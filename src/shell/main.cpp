@@ -240,29 +240,6 @@ int main(int argc, char ** argv)
         CHANDLER->setImagePath(THEME_DIR + "icons/");
     #endif
 
-    /*
-    if (argc == 1) {
-        bool openLast = TCONFIG->value("OpenLastProject").toBool();
-        if (openLast) {
-            QString files = TCONFIG->value("Recents").toString();
-            QStringList recents = files.split(';');
-            if (!files.isEmpty())
-                mainWindow->openProject(recents.first());
-        }
-    } else {
-        // If there is a second argument, it means to open a project from the command line
-        if (argc == 2) {
-            QString project = QString(argv[1]);
-
-            #ifdef TUP_DEBUG
-                qWarning() << "[main.cpp] - Opening project -> " << project;
-            #endif
-
-            if (project.endsWith(".tup") || project.endsWith(".TUP"))
-                mainWindow->openProject(project);
-        }
-    } */
-
     // It's time to play with TupiTube Desk!
     return application.exec();
 }

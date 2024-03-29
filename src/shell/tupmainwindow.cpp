@@ -131,7 +131,15 @@ TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
             QTextStream in(&webMsgFile);
             while (!in.atEnd())
                 fileContent += in.readLine();
+        } else {
+            #ifdef TUP_DEBUG
+                qDebug() << "[TupMainWindow()] - Fatal Error: Can't read news msg file ->" << webMsgPath;
+            #endif
         }
+    } else {
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupMainWindow()] - Warning: News msg file doesn't exist ->" << webMsgPath;
+        #endif
     }
 
     // Processing web msg content
@@ -164,8 +172,13 @@ TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
         }
     }
 
-    if (showWebMsg)
+    if (showWebMsg) {
         QTimer::singleShot(0, this, SLOT(showNewsMessage()));
+    } else {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupMainWindow()] - Warning: News message has been disabled!";
+        #endif
+    }
 
     /* SQA: Check this code for the future
     TCONFIG->beginGroup("General");

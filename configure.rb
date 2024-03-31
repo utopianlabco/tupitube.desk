@@ -142,6 +142,24 @@ _EOH_
        end
     end
 
+    if conf.hasArgument?("with-libpng")
+       libpngDir = conf.argumentValue("with-libpng")
+       if File.directory? libpngDir
+          libpngLib = libpngDir + "/lib"
+          if RUBY_PLATFORM =~ /linux/
+              libpngInclude = libpngDir + "/include"
+          elsif RUBY_PLATFORM =~ /darwin/
+              libpngInclude = libpngDir + "/include"
+          end
+          config.addLib("-L" + libpngLib)
+	  config.addLib("-lpng")
+          config.addIncludePath(libpngInclude)
+       else
+          Info.error << " ERROR: libpng directory does not exist!\n"
+          exit 0
+       end
+    end
+
     if conf.hasArgument?("with-quazip")
        quazipDir = conf.argumentValue("with-quazip")
        if File.directory? quazipDir

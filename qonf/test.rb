@@ -112,9 +112,20 @@ class Test
                          qmakeLine += "'LIBS += #{extraLib}'"
                       end
                    else
-                      qmakeLine = ""
-                      if extraLib.length > 0 
-                         qmakeLine = "'LIBS += #{extraLib} #{parser.libs.join(" ")}'"
+                      if File.dirname(@rules).end_with?("libpng")
+                         if conf.hasArgument?("with-libpng")
+                            pngDir = conf.argumentValue("with-libpng")
+                            pngLib = pngDir + "/lib"
+                            extraLib  = "-L#{pngLib} -lpng"
+                            extraInclude = pngDir + "/include"
+                            qmakeLine = "'LIBS += #{extraLib}'";
+                            qmakeLine += " 'INCLUDEPATH += #{extraInclude}'";
+                         end
+                      else
+                         qmakeLine = ""
+                         if extraLib.length > 0 
+                            qmakeLine = "'LIBS += #{extraLib} #{parser.libs.join(" ")}'"
+                         end
                       end
                    end
                 end

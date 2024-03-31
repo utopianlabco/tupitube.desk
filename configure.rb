@@ -58,6 +58,7 @@ Use: ./configure [options]
   --libdir=[path]:          Set library path [/usr/lib/tupitube | /usr/lib64/tupitube]
   --sharedir=[path]:        Set data path [/usr/share]
   --with-ffmpeg=[path]:     Set ffmpeg installation path [/usr]
+  --with-libpng=[path]:     Set libpng installation path [/usr]
   --with-quazip=[path]:     Set quazip installation path [/usr]
   --with-libsndfile=[path]: Set libsndfile installation path [/usr]
   --without-ffmpeg:         Disable ffmpeg support

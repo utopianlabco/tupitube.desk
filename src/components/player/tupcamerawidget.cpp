@@ -361,6 +361,9 @@ void TupCameraWidget::doPlay()
         qDebug() << "[TupCameraWidget::doPlay()] - Starting player...";
     #endif
 
+    updateFramesTotal(currentSceneIndex);
+    setDuration(project->getFPS(currentSceneIndex));
+
     previewScreen->play();
 
     bool flag = false;
@@ -528,6 +531,10 @@ void TupCameraWidget::setFPS(int fps)
 
 void TupCameraWidget::setDuration(int fps)
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupCameraWidget::setDuration()] - fps ->" << fps;
+    #endif
+
     double time = static_cast<double> (framesTotal) / static_cast<double> (fps);
     duration->setText(QString::number(time, 'f', 2) + QString(" " + tr("secs")));
 }
@@ -535,7 +542,7 @@ void TupCameraWidget::setDuration(int fps)
 void TupCameraWidget::updateFPS(int fps)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupCameraWidget::updateFPS()] - fps -> " << fps;
+        qDebug() << "[TupCameraWidget::updateFPS()] - fps ->" << fps;
     #endif
 
     emit projectHasChanged(true);

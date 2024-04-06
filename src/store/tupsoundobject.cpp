@@ -295,13 +295,22 @@ QDomElement TupSoundObject::toXml(QDomDocument &doc) const
     root.setAttribute("backgroundTrack", backgroundTrack);
     root.setAttribute("duration", duration);
 
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupSoundObject::toXml()] - audioScenes.count() ->" << audioScenes.count();
+    #endif
+
     QString framesString = "";
     for (int i = 0; i < audioScenes.count(); i++) {
          SoundScene scene = audioScenes.at(i);
          QList<int> frames = scene.frames;
+         #ifdef TUP_DEBUG
+            qDebug() << "[TupSoundObject::toXml()] - scene.sceneIndex ->" << scene.sceneIndex;
+            qDebug() << "[TupSoundObject::toXml()] - frames ->" << frames;
+         #endif
+
          if (!frames.isEmpty()) {
              for (int j = 0; j < frames.count(); j++)
-                  framesString = QString::number(frames.at(j)) + ",";
+                  framesString += QString::number(frames.at(j)) + ",";
              framesString.chop(1);
 
              QDomElement element = doc.createElement("scene");

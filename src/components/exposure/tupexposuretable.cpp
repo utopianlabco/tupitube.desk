@@ -251,8 +251,8 @@ void TupExposureTable::requestFrameRenaming(QTableWidgetItem *item)
 void TupExposureTable::requestFrameSelection(int currentSelectedRow, int currentColumn, int previousRow, int previousColumn)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupExposureTable::requestFrameSelection()] - current -> " << currentSelectedRow
-                 << "," << currentColumn << " - previous -> " << previousRow << "," << previousColumn;
+        qDebug() << "[TupExposureTable::requestFrameSelection()] - current ->" << currentSelectedRow
+                 << "," << currentColumn << " - previous ->" << previousRow << "," << previousColumn;
     #endif
 
     if (!removingLayer) {
@@ -380,7 +380,7 @@ void TupExposureTable::updateFrameState(int layerIndex, int frameIndex, TupExpos
 void TupExposureTable::selectFrame(int layerIndex, int frameIndex)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupExposureTable::selectFrame()] - layerIndex, frameIndex -> "
+        qDebug() << "[TupExposureTable::selectFrame()] - layerIndex, frameIndex ->"
                  << layerIndex << "," << frameIndex;
     #endif
 
@@ -395,8 +395,8 @@ void TupExposureTable::selectFrame(int layerIndex, int frameIndex)
 void TupExposureTable::selectFrame(int layerIndex, int frameIndex, const QString &selection)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupExposureTable::selectFrame()] - layerIndex -> "
-                 << layerIndex << " - frameIndex -> " << frameIndex << " - selection -> " << selection;
+        qDebug() << "[TupExposureTable::selectFrame()] - layerIndex ->"
+                 << layerIndex << " - frameIndex ->" << frameIndex << " - selection ->" << selection;
     #endif
 
     selectionModel()->clearSelection();
@@ -474,7 +474,7 @@ void TupExposureTable::insertLayer(int index, const QString & name)
 void TupExposureTable::insertFrame(int layerIndex, int frameIndex, const QString &name, bool external)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupExposureTable::insertFrame()] - layerIndex, frameIndex -> "
+        qDebug() << "[TupExposureTable::insertFrame()] - layerIndex, frameIndex ->"
                  << layerIndex << "," << frameIndex;
     #endif
 
@@ -536,7 +536,7 @@ void TupExposureTable::storeUndoLayerOpacity(int layerIndex, double opacity)
 void TupExposureTable::removeLayer(int layerIndex)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupExposureTable::removeLayer()] - layerIndex -> " << layerIndex;
+        qDebug() << "[TupExposureTable::removeLayer()] - layerIndex ->" << layerIndex;
     #endif
 
     setUpdatesEnabled(false);
@@ -565,7 +565,7 @@ void TupExposureTable::exchangeFrame(int oldPosLayer, int oldPosFrame, int newPo
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupExposureTable::exchangeFrame()]";
-        qDebug() << "*** frameIndex 1, frameIndex 2 -> " << oldPosFrame << "," << newPosFrame;
+        qDebug() << "*** frameIndex 1, frameIndex 2 ->" << oldPosFrame << "," << newPosFrame;
     #endif
 
     QTableWidgetItem *frame1 = item(oldPosFrame, oldPosLayer);
@@ -589,7 +589,7 @@ void TupExposureTable::exchangeFrame(int oldPosLayer, int oldPosFrame, int newPo
     } else {
         #ifdef TUP_DEBUG
             qDebug() << "[TupExposureTable::exchangeFrame()] - Fatal Error: Some of the frame cells are NULL -> indexes: ["
-                        + QString::number(oldPosFrame) +  "," + QString::number(newPosFrame) + "]";
+                        + QString::number(oldPosFrame) + "," + QString::number(newPosFrame) + "]";
         #endif
     }
 }

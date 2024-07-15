@@ -253,8 +253,8 @@ void TupCameraWidget::addAnimationDisplay()
     connect(previewScreen, SIGNAL(frameChanged(int)), this, SLOT(updateTimerPanel(int)));
     connect(previewScreen, SIGNAL(activePause()), this, SLOT(doPause()));
     connect(previewScreen, SIGNAL(sceneHasChanged(int)), this, SLOT(updateFramesTotal(int)));
-    connect(previewScreen, SIGNAL(sceneResponseActivated(int,TupProjectRequestArgument,int)),
-            this, SLOT(sceneResponse(int,TupProjectRequestArgument,int)));
+    connect(previewScreen, SIGNAL(sceneResponseActivated(TupSceneResponse *)),
+            this, SLOT(sceneResponse(TupSceneResponse *)));
 
     layout->addWidget(previewScreen, 0, Qt::AlignCenter);
 }
@@ -357,7 +357,8 @@ void TupCameraWidget::doPlay()
     int frames = previewScreen->sceneFramesTotal();
 
     #ifdef TUP_DEBUG
-        qDebug() << "[TupCameraWidget::doPlay()] - frames -> " << frames;
+        qDebug() << "[TupCameraWidget::doPlay()] - frames ->" << frames;
+        qDebug() << "[TupCameraWidget::doPlay()] - currentSceneIndex ->" << currentSceneIndex;
         qDebug() << "[TupCameraWidget::doPlay()] - Starting player...";
     #endif
 
@@ -436,9 +437,10 @@ void TupCameraWidget::previousFrame()
     previewScreen->previousFrame();
 }
 
-void TupCameraWidget::sceneResponse(int action, TupProjectRequestArgument arg, int sceneIndex)
-{
-    Q_UNUSED(arg)
+void TupCameraWidget::sceneResponse(TupSceneResponse *response)
+{    
+    int action = response->getAction();
+    int sceneIndex = response->getSceneIndex();
 
     #ifdef TUP_DEBUG
         qDebug() << "[TupCameraWidget::sceneResponse()] - action ->" << action;
@@ -451,6 +453,15 @@ void TupCameraWidget::sceneResponse(int action, TupProjectRequestArgument arg, i
              cameraStatus->setScenes(project->getSceneNames());
              cameraStatus->setCurrentScene(sceneIndex);
              updateFramesTotal(sceneIndex);
+        }
+        break;
+        case TupProjectRequest::Duplicate:
+        {
+             if (response->getMode() == TupProjectResponse::Undo || response->getMode() == TupProjectResponse::Redo) {
+                 cameraStatus->setScenes(project->getSceneNames());
+                 cameraStatus->setCurrentScene(sceneIndex);
+                 updateFramesTotal(sceneIndex);
+             }
         }
         break;
         case TupProjectRequest::Remove:

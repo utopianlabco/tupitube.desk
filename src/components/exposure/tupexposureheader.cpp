@@ -158,8 +158,8 @@ int TupExposureHeader::lastFrame(int section)
         return m_sections[section].lastFrame;
 
     #ifdef TUP_DEBUG
-        qDebug() << "TupExposureHeader::lastFrame() - Fatal Error: Section index is invalid -> " + QString::number(section);
-        qDebug() << "m_sections count: " << m_sections.count();
+        qDebug() << "[TupExposureHeader::lastFrame()] - Fatal Error: Section index is invalid! ->" << section;
+        qDebug() << "[TupExposureHeader::lastFrame()] - m_sections count ->" << m_sections.count();
     #endif
 
     return -1;
@@ -171,8 +171,8 @@ void TupExposureHeader::removeSection(int section)
         m_sections.removeAt(section);
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "TupExposureHeader::removeSection() - Fatal Error: Section index is invalid -> " + QString::number(section);
-            qDebug() << "m_sections count: " << m_sections.count();
+            qDebug() << "[TupExposureHeader::removeSection()] - Fatal Error: Section index is invalid ->" << section;
+            qDebug() << "[TupExposureHeader::removeSection()] - m_sections count ->" << m_sections.count();
         #endif
     }
 }
@@ -183,8 +183,8 @@ void TupExposureHeader::setLastFrame(int section, int num)
         m_sections[section].lastFrame = num;
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "TupExposureHeader::removeSelection() - Fatal Error: Section index is invalid -> " + QString::number(section);
-            qDebug() << "m_sections count: " << m_sections.count();
+            qDebug() << "[TupExposureHeader::removeSelection()] - Fatal Error: Section index is invalid ->" << section;
+            qDebug() << "[TupExposureHeader::removeSelection()] - m_sections count ->" << m_sections.count();
         #endif
     }
 }
@@ -212,7 +212,7 @@ void TupExposureHeader::mousePressEvent(QMouseEvent *event)
         }
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "TupExposureHeader::mousePressEvent() - Fatal Error: Section index is invalid -> " + QString::number(section);
+            qDebug() << "[TupExposureHeader::mousePressEvent()] - Fatal Error: Section index is invalid ->" << section;
         #endif
     }
 }

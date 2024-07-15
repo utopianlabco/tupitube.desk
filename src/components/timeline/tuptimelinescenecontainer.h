@@ -62,6 +62,7 @@ class T_GUI_EXPORT TupTimelineSceneContainer : public QTabWidget
         int count();
         void removeAllScenes();
         bool isTableIndexValid(int index);
+        QString currentSceneName() const;
 
     signals:
         void sceneRenameRequested(int sceneIndex);

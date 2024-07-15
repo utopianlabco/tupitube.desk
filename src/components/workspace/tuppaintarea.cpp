@@ -1872,8 +1872,8 @@ void TupPaintArea::importExternalObjects(const QString &tempPath, const QString 
 void TupPaintArea::importLocalProject(const QString &objectPath, bool onlyLibrary)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupPaintArea::importLocalProject()] - objectPath -> " << objectPath;
-        qDebug() << "[TupPaintArea::importLocalProject()] - onlyLibrary -> " << onlyLibrary;
+        qDebug() << "[TupPaintArea::importLocalProject()] - objectPath ->" << objectPath;
+        qDebug() << "[TupPaintArea::importLocalProject()] - onlyLibrary ->" << onlyLibrary;
     #endif
 
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -1913,8 +1913,8 @@ void TupPaintArea::importLocalProject(const QString &objectPath, bool onlyLibrar
 
                 if (newSize != currentSize) {
                     #ifdef TUP_DEBUG
-                        qDebug() << "[TupPaintArea::importLocalProject()] - Current project dimension -> " << currentSize;
-                        qDebug() << "[TupPaintArea::importLocalProject()] - Imported project dimension -> " << newSize;
+                        qDebug() << "[TupPaintArea::importLocalProject()] - Current project dimension ->" << currentSize;
+                        qDebug() << "[TupPaintArea::importLocalProject()] - Imported project dimension ->" << newSize;
                     #endif
 
                     QMessageBox msgBox;
@@ -1995,18 +1995,18 @@ void TupPaintArea::importLocalProject(const QString &objectPath, bool onlyLibrar
         // Removing temporary folder
         QDir assetsDir(tempPath);
         #ifdef TUP_DEBUG
-            qDebug() << "[TupPaintArea::importLocalProject()] - Removing temporary folder -> " << tempPath;
+            qDebug() << "[TupPaintArea::importLocalProject()] - Removing temporary folder ->" << tempPath;
         #endif
         if (assetsDir.exists()) {
             if (!assetsDir.removeRecursively()) {
                 #ifdef TUP_DEBUG
-                    qWarning() << "[TupPaintArea::importLocalProject()] - Error: Can't remove temporary folder -> " << tempPath;
+                    qWarning() << "[TupPaintArea::importLocalProject()] - Error: Can't remove temporary folder ->" << tempPath;
                 #endif
             }
         }
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupPaintArea::importLocalProject()] - Fatal Error: Can't open TUP source file -> " << objectPath;
+            qDebug() << "[TupPaintArea::importLocalProject()] - Fatal Error: Can't open TUP source file ->" << objectPath;
         #endif
         TOsd::self()->display(TOsd::Error, tr("Sorry, TUP source file is invalid!"));
     }

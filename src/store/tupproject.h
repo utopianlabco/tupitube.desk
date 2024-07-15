@@ -108,6 +108,7 @@ class TUPITUBE_EXPORT TupProject : public QObject, public TupAbstractSerializabl
         TupScene *createScene(QString name, int pos, bool loaded = false);
         void updateScene(int pos, TupScene *scene);
         bool restoreScene(int pos);
+        bool duplicateScene(int pos, const QString &sceneName);
         bool removeScene(int pos);
         bool resetScene(int pos, const QString &newName);
         QString recoverScene(int pos);

@@ -361,6 +361,10 @@ void TupScene::fromXml(const QString &xml)
 
 QDomElement TupScene::toXml(QDomDocument &doc) const
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupScene::toXml()]";
+    #endif
+
     QDomElement root = doc.createElement("scene");
     root.setAttribute("name", sceneName);
     root.setAttribute("fps", fps);

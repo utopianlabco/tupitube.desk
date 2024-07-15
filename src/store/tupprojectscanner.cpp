@@ -48,7 +48,7 @@ TupProjectScanner::~TupProjectScanner()
 bool TupProjectScanner::read(const QString &filename, const QString &tempFolder)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupProjectScanner::read()] - fileName -> " << filename;
+        qDebug() << "[TupProjectScanner::read()] - fileName ->" << filename;
     #endif
 
     TupProject *project = new TupProject;
@@ -64,11 +64,11 @@ bool TupProjectScanner::read(const QString &filename, const QString &tempFolder)
             delete projectFile;
         } else {
             #ifdef TUP_DEBUG
-                qWarning() << "[TupProjectScanner::read()] - Error while open .tpp file. Name -> "
+                qWarning() << "[TupProjectScanner::read()] - Error while open .tpp file. Name ->"
                            << projectFile->fileName();
-                qWarning() << "[TupProjectScanner::read()] - Path -> "
+                qWarning() << "[TupProjectScanner::read()] - Path ->"
                            << projectDir.path();
-                qWarning() << "[TupProjectScanner::read()] - Error Description -> "
+                qWarning() << "[TupProjectScanner::read()] - Error Description ->"
                            << projectFile->errorString();
             #endif
             delete projectFile;
@@ -98,9 +98,9 @@ bool TupProjectScanner::read(const QString &filename, const QString &tempFolder)
             delete libraryFile;
         } else {
             #ifdef TUP_DEBUG
-                qWarning() << "[TupProjectScanner::read()] - Error while open .tpl file. Name -> " << libraryFile->fileName();
-                qWarning() << "[TupProjectScanner::read()] - Path -> " << projectDir.path();
-                qWarning() << "[TupProjectScanner::read()] - Error Description -> " << libraryFile->errorString();
+                qWarning() << "[TupProjectScanner::read()] - Error while open .tpl file. Name ->" << libraryFile->fileName();
+                qWarning() << "[TupProjectScanner::read()] - Path ->" << projectDir.path();
+                qWarning() << "[TupProjectScanner::read()] - Error Description ->" << libraryFile->errorString();
             #endif
             delete libraryFile;
 
@@ -130,7 +130,7 @@ bool TupProjectScanner::read(const QString &filename, const QString &tempFolder)
                             libraryFlags << true;
                     } else {
                         #ifdef TUP_DEBUG
-                            qWarning() << "[TupProjectScanner::read()] - Fatal Error: Scene file seems to be invalid -> "
+                            qWarning() << "[TupProjectScanner::read()] - Fatal Error: Scene file seems to be invalid ->"
                                        << scenePath;
                         #endif
                         sceneFile->close();
@@ -143,7 +143,7 @@ bool TupProjectScanner::read(const QString &filename, const QString &tempFolder)
                     delete sceneFile;
                 } else {
                     #ifdef TUP_DEBUG
-                        qWarning() << "[TupProjectScanner::read()] - Fatal Error: Can't open file -> " << scenePath;
+                        qWarning() << "[TupProjectScanner::read()] - Fatal Error: Can't open file ->" << scenePath;
                     #endif
                     delete sceneFile;
 
@@ -163,7 +163,7 @@ bool TupProjectScanner::read(const QString &filename, const QString &tempFolder)
     }
 
     #ifdef TUP_DEBUG
-        qDebug() << "[TupProjectScanner::read()] - Fatal Error: Can't import package -> " << filename;
+        qDebug() << "[TupProjectScanner::read()] - Fatal Error: Can't import package ->" << filename;
     #endif
 
     return false;
@@ -331,9 +331,9 @@ QList<QString> TupProjectScanner::getSceneContents()
 void TupProjectScanner::updateLibraryKey(int index, const QString &oldKey, const QString &key)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupProjectScanner::updateLibraryKey()] - index -> " << index;
-        qDebug() << "[TupProjectScanner::updateLibraryKey()] - oldKey -> " << oldKey;
-        qDebug() << "[TupProjectScanner::updateLibraryKey()] - key -> " << key;
+        qDebug() << "[TupProjectScanner::updateLibraryKey()] - index ->" << index;
+        qDebug() << "[TupProjectScanner::updateLibraryKey()] - oldKey ->" << oldKey;
+        qDebug() << "[TupProjectScanner::updateLibraryKey()] - key ->" << key;
     #endif
 
     sceneContents[index].replace(oldKey, key);

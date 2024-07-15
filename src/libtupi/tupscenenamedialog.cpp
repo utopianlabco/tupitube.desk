@@ -83,7 +83,7 @@ void TupSceneNameDialog::setUI(const QString &sceneName)
     okButton = new QPushButton(QIcon(QPixmap(THEME_DIR + "icons/apply.png")), "");
     okButton->setToolTip(actionDesc);
     if (actionType == Rename)
-        okButton->setVisible(false);
+        okButton->setEnabled(false);
 
     connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
 
@@ -120,5 +120,5 @@ void TupSceneNameDialog::checkInput(const QString &input)
         }
     }
 
-    okButton->setVisible(flag);
+    okButton->setEnabled(flag);
 }

@@ -51,6 +51,7 @@
 #include <QRandomGenerator>
 #include <QCollator>
 #include <QScreen>
+#include <QRegularExpression>
 
 int TAlgorithm::random()
 {
@@ -312,3 +313,27 @@ QPair<int, int> TAlgorithm::screenDimension()
 
     return dimension;
 }
+
+QString TAlgorithm::refactorDuplicatedSceneName(QString sceneName)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupProject::refactorDuplicatedSceneName()] - sceneName ->" << sceneName;
+    #endif
+
+    static QRegularExpression regex("-(\\d+)$");
+    QRegularExpressionMatch match = regex.match(sceneName);
+
+    if (match.hasMatch()) {
+         QString numberStr = match.captured(1);
+         int number = numberStr.toInt();
+
+         QString incrementedString = sceneName.left(sceneName.length() - numberStr.length()) +
+                                     QString::number(number + 1);
+
+         return incrementedString;
+    }
+
+    return sceneName + "-1";
+}
+
+

@@ -71,57 +71,58 @@ class TUPITUBE_EXPORT TupProjectRequest
         {
             None = 0,
             Add = 1,
+            Duplicate = 2,
             Remove = -Add,
-            RemoveSelection = 2,
-            Reset = 3,
-            Exchange = 4,
-            Move = 5,
-            Lock = 6,
-            Rename = 7,
-            Select = 8,
-            View = 9,
+            RemoveSelection = 3,
+            Reset = 4,
+            Exchange = 5,
+            Move = 6,
+            Lock = 7,
+            Rename = 8,
+            Select = 9,
+            View = 10,
             
-            Group = 10,
+            Group = 11,
             Ungroup = -Group,
             
             // Items
-            Transform = 11,
-            Convert = 12,
-            EditNodes = 13,
-            Pen = 14,
-            Brush = 15,
-            TextColor = 16,
-            InsertSymbolIntoFrame = 17,
+            Transform = 12,
+            Convert = 13,
+            EditNodes = 14,
+            Pen = 15,
+            Brush = 16,
+            TextColor = 17,
+            InsertSymbolIntoFrame = 18,
             RemoveSymbolFromFrame = -InsertSymbolIntoFrame,
 
-            SetTween = 18,
-            UpdateTween = 19,
-            RemoveTween = 20,
-            UpdateTweenPath = 21,
+            SetTween = 19,
+            UpdateTween = 20,
+            RemoveTween = 21,
+            UpdateTweenPath = 22,
             
             // frames
-            Update = 22,
-            Extend = 23,
-            Copy = 24,
-            CopySelection = 25,
-            Paste = 26,
-            PasteSelection = 27,
+            Update = 23,
+            Extend = 24,
+            Copy = 25,
+            CopySelection = 26,
+            Paste = 27,
+            PasteSelection = 28,
             ReverseSelection = -PasteSelection,
 
             // scenes
-            GetInfo = 28,
-            BgColor = 29,
+            GetInfo = 29,
+            BgColor = 30,
 
             // layer
-            AddLipSync = 30,
+            AddLipSync = 31,
             RemoveLipSync = -AddLipSync,
-            UpdateLipSync = 31,
-            UpdateOpacity = 32,
+            UpdateLipSync = 32,
+            UpdateOpacity = 33,
 
             // Raster
-            AddRasterItem = 33,
+            AddRasterItem = 34,
             RemoveRasterItem = -AddRasterItem,
-            ClearRasterCanvas = 34
+            ClearRasterCanvas = 35
         };
 
         enum Part

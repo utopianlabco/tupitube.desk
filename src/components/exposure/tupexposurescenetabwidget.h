@@ -71,6 +71,7 @@ class T_GUI_EXPORT TupExposureSceneTabWidget : public QFrame
         TupExposureTable* getTable(int index);
         void setCurrentIndex(int index);
         int currentIndex();
+        QString currentSceneName() const;
         bool isTableIndexValid(int index);
         int count();
         void setLayerOpacity(int sceneIndex, double opacity);

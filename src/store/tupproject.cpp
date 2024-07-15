@@ -45,6 +45,7 @@
 #include "tupitemfactory.h"
 #include "tupprojectresponse.h"
 #include "tupprojectloader.h"
+#include "talgorithm.h"
 
 TupProject::TupProject(QObject *parent) : QObject(parent)
 {
@@ -84,7 +85,7 @@ void TupProject::loadLibrary(const QString &filename)
         file.close();
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupProject::loadLibrary()] - Cannot open library from -> " << filename;
+            qDebug() << "[TupProject::loadLibrary()] - Cannot open library from ->" << filename;
         #endif
     }
 }
@@ -143,8 +144,8 @@ void TupProject::setCurrentBgColor(const QColor &bgColor)
 void TupProject::setSceneBgColor(int sceneIndex, const QColor &bgColor)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupProject::setSceneBgColor()] - sceneIndex -> " << sceneIndex;
-        qDebug() << "[TupProject::setSceneBgColor()] - bgColor.name() -> " << bgColor.name();
+        qDebug() << "[TupProject::setSceneBgColor()] - sceneIndex ->" << sceneIndex;
+        qDebug() << "[TupProject::setSceneBgColor()] - bgColor.name() ->" << bgColor.name();
     #endif
 
     setCurrentBgColor(bgColor);
@@ -207,13 +208,20 @@ QSize TupProject::getDimension() const
 
 int TupProject::getFPS(const int sceneIndex) const
 {
-    if (sceneIndex == 0)
-        return fps;
+    int value = 0;
+    if (sceneIndex > -1 && sceneIndex < scenesList.size()) {
+        if (sceneIndex == 0)
+            return fps;
 
-    TupScene *scene = scenesList.at(sceneIndex);
-    int value = fps;
-    if (scene)
-        value = scene->getFPS();
+        TupScene *scene = scenesList.at(sceneIndex);
+        value = fps;
+        if (scene)
+            value = scene->getFPS();
+    } else {
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupProject::getFPS()] - Fatal Error: Invalid sceneIndex ->" << sceneIndex;
+        #endif
+    }
 
     return value;
 }
@@ -270,37 +278,74 @@ void TupProject::updateScene(int position, TupScene *scene)
     scenesList.insert(position, scene);
 }
 
-bool TupProject::restoreScene(int position)
+bool TupProject::restoreScene(int sceneIndex)
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupProject::restoreScene()] - sceneIndex ->" << sceneIndex;
+    #endif
+
     if (undoScenes.count() > 0) {
         TupScene *scene = undoScenes.takeLast();
         if (scene) {
-            scenesList.insert(position, scene);
+            scenesList.insert(sceneIndex, scene);
             sceneCounter++;
             soundRecords = undoSoundRecords.takeLast();
+            #ifdef TUP_DEBUG
+                qDebug() << "[TupProject::restoreScene()] - Scene restored successfully!";
+            #endif
 
             return true;
+        } else {
+            #ifdef TUP_DEBUG
+                qDebug() << "[TupProject::restoreScene()] - Fatal Error: Scene from undoScenes is NULL!";
+            #endif
         }
 
         return false;
+    } else {
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupProject::restoreScene()] - Fatal Error: undoScenes stack is empty!";
+        #endif
     }
 
     return false;
 }
 
-bool TupProject::removeScene(int pos)
+bool TupProject::duplicateScene(int sceneIndex, const QString &sceneName)
 {
     #ifdef TUP_DEBUG
-        qInfo() << "[TupProject::removeScene()] - scene index -> " << pos;
+        qDebug() << "[TupProject::duplicateScene()] - sceneIndex ->" << sceneIndex;
+        qDebug() << "[TupProject::duplicateScene()] - sceneName ->" << sceneName;
     #endif
 
-    TupScene *toRemove = sceneAt(pos);
+    if (sceneAt(sceneIndex)) {
+        QDomDocument doc;
+        doc.appendChild(sceneAt(sceneIndex)->toXml(doc));
+        QDomElement rootElement = doc.documentElement();
+        rootElement.setAttribute("name", sceneName);
+
+        createScene(sceneName, sceneIndex + 1, true)->fromXml(doc.toString());
+        sceneCounter++;
+    } else {
+        return false;
+    }
+
+    return true;
+}
+
+bool TupProject::removeScene(int sceneIndex)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupProject::removeScene()] - sceneIndex ->" << sceneIndex;
+    #endif
+
+    TupScene *toRemove = sceneAt(sceneIndex);
     if (toRemove) {
-        QString path = getDataDir() + "/scene" + QString::number(pos) + ".tps";
+        QString path = getDataDir() + "/scene" + QString::number(sceneIndex) + ".tps";
         if (QFile::exists(path)) {
             if (!QFile::remove(path)) {
                 #ifdef TUP_DEBUG
-                    qCritical() << "[TupProject::removeScene()] - Error removing file -> " << path;
+                    qCritical() << "[TupProject::removeScene()] - Error removing file ->" << path;
                 #endif
             
                 return false;
@@ -308,15 +353,15 @@ bool TupProject::removeScene(int pos)
         }
 
         int total = sceneCounter - 1;
-        if (pos < total) {
-            for (int i=pos + 1; i<=total; i++) {
+        if (sceneIndex < total) {
+            for (int i=sceneIndex + 1; i<=total; i++) {
                  QString oldName = getDataDir() + "/scene" + QString::number(i) + ".tps";
                  QString newName = getDataDir() + "/scene" + QString::number(i-1) + ".tps";
                  QFile::rename(oldName, newName); 
             }
         }
 
-        undoScenes << scenesList.takeAt(pos);
+        undoScenes << scenesList.takeAt(sceneIndex);
         undoSoundRecords << soundRecords;
         sceneCounter--;
 
@@ -326,37 +371,41 @@ bool TupProject::removeScene(int pos)
     return false;
 }
 
-bool TupProject::resetScene(int pos, const QString &newName)
+bool TupProject::resetScene(int sceneIndex, const QString &newName)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupProject::resetScene()] - pos ->" << pos;
+        qDebug() << "[TupProject::resetScene()] - sceneIndex ->" << sceneIndex;
     #endif
 
-    TupScene *scene = sceneAt(pos);
+    TupScene *scene = sceneAt(sceneIndex);
     if (scene) {
-        undoScenes << scenesList.takeAt(pos);
+        undoScenes << scenesList.takeAt(sceneIndex);
         undoSoundRecords << soundRecords;
 
-        TupScene *basic = new TupScene(this, pos, dimension, Qt::white);
-        basic->setSceneName(newName);
-        basic->setBasicStructure();
-        scenesList.insert(pos, basic);
+        TupScene *emptyScene = new TupScene(this, sceneIndex, dimension, Qt::white);
+        emptyScene->setSceneName(newName);
+        emptyScene->setBasicStructure();
+        scenesList.insert(sceneIndex, emptyScene);
 
         return true;
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupProject::resetScene()] - No scene at index -> " << pos;
+            qDebug() << "[TupProject::resetScene()] - No scene at index ->" << sceneIndex;
         #endif
     }
 
     return false;
 }
 
-QString TupProject::recoverScene(int pos)
+QString TupProject::recoverScene(int sceneIndex)
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupProject::recoverScene()] - sceneIndex ->" << sceneIndex;
+    #endif
+
     TupScene *scene = undoScenes.takeLast();
     if (scene) {
-        scenesList[pos] = scene;
+        scenesList[sceneIndex] = scene;
         soundRecords = undoSoundRecords.takeLast();
 
         return scene->getSceneName();
@@ -365,24 +414,24 @@ QString TupProject::recoverScene(int pos)
     return "";
 }
 
-bool TupProject::moveScene(int pos, int newPos)
+bool TupProject::moveScene(int index, int newIndex)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupProject::moveScene()] - pos ->" << pos;
-        qDebug() << "[TupProject::moveScene()] - newPos ->" << newPos;
+        qDebug() << "[TupProject::moveScene()] - index ->" << index;
+        qDebug() << "[TupProject::moveScene()] - newIndex ->" << newIndex;
     #endif
 
-    if (pos < 0 || newPos < 0) {
+    if (index < 0 || newIndex < 0) {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupProject::moveScene()] - Failed moving scene from ->" << pos
-                     << " to ->" << newPos;
+            qDebug() << "[TupProject::moveScene()] - Failed moving scene from ->" << index
+                     << " to ->" << newIndex;
         #endif
 
         return false;
     }
 
-    scenesList.swapItemsAt(pos, newPos);
-    swapSoundScenes(pos, newPos);
+    scenesList.swapItemsAt(index, newIndex);
+    swapSoundScenes(index, newIndex);
 
     return true;
 }
@@ -390,7 +439,7 @@ bool TupProject::moveScene(int pos, int newPos)
 TupScene *TupProject::sceneAt(int sceneIndex) const
 {    
     #ifdef TUP_DEBUG
-        qDebug() << "[TupProject::sceneAt()] - position ->" << sceneIndex;
+        qDebug() << "[TupProject::sceneAt()] - sceneIndex ->" << sceneIndex;
     #endif    
 
     if (sceneIndex < 0) {

@@ -108,7 +108,8 @@ class TUPITUBE_EXPORT TupScreen : public QFrame, public TupAbstractProjectRespon
         void playerStopped();
         void sceneHasChanged(int sceneIndex);
 
-        void sceneResponseActivated(int action, TupProjectRequestArgument arg, int sceneIndex);
+        // void sceneResponseActivated(int action, TupProjectRequestArgument arg, int sceneIndex);
+        void sceneResponseActivated(TupSceneResponse *event);
 
     protected:
         void paintEvent(QPaintEvent *event);

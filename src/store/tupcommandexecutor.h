@@ -60,6 +60,7 @@ class TUPITUBE_EXPORT TupCommandExecutor : public QObject
 
         void getScenes(TupSceneResponse *response);
         bool createScene(TupSceneResponse *response);
+        bool duplicateScene(TupSceneResponse *response);
         bool createLayer(TupLayerResponse *response);
         bool addLipSync(TupLayerResponse *response);
         bool createFrame(TupFrameResponse *response);
@@ -123,7 +124,7 @@ class TUPITUBE_EXPORT TupCommandExecutor : public QObject
         bool updateTweenPath(TupItemResponse *response);
         bool extendFrame(TupFrameResponse *response);
         bool copyFrameSelection(TupFrameResponse *response);
-        // bool pasteFrame( TupFrameResponse *response);
+        // bool pasteFrame(TupFrameResponse *response);
         bool pasteFrameSelection(TupFrameResponse *response);
         bool reverseFrameSelection(TupFrameResponse *response);
         bool resetScene(TupSceneResponse *response);

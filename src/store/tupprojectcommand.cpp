@@ -130,6 +130,10 @@ QString TupProjectCommand::actionString(int action)
         {
             return "add";
         }
+        case TupProjectRequest::Duplicate:
+        {
+            return "duplicate";
+        }
         case TupProjectRequest::Remove:
         {
             return "remove";
@@ -301,42 +305,42 @@ void TupProjectCommand::frameCommand()
         qDebug() << "[TupProjectCommand::frameCommand()]";
     #endif
 
-    TupFrameResponse *res = static_cast<TupFrameResponse *>(response);
+    TupFrameResponse *frameResponse = static_cast<TupFrameResponse *>(response);
 
-    switch (res->getAction()) {
+    switch (frameResponse->getAction()) {
             case TupProjectRequest::Add:
             {
-                 executor->createFrame(res);
+                 executor->createFrame(frameResponse);
             }
             break;
             case TupProjectRequest::Remove:
             {
-                 executor->removeFrame(res);
+                 executor->removeFrame(frameResponse);
             }
             break;
             case TupProjectRequest::RemoveSelection:
             {
-                 executor->removeFrameSelection(res);
+                 executor->removeFrameSelection(frameResponse);
             }
             break;
             case TupProjectRequest::Reset:
             {
-                 executor->resetFrame(res);
+                 executor->resetFrame(frameResponse);
             }
             break;
             case TupProjectRequest::Exchange:
             {
-                 executor->exchangeFrame(res);
+                 executor->exchangeFrame(frameResponse);
             }
             break;
             case TupProjectRequest::Move:
             {
-                 executor->moveFrame(res);
+                 executor->moveFrame(frameResponse);
             }
             break;
             case TupProjectRequest::ReverseSelection:
             {
-                 executor->reverseFrameSelection(res);
+                 executor->reverseFrameSelection(frameResponse);
             }
             break;
             /*
@@ -348,22 +352,22 @@ void TupProjectCommand::frameCommand()
             */
             case TupProjectRequest::Rename:
             {
-                 executor->renameFrame(res);
+                 executor->renameFrame(frameResponse);
             }
             break;
             case TupProjectRequest::Select:
             {
-                 executor->selectFrame(res);
+                 executor->selectFrame(frameResponse);
             }
             break;
             case TupProjectRequest::View:
             {
-                 executor->setFrameVisibility(res);
+                 executor->setFrameVisibility(frameResponse);
             }
             break;
             case TupProjectRequest::Extend:
             {
-                 executor->extendFrame(res);
+                 executor->extendFrame(frameResponse);
             }
             break;
             /*
@@ -375,12 +379,12 @@ void TupProjectCommand::frameCommand()
             */
             case TupProjectRequest::CopySelection:
             {
-                 executor->copyFrameSelection(res);
+                 executor->copyFrameSelection(frameResponse);
             }
             break;
             case TupProjectRequest::PasteSelection:
             {
-                 executor->pasteFrameSelection(res);
+                 executor->pasteFrameSelection(frameResponse);
             }
             break;
             default: 
@@ -469,58 +473,63 @@ void TupProjectCommand::sceneCommand()
         qDebug() << "[TupProjectCommand::sceneCommand()]";
     #endif
 
-    TupSceneResponse *resp = static_cast<TupSceneResponse *>(response);
+    TupSceneResponse *sceneResponse = static_cast<TupSceneResponse *>(response);
 
-    switch (resp->getAction()) {
+    switch (sceneResponse->getAction()) {
 	    // SQA: Check if this case is valid 
         case TupProjectRequest::GetInfo:
         {
-             executor->getScenes(resp);
+             executor->getScenes(sceneResponse);
         }
         break;
         case TupProjectRequest::Add:
         {
-             executor->createScene(resp);
+             executor->createScene(sceneResponse);
+        }
+        break;
+        case TupProjectRequest::Duplicate:
+        {
+             executor->duplicateScene(sceneResponse);
         }
         break;
         case TupProjectRequest::Remove:
         {
-             executor->removeScene(resp);
+             executor->removeScene(sceneResponse);
         }
         break;
         case TupProjectRequest::Reset:
         {
-             executor->resetScene(resp);
+             executor->resetScene(sceneResponse);
         }
         break;
         case TupProjectRequest::Move:
         {
-             executor->moveScene(resp);
+             executor->moveScene(sceneResponse);
         }
         break;
         case TupProjectRequest::Lock:
         {
-             executor->lockScene(resp);
+             executor->lockScene(sceneResponse);
         }
         break;
         case TupProjectRequest::Rename:
         {
-             executor->renameScene(resp);
+             executor->renameScene(sceneResponse);
         }
         break;
         case TupProjectRequest::Select:
         {
-             executor->selectScene(resp);
+             executor->selectScene(sceneResponse);
         }
         break;
         case TupProjectRequest::View:
         {
-             executor->setSceneVisibility(resp);
+             executor->setSceneVisibility(sceneResponse);
         }
         break;
         case TupProjectRequest::BgColor:
         {
-             executor->setBgColor(resp);
+             executor->setBgColor(sceneResponse);
         }
         break;
 

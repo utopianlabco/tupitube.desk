@@ -188,8 +188,16 @@ void TupScreen::calculateFramesTotal()
 {
     projectFramesTotal = 0;
     int scenesTotal = animationList.count();
-    for (int i=0; i<scenesTotal; i++)
-        projectFramesTotal += project->sceneAt(i)->framesCount();
+    for (int i=0; i<scenesTotal; i++) {
+         TupScene *scene = project->sceneAt(i);
+         if (scene) {
+             projectFramesTotal += scene->framesCount();
+         } else {
+             #ifdef TUP_DEBUG
+                 qDebug() << "[TupScreen::calculateFramesTotal()] - Fatal Error: Invalid scene index ->" << i;
+             #endif
+         }
+    }
 
     #ifdef TUP_DEBUG
         qDebug() << "[TupScreen::calculateFramesTotal()] - projectFramesTotal ->" << projectFramesTotal;
@@ -311,7 +319,7 @@ void TupScreen::play()
             // No frames to play
             if (photograms.count() == 1) {
                 #ifdef TUP_DEBUG
-                    qDebug() << "[TupScreen::play()] - Scene only has one scene. Leaving!";
+                    qDebug() << "[TupScreen::play()] - Scene only has one frame. Leaving!";
                 #endif
 
                 return;
@@ -792,7 +800,8 @@ void TupScreen::sceneResponse(TupSceneResponse *event)
         return;
     }
 
-    emit sceneResponseActivated(event->getAction(), event->getArg(),index);
+    // emit sceneResponseActivated(event->getAction(), event->getArg(),index);
+    emit sceneResponseActivated(event);
 
     switch (event->getAction()) {
         case TupProjectRequest::Add:
@@ -847,6 +856,9 @@ void TupScreen::sceneResponse(TupSceneResponse *event)
 
 void TupScreen::projectResponse(TupProjectResponse *)
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupScreen::projectResponse()]";
+    #endif
 }
 
 void TupScreen::itemResponse(TupItemResponse *)

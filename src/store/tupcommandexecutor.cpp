@@ -82,6 +82,45 @@ bool TupCommandExecutor::createScene(TupSceneResponse *response)
     return true;
 }
 
+bool TupCommandExecutor::duplicateScene(TupSceneResponse *response)
+{
+    int sceneIndex = response->getSceneIndex();
+
+    #ifdef TUP_DEBUG
+        qDebug() << "---";
+        qDebug() << "[TupCommandExecutor::duplicateScene()] - sceneIndex ->" << sceneIndex;
+        qDebug() << "[TupCommandExecutor::duplicateScene()] - scene name ->" << response->getArg().toString();
+    #endif
+
+    if (sceneIndex < 0)
+        return false;
+
+    if (response->getMode() == TupProjectResponse::Do) {
+        bool result = project->duplicateScene(sceneIndex, response->getArg().toString());
+        if (!result)
+            return false;
+        emit responsed(response);
+
+        return true;
+    }
+
+    if (response->getMode() == TupProjectResponse::Redo) {
+        bool success = project->restoreScene(sceneIndex + 1);
+        if (!success)
+            return false;
+    }
+
+    if (response->getMode() == TupProjectResponse::Undo) {
+        bool success = project->removeScene(sceneIndex + 1);
+        if (!success)
+            return false;
+    }
+
+    emit responsed(response);
+
+    return true;
+}
+
 bool TupCommandExecutor::removeScene(TupSceneResponse *response)
 {
     #ifdef TUP_DEBUG
@@ -98,11 +137,12 @@ bool TupCommandExecutor::removeScene(TupSceneResponse *response)
 
         if (project->removeScene(pos)) {
             emit responsed(response);
+
             return true;
         } 
     } else {
         #ifdef TUP_DEBUG
-            qWarning() << "TupCommandExecutor::removeScene() - Fatal Error: No scene at index -> " + QString::number(pos);
+            qWarning() << "[TupCommandExecutor::removeScene()] - Fatal Error: No scene at index ->" << pos;
         #endif
     }
 
@@ -138,13 +178,14 @@ bool TupCommandExecutor::lockScene(TupSceneResponse *response)
     bool lock = response->getArg().toBool();
 
     #ifdef TUP_DEBUG
-        qWarning() << "TupCommandExecutor::lockScene() - Scene is locked: " + QString::number(lock);
+        qWarning() << "[TupCommandExecutor::lockScene()] - Scene is locked ->" << lock;
     #endif  
 
     TupScene *scene = project->sceneAt(pos);
     if (scene) {
         scene->setSceneLocked(lock);
         emit responsed(response);
+
         return true;
     }
 
@@ -160,6 +201,7 @@ bool TupCommandExecutor::renameScene(TupSceneResponse *response)
     if (scene) {
         scene->setSceneName(newName);
         emit responsed(response);
+
         return true;
     }
 
@@ -180,6 +222,7 @@ bool TupCommandExecutor::setSceneVisibility(TupSceneResponse *response)
     if (scene) {
         scene->setVisibility(view);
         emit responsed(response);
+
         return true;
     }
 
@@ -200,6 +243,7 @@ bool TupCommandExecutor::resetScene(TupSceneResponse *response)
         if (response->getMode() == TupProjectResponse::Do || response->getMode() == TupProjectResponse::Redo) {
             if (project->resetScene(index, newName)) {
                 emit responsed(response);
+
                 return true;
             }
         }
@@ -208,11 +252,12 @@ bool TupCommandExecutor::resetScene(TupSceneResponse *response)
             QString oldName = project->recoverScene(index);
             response->setArg(oldName);
             emit responsed(response);
+
             return true;
         }
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "TupCommandExecutor::resetScene() - Fatal Error: No scene at index -> " + QString::number(index);
+            qDebug() << "[TupCommandExecutor::resetScene()] - Fatal Error: No scene at index ->" << index;
         #endif
     }
 

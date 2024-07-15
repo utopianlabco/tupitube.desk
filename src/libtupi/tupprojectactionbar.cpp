@@ -77,7 +77,7 @@ void TupProjectActionBar::setup(QList<Action> actionsList)
     mainLayout->setSpacing(0);
     mainLayout->setMargin(1);
     
-    buttonLayout->setSpacing(1);
+    buttonLayout->setSpacing(2);
     buttonLayout->setMargin(1);
     buttonLayout->addStretch();
 
@@ -216,6 +216,16 @@ void TupProjectActionBar::setup(QList<Action> actionsList)
             button->setToolTip(tr("Insert scene"));
 
             actions.addButton(button, InsertScene);
+
+            buttonLayout->addWidget(button);
+            // button->setAnimated(isAnimated);
+        }
+
+        if (action == DuplicateScene) {
+            TImageButton *button = new TImageButton(QIcon(ICONS_DIR + "duplicate_scene.png"), iconSize);
+            button->setToolTip(tr("Duplicate scene"));
+
+            actions.addButton(button, DuplicateScene);
 
             buttonLayout->addWidget(button);
             // button->setAnimated(isAnimated);

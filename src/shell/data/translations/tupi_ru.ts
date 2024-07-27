@@ -2129,6 +2129,19 @@
     </message>
 </context>
 <context>
+    <name>TImageDialog</name>
+    <message>
+        <location filename="../../../framework/gui/timagedialog.cpp" line="65"/>
+        <source>Breaking News!</source>
+        <translation>Последние новости!</translation>
+    </message>
+    <message>
+        <location filename="../../../framework/gui/timagedialog.cpp" line="80"/>
+        <source>Close</source>
+        <translation>Закрыть</translation>
+    </message>
+</context>
+<context>
     <name>TItemSelector</name>
     <message>
         <location filename="../../../framework/gui/titemselector.cpp" line="215"/>
@@ -2863,7 +2876,7 @@
     </message>
     <message>
         <location filename="../../../components/player/tupcamerawidget.cpp" line="239"/>
-        <location filename="../../../components/player/tupcamerawidget.cpp" line="532"/>
+        <location filename="../../../components/player/tupcamerawidget.cpp" line="550"/>
         <source>secs</source>
         <translation>секунд</translation>
     </message>
@@ -3219,7 +3232,7 @@
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="422"/>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1327"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1334"/>
         <source>Onion Skin Factor</source>
         <translation>Коэффициент прозрачности в режиме калькирования</translation>
     </message>
@@ -3254,43 +3267,43 @@
         <translation>Последовательность изображений</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1260"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1267"/>
         <source>Vector Static BG Properties</source>
         <translation>Свойства статического векторного фона</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1261"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1268"/>
         <source>Vector Dynamic BG Properties</source>
         <translation>Свойства динамического векторного фона</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1268"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1275"/>
         <source>Vector Static BG Mode</source>
         <translation>Режим статического векторного фона</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1269"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1276"/>
         <source>Vector Dynamic BG Mode</source>
         <translation>Режим динамического векторного фона</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1270"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1277"/>
         <source>Raster Static BG Mode</source>
         <translation>Режим статического растрового фона</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1271"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1278"/>
         <source>Raster Dynamic BG Mode</source>
         <translation>Режим динамического растрового фона</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1441"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1448"/>
         <source>Foreground Opacity</source>
         <translation>Непрозрачность переднего плана</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="975"/>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2668"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="982"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2675"/>
         <source>%1</source>
         <translation>%1</translation>
     </message>
@@ -3315,124 +3328,124 @@
         <translation>Форматы видео</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1254"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1261"/>
         <source>Paint area actions</source>
         <translation>Действия области раскраски</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1262"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1269"/>
         <source>Foreground Properties</source>
         <translation>Свойства переднего плана</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1267"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1274"/>
         <source>Frames Mode</source>
         <translation>Покадровый режим</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1272"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1279"/>
         <source>Vector Foreground Mode</source>
         <translation>Режим векторного переднего плана</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1300"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1307"/>
         <source>Previous Frames</source>
         <translation>Предыдущие кадры</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1312"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1319"/>
         <source>Next Frames</source>
         <translation>Последующие кадры</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1344"/>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="1351"/>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1448"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1358"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1455"/>
         <source>Static BG Opacity</source>
         <translation>Непрозрачность статического фона</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1363"/>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1367"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1370"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1374"/>
         <source>Movement Orientation</source>
         <translation>Направление движения</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1368"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1375"/>
         <source>Right</source>
         <translation>Направо</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1369"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1376"/>
         <source>Left</source>
         <translation>Налево</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1370"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1377"/>
         <source>Up</source>
         <translation>Вверх</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1371"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1378"/>
         <source>Down</source>
         <translation>Вниз</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1393"/>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1399"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1400"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1406"/>
         <source>Shift Length</source>
         <translation>Длина смещения</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1404"/>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="1411"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1418"/>
         <source>Dynamic BG Opacity</source>
         <translation>Непрозначность динамического фона</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1539"/>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1540"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1546"/>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="1547"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1554"/>
         <source>Raster Objects</source>
         <translation>Растровые объекты</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1551"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1558"/>
         <source>Image imported successfully</source>
         <translation>Изображение импортировано успешно</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2009"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2016"/>
         <source>Export Frame As</source>
         <translation>Экспорт изображения как</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2010"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2017"/>
         <source>Images</source>
         <translation>Файлы изображений</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2016"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2023"/>
         <source>Frame has been exported successfully</source>
         <translation>Кадр экспортирован успешно</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2018"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2025"/>
         <source>Can&apos;t export frame as image</source>
         <translation>Не удалось экспортировать кадр как изображение</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2207"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2214"/>
         <source>Please, close current camera dialog first!</source>
         <translation>Сначала закройте диалоговое окно текущей камеры!</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2322"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2329"/>
         <source>No cameras detected</source>
         <translation>Не удалось обнаружить камеру</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2390"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2397"/>
         <source>Frame</source>
         <translation>Кадр</translation>
     </message>
@@ -3691,9 +3704,9 @@ until reaches at least 3 seconds.</source>
 <context>
     <name>TupExposureSceneTabWidget</name>
     <message>
-        <location filename="../../../components/exposure/tupexposurescenetabwidget.cpp" line="101"/>
-        <location filename="../../../components/exposure/tupexposurescenetabwidget.cpp" line="108"/>
-        <location filename="../../../components/exposure/tupexposurescenetabwidget.cpp" line="139"/>
+        <location filename="../../../components/exposure/tupexposurescenetabwidget.cpp" line="102"/>
+        <location filename="../../../components/exposure/tupexposurescenetabwidget.cpp" line="109"/>
+        <location filename="../../../components/exposure/tupexposurescenetabwidget.cpp" line="141"/>
         <source>Current Layer Opacity</source>
         <translation>Непрозрачность текущего слоя</translation>
     </message>
@@ -3706,101 +3719,101 @@ until reaches at least 3 seconds.</source>
         <translation>Раскадровка</translation>
     </message>
     <message>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="130"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="131"/>
         <source>actions</source>
         <translation>действия</translation>
     </message>
     <message>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="131"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="132"/>
         <source>Insert</source>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="133"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1310"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="134"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1381"/>
         <source>1 frame</source>
         <translation>1 кадр</translation>
     </message>
     <message>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="137"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1315"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="138"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1386"/>
         <source>5 frames</source>
         <translation>5 кадров</translation>
     </message>
     <message>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="141"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1320"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="142"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1391"/>
         <source>10 frames</source>
         <translation>10 кадров</translation>
     </message>
     <message>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="145"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1325"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="146"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1396"/>
         <source>20 frames</source>
         <translation>20 кадров</translation>
     </message>
     <message>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="149"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1330"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="150"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1401"/>
         <source>50 frames</source>
         <translation>50 кадров</translation>
     </message>
     <message>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="153"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1335"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="154"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1406"/>
         <source>100 frames</source>
         <translation>100 кадров</translation>
     </message>
     <message>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="161"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="162"/>
         <source>Remove frame</source>
         <translation>Удалить кадр</translation>
     </message>
     <message>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="166"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="167"/>
         <source>Clear frame</source>
         <translation>Очистить кадр</translation>
     </message>
     <message>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="176"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="177"/>
         <source>Paste frame</source>
         <translation>Вставить кадр</translation>
     </message>
     <message>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="434"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="449"/>
         <source>Scene 1</source>
         <translation>Сцена 1</translation>
     </message>
     <message>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="171"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="172"/>
         <source>Copy frame</source>
         <translation>Скопировать кадр</translation>
     </message>
     <message>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="377"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="383"/>
         <source>Layer %1</source>
         <translation>Слой %1</translation>
     </message>
     <message>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="383"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="411"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="532"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="671"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="981"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="999"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1445"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="389"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="417"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="547"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="727"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1052"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1070"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1516"/>
         <source>Frame</source>
         <translation>Кадр</translation>
     </message>
     <message>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="401"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="667"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="407"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="723"/>
         <source>Scene %1</source>
         <translation>Сцена %1</translation>
     </message>
     <message>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="408"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="670"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="414"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="726"/>
         <source>Layer 1</source>
         <translation>Слой 1</translation>
     </message>
@@ -3878,7 +3891,7 @@ until reaches at least 3 seconds.</source>
 <context>
     <name>TupFrame</name>
     <message>
-        <location filename="../../../store/tupframe.cpp" line="262"/>
+        <location filename="../../../store/tupframe.cpp" line="263"/>
         <source>Frame</source>
         <translation>Кадр</translation>
     </message>
@@ -4677,178 +4690,178 @@ until reaches at least 3 seconds.</source>
 <context>
     <name>TupMainWindow</name>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="292"/>
+        <location filename="../../tupmainwindow.cpp" line="315"/>
         <source>Opening a new document...</source>
         <translation>Выполняется открытие нового документа…</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="315"/>
-        <location filename="../../tupmainwindow.cpp" line="1246"/>
+        <location filename="../../tupmainwindow.cpp" line="338"/>
+        <location filename="../../tupmainwindow.cpp" line="1281"/>
         <location filename="../../tupmainwindow_gui.cpp" line="260"/>
         <source>Animation</source>
         <translation>Мультипликация</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="422"/>
+        <location filename="../../tupmainwindow.cpp" line="445"/>
         <location filename="../../tupmainwindow_gui.cpp" line="268"/>
         <source>Player</source>
         <translation>Проигрыватель</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="448"/>
+        <location filename="../../tupmainwindow.cpp" line="468"/>
         <source>Project &lt;b&gt;%1&lt;/b&gt; opened!</source>
         <translation>Проект &lt;b&gt;«%1»&lt;/b&gt; открыт!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="529"/>
+        <location filename="../../tupmainwindow.cpp" line="560"/>
         <source>The document has been modified.</source>
         <translation>Документ был изменён.</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="530"/>
+        <location filename="../../tupmainwindow.cpp" line="561"/>
         <source>Do you want to save the project?</source>
         <translation>Сохранить проект?</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="532"/>
+        <location filename="../../tupmainwindow.cpp" line="563"/>
         <source>Save</source>
         <translation>Сохранить</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="533"/>
+        <location filename="../../tupmainwindow.cpp" line="564"/>
         <source>Discard</source>
         <translation>Отклонить</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="534"/>
+        <location filename="../../tupmainwindow.cpp" line="565"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="739"/>
-        <location filename="../../tupmainwindow.cpp" line="844"/>
-        <location filename="../../tupmainwindow.cpp" line="1091"/>
-        <location filename="../../tupmainwindow.cpp" line="1158"/>
-        <location filename="../../tupmainwindow.cpp" line="1834"/>
+        <location filename="../../tupmainwindow.cpp" line="770"/>
+        <location filename="../../tupmainwindow.cpp" line="870"/>
+        <location filename="../../tupmainwindow.cpp" line="1126"/>
+        <location filename="../../tupmainwindow.cpp" line="1193"/>
+        <location filename="../../tupmainwindow.cpp" line="1860"/>
         <source>by</source>
         <translation>Автор:</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="761"/>
+        <location filename="../../tupmainwindow.cpp" line="792"/>
         <source>Open TupiTube project</source>
         <translation>Открытие проекта TupiTube</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="762"/>
-        <location filename="../../tupmainwindow.cpp" line="887"/>
-        <location filename="../../tupmainwindow.cpp" line="1051"/>
+        <location filename="../../tupmainwindow.cpp" line="793"/>
+        <location filename="../../tupmainwindow.cpp" line="922"/>
+        <location filename="../../tupmainwindow.cpp" line="1086"/>
         <source>TupiTube Project Package (*.tup)</source>
         <translation>Файлы проекта TupiTube (*.tup)</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="796"/>
-        <location filename="../../tupmainwindow.cpp" line="857"/>
+        <location filename="../../tupmainwindow.cpp" line="827"/>
+        <location filename="../../tupmainwindow.cpp" line="891"/>
         <source>Cannot open project!</source>
         <translation>Не удалось открыть проект!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1681"/>
+        <location filename="../../tupmainwindow.cpp" line="1716"/>
         <source>Close</source>
         <translation>Закрыть</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="962"/>
+        <location filename="../../tupmainwindow.cpp" line="997"/>
         <source>Gimp Palette (*.gpl *.txt *.css)</source>
         <translation>Цветовая палитра Gimp (*.gpl *.txt *.css)</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="527"/>
+        <location filename="../../tupmainwindow.cpp" line="558"/>
         <source>Confirmation Required</source>
         <translation>Необходимо подтверждение</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="669"/>
+        <location filename="../../tupmainwindow.cpp" line="700"/>
         <source>Error while clearing cache!</source>
         <translation>Ошибка при очистке кеша!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="886"/>
+        <location filename="../../tupmainwindow.cpp" line="921"/>
         <source>Select TupiTube project</source>
         <translation>Выберите проект TupiTube</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="961"/>
+        <location filename="../../tupmainwindow.cpp" line="996"/>
         <source>Import Gimp Palettes</source>
         <translation>Импорт цветовой палитры Gimp</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="997"/>
+        <location filename="../../tupmainwindow.cpp" line="1032"/>
         <source>Gimp palette import was successful</source>
         <translation>Импорт цветовой палитры Gimp выполнен успешно</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="999"/>
+        <location filename="../../tupmainwindow.cpp" line="1034"/>
         <source>Gimp palette import was unsuccessful</source>
         <translation>Не удалось импортировать цветовую палитру Gimp</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1050"/>
+        <location filename="../../tupmainwindow.cpp" line="1085"/>
         <source>Save Project As</source>
         <translation>Сохранение проекта как</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1068"/>
+        <location filename="../../tupmainwindow.cpp" line="1103"/>
         <source>Directory does not exist! Please, choose another path.</source>
         <translation>Каталог не существует! Выберите другой путь.</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1077"/>
+        <location filename="../../tupmainwindow.cpp" line="1112"/>
         <source>Insufficient permissions. Please, pick another path.</source>
         <translation>Недостаточно разрешений. Выберите другой путь.</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1151"/>
+        <location filename="../../tupmainwindow.cpp" line="1186"/>
         <source>Project &lt;b&gt;%1&lt;/b&gt; saved</source>
         <translation>Проект &lt;b&gt;«%1»&lt;/b&gt; сохранён</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1247"/>
+        <location filename="../../tupmainwindow.cpp" line="1282"/>
         <source>New camera</source>
         <translation>Новая камера</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1465"/>
+        <location filename="../../tupmainwindow.cpp" line="1500"/>
         <source>To post video add more frames!</source>
         <translation>Для публикации видео необходимо добавить больше кадров!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1498"/>
-        <location filename="../../tupmainwindow.cpp" line="1550"/>
+        <location filename="../../tupmainwindow.cpp" line="1533"/>
+        <location filename="../../tupmainwindow.cpp" line="1585"/>
         <source>Post canceled by user!</source>
         <translation>Публикация отменена пользователем!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1517"/>
+        <location filename="../../tupmainwindow.cpp" line="1552"/>
         <source>Project is larger than 10 MB. Too big!</source>
         <translation>Проект занимает больше 10 Mб. Это слишком много!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1577"/>
+        <location filename="../../tupmainwindow.cpp" line="1612"/>
         <source>Error while posting image. File is too big!</source>
         <translation>Ошибка при публикации изображения. Слишком большой файл!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1677"/>
+        <location filename="../../tupmainwindow.cpp" line="1712"/>
         <source>Fatal Error</source>
         <translation>Неустранимая ошибка</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1679"/>
+        <location filename="../../tupmainwindow.cpp" line="1714"/>
         <source>The connection to the server has been lost.</source>
         <translation>Соединение с сервером было потеряно.</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1680"/>
+        <location filename="../../tupmainwindow.cpp" line="1715"/>
         <source>Please, try to connect again in a while</source>
         <translation>Попробуйте через некоторое время подключиться снова</translation>
     </message>
@@ -6654,28 +6667,33 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <location filename="../../../libtupi/tupprojectactionbar.cpp" line="226"/>
+        <source>Duplicate scene</source>
+        <translation>Дублировать сцену</translation>
+    </message>
+    <message>
+        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="236"/>
         <source>Remove scene</source>
         <translation>Удалить сцену</translation>
     </message>
     <message>
-        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="277"/>
-        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="298"/>
-        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="318"/>
+        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="287"/>
+        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="308"/>
+        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="328"/>
         <source>Confirmation</source>
         <translation>Подтверждение</translation>
     </message>
     <message>
-        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="277"/>
+        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="287"/>
         <source>Do you want to remove current selection?</source>
         <translation>Удалить выбранное?</translation>
     </message>
     <message>
-        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="298"/>
+        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="308"/>
         <source>Do you want to remove this layer?</source>
         <translation>Удалить этот слой?</translation>
     </message>
     <message>
-        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="318"/>
+        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="328"/>
         <source>Do you want to remove this scene?</source>
         <translation>Удалить эту сцену?</translation>
     </message>
@@ -6920,13 +6938,13 @@ until reaches at least 3 seconds.</source>
         <translation>Слой звука %1</translation>
     </message>
     <message>
-        <location filename="../../../store/tupscene.cpp" line="727"/>
+        <location filename="../../../store/tupscene.cpp" line="731"/>
         <source>Layer %1</source>
         <translation>Слой %1</translation>
     </message>
     <message>
         <location filename="../../../store/tupscene.cpp" line="150"/>
-        <location filename="../../../store/tupscene.cpp" line="728"/>
+        <location filename="../../../store/tupscene.cpp" line="732"/>
         <source>Frame</source>
         <translation>Кадр</translation>
     </message>
@@ -7562,49 +7580,49 @@ Cover</source>
 <context>
     <name>TupTimeLine</name>
     <message>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="55"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="56"/>
         <source>Time Line</source>
         <translation>Монтажный стол</translation>
     </message>
     <message>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="89"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="96"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="92"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="99"/>
         <source>Current Layer Opacity</source>
         <translation>Непрозрачность текущего слоя</translation>
     </message>
     <message>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="315"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="733"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="364"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="789"/>
         <source>Layer %1</source>
         <translation>Слой %1</translation>
     </message>
     <message>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="318"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="648"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="652"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="657"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="690"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="737"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="742"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="783"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="874"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="367"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="702"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="706"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="711"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="744"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="793"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="798"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="844"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="945"/>
         <source>Frame</source>
         <translation>Кадр</translation>
     </message>
     <message>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="802"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="871"/>
         <source>Scene 1</source>
         <translation>Сцена 1</translation>
     </message>
     <message>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="215"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="773"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="256"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="834"/>
         <source>Scene %1</source>
         <translation>Сцена %1</translation>
     </message>
     <message>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="218"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="780"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="259"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="841"/>
         <source>Layer 1</source>
         <translation>Слой 1</translation>
     </message>

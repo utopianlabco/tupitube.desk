@@ -1672,6 +1672,17 @@
     </message>
 </context>
 <context>
+    <name>TImageDialog</name>
+    <message>
+        <source>Breaking News!</source>
+        <translation>爆炸新闻！</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>关闭</translation>
+    </message>
+</context>
+<context>
     <name>TItemSelector</name>
     <message>
         <source>Duration:</source>
@@ -5232,6 +5243,10 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Duplicate frame</source>
         <translation>重复帧</translation>
+    </message>
+    <message>
+        <source>Duplicate scene</source>
+        <translation>复制场景</translation>
     </message>
 </context>
 <context>

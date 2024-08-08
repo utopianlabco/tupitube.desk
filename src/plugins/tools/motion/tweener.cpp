@@ -341,6 +341,7 @@ void Tweener::setGuideLine(const QColor &pathColor, const QPointF &initPoint)
     guidePen.setWidth(configPanel->getPathThickness());
     guidePen.setBrush(pathColor);
     guideLine->setPen(guidePen);
+    guideLine->setZValue(baseZValue);
 
     guideLine->setLine(QLineF(initPoint, initPoint));
 }
@@ -1016,6 +1017,13 @@ void Tweener::setCurrentTween(const QString &name)
 
 void Tweener::setEditEnv()
 {
+    if (!currentTween) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[Motion Tweener::setEditEnv()] - Current tween is NULL!";
+        #endif
+        return;
+    }
+
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::setEditEnv()] - Loading tween ->" << currentTween->getTweenName();
     #endif
@@ -1026,6 +1034,8 @@ void Tweener::setEditEnv()
 
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::setEditEnv()] - initFrame -> " << initFrame;
+        qDebug() << "[Motion Tweener::setEditEnv()] - initLayer -> " << initLayer;
+        qDebug() << "[Motion Tweener::setEditEnv()] - initScene -> " << initScene;
     #endif
 
     if (initFrame != scene->currentFrameIndex() || initLayer != scene->currentLayerIndex() || initScene != scene->currentSceneIndex()) {

@@ -44,6 +44,7 @@ StepsViewer::StepsViewer(QWidget *parent) : QTableWidget(parent)
 {
     verticalHeader()->hide();
 
+    selecting = false;
     intervalsTotal = 0;
     setColumnCount(4);
     setColumnWidth(0, 70);
@@ -120,18 +121,6 @@ void StepsViewer::loadPath(const QGraphicsPathItem *pathItem, QList<int> interva
                  segmentPoints << block.at(pos);
                  pos += delta;
              }
-
-             /*
-             if (framesCount > 2) {
-                 for (int i=1; i < framesCount; i++) { // calculating points set for the segment j
-                      segmentPoints << block.at(pos);
-                      pos += delta;
-                 }
-             } else {
-                 if (row > 0)
-                     segmentPoints << block.at(pos);
-             }
-             */
 
              segmentPoints << keys.at(row);
          } else { // Only two points in the segment
@@ -291,11 +280,11 @@ void StepsViewer::setPath(const QGraphicsPathItem *pathItem)
     loadTweenPoints();
 }
 
-// +/- frames slot and text/input slot 
-void StepsViewer::updatePathSection(int column, int row)
+// +/- frames slot and text/input slot
+void StepsViewer::updateFramesSection(int column, int row)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[StepsViewer::updatePathSection()]";
+        qDebug() << "[StepsViewer::updateFramesSection()]";
         qDebug() << "*** column: " <<  column << " - row: " << row;
     #endif
 
@@ -398,7 +387,11 @@ void StepsViewer::updatePathSection(int column, int row)
     segments.replace(row, segment);
 
     loadTweenPoints();
+}
 
+void StepsViewer::updatePathSection(int column, int row)
+{
+    updateFramesSection(column, row);
     emit totalHasChanged(totalSteps());
 }
 
@@ -481,8 +474,8 @@ void StepsViewer::clearInterface()
 QList<QPointF> StepsViewer::calculateSegmentPoints(QPointF begin, QPointF end, int total)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[StepsViewer::calculateSegmentPoints()] - begin point -> " << begin;
-        qDebug() << "[StepsViewer::calculateSegmentPoints()] - end point -> " << end;
+        qDebug() << "[StepsViewer::calculateSegmentPoints()] - begin point ->" << begin;
+        qDebug() << "[StepsViewer::calculateSegmentPoints()] - end point ->" << end;
     #endif
 
     QList<QPointF> pathPoints;
@@ -639,12 +632,12 @@ void StepsViewer::commitData(QWidget *editor)
             QTableWidgetItem *cell = item(row, column);
             cell->setText(value);
             #ifdef TUP_DEBUG
-                qDebug() << "[StepsViewer::commitData()] - Processing value -> " << value;
+                qDebug() << "[StepsViewer::commitData()] - Processing value ->" << value;
             #endif
             updatePathSection(column, row);
         } else {
             #ifdef TUP_DEBUG
-                qWarning() << "[StepsViewer::commitData()] - Input value -> " << value;
+                qWarning() << "[StepsViewer::commitData()] - Input value ->" << value;
             #endif
         }
     }
@@ -742,6 +735,13 @@ void StepsViewer::updateSegments()
         qDebug() << "[StepsViewer::updateSegments()] - blocksList.count() ->" << blocksList.count();
     #endif
 
+    if (total > blocksList.count()) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[StepsViewer::updateSegments()] - Fatal Error: blocksList is either empty or incomplete!";
+        #endif
+        return;
+    }
+
     for (int row=0; row < total; row++) { // Processing every segment
          QList<QPointF> block = blocksList.at(row);
          int size = block.size();
@@ -825,4 +825,110 @@ void StepsViewer::updateSegments()
     }
 
     loadTweenPoints();
+}
+
+void StepsViewer::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton && (event->modifiers() & Qt::ShiftModifier)) {
+         QPoint pos = event->pos();
+         QTableWidgetItem *item = itemAt(pos);
+
+         if (item && (item->column() == 1)) {
+             selecting = true;
+             selectedColumn = item->column();
+             initialRow = rowAt(pos.y());
+             initialValue = item->text(); // Track the value of the first selected cell
+
+             // Store the original value of the selected cell
+             originalValues[item->row()] = initialValue;
+             updateColumnSelection(pos);
+         }
+    }
+    QTableWidget::mousePressEvent(event);
+}
+
+void StepsViewer::mouseMoveEvent(QMouseEvent *event)
+{
+    if (selecting) {
+         updateColumnSelection(event->pos());
+    }
+    QTableWidget::mouseMoveEvent(event);
+}
+
+void StepsViewer::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (selecting) {
+        updateColumnSelection(event->pos());
+        selecting = false;
+        selectedColumn = -1;
+        initialRow = -1;
+        initialValue.clear(); // Clear the initial value after selection is done
+
+        int rowsTotal = rowCount();
+        for(int row=0; row<rowsTotal; row++)
+            updateFramesSection(1, row);
+
+        emit totalHasChanged(totalSteps());
+    }
+
+    QTableWidget::mouseReleaseEvent(event);
+}
+
+void StepsViewer::updateColumnSelection(const QPoint &pos)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[StepsViewer::updateColumnSelection()] - pos ->" << pos;
+    #endif
+
+    if (selectedColumn != 1) // Only update if the column is the second column
+        return;
+
+    // int rowTotal = rowCount();
+    int column = selectedColumn;
+
+    // Deselect all items first
+    clearSelection();
+
+    // Get the row under the current mouse position
+    int rowUnderMouse = rowAt(pos.y());
+
+    // Select items in the selected column from the initial row to the current row under the mouse
+    int rowStart = qMin(initialRow, rowUnderMouse);
+    int rowEnd = qMax(initialRow, rowUnderMouse);
+
+    for (int row = rowStart; row <= rowEnd; ++row) {
+        QTableWidgetItem *columnItem = this->item(row, column);
+        if (columnItem) {
+            columnItem->setSelected(true);
+
+            // Check if the cell was previously selected
+            if (!originalValues.contains(row)) {
+                 originalValues[row] = columnItem->text(); // Store original value if not already stored
+            }
+
+            columnItem->setText(initialValue); // Update the cell value
+        }
+    }
+}
+
+void StepsViewer::clearSelection()
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[StepsViewer::clearSelection()]";
+    #endif
+
+    QTableWidget::clearSelection();
+
+    // Restore original values for deselected cells
+    for (auto it = originalValues.begin(); it != originalValues.end(); ++it) {
+        int row = it.key();
+        QString originalValue = it.value();
+        QTableWidgetItem *columnItem = this->item(row, selectedColumn);
+        if (columnItem && !columnItem->isSelected()) {
+            columnItem->setText(originalValue); // Restore the original value
+        }
+    }
+
+    // Clear the original values map after restoring
+    originalValues.clear();
 }

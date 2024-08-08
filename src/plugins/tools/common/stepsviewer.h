@@ -49,6 +49,7 @@
 #include <QBoxLayout>
 #include <QHeaderView>
 #include <QPainter>
+#include <QKeyEvent>
 
 typedef QList<QPointF> Segment;
 
@@ -81,6 +82,11 @@ class TUPITUBE_EXPORT StepsViewer : public QTableWidget
     private slots:
         void updatePathSection(int column, int row);
 
+    protected:
+        void mousePressEvent(QMouseEvent *event) override;
+        void mouseMoveEvent(QMouseEvent *event) override;
+        void mouseReleaseEvent(QMouseEvent *event) override;
+
     protected slots:
         void commitData(QWidget *editor);
         
@@ -108,8 +114,15 @@ class TUPITUBE_EXPORT StepsViewer : public QTableWidget
 
         QList<TPushButton*> *plusButton;
         QList<TPushButton*> *minusButton;
+        void updateFramesSection(int column, int row);
+        void updateColumnSelection(const QPoint &pos);
+        void clearSelection();
 
-    signals:
-        void updateTable();
+    private:
+        bool selecting;
+        int selectedColumn;
+        int initialRow;
+        QString initialValue; // Store the value of the first selected cell
+        QMap<int, QString> originalValues; // Map to store the original values of the selected cells
 };
 #endif

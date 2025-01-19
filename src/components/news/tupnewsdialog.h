@@ -56,9 +56,9 @@ class TUPITUBE_EXPORT TupNewsDialog : public QDialog
 
     private:
         QTextBrowser *releasePage;
-        QTextBrowser *newsPage;
+        // QTextBrowser *newsPage;
         QTextDocument *releaseDocument;
-        QTextDocument *newsDocument;
+        // QTextDocument *newsDocument;
 };
 
 #endif

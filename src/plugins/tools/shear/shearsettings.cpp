@@ -158,7 +158,7 @@ void ShearSettings::setInnerForm()
     comboFactor->setSingleStep(0.05);
     comboFactor->setValue(0.10);
 
-    QLabel *speedLabel = new QLabel(tr("Scaling Factor") + ": ");
+    QLabel *speedLabel = new QLabel(tr("Shear Factor") + ": ");
     speedLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     QHBoxLayout *speedLayout = new QHBoxLayout;
     speedLayout->setAlignment(Qt::AlignHCenter);

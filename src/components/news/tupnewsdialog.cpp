@@ -53,13 +53,15 @@ TupNewsDialog::TupNewsDialog(QWidget *parent) : QDialog(parent)
     releaseDocument = new QTextDocument(releasePage);
     releasePage->setDocument(releaseDocument);
 
+    /*
     newsPage = new QTextBrowser;
     newsDocument = new QTextDocument(newsPage);
     newsPage->setDocument(newsDocument);
+    */
 
     QTabWidget *tabWidget = new QTabWidget;
     tabWidget->addTab(releasePage, tr("Updates"));
-    tabWidget->addTab(newsPage, tr("News"));
+    // tabWidget->addTab(newsPage, tr("News"));
 
     QPushButton *closeButton = new QPushButton(this);
     closeButton->setIcon(QIcon(THEME_DIR + "icons/close.png"));
@@ -102,7 +104,9 @@ void TupNewsDialog::setSource(const QString &releasePath, const QString &newsPat
     releasePage->setOpenExternalLinks(true);
     releasePage->setSource(QUrl::fromLocalFile(releasePath));
 
+    /*
     newsPage->setSearchPaths(path);
     newsPage->setOpenExternalLinks(true);
     newsPage->setSource(QUrl::fromLocalFile(newsPath));
+    */
 }

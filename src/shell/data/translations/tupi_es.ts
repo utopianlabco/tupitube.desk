@@ -1908,8 +1908,8 @@
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="161"/>
-        <source>Scaling Factor</source>
-        <translation>Factor de Escala</translation>
+        <source>Shear Factor</source>
+        <translation>Factor de Corte</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="175"/>
@@ -1978,12 +1978,12 @@
 <context>
     <name>StepsViewer</name>
     <message>
-        <location filename="../../../plugins/tools/common/stepsviewer.cpp" line="54"/>
+        <location filename="../../../plugins/tools/common/stepsviewer.cpp" line="55"/>
         <source>Interval</source>
         <translation>Intervalo</translation>
     </message>
     <message>
-        <location filename="../../../plugins/tools/common/stepsviewer.cpp" line="54"/>
+        <location filename="../../../plugins/tools/common/stepsviewer.cpp" line="55"/>
         <source>Frames</source>
         <translation>Marcos</translation>
     </message>
@@ -4116,8 +4116,8 @@ until reaches at least 3 seconds.</source>
 <context>
     <name>TupGraphicsScene</name>
     <message>
-        <location filename="../../../libbase/tupgraphicsscene.cpp" line="1149"/>
-        <location filename="../../../libbase/tupgraphicsscene.cpp" line="1197"/>
+        <location filename="../../../libbase/tupgraphicsscene.cpp" line="1156"/>
+        <location filename="../../../libbase/tupgraphicsscene.cpp" line="1204"/>
         <source>lipsync:</source>
         <translation>lipsync:</translation>
     </message>
@@ -5776,17 +5776,12 @@ until reaches at least 3 seconds.</source>
         <translation>Actualizaciones de TupiTube</translation>
     </message>
     <message>
-        <location filename="../../../components/news/tupnewsdialog.cpp" line="61"/>
+        <location filename="../../../components/news/tupnewsdialog.cpp" line="63"/>
         <source>Updates</source>
         <translation>Actualizaciones</translation>
     </message>
     <message>
-        <location filename="../../../components/news/tupnewsdialog.cpp" line="62"/>
-        <source>News</source>
-        <translation>Noticias</translation>
-    </message>
-    <message>
-        <location filename="../../../components/news/tupnewsdialog.cpp" line="66"/>
+        <location filename="../../../components/news/tupnewsdialog.cpp" line="68"/>
         <source>Close</source>
         <translation>Cerrar</translation>
     </message>
@@ -5913,43 +5908,43 @@ until reaches at least 3 seconds.</source>
         <translation>Un nivel hacia el frente</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1894"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1897"/>
         <source>Sorry, no library was found!</source>
         <translation>Ninguna biblioteca fue encontrada!</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1921"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1924"/>
         <source>Project Dimension Conflict</source>
         <translation>Conflicto de Dimensiones de Proyecto</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1923"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1926"/>
         <source>Imported scenes require a different dimension than the current to fit accurately.</source>
         <translation>Las escenas importadas requieren una dimensión diferente a la actual para encajar correctamente.</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1924"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1927"/>
         <source>Do you want to resize your current project?</source>
         <translation>Deseas redimensionar el proyecto actual?</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1992"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1995"/>
         <source>Project assets imported successfully!</source>
         <translation>Los objetos fueron importados satisfactoriamente!</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2011"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2014"/>
         <source>Sorry, TUP source file is invalid!</source>
         <translation>El archivo fuente TUP es inválido!</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2050"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2142"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2053"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2145"/>
         <source>Sorry, file format not supported!</source>
         <translation>El formato de archivo no es soportado!</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2156"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2159"/>
         <source>Network Fatal Error. Please, contact us!</source>
         <translation>Error Fatal de Red. Por favor, contáctanos!</translation>
     </message>
@@ -5961,11 +5956,11 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="1100"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1526"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1579"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1594"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1714"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1741"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1529"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1582"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1597"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1717"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1744"/>
         <source>Frame</source>
         <translation>Marco</translation>
     </message>
@@ -5976,12 +5971,12 @@ until reaches at least 3 seconds.</source>
         <translation>No hay items seleccionados</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1650"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1653"/>
         <source>Do you want to remove this frame?</source>
         <translation>Deseas eliminar este marco?</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1650"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1653"/>
         <source>Confirmation</source>
         <translation>Confirmación</translation>
     </message>
@@ -8051,7 +8046,7 @@ until reaches at least 3 seconds.</source>
         <translation>Shift+C</translation>
     </message>
     <message>
-        <location filename="../../../plugins/tools/motion/tweener.cpp" line="682"/>
+        <location filename="../../../plugins/tools/motion/tweener.cpp" line="683"/>
         <location filename="../../../plugins/tools/rotation/tweener.cpp" line="448"/>
         <location filename="../../../plugins/tools/scale/tweener.cpp" line="422"/>
         <location filename="../../../plugins/tools/shear/tweener.cpp" line="426"/>
@@ -8061,7 +8056,7 @@ until reaches at least 3 seconds.</source>
         <translation>El nombre del Tween no ha sido asignado!</translation>
     </message>
     <message>
-        <location filename="../../../plugins/tools/motion/tweener.cpp" line="801"/>
+        <location filename="../../../plugins/tools/motion/tweener.cpp" line="802"/>
         <location filename="../../../plugins/tools/rotation/tweener.cpp" line="577"/>
         <location filename="../../../plugins/tools/scale/tweener.cpp" line="528"/>
         <location filename="../../../plugins/tools/shear/tweener.cpp" line="533"/>
@@ -8071,7 +8066,7 @@ until reaches at least 3 seconds.</source>
         <translation>Marco</translation>
     </message>
     <message>
-        <location filename="../../../plugins/tools/motion/tweener.cpp" line="815"/>
+        <location filename="../../../plugins/tools/motion/tweener.cpp" line="816"/>
         <location filename="../../../plugins/tools/rotation/tweener.cpp" line="591"/>
         <location filename="../../../plugins/tools/scale/tweener.cpp" line="542"/>
         <location filename="../../../plugins/tools/shear/tweener.cpp" line="547"/>
@@ -8101,10 +8096,10 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <location filename="../../../plugins/tools/motion/tweener.cpp" line="261"/>
-        <location filename="../../../plugins/tools/motion/tweener.cpp" line="970"/>
-        <location filename="../../../plugins/tools/motion/tweener.cpp" line="973"/>
+        <location filename="../../../plugins/tools/motion/tweener.cpp" line="971"/>
         <location filename="../../../plugins/tools/motion/tweener.cpp" line="974"/>
         <location filename="../../../plugins/tools/motion/tweener.cpp" line="975"/>
+        <location filename="../../../plugins/tools/motion/tweener.cpp" line="976"/>
         <source>Motion</source>
         <translation>Movimiento</translation>
     </message>
@@ -8149,12 +8144,12 @@ until reaches at least 3 seconds.</source>
         <translation>Aceptar</translation>
     </message>
     <message>
-        <location filename="../../../plugins/tools/motion/tweener.cpp" line="476"/>
+        <location filename="../../../plugins/tools/motion/tweener.cpp" line="477"/>
         <source>Motion Tween</source>
         <translation>Tween de Movimiento</translation>
     </message>
     <message>
-        <location filename="../../../plugins/tools/motion/tweener.cpp" line="477"/>
+        <location filename="../../../plugins/tools/motion/tweener.cpp" line="478"/>
         <source>Shift+W</source>
         <translation>Shift+W</translation>
     </message>

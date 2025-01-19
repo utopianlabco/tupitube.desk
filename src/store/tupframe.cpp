@@ -1502,7 +1502,7 @@ int TupFrame::getTopZLevel()
 
 bool TupFrame::isEmpty()
 {
-    if (graphicsCount() + svgItemsCount() > 0)
+    if (itemsTotalCount() > 0)
         return false;
 
     return true;

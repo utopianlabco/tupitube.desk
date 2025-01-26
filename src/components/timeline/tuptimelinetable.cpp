@@ -1,15 +1,15 @@
 /***************************************************************************
- *   Project TUPITUBE DESK                                                *
- *   Project Contact: info@maefloresta.com                                 *
- *   Project Website: http://www.maefloresta.com                           *
- *   Project Leader: Gustav Gonzalez <info@maefloresta.com>                *
+ *   Project TupiTube Desk                                                 *
+ *   Project Contact: info@tupitube.com                                    *
+ *   Project Website: http://www.tupitube.com                              * 
  *                                                                         *
  *   Developers:                                                           *
+ *   2025:                                                                 *
+ *    Naara's Development Team                                             *
  *   2010:                                                                 *
- *    Gustavo Gonzalez / xtingray                                          *
- *                                                                         *
- *   KTooN's versions:                                                     * 
- *                                                                         *
+ *    Gustav Gonzalez                                                      *
+ *   ---                                                                   *
+ *   KTooN's versions:                                                     *
  *   2006:                                                                 *
  *    David Cuadrado                                                       *
  *    Jorge Cuadrado                                                       *
@@ -17,7 +17,6 @@
  *    Fernado Roldan                                                       *
  *    Simena Dinas                                                         *
  *                                                                         *
- *   Copyright (C) 2010 Gustav Gonzalez - http://www.maefloresta.com       *
  *   License:                                                              *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -31,7 +30,7 @@
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
- ***************************************************************************/
+ ***************************************************************************/ 
 
 #include "tuptimelinetable.h"
 #include "tconfig.h"

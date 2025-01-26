@@ -1,16 +1,15 @@
 /***************************************************************************
- *   Project TUPITUBE DESK                                                 *
- *   Project Contact: info@maefloresta.com                                 *
- *   Project Leader: Gustav Gonzalez <info@maefloresta.com>                *
+ *   Project TupiTube Desk                                                 *
+ *   Project Contact: info@tupitube.com                                    *
+ *   Project Website: http://www.tupitube.com                              * 
  *                                                                         *
  *   Developers:                                                           *
- *   2019:                                                                 *
- *    Alejandro Carrasco Rodríguez                                         *
+ *   2025:                                                                 *
+ *    Naara's Development Team                                             *
  *   2010:                                                                 *
- *    Gustavo Gonzalez / xtingray                                          *
- *                                                                         *
- *   KTooN's versions:                                                     * 
- *                                                                         *
+ *    Gustav Gonzalez                                                      *
+ *   ---                                                                   *
+ *   KTooN's versions:                                                     *
  *   2006:                                                                 *
  *    David Cuadrado                                                       *
  *    Jorge Cuadrado                                                       *
@@ -30,6 +29,7 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
 #ifndef TCONFIGURATIONDIALOG_H

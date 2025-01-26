@@ -21,7 +21,7 @@
                     </array>
                 <key>LSItemContentTypes</key>
                     <array>
-                        <string>com.maefloresta.tup</string>
+                        <string>co.naara.tup</string>
                     </array>
                 <key>CFBundleTypeExtensions</key>
                     <array>
@@ -38,9 +38,9 @@
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleGetInfoString</key>
-    <string>Created by MaeFloresta</string>
+    <string>Created by Naara</string>
     <key>CFBundleIdentifier</key>
-    <string>com.maefloresta.tupitube</string>
+    <string>co.naara.tupitube</string>
     <key>NSCameraUsageDescription</key>
     <string>APPNAME requires access to your computer’s camera.</string>
     <key>NOTE</key>

@@ -1490,10 +1490,6 @@
         <translation>剪切</translation>
     </message>
     <message>
-        <source>Scaling Factor</source>
-        <translation>縮放比例</translation>
-    </message>
-    <message>
         <source>Iterations</source>
         <translation>疊代次數</translation>
     </message>
@@ -1532,6 +1528,10 @@
     <message>
         <source>Select objects for Tweening first!</source>
         <translation>先為補間動畫選擇對象!</translation>
+    </message>
+    <message>
+        <source>Shear Factor</source>
+        <translation>剪切係數</translation>
     </message>
 </context>
 <context>
@@ -3178,8 +3178,8 @@ until reaches at least 3 seconds.</source>
         <translation>錯誤: 電子郵箱已註冊!</translation>
     </message>
     <message>
-        <source>Please contact us at info@maefloresta.com</source>
-        <translation>請聯絡我們 solution@meshmellow.co</translation>
+        <source>Please contact us at info@tupitube.com</source>
+        <translation>請聯絡我們 info@tupitube.com</translation>
     </message>
     <message>
         <source>Allow TupiTube to collect use statistics (No private/personal info)</source>
@@ -4537,10 +4537,6 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Updates</source>
         <translation>更新</translation>
-    </message>
-    <message>
-        <source>News</source>
-        <translation>消息</translation>
     </message>
     <message>
         <source>Close</source>

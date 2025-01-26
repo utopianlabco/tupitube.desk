@@ -2,7 +2,7 @@
 SetupIconFile=icon\tupitube.ico
 AppName=TupiTube Desk
 AppVersion=0.2.22
-AppPublisher=MaeFloresta
+AppPublisher=Naara
 AppPublisherURL=https://www.tupitube.com/
 DefaultDirName={commonpf}\TupiTube
 DefaultGroupName=TupiTube

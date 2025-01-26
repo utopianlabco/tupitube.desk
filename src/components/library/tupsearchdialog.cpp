@@ -1,15 +1,15 @@
 /***************************************************************************
- *   Project TUPITUBE DESK                                                *
- *   Project Contact: info@maefloresta.com                                 *
- *   Project Website: http://www.maefloresta.com                           *
- *   Project Leader: Gustav Gonzalez <info@maefloresta.com>                *
+ *   Project TupiTube Desk                                                 *
+ *   Project Contact: info@tupitube.com                                    *
+ *   Project Website: http://www.tupitube.com                              * 
  *                                                                         *
  *   Developers:                                                           *
+ *   2025:                                                                 *
+ *    Naara's Development Team                                             *
  *   2010:                                                                 *
- *    Gustavo Gonzalez / xtingray                                          *
- *                                                                         *
- *   KTooN's versions:                                                     * 
- *                                                                         *
+ *    Gustav Gonzalez                                                      *
+ *   ---                                                                   *
+ *   KTooN's versions:                                                     *
  *   2006:                                                                 *
  *    David Cuadrado                                                       *
  *    Jorge Cuadrado                                                       *
@@ -17,7 +17,6 @@
  *    Fernado Roldan                                                       *
  *    Simena Dinas                                                         *
  *                                                                         *
- *   Copyright (C) 2010 Gustav Gonzalez - http://www.maefloresta.com       *
  *   License:                                                              *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -336,7 +335,7 @@ QWidget * TupSearchDialog::patreonTab()
     font.setPointSize(11);
 
     QTextEdit *patreonText = new QTextEdit;
-    patreonText->setHtml(tr("From the <b>MaeFloresta</b> startup we are requesting the support from our users community "
+    patreonText->setHtml(tr("From the <b>Naara</b> startup we are requesting the support from our users community "
                             "to keep creating new assets for our library repository. Thanks to your contributions "
                             "we can deliver a better product. You can start helping from <b>USD 1</b>."));
     patreonText->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
@@ -963,13 +962,13 @@ bool TupSearchDialog::saveAssetFile(const QString path, const QByteArray &data)
 
 void TupSearchDialog::openDonationLink()
 {
-    QUrl url("https://paypal.me/maefloresta");
+    QUrl url("https://www.patreon.com/tupitube");
     QDesktopServices::openUrl(url);
 }
 
 void TupSearchDialog::openPatreonLink()
 {
-    QUrl url("https://www.patreon.com/maefloresta");
+    QUrl url("https://www.patreon.com/tupitube");
     QDesktopServices::openUrl(url);
 }
 

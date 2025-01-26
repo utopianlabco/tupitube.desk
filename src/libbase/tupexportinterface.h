@@ -1,15 +1,15 @@
 /***************************************************************************
- *   Project TUPITUBE DESK                                                *
- *   Project Contact: info@maefloresta.com                                 *
- *   Project Website: http://www.maefloresta.com                           *
- *   Project Leader: Gustav Gonzalez <info@maefloresta.com>                *
+ *   Project TupiTube Desk                                                 *
+ *   Project Contact: info@tupitube.com                                    *
+ *   Project Website: http://www.tupitube.com                              * 
  *                                                                         *
  *   Developers:                                                           *
+ *   2025:                                                                 *
+ *    Naara's Development Team                                             *
  *   2010:                                                                 *
- *    Gustavo Gonzalez / xtingray                                          *
- *                                                                         *
- *   KTooN's versions:                                                     * 
- *                                                                         *
+ *    Gustav Gonzalez                                                      *
+ *   ---                                                                   *
+ *   KTooN's versions:                                                     *
  *   2006:                                                                 *
  *    David Cuadrado                                                       *
  *    Jorge Cuadrado                                                       *
@@ -17,7 +17,6 @@
  *    Fernado Roldan                                                       *
  *    Simena Dinas                                                         *
  *                                                                         *
- *   Copyright (C) 2010 Gustav Gonzalez - http://www.maefloresta.com       *
  *   License:                                                              *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -90,6 +89,6 @@ class TUPITUBE_EXPORT TupExportInterface
         virtual QString getExceptionMsg() const = 0;
 };
         Q_DECLARE_OPERATORS_FOR_FLAGS(TupExportInterface::Formats);
-        Q_DECLARE_INTERFACE(TupExportInterface, "com.maefloresta.tupi.ExportInterface/0.1");
+        Q_DECLARE_INTERFACE(TupExportInterface, "co.naara.tupi.ExportInterface/0.1");
 
 #endif

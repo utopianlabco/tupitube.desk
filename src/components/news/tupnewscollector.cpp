@@ -1,15 +1,15 @@
 /***************************************************************************
- *   Project TUPITUBE DESK                                                *
- *   Project Contact: info@maefloresta.com                                 *
- *   Project Website: http://www.maefloresta.com                           *
- *   Project Leader: Gustav Gonzalez <info@maefloresta.com>                *
+ *   Project TupiTube Desk                                                 *
+ *   Project Contact: info@tupitube.com                                    *
+ *   Project Website: http://www.tupitube.com                              * 
  *                                                                         *
  *   Developers:                                                           *
+ *   2025:                                                                 *
+ *    Naara's Development Team                                             *
  *   2010:                                                                 *
- *    Gustavo Gonzalez / xtingray                                          *
- *                                                                         *
- *   KTooN's versions:                                                     * 
- *                                                                         *
+ *    Gustav Gonzalez                                                      *
+ *   ---                                                                   *
+ *   KTooN's versions:                                                     *
  *   2006:                                                                 *
  *    David Cuadrado                                                       *
  *    Jorge Cuadrado                                                       *
@@ -17,7 +17,6 @@
  *    Fernado Roldan                                                       *
  *    Simena Dinas                                                         *
  *                                                                         *
- *   Copyright (C) 2010 Gustav Gonzalez - http://www.maefloresta.com       *
  *   License:                                                              *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -78,7 +77,7 @@ TupNewsCollector::TupNewsCollector(QWidget *parent): QWidget(parent)
 
 void TupNewsCollector::start()
 {
-    QString url = MAEFLORESTA_URL + IS_HOST_UP_URL;
+    QString url = UPDATES_URL + IS_HOST_UP_URL;
 
     #ifdef TUP_DEBUG
         qWarning() << "[TupNewsCollector::start()] - Getting news updates...";
@@ -175,7 +174,7 @@ void TupNewsCollector::closeRequest(QNetworkReply *reply)
 
     if (answer.length() > 0) {
         if (answer.compare("<ok>true</ok>") == 0) { // The webserver data is available! 
-            requestFile(MAEFLORESTA_URL + TUPITUBE_VERSION_URL);
+            requestFile(UPDATES_URL + TUPITUBE_VERSION_URL);
         } else {
             if (answer.startsWith("<version>")) { // Processing TupiTube versioning data
                 checkSoftwareUpdates(array);
@@ -196,7 +195,7 @@ void TupNewsCollector::closeRequest(QNetworkReply *reply)
                     os = "win";
                 #endif
 
-                QString target = MAEFLORESTA_URL + USER_TIMELINE_URL;
+                QString target = UPDATES_URL + USER_TIMELINE_URL;
                 if (enableStatistics)
                     target += "?id=" + id + "&os=" + os + "&v=" + kAppProp->version() + "." + kAppProp->revision();
                 requestFile(target);
@@ -209,7 +208,7 @@ void TupNewsCollector::closeRequest(QNetworkReply *reply)
                             qDebug() << "[TupNewsCollector::closeRequest()] - Network Error: Twitter output is NULL!";
                         #endif
                     }
-                    requestFile(MAEFLORESTA_URL + TUPITUBE_WEB_AD + locale + ".html");
+                    requestFile(UPDATES_URL + TUPITUBE_WEB_AD + locale + ".html");
                 } else {
                     if (answer.startsWith("<webmsg>")) { // Getting web msg
                         if (showAds) {
@@ -219,7 +218,7 @@ void TupNewsCollector::closeRequest(QNetworkReply *reply)
                                 if (!code.isEmpty()) {
                                     QString imgPath = QDir::homePath() + "/." + QCoreApplication::applicationName() + "/images/" + code;
                                     if (!QFile::exists(imgPath)) {
-                                        requestFile(MAEFLORESTA_URL + TUPITUBE_IMAGES + code);
+                                        requestFile(UPDATES_URL + TUPITUBE_IMAGES + code);
                                         return;
                                     }
                                 }
@@ -337,14 +336,14 @@ void TupNewsCollector::formatStatus(QByteArray array)
     htmlHeader += "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n";
     htmlHeader += "<link rel=\"stylesheet\" type=\"text/css\" href=\"file:tupitube.css\">\n";
     htmlHeader += "</head>\n";
-    htmlHeader += "<body class=\"twitter_white\">\n";
+    htmlHeader += "<body class=\"bg_white\">\n";
     htmlHeader += "<div class=\"tupi_background5\">";
 
     QString htmlFooter = "</div></body>\n";
     htmlFooter += "</html>";
 
     releaseHtml = htmlHeader;
-    releaseHtml += "<center><img src=\"file:maefloresta.png\" alt=\"maefloresta\"/></center>\n";
+    releaseHtml += "<center><img src=\"file:naara.png\" alt=\"Naara\"/></center>\n";
     releaseHtml += "<div class=\"twitter_headline\"><center>&nbsp;&nbsp;@tupitube</center></div></div>\n";
     QString css = "twitter_tupi_version";  
     if (update)
@@ -373,7 +372,7 @@ void TupNewsCollector::formatStatus(QByteArray array)
                 "</div>";
     releaseHtml += "<div class=\"twitter_separator\">&nbsp;</div>";
     releaseHtml += "<div class=\"twitter_tupi_donation\"><center>\n";
-    releaseHtml += "<a href=\"https://www.patreon.com/maefloresta\">" + tr("Want to help us to make a better project? Click here!") + "</a>";
+    releaseHtml += "<a href=\"https://www.patreon.com/tupitube\">" + tr("Want to help us to make a better project? Click here!") + "</a>";
     releaseHtml += "</center></div>\n";
     releaseHtml += "<p/><p/>"
                    "<div class=\"twitter_separator\">&nbsp;</div>";

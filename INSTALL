@@ -36,7 +36,7 @@ Linux distro
 2. Get the source code and compile it
 
 - Get the TupiTube source code from our Download section
-  (http://www.maefloresta.com/portal/downloads). Then, 
+  (https://www.tupitube.com/downloads). Then, 
   run these commands:
    % tar xvfz tupi-XXX.tar.gz    [Press enter]
    % cd tupi-XXX    [Press enter]
@@ -60,5 +60,5 @@ And enjoy TupiTube!
 Note: Whether you find any error in this how-to or you want to share your own
 installation notes with us, feel free to send us your documents.
 
-Additional info: http://www.maefloresta.com
+Additional info: http://www.tupitube.com
 

@@ -1,15 +1,14 @@
 /***************************************************************************
- *   Project TUPITUBE DESK                                                 *
- *   Project Contact: info@maefloresta.com                                 *
- *   Project Website: http://www.maefloresta.com                           *
+ *   Project TupiTube Desk                                                 *
+ *   Project Contact: info@tupitube.com                                    *
+ *   Project Website: http://www.tupitube.com                              * 
  *                                                                         *
  *   Developers:                                                           *
- *   2012:                                                                 *
- *    Gustavo Gonzalez / @xtingray                                         *
- *    Andres Calderon / @andresfcalderon                                   *
- *    Antonio Vanegas / @hpsaturn                                          *
- *                                                                         *
- *   TupiTube Desk is a fork of the KTooN project                          *
+ *   2025:                                                                 *
+ *    Naara's Development Team                                             *
+ *   2010:                                                                 *
+ *    Gustav Gonzalez                                                      *
+ *   ---                                                                   *
  *   KTooN's versions:                                                     *
  *   2006:                                                                 *
  *    David Cuadrado                                                       *
@@ -18,7 +17,6 @@
  *    Fernado Roldan                                                       *
  *    Simena Dinas                                                         *
  *                                                                         *
- *   Copyright (C) 2012 Mae Floresta - http://www.maefloresta.com          *
  *   License:                                                              *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *

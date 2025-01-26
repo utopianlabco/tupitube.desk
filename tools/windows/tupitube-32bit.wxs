@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-    <Product Id="EA1268B2-50E5-4AF4-B7A6-BC994EB62FC0" Name="TupiTube Desk" Language="1033" Version="0.2.19" Manufacturer="MaeFloresta" UpgradeCode="E9406008-AF23-47F2-ABE3-42749697C274">
+    <Product Id="EA1268B2-50E5-4AF4-B7A6-BC994EB62FC0" Name="TupiTube Desk" Language="1033" Version="0.2.19" Manufacturer="Naara" UpgradeCode="E9406008-AF23-47F2-ABE3-42749697C274">
         <Package Description="Test file in a Product" Comments="Simple test" InstallerVersion="200" Compressed="yes" />
         <Media Id="1" Cabinet="simple.cab" EmbedCab="yes" />
         <Directory Id="TARGETDIR" Name="SourceDir">
@@ -133,8 +133,8 @@
                                 <Component Id="INSTAGRAM.PNG" DiskId="1" Guid="88663D33-4712-4ECC-A358-88D39EF15F78">
                                     <File Id="INSTAGRAM.PNG" Name="instagram.png" Source="data\html\images\instagram.png" />
                                 </Component>
-                                <Component Id="MAEFLORESTA.PNG" DiskId="1" Guid="D2C3CBE7-CC3D-4B55-B379-078B75FCC255">
-                                    <File Id="MAEFLORESTA.PNG" Name="maefloresta.png" Source="data\html\images\maefloresta.png" />
+                                <Component Id="NAARA.PNG" DiskId="1" Guid="D2C3CBE7-CC3D-4B55-B379-078B75FCC255">
+                                    <File Id="NAARA.PNG" Name="naara.png" Source="data\html\images\naara.png" />
                                 </Component>
                                 <Component Id="THANKS.PNG" DiskId="1" Guid="F7399E7A-C1CB-4437-BFFB-2780F6963A21">
                                     <File Id="THANKS.PNG" Name="thanks.png" Source="data\html\images\thanks.png" />
@@ -2715,7 +2715,7 @@
             <ComponentRef Id="BG6.PNG" />
             <ComponentRef Id="FACEBOOK.PNG" />
             <ComponentRef Id="INSTAGRAM.PNG" />
-            <ComponentRef Id="MAEFLORESTA.PNG" />
+            <ComponentRef Id="NAARA.PNG" />
             <ComponentRef Id="THANKS.PNG" />
             <ComponentRef Id="TIKTOK.PNG" />
             <ComponentRef Id="TIP_BG01.PNG" />

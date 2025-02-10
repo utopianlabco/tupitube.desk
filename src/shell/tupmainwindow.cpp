@@ -141,42 +141,60 @@ TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
         #endif
     }
 
-    // Processing web msg content
-    bool showWebMsg = false;
-    if (!fileContent.isEmpty()) {
-        QDomDocument doc;
-        if (doc.setContent(fileContent)) {
-            QDomElement root = doc.documentElement();
-            QDomNode n = root.firstChild();
-            while (!n.isNull()) {
-                QDomElement e = n.toElement();
-                if (e.tagName() == "show") {
-                    QString flag = e.text();
-                    if (flag.compare("true") == 0)
-                        showWebMsg = true;
-                    else
-                        break;
-                } else if (e.tagName() == "url") {
-                    msgUrl = e.text();
-                } else if (e.tagName() == "image") {
-                    msgImageName = e.text();
-                }
+    if (TCONFIG->firstTime()) {
+        TOptionalDialog dialog(tr("Allow TupiTube to collect app usage statistics (Only performance anonymous data).")
+                               + "<br/>" +
+                               tr("This information will helps us to enhance our project. Go to the Preferences dialog to enable/disable it any time."),
+                               tr("Usage Statistics Request"), false, false, this);
+        dialog.setModal(true);
+        dialog.move(static_cast<int> ((screenWidth - dialog.sizeHint().width()) / 2),
+                    static_cast<int> ((screenHeight - dialog.sizeHint().height()) / 2));
+        dialog.exec();
 
-                n = n.nextSibling();
+        TOptionalDialog::Result result = dialog.getResult();
+        TCONFIG->beginGroup("General");
+        bool isEnabled = false;
+        if (result == TOptionalDialog::Accepted)
+            isEnabled = true;
+        TCONFIG->setValue("EnableStatistics", isEnabled);
+    } else {
+        // Processing web msg content
+        bool showWebMsg = false;
+        if (!fileContent.isEmpty()) {
+            QDomDocument doc;
+            if (doc.setContent(fileContent)) {
+                QDomElement root = doc.documentElement();
+                QDomNode n = root.firstChild();
+                while (!n.isNull()) {
+                    QDomElement e = n.toElement();
+                    if (e.tagName() == "show") {
+                        QString flag = e.text();
+                        if (flag.compare("true") == 0)
+                            showWebMsg = true;
+                        else
+                            break;
+                    } else if (e.tagName() == "url") {
+                        msgUrl = e.text();
+                    } else if (e.tagName() == "image") {
+                        msgImageName = e.text();
+                    }
+
+                    n = n.nextSibling();
+                }
+            } else {
+                #ifdef TUP_DEBUG
+                    qWarning() << "[TupMainWindow()] - Fatal Error: XML file seems to be corrupted ->" << webMsgPath;
+                #endif
             }
+        }
+
+        if (showWebMsg) {
+            QTimer::singleShot(0, this, SLOT(showNewsMessage()));
         } else {
             #ifdef TUP_DEBUG
-                qWarning() << "[TupMainWindow()] - Fatal Error: XML file seems to be corrupted ->" << webMsgPath;
+                qWarning() << "[TupMainWindow()] - Warning: News message has been disabled!";
             #endif
         }
-    }
-
-    if (showWebMsg) {
-        QTimer::singleShot(0, this, SLOT(showNewsMessage()));
-    } else {
-        #ifdef TUP_DEBUG
-            qWarning() << "[TupMainWindow()] - Warning: News message has been disabled!";
-        #endif
     }
 
     /* SQA: Check this code for the future
@@ -197,7 +215,6 @@ TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
         TCONFIG->setValue("NotifyUpdate", false);
         TCONFIG->setValue("OpenLastProject", false);
         TCONFIG->setValue("ShowTipOfDay", true);
-        TCONFIG->setValue("EnableStatistics", true);
         TCONFIG->setValue("ConfirmRemoveFrame", true); 
         TCONFIG->setValue("ConfirmRemoveLayer", true); 
         TCONFIG->setValue("ConfirmRemoveScene", true); 

@@ -73,19 +73,19 @@ int TupAudioTranscoder::openInputFile(AVFormatContext **inputFormatContext, AVCo
     const char *filename = byteArray.data();
 
     // Open the input file to read from it
-    if ((errorCode = avformat_open_input(inputFormatContext, filename, NULL, NULL)) < 0) {
+    if ((errorCode = avformat_open_input(inputFormatContext, filename, nullptr, nullptr)) < 0) {
         errorMsg = "Fatal Error: Could not open input file " + audioInputFile;
         #ifdef TUP_DEBUG
             qCritical() << "[TupAudioTranscoder::openInputFile()] - " << errorMsg;
             qCritical() << "ERROR CODE -> " << errorCode;
         #endif
-        *inputFormatContext = NULL;
+        *inputFormatContext = nullptr;
 
         return errorCode;
     }
 
     // Get information on the input file (number of streams etc.)
-    if ((errorCode = avformat_find_stream_info(*inputFormatContext, NULL)) < 0) {
+    if ((errorCode = avformat_find_stream_info(*inputFormatContext, nullptr)) < 0) {
         errorMsg = "Fatal Error: Could not open find stream info.";
         #ifdef TUP_DEBUG
             qCritical() << "[TupAudioTranscoder::openInputFile()] - " << errorMsg;
@@ -146,7 +146,7 @@ int TupAudioTranscoder::openInputFile(AVFormatContext **inputFormatContext, AVCo
     }
 
     // Open the decoder for the audio stream to use it later
-    if ((errorCode = avcodec_open2(codecContext, inputCodec, NULL)) < 0) {
+    if ((errorCode = avcodec_open2(codecContext, inputCodec, nullptr)) < 0) {
         errorMsg = "Fatal Error: Could not open input codec.";
         #ifdef TUP_DEBUG
             qCritical() << "[TupAudioTranscoder::openInputFile()] - " << errorMsg;
@@ -172,7 +172,7 @@ int TupAudioTranscoder::openInputFile(AVFormatContext **inputFormatContext, AVCo
 // Some of these parameters are based on the input file's parameters.
 // @param      filename              File to be opened
 // @param      inputCodecContext     Codec context of input file
-// @param[out] output_format_context Format context of output file
+// @param[out] outputFormatContext   Format context of output file
 // @param[out] outputCodecContext    Codec context of output file
 // @return     Error code (0 if successful)
 int TupAudioTranscoder::openOutputFile(AVCodecContext *inputCodecContext,
@@ -183,10 +183,10 @@ int TupAudioTranscoder::openOutputFile(AVCodecContext *inputCodecContext,
         qDebug() << "[TupAudioTranscoder::openOutputFile()]";
     #endif
 
-    AVCodecContext *codecContext   = NULL;
-    AVIOContext *outputIOContext   = NULL;
-    AVStream *stream               = NULL;
-    const AVCodec *outputCodec     = NULL;
+    AVCodecContext *codecContext   = nullptr;
+    AVIOContext *outputIOContext   = nullptr;
+    AVStream *stream               = nullptr;
+    const AVCodec *outputCodec     = nullptr;
     int errorCode;
 
     QByteArray byteArray = audioOutputFile.toLocal8Bit();
@@ -219,8 +219,7 @@ int TupAudioTranscoder::openOutputFile(AVCodecContext *inputCodecContext,
     (*outputFormatContext)->pb = outputIOContext;
 
     // Guess the desired container format based on the file extension
-    if (!((*outputFormatContext)->oformat = av_guess_format(NULL, filename,
-                                                              NULL))) {        
+    if (!((*outputFormatContext)->oformat = av_guess_format(nullptr, filename, nullptr))) {
         errorMsg = "Fatal Error: Could not find output file format.";
         #ifdef TUP_DEBUG
             qCritical() << "[TupAudioTranscoder::openOutputFile()] - " << errorMsg;
@@ -249,7 +248,7 @@ int TupAudioTranscoder::openOutputFile(AVCodecContext *inputCodecContext,
     }
 
     // Create a new audio stream in the output file container
-    if (!(stream = avformat_new_stream(*outputFormatContext, NULL))) {
+    if (!(stream = avformat_new_stream(*outputFormatContext, nullptr))) {
         errorMsg = "Fatal Error: Could not create new stream.";
         errorCode = AVERROR(ENOMEM);
         #ifdef TUP_DEBUG
@@ -286,7 +285,7 @@ int TupAudioTranscoder::openOutputFile(AVCodecContext *inputCodecContext,
         codecContext->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
 
     //  Open the encoder for the audio stream to use it later
-    if ((errorCode = avcodec_open2(codecContext, outputCodec, NULL)) < 0) {
+    if ((errorCode = avcodec_open2(codecContext, outputCodec, nullptr)) < 0) {
         errorMsg = "Fatal Error: Could not open output codec.";
         #ifdef TUP_DEBUG
             qCritical() << "[TupAudioTranscoder::openOutputFile()] - " << errorMsg;
@@ -374,7 +373,7 @@ int TupAudioTranscoder::initResampler(AVCodecContext *inputCodecContext, AVCodec
                                          &inputCodecContext->ch_layout,
                                           inputCodecContext->sample_fmt,
                                           inputCodecContext->sample_rate,
-                                          0, NULL);
+                                          0, nullptr);
     if (errorCode < 0) {
         errorMsg = "Fatal Error: Could not allocate resample context.";
         #ifdef TUP_DEBUG
@@ -435,7 +434,7 @@ int TupAudioTranscoder::writeOutputFileHeader(AVFormatContext *outputFormatConte
     #endif
 
     int errorCode;
-    if ((errorCode = avformat_write_header(outputFormatContext, NULL)) < 0) {
+    if ((errorCode = avformat_write_header(outputFormatContext, nullptr)) < 0) {
         errorMsg = "Fatal Error: Could not write output file header.";
         #ifdef TUP_DEBUG
             qCritical() << "[TupAudioTranscoder::writeOutputFileHeader()] - " << errorMsg;
@@ -552,7 +551,7 @@ int TupAudioTranscoder::initConvertedSamples(uint8_t ***convertedInputSamples,
     // channels (although it may be NULL for interleaved formats)
     // Allocate memory for the samples of all channels in one consecutive
     // block for convenience
-    if ((errorCode = av_samples_alloc_array_and_samples(convertedInputSamples, NULL,
+    if ((errorCode = av_samples_alloc_array_and_samples(convertedInputSamples, nullptr,
                                   ouputCodecContext->ch_layout.nb_channels,
                                   frameSize,
                                   ouputCodecContext->sample_fmt, 0)) < 0) {
@@ -664,7 +663,7 @@ int TupAudioTranscoder::readDecodeConvertAndStore(AVAudioFifo *fifo,
     // Temporary storage for the converted input samples
     uint8_t **convertedInputSamples = nullptr;
     int dataPresent;
-    int ret = AVERROR_EXIT;
+    int response = AVERROR_EXIT;
 
     // Initialize temporary storage for one input frame
     if (initInputFrame(&inputFrame))
@@ -676,7 +675,7 @@ int TupAudioTranscoder::readDecodeConvertAndStore(AVAudioFifo *fifo,
     // in the decoder which are delayed, we are actually finished
     // This must not be treated as an error
     if (*finished) {
-        ret = 0;
+        response = 0;
         goto cleanup;
     }
     // If there is decoded data, convert and store it
@@ -693,21 +692,19 @@ int TupAudioTranscoder::readDecodeConvertAndStore(AVAudioFifo *fifo,
             goto cleanup;
 
         //  Add the converted input samples to the FIFO buffer for later processing
-        if (addSamplesToFifo(fifo, convertedInputSamples,
-                             inputFrame->nb_samples))
+        if (addSamplesToFifo(fifo, convertedInputSamples, inputFrame->nb_samples))
             goto cleanup;
-        ret = 0;
     }
 
-    ret = 0;
+    response = 0;
 
-cleanup:
-    if (convertedInputSamples)
-        av_freep(&convertedInputSamples[0]);
-    av_freep(&convertedInputSamples);
-    av_frame_free(&inputFrame);
+    cleanup:
+        if (convertedInputSamples)
+            av_freep(&convertedInputSamples[0]);
+        av_freep(&convertedInputSamples);
+        av_frame_free(&inputFrame);
 
-    return ret;
+    return response;
 }
 
 // Initialize one input frame for writing to the output file
@@ -921,7 +918,7 @@ int TupAudioTranscoder::processAudio()
     AVCodecContext *inputCodecContext = nullptr, *outputCodecContext = nullptr;
     SwrContext *resampleContext = nullptr;
     AVAudioFifo *fifo = nullptr;
-    int ret = AVERROR_EXIT;
+    int response = AVERROR_EXIT;
     int percent = 0;
 
     // Open the input file for reading
@@ -990,8 +987,8 @@ int TupAudioTranscoder::processAudio()
             int data_written;
             // Flush the encoder as it may have delayed frames
             do {
-                if (encodeAudioFrame(NULL, outputFormatContext,
-                                       outputCodecContext, &data_written))
+                if (encodeAudioFrame(nullptr, outputFormatContext,
+                                     outputCodecContext, &data_written))
                     goto cleanup;
             } while (data_written);
             break;
@@ -1002,24 +999,24 @@ int TupAudioTranscoder::processAudio()
     if (writeOutputFileTrailer(outputFormatContext))
         goto cleanup;
 
-    ret = 0;
+    response = 0;
 
-cleanup:
-    if (fifo)
-        av_audio_fifo_free(fifo);
-    swr_free(&resampleContext);
-    if (outputCodecContext)
-        avcodec_free_context(&outputCodecContext);
-    if (outputFormatContext) {
-        avio_closep(&outputFormatContext->pb);
-        avformat_free_context(outputFormatContext);
-    }
-    if (inputCodecContext)
-        avcodec_free_context(&inputCodecContext);
-    if (inputFormatContext)
-        avformat_close_input(&inputFormatContext);
+    cleanup:
+        if (fifo)
+            av_audio_fifo_free(fifo);
+        swr_free(&resampleContext);
+        if (outputCodecContext)
+            avcodec_free_context(&outputCodecContext);
+        if (outputFormatContext) {
+            avio_closep(&outputFormatContext->pb);
+            avformat_free_context(outputFormatContext);
+        }
+        if (inputCodecContext)
+            avcodec_free_context(&inputCodecContext);
+        if (inputFormatContext)
+            avformat_close_input(&inputFormatContext);
 
-    return ret;
+    return response;
 }
 
 QString TupAudioTranscoder::getErrorMsg() const

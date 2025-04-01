@@ -39,11 +39,14 @@
 
 #ifdef __cplusplus
 extern "C" {
-#include <libavformat/avformat.h>
+#include "libavcodec/avcodec.h"
+#include "libavformat/avformat.h"
 #include "libavfilter/avfilter.h"
 #include "libavfilter/buffersink.h"
 #include "libavfilter/buffersrc.h"
 #include "libavutil/opt.h"
+#include "libavutil/channel_layout.h"
+#include "libavutil/bprint.h"
 }
 #endif
 
@@ -65,6 +68,7 @@ class TUPITUBE_PLUGIN TupAudioMixer: public QObject
         int openInputFile(const char *filename);
         int openOutputFile(const char *filename, AVCodecContext *inputCodecContext);
         int initInputFrame(AVFrame **frame);
+        int initPacket(AVPacket **packet);
         int decodeAudioFrame(AVFrame *frame, AVFormatContext *inputFormatContext,
                              AVCodecContext *inputCodecContext, int *dataPresent, int *finished);
         int encodeAudioFrame(AVFrame *frame, int *dataPresent);

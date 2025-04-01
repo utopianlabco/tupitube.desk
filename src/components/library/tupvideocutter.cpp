@@ -118,7 +118,7 @@ bool TupVideoCutter::loadFile(const QString &videoFile, const QString &outputPat
     // The component that knows how to enCOde and DECode the stream
     // it's the codec (audio or video)
     // http://ffmpeg.org/doxygen/trunk/structAVCodec.html
-    AVCodec *inputCodec = nullptr;
+    const AVCodec *inputCodec = nullptr;
     // this component describes the properties of a codec used by the stream i
     // https://ffmpeg.org/doxygen/trunk/structAVCodecParameters.html
     AVCodecParameters *inputCodecParameters = nullptr;
@@ -140,7 +140,7 @@ bool TupVideoCutter::loadFile(const QString &videoFile, const QString &outputPat
             qDebug() << "---";
         #endif
 
-        AVCodec *codec = nullptr;
+        const AVCodec *codec = nullptr;
 
         // Finds the registered decoder for a codec ID
         // https://ffmpeg.org/doxygen/trunk/group__lavc__decoding.html
@@ -170,7 +170,7 @@ bool TupVideoCutter::loadFile(const QString &videoFile, const QString &outputPat
             #endif
         } else if (codecParameters->codec_type == AVMEDIA_TYPE_AUDIO) {
             #ifdef TUP_DEBUG
-                qDebug() << "[TupVideoCutter::loadFile()] -  Audio Codec -> " << codecParameters->channels
+                qDebug() << "[TupVideoCutter::loadFile()] -  Audio Codec -> " << codecParameters->ch_layout.nb_channels
                          << " channels, sample rate -> " << codecParameters->sample_rate;
             #endif
         }
@@ -294,11 +294,11 @@ bool TupVideoCutter::startExtraction()
     return true;
 }
 
-int TupVideoCutter::decodePacket(AVPacket *pPacket, AVCodecContext *codecContext, AVFrame *frame)
+int TupVideoCutter::decodePacket(AVPacket *packet, AVCodecContext *codecContext, AVFrame *frame)
 {
     // Supply raw packet data as input to a decoder
     // https://ffmpeg.org/doxygen/trunk/group__lavc__decoding.html
-    int ret = avcodec_send_packet(codecContext, pPacket);
+    int ret = avcodec_send_packet(codecContext, packet);
 
     if (ret < 0) {
         #ifdef TUP_DEBUG
@@ -324,14 +324,15 @@ int TupVideoCutter::decodePacket(AVPacket *pPacket, AVCodecContext *codecContext
 
         if (ret >= 0) {
             #ifdef TUP_DEBUG
-                qDebug() << "[TupVideoCutter::decodePacket()]   - Frame -> " << codecContext->frame_number
-                         << " (type=" << av_get_picture_type_char(frame->pict_type) << ", size=" << frame->pkt_size
+                int isKeyFrame = frame->flags & AV_FRAME_FLAG_KEY;
+                qDebug() << "[TupVideoCutter::decodePacket()]   - Frame -> " << codecContext->frame_num
+                         << " (type=" << av_get_picture_type_char(frame->pict_type) << ", size=" << packet->size
                          << " bytes, format=" << frame->format << ") pts " << frame->pts
-                         << " key_frame " << frame->key_frame
-                         << " [DTS " "]" << frame->coded_picture_number;
+                         << " key_frame " << isKeyFrame
+                         << " [DTS " "]" << packet->dts;
             #endif
 
-            int photogram = codecContext->frame_number;
+            int photogram = codecContext->frame_num;
             QString frameFilename = outputFolder + "frame" + QString::number(photogram) + ".png";
 
             // Check if the frame is a planar YUV 4:2:0, 12bpp

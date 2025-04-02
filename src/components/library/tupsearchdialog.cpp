@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Naara's Development Team                                             *
+ *    Utopian Lab Development Team                                             *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -335,7 +335,7 @@ QWidget * TupSearchDialog::patreonTab()
     font.setPointSize(11);
 
     QTextEdit *patreonText = new QTextEdit;
-    patreonText->setHtml(tr("From the <b>Naara</b> startup we are requesting the support from our users community "
+    patreonText->setHtml(tr("From the <b>Utopian Lab</b> startup we are requesting the support from our users community "
                             "to keep creating new assets for our library repository. Thanks to your contributions "
                             "we can deliver a better product. You can start helping from <b>USD 1</b>."));
     patreonText->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);

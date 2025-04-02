@@ -2,7 +2,7 @@
 SetupIconFile=icon\tupitube.ico
 AppName=TupiTube Desk
 AppVersion=0.2.22
-AppPublisher=Naara
+AppPublisher=Utopian Lab
 AppPublisherURL=https://www.tupitube.com/
 DefaultDirName={commonpf}\TupiTube
 DefaultGroupName=TupiTube

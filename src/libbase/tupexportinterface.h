@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Naara's Development Team                                             *
+ *    Utopian Lab Development Team                                             *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -89,6 +89,6 @@ class TUPITUBE_EXPORT TupExportInterface
         virtual QString getExceptionMsg() const = 0;
 };
         Q_DECLARE_OPERATORS_FOR_FLAGS(TupExportInterface::Formats);
-        Q_DECLARE_INTERFACE(TupExportInterface, "co.naara.tupi.ExportInterface/0.1");
+        Q_DECLARE_INTERFACE(TupExportInterface, "co.utopianlab.tupi.ExportInterface/0.1");
 
 #endif

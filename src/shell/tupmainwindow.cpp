@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Naara's Development Team                                             *
+ *    Utopian Lab Development Team                                             *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -201,7 +201,7 @@ TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
     TCONFIG->beginGroup("General");
     bool update = TCONFIG->value("NotifyUpdate", false).toBool();
     if (update)
-        QDesktopServices::openUrl(QString(NAARA_URL) + QString("downloads"));
+        QDesktopServices::openUrl(QString(UPDATES_URL) + QString("downloads"));
     */
 
     // Time to load plugins... 

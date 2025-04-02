@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Naara's Development Team                                             *
+ *    Utopian Lab Development Team                                             *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -64,6 +64,6 @@ class TUPITUBE_EXPORT AFilterInterface
         virtual TAction * getAction(const QString &id) = 0;
 };
 
-Q_DECLARE_INTERFACE(AFilterInterface, "co.naara.tupi.AFilterInterface/0.1")
+Q_DECLARE_INTERFACE(AFilterInterface, "co.utopianlab.tupi.AFilterInterface/0.1")
 
 #endif

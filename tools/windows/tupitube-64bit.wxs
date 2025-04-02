@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-  <Product Id="C9C7F944-A661-4915-88C8-E542D2EDEF42" Name="TupiTube Desk" Language="1033" Version="0.2.22" Manufacturer="Naara" UpgradeCode="DFE39486-F97D-4BA2-A83F-7DCBF085C4E4">
+  <Product Id="C9C7F944-A661-4915-88C8-E542D2EDEF42" Name="TupiTube Desk" Language="1033" Version="0.2.22" Manufacturer="Utopian Lab" UpgradeCode="DFE39486-F97D-4BA2-A83F-7DCBF085C4E4">
     <Package Description="TupiTube Desk" Comments="2D Animation Tool" InstallerVersion="200" Compressed="yes" Platform="x64" />
     <Media Id="1" Cabinet="simple.cab" EmbedCab="yes" />
     <Directory Id="TARGETDIR" Name="SourceDir">
@@ -271,8 +271,8 @@
                 <Component Id="INSTAGRAM.PNG" DiskId="1" Guid="D5185DEB-5488-45FB-BDA2-3715316C1D93" Win64="yes">
                   <File Id="INSTAGRAM.PNG" Name="instagram.png" Source="data\html\images\instagram.png" />
                 </Component>
-                <Component Id="NAARA.PNG" DiskId="1" Guid="25409FB7-BC5D-4B85-98B3-1FF0DD01B574" Win64="yes">
-                  <File Id="NAARA.PNG" Name="naara.png" Source="data\html\images\naara.png" />
+                <Component Id="UTOPIAN_LAB.PNG" DiskId="1" Guid="25409FB7-BC5D-4B85-98B3-1FF0DD01B574" Win64="yes">
+                  <File Id="UTOPIAN_LAB.PNG" Name="utopian_lab.png" Source="data\html\images\utopian_lab.png" />
                 </Component>
                 <Component Id="THANKS.PNG" DiskId="1" Guid="75781918-1916-43A6-A2D0-D0D83559116D" Win64="yes">
                   <File Id="THANKS.PNG" Name="thanks.png" Source="data\html\images\thanks.png" />
@@ -3145,7 +3145,7 @@
       <ComponentRef Id="BG6.PNG" />
       <ComponentRef Id="FACEBOOK.PNG" />
       <ComponentRef Id="INSTAGRAM.PNG" />
-      <ComponentRef Id="NAARA.PNG" />
+      <ComponentRef Id="UTOPIAN_LAB.PNG" />
       <ComponentRef Id="THANKS.PNG" />
       <ComponentRef Id="TIKTOK.PNG" />
       <ComponentRef Id="TIP_BG01.PNG" />

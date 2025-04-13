@@ -1661,12 +1661,6 @@
                     <Component Id="LOOP.PNG_1" DiskId="1" Guid="FAEB1DFA-6A1F-49DA-8B7E-6975D88321AF" Win64="yes">
                       <File Id="LOOP.PNG_1" Name="loop.png" Source="data\themes\default\icons\hd\loop.png" />
                     </Component>
-                    <Component Id="MAKEFILE.DEBUG" DiskId="1" Guid="04147F16-6739-4328-A318-41AC1AEAA678" Win64="yes">
-                      <File Id="MAKEFILE.DEBUG" Name="Makefile.Debug" Source="data\themes\default\icons\hd\Makefile.Debug" />
-                    </Component>
-                    <Component Id="MAKEFILE.RELEASE" DiskId="1" Guid="F23BDB1F-C8AB-4371-898A-C4AFFE84877D" Win64="yes">
-                      <File Id="MAKEFILE.RELEASE" Name="Makefile.Release" Source="data\themes\default\icons\hd\Makefile.Release" />
-                    </Component>
                     <Component Id="MODES_SETTINGS.PNG_1" DiskId="1" Guid="C1CC7EC2-88CE-4992-8357-BD47453A0652" Win64="yes">
                       <File Id="MODES_SETTINGS.PNG_1" Name="modes_settings.png" Source="data\themes\default\icons\hd\modes_settings.png" />
                     </Component>
@@ -3599,8 +3593,6 @@
       <ComponentRef Id="LIBRARY.PNG_1" />
       <ComponentRef Id="LINE.PNG_2" />
       <ComponentRef Id="LOOP.PNG_1" />
-      <ComponentRef Id="MAKEFILE.DEBUG" />
-      <ComponentRef Id="MAKEFILE.RELEASE" />
       <ComponentRef Id="MODES_SETTINGS.PNG_1" />
       <ComponentRef Id="MOTION_TWEEN.PNG_1" />
       <ComponentRef Id="MOVE_FRAME_DOWN.PNG_1" />

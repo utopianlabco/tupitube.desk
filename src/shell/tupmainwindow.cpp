@@ -144,7 +144,7 @@ TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
     if (TCONFIG->firstTime()) {
         TOptionalDialog dialog(tr("Allow TupiTube to collect app usage statistics (Only performance anonymous data).")
                                + "<br/>" +
-                               tr("This information will helps us to enhance our project. Go to the Preferences dialog to enable/disable it any time."),
+                               tr("This information will help us to enhance our project. Go to the Preferences dialog to enable/disable it any time."),
                                tr("Usage Statistics Request"), false, false, this);
         dialog.setModal(true);
         dialog.move(static_cast<int> ((screenWidth - dialog.sizeHint().width()) / 2),

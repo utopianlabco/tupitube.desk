@@ -788,6 +788,10 @@
         <source>Apply Forward</source>
         <translation>向前应用转换</translation>
     </message>
+    <message>
+        <source>Apply On Current Frame</source>
+        <translation>应用于当前帧</translation>
+    </message>
 </context>
 <context>
     <name>PapagayoTool</name>
@@ -3182,10 +3186,6 @@ until reaches at least 3 seconds.</source>
         <translation>请通过info@tupitube.com与我们联系。</translation>
     </message>
     <message>
-        <source>Allow TupiTube to collect use statistics (No private/personal info)</source>
-        <translation>允许绘幻想收集使用统计信息（无私人/个人信息）</translation>
-    </message>
-    <message>
         <source>Username / Email: </source>
         <translation>用户名 / 电子邮箱： </translation>
     </message>
@@ -3208,6 +3208,10 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Player</source>
         <translation>播放器</translation>
+    </message>
+    <message>
+        <source>Allow TupiTube to collect app usage statistics (Anonymous data)</source>
+        <translation>允许 TupiTube 收集应用程序使用情况统计信息（匿名数据）</translation>
     </message>
 </context>
 <context>
@@ -4148,6 +4152,18 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Ctrl+F</source>
         <translation>Ctrl+F</translation>
+    </message>
+    <message>
+        <source>Allow TupiTube to collect app usage statistics (Only performance anonymous data).</source>
+        <translation>允许 TupiTube 收集应用程序使用情况统计信息（仅限性能匿名数据）。</translation>
+    </message>
+    <message>
+        <source>Usage Statistics Request</source>
+        <translation>使用情况统计请求</translation>
+    </message>
+    <message>
+        <source>This information will help us to enhance our project. Go to the Preferences dialog to enable/disable it any time.</source>
+        <translation>这些信息将有助于我们改进项目。您可以随时前往“首选项”对话框启用/禁用此功能。</translation>
     </message>
 </context>
 <context>

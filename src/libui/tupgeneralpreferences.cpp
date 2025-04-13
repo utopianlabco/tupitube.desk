@@ -97,7 +97,7 @@ QWidget * TupGeneralPreferences::generalTab()
 
     QStringList labels;
     labels << tr("Always open last project")
-           << tr("Allow TupiTube to collect app usage statistics (No private/personal info)");
+           << tr("Allow TupiTube to collect app usage statistics (Anonymous data)");
 
     QGridLayout *interfaceForm = createForm("General", Startup, interfaceOptions, labels);
 

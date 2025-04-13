@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Naara's Development Team                                             *
+ *    Utopian Lab Development Team                                         *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -40,24 +40,16 @@
 
 #ifdef __cplusplus
 extern "C" {
-#include "libavcodec/avcodec.h"
-#include "libavformat/avformat.h"
-#include "libswresample/swresample.h"
-#include "libswscale/swscale.h"
-#include "libavutil/avutil.h"
-#include "libavutil/channel_layout.h"
-#include "libavutil/mathematics.h"
-#include "libavutil/opt.h"
-#include "libavutil/imgutils.h"
-
-#include "libavutil/frame.h"
-#include "libavutil/samplefmt.h"
-#include "libavutil/timestamp.h"
-
-#include "libavformat/avio.h"
-#include "libavutil/audio_fifo.h"
-#include "libavutil/avassert.h"
-#include "libavutil/avstring.h"
+    #include "libavformat/avformat.h"
+    #include "libavformat/avio.h"
+    #include "libavcodec/avcodec.h"
+    #include "libavutil/audio_fifo.h"
+    #include "libavutil/avassert.h"
+    #include "libavutil/avstring.h"
+    #include "libavutil/channel_layout.h"
+    #include "libavutil/frame.h"
+    #include "libavutil/opt.h"
+    #include "libswresample/swresample.h"
 }
 #endif
 
@@ -69,81 +61,44 @@ class TUPITUBE_PLUGIN TupAudioTranscoder : public QObject
         TupAudioTranscoder(const QString &input, const QString &output);
         ~TupAudioTranscoder();
 
-        QString getErrorMsg() const;
         int processAudio();
+        QString getErrorMsg() const;
 
     signals:
         void progressChanged(int percent);
 
     private:
-        void logAudioPacket(AVRational timeBase, const AVPacket *pkt, const QString &direction);
-        double av_q2d(AVRational a);
-        QString formatTS(int64_t ts, AVRational tb);
-        QString rationalToString(AVRational a);
-
-        // Audio methods
-        int openInputFile(const char *filename, AVFormatContext **inputFormatContext,
-                          AVCodecContext **inputCodecContext);
-
-        int openOutputFile(const char *filename, AVCodecContext *inputCodecContext,
-                           AVFormatContext **outputFormatContext, AVCodecContext **outputCodecContext);
-
+        int openInputFile(AVFormatContext **inputFormatContext, AVCodecContext **inputCodecContext);
+        int openOutputFile(AVCodecContext *inputCodecContext, AVFormatContext **outputFormatContext,
+                             AVCodecContext **outputCodecContext);
         int initPacket(AVPacket **packet);
-
         int initInputFrame(AVFrame **frame);
-
-        int initResampler(AVCodecContext *inputCodecContext, AVCodecContext *outputCodecContext,
-                          SwrContext **resampleContext);
-
+        int initResampler(AVCodecContext *inputCodecContext,
+                           AVCodecContext *outputCodecContext,
+                           SwrContext **resampleContext);
         int initFifo(AVAudioFifo **fifo, AVCodecContext *outputCodecContext);
-
         int writeOutputFileHeader(AVFormatContext *outputFormatContext);
-
-        int decodeAudioFrame(AVFrame *frame, AVFormatContext *inputFormatContext, AVCodecContext *inputCodecContext,
-                             int *dataPresent, int *finished);
-
+        int decodeAudioFrame(AVFrame *frame, AVFormatContext *inputFormatContext,
+                               AVCodecContext *inputCodecContext, int *dataPresent, int *finished);
         int initConvertedSamples(uint8_t ***convertedInputSamples, AVCodecContext *outputCodecContext,
-                                 int frameSize);
-
+                                   int frameSize);
         int convertSamples(const uint8_t **inputData, uint8_t **convertedData, const int frameSize,
-                           SwrContext *resampleContext);
-
-        int addSamplesToFifo(AVAudioFifo *fifo, uint8_t **convertedInputSamples, const int frameSize);
-
+                            SwrContext *resampleContext);
+        int addSamplesToFifo(AVAudioFifo *fifo, uint8_t **convertedInputSamples,
+                                const int frameSize);
         int readDecodeConvertAndStore(AVAudioFifo *fifo, AVFormatContext *inputFormatContext,
-                                      AVCodecContext *inputCodecContext, AVCodecContext *outputCodecContext,
-                                      SwrContext *resamplerContext, int *finished);
-
-        int initOutputFrame(AVFrame **frame, AVCodecContext *outputCodecContext, int frameSize);
-
+                                          AVCodecContext *inputCodecContext, AVCodecContext *outputCodecContext,
+                                          SwrContext *resamplerContext, int *finished);
+        int initOutputFrame(AVFrame **frame, AVCodecContext *outputCodecContext,
+                              int frameSize);
         int encodeAudioFrame(AVFrame *frame, AVFormatContext *outputFormatContext, AVCodecContext *outputCodecContext,
-                                      int *dataPresent);
-
-        int loadEncodeAndWrite(AVAudioFifo *fifo, AVFormatContext *outputFormatContext,
-                               AVCodecContext *outputCodecContext);
-
+                               int *dataPresent);
+        int loadEncodeAndWrite(AVAudioFifo *fifo, AVFormatContext *outputFormatContext, AVCodecContext *outputCodecContext);
         int writeOutputFileTrailer(AVFormatContext *outputFormatContext);
-
-        // Global Variables
-        AVFormatContext *audioOutputFormatContext;
-        AVOutputFormat *audioOutputFormat;
 
         QString audioInputFile;
         QString audioOutputFile;
-
-        enum AVCodecID audioOutputCodecID;
-        const AVCodec *audioOutputCodec;
-        AVCodecContext *audioOutputCodecContext;
-        AVStream *audioOutputStream;
-
-        AVFormatContext *audioInputFormatContext;
-        AVCodecContext *audioInputCodecContext;
-        AVCodec *audioInputCodec;
-        AVStream *audioInputStream;
-        SwrContext *resampleContext;
-
-        int audioPktCounter;
-        QString errorMsg;
+        QString errorMsg;                
 };
 
 #endif

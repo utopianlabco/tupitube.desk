@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Naara's Development Team                                             *
+ *    Utopian Lab Development Team                                         *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -272,16 +272,16 @@ bool TupSoundDialog::isAudioInStereo(const QString &soundPath)
     QByteArray array = soundPath.toLocal8Bit();
     char *filename = array.data();
 
-    AVStream *in_stream;
-    AVCodecParameters *in_codecpar;
-    int error;
+    AVStream *inputStream;
+    AVCodecParameters *inputCodecParams;
+    int errorCode;
 
     // Open the input file to read from it.
     AVFormatContext *inputFormatContext = avformat_alloc_context();
-    if ((error = avformat_open_input(&inputFormatContext, filename, nullptr, nullptr)) < 0) {
+    if ((errorCode = avformat_open_input(&inputFormatContext, filename, nullptr, nullptr)) < 0) {
         #ifdef TUP_DEBUG
             qCritical() << "[TupSoundDialog::isAudioInStereo()] - Fatal Error: Could not open input file ->" << soundPath;
-            qCritical() << "ERROR CODE ->" << error;
+            qCritical() << "ERROR CODE ->" << errorCode;
         #endif
         avformat_close_input(&inputFormatContext);
 
@@ -289,10 +289,10 @@ bool TupSoundDialog::isAudioInStereo(const QString &soundPath)
     }
 
     // Get information on the input file (number of streams etc.).
-    if ((error = avformat_find_stream_info(inputFormatContext, nullptr)) < 0) {
+    if ((errorCode = avformat_find_stream_info(inputFormatContext, nullptr)) < 0) {
         #ifdef TUP_DEBUG
             qCritical() << "[TupSoundDialog::isAudioInStereo()] - Fatal Error: Could not open find stream ->" << soundPath;
-            qCritical() << "ERROR CODE ->" << error;
+            qCritical() << "ERROR CODE ->" << errorCode;
         #endif
         avformat_close_input(&inputFormatContext);
 
@@ -301,15 +301,16 @@ bool TupSoundDialog::isAudioInStereo(const QString &soundPath)
 
     int streamsTotal = inputFormatContext->nb_streams;
     for(int i=0; i<streamsTotal; i++) {
-        in_stream = inputFormatContext->streams[i];
-        in_codecpar = in_stream->codecpar;
-        if (in_codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
+        inputStream = inputFormatContext->streams[i];
+        inputCodecParams = inputStream->codecpar;
+        if (inputCodecParams->codec_type == AVMEDIA_TYPE_AUDIO) {
+            int channels = inputCodecParams->ch_layout.nb_channels;
             #ifdef TUP_DEBUG
                 qDebug() << "[TupSoundDialog::isAudioInStereo()] - Found audio stream!";
-                qDebug() << "[TupSoundDialog::isAudioInStereo()] - Audio channels total ->" << in_codecpar->channels;
+                qDebug() << "[TupSoundDialog::isAudioInStereo()] - Audio channels total ->" << channels;
             #endif
 
-            if (in_codecpar->channels == 2) {
+            if (channels == 2) {
                 avformat_close_input(&inputFormatContext);
 
                 return true;

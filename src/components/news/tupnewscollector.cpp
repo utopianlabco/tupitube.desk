@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Naara's Development Team                                             *
+ *    Utopian Lab Development Team                                         *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -343,7 +343,7 @@ void TupNewsCollector::formatStatus(QByteArray array)
     htmlFooter += "</html>";
 
     releaseHtml = htmlHeader;
-    releaseHtml += "<center><img src=\"file:naara.png\" alt=\"Naara\"/></center>\n";
+    releaseHtml += "<center><img src=\"file:utopian_lab.png\" alt=\"Utopian Lab\"/></center>\n";
     releaseHtml += "<div class=\"twitter_headline\"><center>&nbsp;&nbsp;@tupitube</center></div></div>\n";
     QString css = "twitter_tupi_version";  
     if (update)

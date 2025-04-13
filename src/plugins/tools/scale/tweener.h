@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Naara's Development Team                                             *
+ *    Utopian Lab Development Team                                         *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -55,7 +55,7 @@
 class TUPITUBE_PLUGIN Tweener : public TupToolPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "co.naara.tupi.TupToolInterface" FILE "scaletool.json")
+    Q_PLUGIN_METADATA(IID "co.utopianlab.tupi.TupToolInterface" FILE "scaletool.json")
 
     public:
         Tweener();

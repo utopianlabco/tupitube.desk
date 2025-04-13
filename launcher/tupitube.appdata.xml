@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>co.naara.tupitube</id>
+  <id>co.utopianlab.tupitube</id>
   <launchable type="desktop-id">tupitube.desktop</launchable>
   <name>TupiTube Desk</name>
   <summary>2D Animation Software</summary>
@@ -23,6 +23,6 @@
 ​      <image>https://a.fsdn.com/con/app/proj/tupi2d/screenshots/tweening-en.png</image>
     </screenshot>
   </screenshots>
-  <url type="bugtracker">https://github.com/naara-dev/tupitube.desk/issues</url>
-  <url type="homepage">https://www.naara.co/</url>
+  <url type="bugtracker">https://github.com/utopianlabco/tupitube.desk/issues</url>
+  <url type="homepage">https://www.utopianlab.co/</url>
 </component>

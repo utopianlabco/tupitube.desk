@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Naara's Development Team                                             *
+ *    Utopian Lab Development Team                                         *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -110,7 +110,7 @@ class TUPITUBE_PLUGIN TFFmpegMovieGenerator : public TMovieGenerator
         int videoW;
         int videoH;
         AVFormatContext *formatContext;
-        AVOutputFormat *outputFormat;
+        const AVOutputFormat *outputFormat;
 
         AVCodecContext *videoCodecContext;
         enum AVCodecID videoCodecID;
@@ -128,7 +128,7 @@ class TUPITUBE_PLUGIN TFFmpegMovieGenerator : public TMovieGenerator
 
         AVFormatContext *audioInputFormatContext;
         AVCodecContext *audioInputCodecContext;
-        AVCodec *audioInputCodec;
+        const AVCodec *audioInputCodec;
         AVStream *audioInputStream;
         // SwrContext *resampleContext;
 

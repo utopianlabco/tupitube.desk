@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Naara's Development Team                                             *
+ *    Utopian Lab Development Team                                         *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -253,8 +253,16 @@ void TupSoundObject::fromXml(const QString &xml)
                             QList<int> frames;
                             foreach(QString frame, framesArray) {
                                 if (!frame.isEmpty())
-                                    frames << frame.toInt();
+                                {
+                                    int frameIndex = frame.toInt();
+                                    if (frameIndex > 0)
+                                        frames << frameIndex;
+                                }
                             }
+
+                            QSet<int> uniqueSet = QSet<int>::fromList(frames);
+                            frames = uniqueSet.toList();
+
                             record.frames = QList<int>(frames);
                         }
                     }
@@ -286,6 +294,7 @@ QDomElement TupSoundObject::toXml(QDomDocument &doc) const
         qDebug() << "[TupSoundObject::toXml()] - soundType ->" << soundType;
         qDebug() << "[TupSoundObject::toXml()] - mute ->" << mute;
         qDebug() << "[TupSoundObject::toXml()] - backgroundTrack ->" << backgroundTrack;
+        qDebug() << "[TupSoundObject::toXml()] - duration ->" << duration;
     #endif
 
     QDomElement root = doc.createElement("sound");

@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Naara's Development Team                                             *
+ *    Utopian Lab Development Team                                         *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -64,6 +64,6 @@ class TUPITUBE_EXPORT TupToolInterface
         virtual int toolType() const = 0;
 };
 
-Q_DECLARE_INTERFACE( TupToolInterface, "co.naara.tupi.TupToolInterface/0.1" );
+Q_DECLARE_INTERFACE( TupToolInterface, "co.utopianlab.tupi.TupToolInterface/0.1" );
 
 #endif

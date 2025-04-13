@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Naara's Development Team                                             *
+ *    Utopian Lab Development Team                                         *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -42,7 +42,7 @@ extern "C" {
 
 int main()
 {
-    AVOutputFormat *format = av_guess_format("ffh264", NULL, NULL);
+    const AVOutputFormat *format = av_guess_format("ffh264", NULL, NULL);
 
     AVFormatContext *formatContext = avformat_alloc_context();
     formatContext->oformat = format;
@@ -52,7 +52,7 @@ int main()
 
     stream = avformat_new_stream(formatContext, 0);
 
-    AVCodec *codec = avcodec_find_encoder(stream->codecpar->codec_id);
+    const AVCodec *codec = avcodec_find_encoder(stream->codecpar->codec_id);
     if (!codec) {
         av_log(NULL, AV_LOG_ERROR, "Failed to find decoder for stream\n");
         return AVERROR_DECODER_NOT_FOUND;

@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Naara's Development Team                                             *
+ *    Utopian Lab Development Team                                         *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -73,7 +73,7 @@ class TUPITUBE_EXPORT TupVideoCutter : public QObject
 
     private:
         // Decode packets into frames
-        int decodePacket(AVPacket *pPacket, AVCodecContext *pCodecContext, AVFrame *pFrame);
+        int decodePacket(AVPacket *packet, AVCodecContext *codecContext, AVFrame *frame);
         // Save a frame into a .png file
         int saveFrameToPng(AVFrame *frame, const QString &filename);
 

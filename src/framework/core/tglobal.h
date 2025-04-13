@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Naara's Development Team                                             *
+ *    Utopian Lab Development Team                                         *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -58,7 +58,7 @@
   #define SHOW_VAR(arg) qDebug() << #arg << " = " << arg;
 #endif
 
-#define COMPANY "Naara"
+#define COMPANY "Utopian Lab"
 #define CACHE_DB "TupiTube"
 
 #define LIBRARY_DIR CONFIG_DIR+"/libraries"

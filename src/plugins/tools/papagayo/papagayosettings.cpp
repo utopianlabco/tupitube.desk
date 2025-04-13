@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Naara's Development Team                                             *
+ *    Utopian Lab Development Team                                         *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -40,6 +40,7 @@
 
 PapagayoSettings::PapagayoSettings(QWidget *parent) : QWidget(parent)
 {
+    forwardFlag = 0;
     layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
     layout->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
 
@@ -213,10 +214,12 @@ void PapagayoSettings::setInnerForm()
     scaleLayout->addWidget(propCheck);
     scaleLayout->setAlignment(propCheck, Qt::AlignHCenter);
 
-    forwardCheck = new QCheckBox(tr("Apply Forward"), this);
-    connect(forwardCheck, SIGNAL(stateChanged(int)), this, SIGNAL(forwardActivated(int)));
-    scaleLayout->addWidget(forwardCheck);
-    scaleLayout->setAlignment(forwardCheck, Qt::AlignHCenter);
+    forwardCombo = new QComboBox();
+    forwardCombo->addItem(tr("Apply Forward"));
+    forwardCombo->addItem(tr("Apply On Current Frame"));
+    connect(forwardCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(updateForwardFlag(int)));
+    scaleLayout->addWidget(forwardCombo);
+    scaleLayout->setAlignment(forwardCombo, Qt::AlignHCenter);
 
     // Bottom section    
     int iconSize = TResponsiveUI::fitRightPanelIconSize();
@@ -287,14 +290,13 @@ void PapagayoSettings::openLipSyncProperties(TupLipSync *lipsync)
     endingLabel->setText(tr("Ending at frame") + ": <b>" + QString::number(endIndex) + "</b>");
     totalLabel->setText(tr("Frames Total") + ": <b>" + QString::number(framesCount) + "</b>");
 
-    if (forwardCheck->isChecked())
-        forwardCheck->setChecked(false);
+    forwardCombo->setCurrentIndex(0);
 }
 
 void PapagayoSettings::updateInitFrame(int index)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PapagayoSettings::updateInitFrame()] - index -> " << index;
+        qDebug() << "[PapagayoSettings::updateInitFrame()] - index ->" << index;
     #endif
 
     int frame = index - 1;
@@ -349,8 +351,8 @@ void PapagayoSettings::setPhoneme(const TupPhoneme *phoneme)
 void PapagayoSettings::updatePositionCoords(int x, int y)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PapagayoSettings::updatePositionCoords()] - x -> " << x;
-        qDebug() << "[PapagayoSettings::updatePositionCoords()] - y -> " << y;
+        qDebug() << "[PapagayoSettings::updatePositionCoords()] - x ->" << x;
+        qDebug() << "[PapagayoSettings::updatePositionCoords()] - y ->" << y;
     #endif
 
    xPosField->blockSignals(true);
@@ -369,7 +371,7 @@ void PapagayoSettings::updatePositionCoords(int x, int y)
 void PapagayoSettings::updateRotationAngle(int angle)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PapagayoSettings::updateRotationAngle()] - angle -> " << angle;
+        qDebug() << "[PapagayoSettings::updateRotationAngle()] - angle ->" << angle;
     #endif
 
     angleField->blockSignals(true);
@@ -384,8 +386,8 @@ void PapagayoSettings::updateRotationAngle(int angle)
 void PapagayoSettings::updateScaleFactor(double x, double y)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PapagayoSettings::updateScaleFactor()] - x -> " << x;
-        qDebug() << "[PapagayoSettings::updateScaleFactor()] - y -> " << y;
+        qDebug() << "[PapagayoSettings::updateScaleFactor()] - x ->" << x;
+        qDebug() << "[PapagayoSettings::updateScaleFactor()] - y ->" << y;
     #endif
 
    factorXField->blockSignals(true);
@@ -404,7 +406,7 @@ void PapagayoSettings::updateScaleFactor(double x, double y)
 void PapagayoSettings::notifyRotation(int angle)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PapagayoSettings::notifyRotation()] - angle -> " << angle;
+        qDebug() << "[PapagayoSettings::notifyRotation()] - angle ->" << angle;
     #endif
 
     if (angle == 360) {
@@ -417,7 +419,7 @@ void PapagayoSettings::notifyRotation(int angle)
 void PapagayoSettings::notifyXScale(double factor)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PapagayoSettings::notifyXScale()] - factor -> " << factor;
+        qDebug() << "[PapagayoSettings::notifyXScale()] - factor ->" << factor;
     #endif
 
     if (propCheck->isChecked()) {
@@ -432,7 +434,7 @@ void PapagayoSettings::notifyXScale(double factor)
 void PapagayoSettings::notifyYScale(double factor)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PapagayoSettings::notifyYScale()] - factor -> " << factor;
+        qDebug() << "[PapagayoSettings::notifyYScale()] - factor ->" << factor;
     #endif
 
     if (propCheck->isChecked()) {
@@ -447,7 +449,7 @@ void PapagayoSettings::notifyYScale(double factor)
 void PapagayoSettings::enableProportion(int flag)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PapagayoSettings::enableProportion()] - flag -> " << flag;
+        qDebug() << "[PapagayoSettings::enableProportion()] - flag ->" << flag;
     #endif
 
     bool enable = false;
@@ -465,4 +467,10 @@ void PapagayoSettings::setProportionState(int flag)
     propCheck->blockSignals(true);
     propCheck->setChecked(flag);
     propCheck->blockSignals(false);
+}
+
+void PapagayoSettings::updateForwardFlag(int flag)
+{
+    forwardFlag = forwardCombo->currentIndex();
+    emit notifyForwardFlagUpdated(flag);
 }

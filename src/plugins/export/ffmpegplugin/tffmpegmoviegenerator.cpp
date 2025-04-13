@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Naara's Development Team                                             *
+ *    Utopian Lab Development Team                                         *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -308,7 +308,10 @@ AVStream * TFFmpegMovieGenerator::addVideoStream()
     // of which frame timestamps are represented. For fixed-fps content,
     // timebase should be 1/framerate and timestamp increments should be
     // identical to 1.
-    videoStream->time_base = (AVRational){ 1, fps };
+
+    // videoStream->time_base = (AVRational){ 1, fps };
+    videoStream->time_base.num = 1;
+    videoStream->time_base.den = fps;
     videoCodecContext->time_base = videoStream->time_base;
 
     videoCodecContext->gop_size = 12; // emit one intra frame every twelve frames at most
@@ -549,8 +552,8 @@ bool TFFmpegMovieGenerator::openAudioOutputStream()
 
     // Set the basic encoder parameters.
     // The input file's sample rate is used to avoid a sample rate conversion.
-    audioOutputCodecContext->channels       = OUTPUT_CHANNELS;
-    audioOutputCodecContext->channel_layout = av_get_default_channel_layout(OUTPUT_CHANNELS);
+
+    av_channel_layout_default(&audioOutputCodecContext->ch_layout, OUTPUT_CHANNELS);
     audioOutputCodecContext->sample_rate    = audioInputCodecContext->sample_rate;
     audioOutputCodecContext->sample_fmt     = audioOutputCodec->sample_fmts[0];
     audioOutputCodecContext->bit_rate       = OUTPUT_BIT_RATE;
@@ -786,12 +789,12 @@ void TFFmpegMovieGenerator::endVideoFile()
     av_write_trailer(formatContext);
 
     if (videoCodecContext)
-        avcodec_close(videoCodecContext);
+        avcodec_free_context(&videoCodecContext);
+
     av_frame_free(&videoFrame);
 
     if (hasSound) {
         if (audioInputCodecContext) {
-            avcodec_close(audioInputCodecContext);
             avcodec_free_context(&audioInputCodecContext);
         }
 
@@ -799,14 +802,13 @@ void TFFmpegMovieGenerator::endVideoFile()
             avformat_close_input(&audioInputFormatContext);
 
         if (audioOutputCodecContext) {
-            avcodec_close(audioOutputCodecContext);
             avcodec_free_context(&audioOutputCodecContext);
         }
     }
 
     if (formatContext) {
         if (!(outputFormat->flags & AVFMT_NOFILE))
-            avio_close(formatContext->pb);
+            avio_closep(&formatContext->pb);
         avformat_free_context(formatContext);
     }
 }

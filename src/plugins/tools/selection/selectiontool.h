@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Naara's Development Team                                             *
+ *    Utopian Lab Development Team                                         *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -58,7 +58,7 @@ class NodeManager;
 class TUPITUBE_PLUGIN SelectionTool : public TupToolPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "co.naara.tupi.TupToolInterface" FILE "selectiontool.json")
+    Q_PLUGIN_METADATA(IID "co.utopianlab.tupi.TupToolInterface" FILE "selectiontool.json")
     
     public:
         SelectionTool();

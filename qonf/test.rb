@@ -5,7 +5,7 @@
 #                                                                         #
 #   Developers:                                                           #
 #   2025:                                                                 #
-#    Naara's Development Team                                             #
+#    Utopian Lab Development Team                                         #
 #   2010:                                                                 #
 #    Gustav Gonzalez                                                      #
 #   ---                                                                   #
@@ -73,7 +73,7 @@ class Test
         
         cwd = Dir.getwd
 
-        if File.exists?(dir)
+        if File.exist?(dir)
             if File.stat(dir).directory?
                 Dir.chdir(dir)
 

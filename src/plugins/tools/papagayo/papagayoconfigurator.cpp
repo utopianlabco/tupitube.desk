@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Naara's Development Team                                             *
+ *    Utopian Lab Development Team                                         *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -99,7 +99,7 @@ void PapagayoConfigurator::setPropertiesPanel()
 
     connect(settingsPanel, SIGNAL(objectHasBeenReset()), this, SIGNAL(objectHasBeenReset()));
     connect(settingsPanel, SIGNAL(proportionActivated(bool)), this, SIGNAL(proportionActivated(bool)));
-    connect(settingsPanel, SIGNAL(forwardActivated(int)), this, SIGNAL(forwardActivated(int)));
+    connect(settingsPanel, SIGNAL(notifyForwardFlagUpdated(int)), this, SIGNAL(notifyForwardFlagUpdated(int)));
 
     /* SQA: These connections don't work on Windows
     connect(settingsPanel, &PapagayoSettings::selectMouth, this, &PapagayoConfigurator::selectMouth);

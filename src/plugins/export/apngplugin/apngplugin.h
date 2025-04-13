@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Naara's Development Team                                             *
+ *    Utopian Lab Development Team                                         *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -52,7 +52,7 @@
 class TUPITUBE_EXPORT APNGPlugin : public TupExportPluginObject
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "co.naara.tupi.TupToolInterface" FILE "apngplugin.json")
+    Q_PLUGIN_METADATA(IID "co.utopianlab.tupi.TupToolInterface" FILE "apngplugin.json")
 
     public:
         APNGPlugin();

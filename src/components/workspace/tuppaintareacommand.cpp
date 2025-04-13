@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Utopian Lab Development Team                                             *
+ *    Utopian Lab Development Team                                         *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *

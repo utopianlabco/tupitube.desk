@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Utopian Lab Development Team                                             *
+ *    Utopian Lab Development Team                                         *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -67,7 +67,7 @@ void PapagayoTool::init(TupGraphicsScene *gScene)
 
     nodesManager = nullptr;
     managerIncluded = false;
-    forwardFlag = false;
+    forwardFlag = true;
     scene = gScene;
     mode = TupToolPlugin::View;
 
@@ -163,7 +163,7 @@ QWidget * PapagayoTool::configurator()
 
         connect(configPanel, SIGNAL(objectHasBeenReset()), this, SLOT(resetMouthTransformations()));
         connect(configPanel, SIGNAL(proportionActivated(bool)), this, SLOT(enableProportion(bool)));
-        connect(configPanel, SIGNAL(forwardActivated(int)), this, SLOT(enableTransformationForward(int)));
+        connect(configPanel, SIGNAL(notifyForwardFlagUpdated(int)), this, SLOT(enableTransformationForward(int)));
 
         /* SQA: These connection don't work on Windows
         connect(configPanel, &PapagayoConfigurator::lipsyncCreatorRequested, this, &PapagayoTool::lipsyncCreatorRequested);
@@ -257,7 +257,7 @@ void PapagayoTool::updateScene(TupGraphicsScene *scene)
 void PapagayoTool::editLipsyncMouth(const QString &name)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PapagayoTool::editLipsyncMouth()] - name -> " << name;
+        qDebug() << "[PapagayoTool::editLipsyncMouth()] - name ->" << name;
     #endif
 
     TupScene *sceneData = scene->currentScene();
@@ -280,13 +280,13 @@ void PapagayoTool::editLipsyncMouth(const QString &name)
         } else {
             #ifdef TUP_DEBUG
                 qDebug() << "[PapagayoTool::editLipsyncMouth()] - "
-                            "Warning: voice is not available in lipsync -> " << name;
+                            "Warning: voice is not available in lipsync ->" << name;
             #endif
         }
     } else {
         #ifdef TUP_DEBUG
             qDebug() << "[PapagayoTool::editLipsyncMouth()] - "
-                        "Warning: lipsync record is not available -> " << name;
+                        "Warning: lipsync record is not available ->" << name;
         #endif
     }
 }
@@ -294,7 +294,7 @@ void PapagayoTool::editLipsyncMouth(const QString &name)
 void PapagayoTool::removeCurrentLipSync(const QString &lipsyncName)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PapagayoTool::removeCurrentLipSync()] - name -> " << lipsyncName;
+        qDebug() << "[PapagayoTool::removeCurrentLipSync()] - name ->" << lipsyncName;
     #endif
 
     QList<QGraphicsView *> views = scene->views();
@@ -320,12 +320,12 @@ void PapagayoTool::removeCurrentLipSync(const QString &lipsyncName)
     if (QFile::exists(pgoPath)) {
         if (!QFile::remove(pgoPath)) {
             #ifdef TUP_DEBUG
-                qDebug() << "[PapagayoTool::removeCurrentLipSync()] - Fatal Error: Can't remove PGO file -> " << pgoPath;
+                qDebug() << "[PapagayoTool::removeCurrentLipSync()] - Fatal Error: Can't remove PGO file ->" << pgoPath;
             #endif
         }
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "[PapagayoTool::removeCurrentLipSync()] - Warning: PGO file doesn't exists -> " << pgoPath;
+            qDebug() << "[PapagayoTool::removeCurrentLipSync()] - Warning: PGO file doesn't exists ->" << pgoPath;
         #endif
     }
 
@@ -334,12 +334,12 @@ void PapagayoTool::removeCurrentLipSync(const QString &lipsyncName)
     if (QFile::exists(imagesPath)) {
         if (!imgDir.removeRecursively()) {
             #ifdef TUP_DEBUG
-                qDebug() << "[PapagayoTool::removeCurrentLipSync()] - Fatal Error: Can't remove folder -> " << imagesPath;
+                qDebug() << "[PapagayoTool::removeCurrentLipSync()] - Fatal Error: Can't remove folder ->" << imagesPath;
             #endif
         }
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "[PapagayoTool::removeCurrentLipSync()] - Warning: folder doesn't exists -> " << imagesPath;
+            qDebug() << "[PapagayoTool::removeCurrentLipSync()] - Warning: folder doesn't exists ->" << imagesPath;
         #endif
     }
 
@@ -348,12 +348,12 @@ void PapagayoTool::removeCurrentLipSync(const QString &lipsyncName)
     if (QFile::exists(audioPath)) {
         if (!audioDir.removeRecursively()) {
             #ifdef TUP_DEBUG
-                qDebug() << "[PapagayoTool::removeCurrentLipSync()] - Fatal Error: Can't remove folder -> " << audioPath;
+                qDebug() << "[PapagayoTool::removeCurrentLipSync()] - Fatal Error: Can't remove folder ->" << audioPath;
             #endif
         }
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "[PapagayoTool::removeCurrentLipSync()] - Warning: folder doesn't exists -> " << audioPath;
+            qDebug() << "[PapagayoTool::removeCurrentLipSync()] - Warning: folder doesn't exists ->" << audioPath;
         #endif
     }
 }
@@ -367,7 +367,7 @@ void PapagayoTool::addNodesManager()
     int initFrame = currentLipSync->getInitFrame();
 
     #ifdef TUP_DEBUG
-        qDebug() << "[PapagayoTool::addNodesManager()] - initLayer -> " << initLayer;
+        qDebug() << "[PapagayoTool::addNodesManager()] - initLayer ->" << initLayer;
     #endif
 
     QString selection = QString::number(initLayer) + "," + QString::number(initLayer) + ","
@@ -475,7 +475,7 @@ void PapagayoTool::sceneResponse(const TupSceneResponse *event)
 void PapagayoTool::layerResponse(const TupLayerResponse *event)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PapagayoTool::layerResponse()] - action -> " << event->getAction();
+        qDebug() << "[PapagayoTool::layerResponse()] - action ->" << event->getAction();
     #endif
 
     QString xml = event->getArg().toString();
@@ -573,7 +573,7 @@ void PapagayoTool::updateInitFrame(int index)
 void PapagayoTool::keyPressEvent(QKeyEvent *event)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PapagayoTool::keyPressEvent()] - key -> " << event->key();
+        qDebug() << "[PapagayoTool::keyPressEvent()] - key ->" << event->key();
     #endif
 
     if (mode == TupToolPlugin::Edit) {
@@ -632,16 +632,17 @@ void PapagayoTool::keyReleaseEvent(QKeyEvent *event)
 void PapagayoTool::updateXMouthPositionInScene(int x)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PapagayoTool::updateXMouthPositionInScene()] - x -> " << x;
+        qDebug() << "[PapagayoTool::updateXMouthPositionInScene()] - x ->" << x;
     #endif
 
     mouth->setPos(x, mouth->pos().y());
+    updateMouthTransformation();
 }
 
 void PapagayoTool::updateYMouthPositionInScene(int y)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PapagayoTool::updateYMouthPositionInScene()] - y -> " << y;
+        qDebug() << "[PapagayoTool::updateYMouthPositionInScene()] - y ->" << y;
     #endif
 
     mouth->setPos(mouth->pos().x(), y);
@@ -651,7 +652,7 @@ void PapagayoTool::updateYMouthPositionInScene(int y)
 void PapagayoTool::updateRotationInScene(int angle)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PapagayoTool::updateRotationInScene()] - angle -> " << angle;
+        qDebug() << "[PapagayoTool::updateRotationInScene()] - angle ->" << angle;
     #endif
 
     if (nodesManager) {
@@ -696,7 +697,7 @@ void PapagayoTool::updatePositionRecord(const QPointF &point)
 void PapagayoTool::updateRotationAngleRecord(int angle)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PapagayoTool::updateRotationAngleRecord()] - angle -> " << angle;
+        qDebug() << "[PapagayoTool::updateRotationAngleRecord()] - angle ->" << angle;
     #endif
 
     configPanel->updateRotationAngle(angle);
@@ -722,10 +723,10 @@ void PapagayoTool::enableProportion(bool flag)
 void PapagayoTool::enableTransformationForward(int flag)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PapagayoTool::enableTransformationForward()] - flag -> " << flag;
+        qDebug() << "[PapagayoTool::enableTransformationForward()] - flag ->" << flag;
     #endif
 
-    if (flag == Qt::Checked)
+    if (flag == 0) // Forward option is selected
         forwardFlag = true;
     else
         forwardFlag = false;
@@ -768,7 +769,7 @@ void PapagayoTool::updateMouthTransformation()
             int layerIndex = tupScene->getLipSyncLayerIndex(currentLipSync->getLipSyncName());
 
             #ifdef TUP_DEBUG
-                qDebug() << "[PapagayoTool::updateMouthTransformation()] - layerIndex -> " << layerIndex;
+                qDebug() << "[PapagayoTool::updateMouthTransformation()] - layerIndex ->" << layerIndex;
             #endif
 
             TupProjectRequest request;

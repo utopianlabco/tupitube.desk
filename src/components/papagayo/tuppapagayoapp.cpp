@@ -521,7 +521,7 @@ void TupPapagayoApp::setupMenus()
 void TupPapagayoApp::openFile(QString filePath)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupPapagayoApp::openFile()] - filePath -> " << filePath;
+        qDebug() << "[TupPapagayoApp::openFile()] - filePath ->" << filePath;
     #endif
 
     QFileInfo info(filePath);
@@ -643,7 +643,7 @@ bool TupPapagayoApp::confirmCloseDocument()
 void TupPapagayoApp::updateLanguage(int index)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupPapagayoApp::updateLanguage()] - index -> " << index;
+        qDebug() << "[TupPapagayoApp::updateLanguage()] - index ->" << index;
     #endif
 
     if (index == English) {
@@ -1383,7 +1383,9 @@ bool TupPapagayoApp::saveLipsyncRecord()
         QFile projectFile(pgoFilePath);
         if (projectFile.exists()) {
             if (projectFile.size() > 0) {
-                frameIndex = initFrameBox->value();
+                frameIndex = initFrameBox->value() - 1;
+                if (frameIndex < 0)
+                    frameIndex = 0;
                 QDir dir(currentMouthPath);
                 QStringList imagesList = dir.entryList(QStringList() << "*.png" << "*.jpg" << "*.jpeg");
                 if (imagesList.size() > 0) {
@@ -1547,13 +1549,12 @@ bool TupPapagayoApp::saveLipsyncRecord()
                                               emit requestTriggered(&request);
                                          }
                                     }
-
-                                    QString selection = QString::number(layerIndex) + "," + QString::number(layerIndex) + ","
-                                                        + QString::number(frameIndex) + "," + QString::number(frameIndex);
-
-                                    request = TupRequestBuilder::createFrameRequest(sceneIndex, layerIndex, frameIndex, TupProjectRequest::Select, selection);
-                                    emit requestTriggered(&request);
                                 }
+
+                                QString selection = QString::number(layerIndex) + "," + QString::number(layerIndex) + ","
+                                                    + QString::number(frameIndex) + "," + QString::number(frameIndex);
+                                request = TupRequestBuilder::createFrameRequest(sceneIndex, layerIndex, frameIndex, TupProjectRequest::Select, selection);
+                                emit requestTriggered(&request);
                             }
 
                             TOsd::self()->display(TOsd::Info, tr("Papagayo file has been imported successfully"));

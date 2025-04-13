@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Utopian Lab Development Team                                             *
+ *    Utopian Lab Development Team                                         *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -297,6 +297,15 @@ int TupAudioMixer::initFilterGraph()
         }
 
         int delayTime = soundMixerList.at(i).playAt;
+        if (delayTime < 0)
+        {
+            #ifdef TUP_DEBUG
+                qWarning() << "[TupAudioMixer::initFilterGraph()] - "
+                              "Warning: delayTime variable has a negative value -> " + delayTime;
+            #endif
+            delayTime = 0;
+        }
+
         AVFilterContext *adelayContext;
         args = "delays=" + QString::number(delayTime) + ":all=1";
         QByteArray bt = args.toUtf8();

@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Utopian Lab Development Team                                             *
+ *    Utopian Lab Development Team                                         *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -46,6 +46,7 @@
 #include <QDoubleSpinBox>
 #include <QCheckBox>
 #include <QTextEdit>
+#include <QComboBox>
 
 /**
  * @author Gustav Gonzalez 
@@ -70,7 +71,7 @@ class TUPITUBE_PLUGIN PapagayoSettings : public QWidget
         void updateRotationAngle(int angle);
         void updateScaleFactor(double x, double y);
 
-        void setProportionState(int flag);
+        void setProportionState(int flag);        
 
     signals:
         void initFrameHasChanged(int index);
@@ -84,7 +85,7 @@ class TUPITUBE_PLUGIN PapagayoSettings : public QWidget
 
         void objectHasBeenReset();
         void proportionActivated(bool flag);
-        void forwardActivated(int flag);
+        void notifyForwardFlagUpdated(int flag);
 
     private slots:
         void updateInitFrame(int index);
@@ -93,6 +94,7 @@ class TUPITUBE_PLUGIN PapagayoSettings : public QWidget
         void notifyXScale(double factor);
         void notifyYScale(double factor);
         void enableProportion(int flag);
+        void updateForwardFlag(int flag);
 
     private:
         void setInnerForm();
@@ -114,7 +116,8 @@ class TUPITUBE_PLUGIN PapagayoSettings : public QWidget
         QDoubleSpinBox *factorXField;
         QDoubleSpinBox *factorYField;
         QCheckBox *propCheck;
-        QCheckBox *forwardCheck;
+        QComboBox *forwardCombo;
+        int forwardFlag;
 
         QString name;
         int initFrame;

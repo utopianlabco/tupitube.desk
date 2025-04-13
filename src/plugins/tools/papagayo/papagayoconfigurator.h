@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Utopian Lab Development Team                                             *
+ *    Utopian Lab Development Team                                         *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -93,7 +93,7 @@ class TUPITUBE_PLUGIN PapagayoConfigurator : public QFrame
 
         void objectHasBeenReset();
         void proportionActivated(bool flag);
-        void forwardActivated(int);
+        void notifyForwardFlagUpdated(int);
 
     private slots:
         void editCurrentLipSync(const QString &name);

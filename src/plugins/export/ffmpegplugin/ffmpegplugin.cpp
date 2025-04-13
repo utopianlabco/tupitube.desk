@@ -5,7 +5,7 @@
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
- *    Utopian Lab Development Team                                             *
+ *    Utopian Lab Development Team                                         *
  *   2010:                                                                 *
  *    Gustav Gonzalez                                                      *
  *   ---                                                                   *
@@ -412,11 +412,20 @@ void FFmpegPlugin::loadSoundMixerList(int fps)
                     if (soundSceneIndex == sceneIndex) {
                         QList<int> frames = scene.frames;
                         foreach(int frameIndex, frames) {
-                            float millisecs = ((float) (frameIndex-1) / (float) fps) * 1000;
-                            millisecs += scenesDuration.at(sceneIndexCounter);
                             SoundMixerItem mixerItem;
                             mixerItem.audioIndex = resourceIndex;
-                            mixerItem.playAt = millisecs;
+
+                            float millisecs = ((float) (frameIndex-1) / (float) fps) * 1000;
+                            millisecs += scenesDuration.at(sceneIndexCounter);
+                            if (millisecs >= 0) {
+                                mixerItem.playAt = millisecs;
+                            } else {
+                                #ifdef TUP_DEBUG
+                                    qDebug() << "[FFmpegPlugin::loadSoundMixerList()] - "
+                                                "Warning: millisecs variable has a negative value ->" << millisecs;
+                                #endif
+                                mixerItem.playAt = 0;
+                            }
 
                             soundMixerList << mixerItem;
                         }

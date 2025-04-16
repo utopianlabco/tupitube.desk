@@ -1145,7 +1145,7 @@ void TupGraphicsScene::addLipSyncObjects(TupLayer *layer, int photogram, int zVa
                                      QDomElement properties = phoneme->getTransformationDom();
                                      TupSerializer::loadProperties(item, properties);
 
-                                     item->setToolTip(tr("lipsync:") + name);
+                                     item->setToolTip("lipsync:" + name);
                                      item->setZValue(zValue);
                                      qreal opacity = layer->getOpacity();
                                      if (opacity >= 0 && opacity <= 1) {
@@ -1193,7 +1193,7 @@ void TupGraphicsScene::addLipSyncObjects(TupLayer *layer, int photogram, int zVa
                                          item->moveBy(-x, -y);
                                          */
 
-                                         item->setToolTip(tr("lipsync:") + name);
+                                         item->setToolTip("lipsync:" + name);
                                          item->setZValue(zValue);
                                          addItem(item);
                                      } else {

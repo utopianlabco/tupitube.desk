@@ -302,7 +302,7 @@ void PapagayoTool::removeCurrentLipSync(const QString &lipsyncName)
     foreach (QGraphicsItem *item, view->scene()->items()) {
         QString tip = item->toolTip();
         if (tip.length() > 0) {
-            if (tip.startsWith(tr("lipsync:") + lipsyncName))
+            if (tip.startsWith("lipsync:" + lipsyncName))
                 scene->removeItem(item);
         }
     }

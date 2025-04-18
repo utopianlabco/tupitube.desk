@@ -383,13 +383,42 @@ void TupPaintAreaBase::drawForeground(QPainter *painter, const QRectF &rect)
 
                             // if enabled draw grid
                             if (gridEnabled) {
+//                                painter->setPen(gridPen);
+//                                int maxX = static_cast<int> (width + 100);
+//                                int maxY = static_cast<int> (height + 100);
+//                                for (int i = -100; i <= maxX; i += gridSeparation)
+//                                     painter->drawLine(i, -100, i, maxY);
+//                                for (int i = -100; i <= maxY; i += gridSeparation)
+//                                     painter->drawLine(-100, i, maxX, i);
+
+                                int midX = width / 2;
+                                int midY = height / 2;
+                                int minX = midX - (width/2);
+                                int maxX = midX + (width/2);
+                                int minY = midY - (height/2);
+                                int maxY = midY + (height/2);
+
                                 painter->setPen(gridPen);
-                                int maxX = static_cast<int> (width + 100);
-                                int maxY = static_cast<int> (height + 100);
-                                for (int i = -100; i <= maxX; i += gridSeparation)
-                                     painter->drawLine(i, -100, i, maxY);
-                                for (int i = -100; i <= maxY; i += gridSeparation)
-                                     painter->drawLine(-100, i, maxX, i);
+
+                                int initX = midX - gridSeparation;
+                                for (int i=initX; i > minX; i -= gridSeparation)
+                                     painter->drawLine(i, minY, i, maxY);
+
+                                initX = midX + gridSeparation;
+                                for (int i=initX; i < maxX; i += gridSeparation)
+                                     painter->drawLine(i, minY, i, maxY);
+
+                                int initY = midY - gridSeparation;
+                                for (int i=initY; i > minY; i -= gridSeparation)
+                                     painter->drawLine(minX, i, maxX, i);
+
+                                initY = midY + gridSeparation;
+                                for (int i=initY; i < maxY; i += gridSeparation)
+                                     painter->drawLine(minX, i, maxX, i);
+
+                                painter->setPen(gridAxisPen);
+                                painter->drawLine(midX, minY, midX, maxY);
+                                painter->drawLine(minX, midY, maxX, midY);
                             }
 
                             // if enabled action safe area
@@ -549,11 +578,14 @@ void TupPaintAreaBase::updateCenter(const QPoint point)
 void TupPaintAreaBase::updateGridParameters()
 {
     TCONFIG->beginGroup("PaintArea");
-    QString colorName = TCONFIG->value("GridColor", "#0000b4").toString();
-    QColor gridColor(colorName);
+    QString gridColorName = TCONFIG->value("GridColor", "#0000b4").toString();
+    QString gridAxisColorName = TCONFIG->value("GridAxisColor", "#0000b4").toString();
+    QColor gridColor(gridColorName);
+    QColor gridAxisColor(gridAxisColorName);
     gridColor.setAlpha(50);
 
     gridPen = QPen(gridColor, TCONFIG->value("GridLineThickness", "1").toInt());
+    gridAxisPen = QPen(gridAxisColor, TCONFIG->value("GridLineThickness", "1").toInt());
     gridSeparation = TCONFIG->value("GridSeparation", "10").toInt();
 }
 

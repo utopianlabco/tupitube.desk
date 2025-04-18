@@ -94,7 +94,7 @@ void TupVideoSurface::loadGridParameters()
 
     int thickness = TCONFIG->value("GridLineThickness", "1").toInt();
     gridPen = QPen(gridColor, thickness);
-    gridAxesPen = QPen(Qt::black, thickness);
+    gridAxisPen = QPen(Qt::black, thickness);
     gridSeparation = TCONFIG->value("GridSeparation", "10").toInt();
 }
 
@@ -225,16 +225,6 @@ void TupVideoSurface::paint(QPainter *painter)
         int maxY = midY + (height/2);
 
         if (grid) {
-            /*
-            painter->setPen(gridPen);
-            int maxX = static_cast<int> (width + 100);
-            int maxY = static_cast<int> (height + 100);
-            for (int i = -100; i <= maxX; i += gridSeparation)
-                 painter->drawLine(i, -100, i, maxY);
-            for (int i = -100; i <= maxY; i += gridSeparation)
-                 painter->drawLine(-100, i, maxX, i);
-            */
-
             painter->setPen(gridPen);
 
             int initX = midX - gridSeparation;
@@ -253,7 +243,7 @@ void TupVideoSurface::paint(QPainter *painter)
             for (int i=initY; i < maxY; i += gridSeparation)
                  painter->drawLine(minX, i, maxX, i);
 
-            painter->setPen(gridAxesPen);
+            painter->setPen(gridAxisPen);
             painter->drawLine(midX, minY, midX, maxY);
             painter->drawLine(minX, midY, maxX, midY);
         }
@@ -449,7 +439,7 @@ void TupVideoSurface::updateGridLineThickness(int thickness)
 {
     gridLineThickness = thickness;
     gridPen.setWidth(thickness);
-    gridAxesPen.setWidth(thickness);
+    gridAxisPen.setWidth(thickness);
     videoIF->updateVideo();
 }
 

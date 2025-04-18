@@ -58,6 +58,7 @@ class TUPITUBE_EXPORT TupPaintAreaPreferences : public QWidget
 
     private slots:
         void setGridColor();
+        void setGridAxisColor();
         void setRotColor();
         void setSafeAreaRectColor();
         void setSafeAreaLineColor();
@@ -73,11 +74,13 @@ class TUPITUBE_EXPORT TupPaintAreaPreferences : public QWidget
     private:
         QTabWidget *tabWidget;
         QColor gridColor;
+        QColor gridAxisColor;
         QColor rotColor;
         QColor safeAreaRectColor;
         QColor safeAreaLineColor;
 
         QPushButton *gridColorButton;
+        QPushButton *gridAxisColorButton;
         QSpinBox *gridSeparation;
         QSpinBox *gridThickness;
 

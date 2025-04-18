@@ -99,7 +99,7 @@ class TUPITUBE_EXPORT TupVideoSurface: public QAbstractVideoSurface
 
         QColor gridColor;
         QPen gridPen;
-        QPen gridAxesPen;
+        QPen gridAxisPen;
         int gridSeparation;
         int gridLineThickness;
 

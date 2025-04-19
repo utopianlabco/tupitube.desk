@@ -184,7 +184,7 @@ void TupCameraWindow::paintEvent(QPaintEvent *event)
 void TupCameraWindow::takePicture(int i)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupCameraWindow::takePicture()] - i -> " << i;
+        qDebug() << "[TupCameraWindow::takePicture()] - i ->" << i;
     #endif
 
     QString prev = "pic";
@@ -214,6 +214,19 @@ void TupCameraWindow::imageSavedFromCamera(int id, const QString path)
 
     if (path.isEmpty())
         return;
+
+    // Rotate image if camera is flipped
+    int rotation = videoSurface->getCurrentFlipValue();
+    if (rotation == 180) {
+        QImage image(path);
+        image = image.mirrored();
+        if (!image.save(path, "JPG")) {
+            #ifdef TUP_DEBUG
+                qWarning() << "[TupCameraWindow::takePicture()] - Error while saving picture at path ->" << path;
+            #endif
+            return;
+        }
+    }
 
     emit pictureHasBeenSelected(counter, path);
     videoSurface->setLastImage(QImage(path));

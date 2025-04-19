@@ -468,3 +468,8 @@ void TupVideoSurface::flipSurface()
     else
         rotation = 0;
 }
+
+int TupVideoSurface::getCurrentFlipValue()
+{
+    return rotation;
+}

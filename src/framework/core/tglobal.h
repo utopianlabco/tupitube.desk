@@ -86,7 +86,7 @@ enum MediaType {Video = 0, Audio};
 enum SoundType {NoSound = 0, Lipsync = 1, Effect = 2};
 
 struct SoundScene {
-    int sceneIndex;
+    int sceneIndex = 0;
     QList<int> frames;
 };
 

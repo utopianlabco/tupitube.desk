@@ -87,7 +87,8 @@ TupNewsDialog::~TupNewsDialog()
     #endif
 }
 
-void TupNewsDialog::setSource(const QString &releasePath, const QString &newsPath)
+// void TupNewsDialog::setSource(const QString &releasePath, const QString &newsPath)
+void TupNewsDialog::setSource(const QString &releasePath)
 {
     QStringList path;
 

@@ -680,10 +680,10 @@ void TupMainWindow::checkTupiTubeUpdates()
 
     QString mainPath = QDir::homePath() + "/." + QCoreApplication::applicationName() + "/";
     QString releasePath = mainPath + "release.html";
-    QString newsPath = mainPath + "news.html";
+    // QString newsPath = mainPath + "news.html";
 
     newsDialog = new TupNewsDialog(this);
-    newsDialog->setSource(releasePath, newsPath);
+    newsDialog->setSource(releasePath);
     newsDialog->show();
 }
 

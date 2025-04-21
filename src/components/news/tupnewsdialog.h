@@ -51,7 +51,8 @@ class TUPITUBE_EXPORT TupNewsDialog : public QDialog
         ~TupNewsDialog();
 
     public slots:
-        void setSource(const QString &releasePath, const QString &newsPath);
+        // void setSource(const QString &releasePath, const QString &newsPath);
+        void setSource(const QString &releasePath);
 
     private:
         QTextBrowser *releasePage;

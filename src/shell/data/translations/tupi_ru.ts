@@ -1024,11 +1024,6 @@
         <translation>Ctrl+Shift+P</translation>
     </message>
     <message>
-        <location filename="../../../plugins/tools/papagayo/papagayotool.cpp" line="305"/>
-        <source>lipsync:</source>
-        <translation>Синхронизация движения губ:</translation>
-    </message>
-    <message>
         <location filename="../../../plugins/tools/papagayo/papagayotool.cpp" line="553"/>
         <source>Frame</source>
         <translation>Кадр</translation>
@@ -4119,15 +4114,6 @@ until reaches at least 3 seconds.</source>
     </message>
 </context>
 <context>
-    <name>TupGraphicsScene</name>
-    <message>
-        <location filename="../../../libbase/tupgraphicsscene.cpp" line="1148"/>
-        <location filename="../../../libbase/tupgraphicsscene.cpp" line="1196"/>
-        <source>lipsync:</source>
-        <translation>синхронизация губ:</translation>
-    </message>
-</context>
-<context>
     <name>TupImageDialog</name>
     <message>
         <location filename="../../../components/workspace/tupimagedialog.cpp" line="46"/>
@@ -6014,12 +6000,12 @@ until reaches at least 3 seconds.</source>
         <translation>Заблокирован!</translation>
     </message>
     <message>
-        <location filename="../../../libbase/tuppaintareabase.cpp" line="404"/>
+        <location filename="../../../libbase/tuppaintareabase.cpp" line="433"/>
         <source>No Frames!</source>
         <translation>Отсутствуют кадры!</translation>
     </message>
     <message>
-        <location filename="../../../libbase/tuppaintareabase.cpp" line="407"/>
+        <location filename="../../../libbase/tuppaintareabase.cpp" line="436"/>
         <source>No Layers!</source>
         <translation>Отсутствуют слои!</translation>
     </message>
@@ -6057,49 +6043,54 @@ until reaches at least 3 seconds.</source>
         <translation>Параметры пользовательского интерфейса</translation>
     </message>
     <message>
-        <location filename="../../../libui/tuppaintareapreferences.cpp" line="121"/>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="124"/>
         <source>Grid Color:</source>
         <translation>Цвет сетки:</translation>
     </message>
     <message>
-        <location filename="../../../libui/tuppaintareapreferences.cpp" line="128"/>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="131"/>
+        <source>Grid Axis Color:</source>
+        <translation>Цвет оси сетки:</translation>
+    </message>
+    <message>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="138"/>
         <source>Grid Separation:</source>
         <translation>Шаг сетки:</translation>
     </message>
     <message>
-        <location filename="../../../libui/tuppaintareapreferences.cpp" line="135"/>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="145"/>
         <source>Grid Line Thickness:</source>
         <translation>Толщина линий сетки:</translation>
     </message>
     <message>
-        <location filename="../../../libui/tuppaintareapreferences.cpp" line="154"/>
-        <location filename="../../../libui/tuppaintareapreferences.cpp" line="190"/>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="164"/>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="200"/>
         <source>Line Color:</source>
         <translation>Цвет линий:</translation>
     </message>
     <message>
-        <location filename="../../../libui/tuppaintareapreferences.cpp" line="161"/>
-        <location filename="../../../libui/tuppaintareapreferences.cpp" line="197"/>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="171"/>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="207"/>
         <source>Line Thickness:</source>
         <translation>Толщина линий:</translation>
     </message>
     <message>
-        <location filename="../../../libui/tuppaintareapreferences.cpp" line="183"/>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="193"/>
         <source>Rect Color:</source>
         <translation>Цвет прямоугольника:</translation>
     </message>
     <message>
-        <location filename="../../../libui/tuppaintareapreferences.cpp" line="204"/>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="214"/>
         <source>Safe Area Level:</source>
-        <translation>安全區域等級:</translation>
+        <translation>Уровень безопасной зоны:</translation>
     </message>
     <message>
-        <location filename="../../../libui/tuppaintareapreferences.cpp" line="206"/>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="216"/>
         <source>Background</source>
         <translation>Фон</translation>
     </message>
     <message>
-        <location filename="../../../libui/tuppaintareapreferences.cpp" line="207"/>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="217"/>
         <source>Foreground</source>
         <translation>Передний план</translation>
     </message>

@@ -800,10 +800,6 @@
         <translation>帧</translation>
     </message>
     <message>
-        <source>lipsync:</source>
-        <translation>唇型同步校正</translation>
-    </message>
-    <message>
         <source>Ctrl+Shift+P</source>
         <translation>Ctrl+Shift+P</translation>
     </message>
@@ -3242,13 +3238,6 @@ until reaches at least 3 seconds.</source>
     </message>
 </context>
 <context>
-    <name>TupGraphicsScene</name>
-    <message>
-        <source>lipsync:</source>
-        <translation>唇型同步校正</translation>
-    </message>
-</context>
-<context>
     <name>TupImageDialog</name>
     <message>
         <source>Title</source>
@@ -4789,6 +4778,10 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Foreground</source>
         <translation>前景</translation>
+    </message>
+    <message>
+        <source>Grid Axis Color:</source>
+        <translation>网格轴颜色：</translation>
     </message>
 </context>
 <context>

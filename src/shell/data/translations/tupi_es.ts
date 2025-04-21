@@ -1024,11 +1024,6 @@
         <translation>Ctrl+Shift+P</translation>
     </message>
     <message>
-        <location filename="../../../plugins/tools/papagayo/papagayotool.cpp" line="305"/>
-        <source>lipsync:</source>
-        <translation>lipsync:</translation>
-    </message>
-    <message>
         <location filename="../../../plugins/tools/papagayo/papagayotool.cpp" line="553"/>
         <source>Frame</source>
         <translation>Marco</translation>
@@ -4119,15 +4114,6 @@ until reaches at least 3 seconds.</source>
     </message>
 </context>
 <context>
-    <name>TupGraphicsScene</name>
-    <message>
-        <location filename="../../../libbase/tupgraphicsscene.cpp" line="1148"/>
-        <location filename="../../../libbase/tupgraphicsscene.cpp" line="1196"/>
-        <source>lipsync:</source>
-        <translation>lipsync:</translation>
-    </message>
-</context>
-<context>
     <name>TupImageDialog</name>
     <message>
         <location filename="../../../components/workspace/tupimagedialog.cpp" line="46"/>
@@ -6014,12 +6000,12 @@ until reaches at least 3 seconds.</source>
         <translation>Bloqueado!</translation>
     </message>
     <message>
-        <location filename="../../../libbase/tuppaintareabase.cpp" line="404"/>
+        <location filename="../../../libbase/tuppaintareabase.cpp" line="433"/>
         <source>No Frames!</source>
         <translation>No hay marcos!</translation>
     </message>
     <message>
-        <location filename="../../../libbase/tuppaintareabase.cpp" line="407"/>
+        <location filename="../../../libbase/tuppaintareabase.cpp" line="436"/>
         <source>No Layers!</source>
         <translation>No hay capas!</translation>
     </message>
@@ -6039,17 +6025,17 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../libui/tuppaintareapreferences.cpp" line="85"/>
         <source>Rule Of Thirds Settings</source>
-        <translation>Configuración Regla De Tercios</translation>
+        <translation>Configuración Regla de Tercios</translation>
     </message>
     <message>
         <location filename="../../../libui/tuppaintareapreferences.cpp" line="80"/>
         <source>Safe Area Settings</source>
-        <translation>Configuración Área De Seguridad</translation>
+        <translation>Configuración Área de Seguridad</translation>
     </message>
     <message>
         <location filename="../../../libui/tuppaintareapreferences.cpp" line="95"/>
         <source>Restore Default Values</source>
-        <translation>Restaurar Valores Por Omisión</translation>
+        <translation>Restaurar Valores por Omisión</translation>
     </message>
     <message>
         <location filename="../../../libui/tuppaintareapreferences.cpp" line="105"/>
@@ -6057,49 +6043,54 @@ until reaches at least 3 seconds.</source>
         <translation>Configuración Interfaz</translation>
     </message>
     <message>
-        <location filename="../../../libui/tuppaintareapreferences.cpp" line="121"/>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="124"/>
         <source>Grid Color:</source>
-        <translation>Color De Malla:</translation>
+        <translation>Color de Malla:</translation>
     </message>
     <message>
-        <location filename="../../../libui/tuppaintareapreferences.cpp" line="128"/>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="131"/>
+        <source>Grid Axis Color:</source>
+        <translation>Color de Eje de Malla:</translation>
+    </message>
+    <message>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="138"/>
         <source>Grid Separation:</source>
-        <translation>Separación De Malla:</translation>
+        <translation>Separación de Malla:</translation>
     </message>
     <message>
-        <location filename="../../../libui/tuppaintareapreferences.cpp" line="135"/>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="145"/>
         <source>Grid Line Thickness:</source>
-        <translation>Grosor De Línea De La Grilla:</translation>
+        <translation>Grosor de Línea de la Grilla:</translation>
     </message>
     <message>
-        <location filename="../../../libui/tuppaintareapreferences.cpp" line="154"/>
-        <location filename="../../../libui/tuppaintareapreferences.cpp" line="190"/>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="164"/>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="200"/>
         <source>Line Color:</source>
-        <translation>Color De Línea:</translation>
+        <translation>Color de Línea:</translation>
     </message>
     <message>
-        <location filename="../../../libui/tuppaintareapreferences.cpp" line="161"/>
-        <location filename="../../../libui/tuppaintareapreferences.cpp" line="197"/>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="171"/>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="207"/>
         <source>Line Thickness:</source>
-        <translation>Grosor De Línea:</translation>
+        <translation>Grosor de Línea:</translation>
     </message>
     <message>
-        <location filename="../../../libui/tuppaintareapreferences.cpp" line="183"/>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="193"/>
         <source>Rect Color:</source>
-        <translation>Color De Rectángulo:</translation>
+        <translation>Color de Rectángulo:</translation>
     </message>
     <message>
-        <location filename="../../../libui/tuppaintareapreferences.cpp" line="204"/>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="214"/>
         <source>Safe Area Level:</source>
         <translation>Nivel del Área de Seguridad:</translation>
     </message>
     <message>
-        <location filename="../../../libui/tuppaintareapreferences.cpp" line="206"/>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="216"/>
         <source>Background</source>
         <translation>Fondo</translation>
     </message>
     <message>
-        <location filename="../../../libui/tuppaintareapreferences.cpp" line="207"/>
+        <location filename="../../../libui/tuppaintareapreferences.cpp" line="217"/>
         <source>Foreground</source>
         <translation>Primer Plano</translation>
     </message>

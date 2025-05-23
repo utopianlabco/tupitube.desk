@@ -97,11 +97,11 @@ TMovieGeneratorInterface::Format FFmpegPlugin::videoFormat(TupExportInterface::F
     }
 }
 
-bool FFmpegPlugin::exportToFormat(const QColor bgColor, const QString &filePath, const QList<TupScene *> &scenes,
+bool FFmpegPlugin::exportToFormat(int colorAlpha, const QString &filePath, const QList<TupScene *> &scenes,
                                   TupExportInterface::Format fmt, const QSize &size, const QSize &newSize, int fps,
                                   TupProject *project, bool waterMark)
 {
-    Q_UNUSED(bgColor)
+    Q_UNUSED(colorAlpha)
     Q_UNUSED(newSize)
     #ifdef TUP_DEBUG
         qDebug() << "[FFmpegPlugin::exportToFormat()] - fps ->" << fps;

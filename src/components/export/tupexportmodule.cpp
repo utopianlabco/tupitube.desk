@@ -37,7 +37,6 @@
 #include "tconfig.h"
 #include "tosd.h"
 #include "tupexportpluginobject.h"
-
 #include <QGroupBox>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -232,9 +231,12 @@ void TupExportModule::setCurrentFormat(TupExportInterface::Format format, const 
         filename += m_project->getName();
         filename += extension;
     } else { // Images Array
-        if (m_currentFormat == TupExportInterface::JPEG) {
-            if (bgTransparency->isVisible())
+        if (m_currentFormat == TupExportInterface::JPEG || m_currentFormat == TupExportInterface::SVG) {
+            qDebug() << "FLAG 1";
+            // if (bgTransparency->isVisible()) {
                 bgTransparency->setVisible(false);
+                qDebug() << "FLAG 2";
+            // }
         } else {
             if (!bgTransparency->isVisible())
                 bgTransparency->setVisible(true);
@@ -342,16 +344,19 @@ void TupExportModule::exportIt()
             return;
         }
 
-        filename = path + "/" + name;
-
-        if (QFile::exists(QString(filename + "0000" + extension))) {
+        QDir imagesDir(path);
+        bool folderIsEmpty = imagesDir.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries).isEmpty();
+        if (!folderIsEmpty) {
             QMessageBox::StandardButton reply;
-            reply = QMessageBox::question(this, tr("Warning!"), tr("Image sequence already exists. Overwrite it?"),
+            reply = QMessageBox::question(this, tr("Warning!"), tr("Target folder already contains images. Continue?"),
                                           QMessageBox::Yes | QMessageBox::No);
 
             if (reply == QMessageBox::No)
                 return;
         }
+
+        filename = path + "/" + name;
+
     } else { // Animation or Animated Image
         filename = m_filePath->text();
         filename = QDir::fromNativeSeparators(filename);
@@ -439,17 +444,20 @@ void TupExportModule::exportIt()
             if ((height % 2) != 0)
                 height++;
 
-            QColor color = m_project->getCurrentBgColor();
+            // QColor color = m_project->getCurrentBgColor();
+            int colorAlpha = 0;
             if (m_currentFormat == TupExportInterface::PNG || m_currentFormat == TupExportInterface::SVG) {
                 if (transparency)
-                    color.setAlpha(0);
+                    colorAlpha = 0;
+                    // color.setAlpha(0);
                 else
-                    color.setAlpha(255);
+                    colorAlpha = 255;
+                    // color.setAlpha(255);
             }
 
             // SQA: The QSize second parameter will contain the resizing value of the animation
             //      * Pending feature
-            done = m_currentExporter->exportToFormat(color, filename, scenes, m_currentFormat, 
+            done = m_currentExporter->exportToFormat(colorAlpha, filename, scenes, m_currentFormat,
                                       QSize(width, height), QSize(width, height), fps /* m_project->getFPS() */,
                                       // QSize(width, height), QSize(newWidth, newHeight), m_fps->value(),
                                       m_project);

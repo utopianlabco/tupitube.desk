@@ -5,7 +5,47 @@
     <name>BucketTool</name>
     <message>
         <source>F</source>
-        <translation>F</translation>
+        <translation>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+F</translation>
     </message>
     <message>
         <source>Sorry, only native objects can be filled</source>
@@ -2779,10 +2819,6 @@
         <translation>動畫路徑不能取消設定！ 請選擇一個。</translation>
     </message>
     <message>
-        <source>Image sequence already exists. Overwrite it?</source>
-        <translation>影像序列已存在。 覆蓋它？</translation>
-    </message>
-    <message>
         <source>was saved successful</source>
         <translation>儲存成功</translation>
     </message>
@@ -2851,6 +2887,10 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Sorry, animation is too short!</source>
         <translation>抱歉，動畫太短了！</translation>
+    </message>
+    <message>
+        <source>Target folder already contains images. Continue?</source>
+        <translation>目標資料夾已包含圖像。繼續？</translation>
     </message>
 </context>
 <context>

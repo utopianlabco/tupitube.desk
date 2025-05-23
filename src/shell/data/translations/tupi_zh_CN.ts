@@ -2779,10 +2779,6 @@
         <translation>动画路径不能取消设置！请选择一个。</translation>
     </message>
     <message>
-        <source>Image sequence already exists. Overwrite it?</source>
-        <translation>图像序列已存在。 覆盖它？</translation>
-    </message>
-    <message>
         <source>was saved successful</source>
         <translation>保存成功</translation>
     </message>
@@ -2851,6 +2847,10 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Sorry, animation is too short!</source>
         <translation>抱歉，动画太短了！</translation>
+    </message>
+    <message>
+        <source>Target folder already contains images. Continue?</source>
+        <translation>目标文件夹已包含图像。是否继续？</translation>
     </message>
 </context>
 <context>

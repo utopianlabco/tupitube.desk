@@ -52,9 +52,9 @@ TupExportInterface::Formats APNGPlugin::availableFormats()
     return TupExportInterface::APNG;
 }
 
-bool APNGPlugin::exportToFormat(const QColor color, const QString &filePath, const QList<TupScene *> &scenes, TupExportInterface::Format fmt, const QSize &size, int fps)
+bool APNGPlugin::exportToFormat(int colorAlpha, const QString &filePath, const QList<TupScene *> &scenes, TupExportInterface::Format fmt, const QSize &size, int fps)
 {
-    Q_UNUSED(color);
+    Q_UNUSED(colorAlpha);
     Q_UNUSED(filePath);
     Q_UNUSED(scenes);
     Q_UNUSED(fmt);

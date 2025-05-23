@@ -3453,156 +3453,156 @@
 <context>
     <name>TupExportModule</name>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="76"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="75"/>
         <source>Directory: </source>
         <translation>Diretório: </translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="78"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="77"/>
         <source>File: </source>
         <translation>Ficheiro: </translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="93"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="92"/>
         <source>Choose another path</source>
         <translation>Escolha outro caminho</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="104"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="103"/>
         <source>i.e. </source>
         <translation>exemplo: </translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="189"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="188"/>
         <source>Can&apos;t export project</source>
         <translation>Não é possível exportar o projeto</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="192"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="191"/>
         <source>The duration of the project is TOO SHORT to generate an accurate MP4 file.
 Please, try to export the scene several times to extend the animation duration
 until reaches at least 3 seconds.</source>
         <translation>A duração do projeto é MUITO CURTA para gerar um arquivo MP4 preciso. Por favor, tente exportar a cena várias vezes para prolongar a duração da animação até atingir pelo menos 3 segundos.</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="289"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="291"/>
         <source>Choose a directory...</source>
         <translation>Escolha um diretório...</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="349"/>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="390"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="351"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="395"/>
         <source>Warning!</source>
         <translation>Alerta!</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="349"/>
-        <source>Image sequence already exists. Overwrite it?</source>
-        <translation>Seqüência de imagens já existe. Substituí-la?</translation>
-    </message>
-    <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="391"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="396"/>
         <source>Video file exists. Overwrite it?</source>
         <translation>O arquivo de vídeo existe. Substituir?</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="403"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="408"/>
         <source>Insufficient permissions. Please, choose another directory.</source>
         <translation>Permissões insuficientes. Por favor, escolha outro diretório.</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="410"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="415"/>
         <source>Insufficient permissions. Please, choose another path.</source>
         <translation>Permissões insuficientes. Por favor, escolha outro caminho.</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="466"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="474"/>
         <source>Image sequence was saved successful</source>
         <translation>Sequência de imagens foi guardada satisfatoriamente</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="478"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="486"/>
         <source>Fatal Error: Can&apos;t export video</source>
         <translation>Erro fatal: Não é possível exportar vídeo</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="486"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="494"/>
         <source>Sorry, animation is too short!</source>
         <translation>Desculpe, a animação é muito curta!</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="65"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="64"/>
         <source>Enable Background Transparency</source>
         <translation>Ativar Transparência Do Fundo</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="73"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="72"/>
         <source>Image Name Prefix: </source>
         <translation>Prefixo Do Arquivo: </translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="264"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="266"/>
         <source>Export video as...</source>
         <translation>Exportar vídeo como...</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="265"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="267"/>
         <source>Video File</source>
         <translation>Arquivo de Vídeo</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="330"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="332"/>
         <source>Images name prefix is unset! Please, type a prefix.</source>
         <translation>O prefixo do nome das imagens não está definido! Por favor, digite um prefixo.</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="335"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="337"/>
         <source>Images path can&apos;t be unset! Please, choose one.</source>
         <translation>O caminho das imagens não está definido! Por favor, escolha um.</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="341"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="343"/>
         <source>Images path doesn&apos;t exist! Please, choose another.</source>
         <translation>O caminho das imagens não existe! Por favor escolha outro.</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="360"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="351"/>
+        <source>Target folder already contains images. Continue?</source>
+        <translation>A pasta de destino já contém imagens. Continuar?</translation>
+    </message>
+    <message>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="365"/>
         <source>Animation path is unset! Please, choose one.</source>
         <translation>O caminho de animação não está definido! Por favor, escolha um.</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="377"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="382"/>
         <source>Animation path can&apos;t be unset! Please, choose one.</source>
         <translation>O caminho de animação não está definido! Por favor, escolha um.</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="383"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="388"/>
         <source>Animation path doesn&apos;t exist! Please, choose another.</source>
         <translation>O caminho de animação não existe! Por favor escolha outro.</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="458"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="466"/>
         <source>Format problem. TupiTube Internal error.</source>
         <translation>Problema no formato. Erro interno do TupiTube.</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="464"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="472"/>
         <source>Video file</source>
         <translation>Arquivo de Vídeo</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="464"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="472"/>
         <source>was saved successful</source>
         <translation>foi guardado satisfatoriamente</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="195"/>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="482"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="194"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="490"/>
         <source>Ok</source>
         <translation>Ok</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="199"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="198"/>
         <source>Sorry, export attempt failed!</source>
         <translation>Desculpe, a tentativa de exportação falhou!</translation>
     </message>

@@ -61,15 +61,15 @@ bool TupAudioCutter::startExtraction()
     bytes = audioFilePath.toLocal8Bit();
     const char *outputFilename = bytes.data();
 
-    AVFormatContext *inputFormatContext = NULL;
-    if (avformat_open_input(&inputFormatContext, inputFilename, NULL, NULL) < 0) {
+    AVFormatContext *inputFormatContext = nullptr;
+    if (avformat_open_input(&inputFormatContext, inputFilename, nullptr, nullptr) < 0) {
         #ifdef TUP_DEBUG
             qDebug() << "[TupAudioCutter::startExtraction()] - Fatal Error: Could not open video input file!";
         #endif
         return false;
     }
 
-    if (avformat_find_stream_info(inputFormatContext, NULL) < 0) {
+    if (avformat_find_stream_info(inputFormatContext, nullptr) < 0) {
         #ifdef TUP_DEBUG
             qDebug() << "[TupAudioCutter::startExtraction()] - Fatal Error: Could not find stream information!";
         #endif
@@ -91,34 +91,34 @@ bool TupAudioCutter::startExtraction()
         return false;
     }
 
-    AVFormatContext *output_format_context = NULL;
-    avformat_alloc_output_context2(&output_format_context, NULL, NULL, outputFilename);
-    if (!output_format_context) {
+    AVFormatContext *outputFormatContext = nullptr;
+    avformat_alloc_output_context2(&outputFormatContext, nullptr, nullptr, outputFilename);
+    if (!outputFormatContext) {
         #ifdef TUP_DEBUG
             qDebug() << "[TupAudioCutter::startExtraction()] - Fatal Error: Could not create output context!";
         #endif
         return false;
     }
 
-    AVStream *out_stream = avformat_new_stream(output_format_context, NULL);
-    if (!out_stream) {
+    AVStream *outStream = avformat_new_stream(outputFormatContext, nullptr);
+    if (!outStream) {
         #ifdef TUP_DEBUG
             qDebug() << "[TupAudioCutter::startExtraction()] - Fatal Error: Failed to allocate output stream!";
         #endif
         return false;
     }
 
-    if (avcodec_parameters_copy(out_stream->codecpar, inputFormatContext->streams[audioStreamIndex]->codecpar) < 0) {
+    if (avcodec_parameters_copy(outStream->codecpar, inputFormatContext->streams[audioStreamIndex]->codecpar) < 0) {
         #ifdef TUP_DEBUG
             qDebug() << "[TupAudioCutter::startExtraction()] - Fatal Error: Failed to copy codec parameters!";
         #endif
         return false;
     }
 
-    out_stream->codecpar->codec_tag = 0;
+    outStream->codecpar->codec_tag = 0;
 
-    if (!(output_format_context->oformat->flags & AVFMT_NOFILE)) {
-        if (avio_open(&output_format_context->pb, outputFilename, AVIO_FLAG_WRITE) < 0) {
+    if (!(outputFormatContext->oformat->flags & AVFMT_NOFILE)) {
+        if (avio_open(&outputFormatContext->pb, outputFilename, AVIO_FLAG_WRITE) < 0) {
             #ifdef TUP_DEBUG
                 qDebug() << "[TupAudioCutter::startExtraction()] - Fatal Error: Could not open output file!";
             #endif
@@ -126,7 +126,7 @@ bool TupAudioCutter::startExtraction()
         }
     }
 
-    if (avformat_write_header(output_format_context, NULL) < 0) {
+    if (avformat_write_header(outputFormatContext, nullptr) < 0) {
         #ifdef TUP_DEBUG
             qDebug() << "[TupAudioCutter::startExtraction()] - Fatal Error: Error occurred when writing header!";
         #endif
@@ -136,18 +136,18 @@ bool TupAudioCutter::startExtraction()
     AVPacket packet;
     while (av_read_frame(inputFormatContext, &packet) >= 0) {
         if (packet.stream_index == audioStreamIndex) {
-            packet.stream_index = out_stream->index;
-            av_interleaved_write_frame(output_format_context, &packet);
+            packet.stream_index = outStream->index;
+            av_interleaved_write_frame(outputFormatContext, &packet);
         }
         av_packet_unref(&packet);
     }
 
-    av_write_trailer(output_format_context);
+    av_write_trailer(outputFormatContext);
 
     avformat_close_input(&inputFormatContext);
-    if (!(output_format_context->oformat->flags & AVFMT_NOFILE))
-        avio_closep(&output_format_context->pb);
-    avformat_free_context(output_format_context);
+    if (!(outputFormatContext->oformat->flags & AVFMT_NOFILE))
+        avio_closep(&outputFormatContext->pb);
+    avformat_free_context(outputFormatContext);
 
     #ifdef TUP_DEBUG
         qDebug() << "[TupAudioCutter::startExtraction()] - Process is done. Audio extracted!";

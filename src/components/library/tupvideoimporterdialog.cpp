@@ -228,6 +228,7 @@ void TupVideoImporterDialog::startExtraction()
 
     // Audio extraction
     if (audioCheck->isChecked()) {
+        progressLabel->setText(tr("Importing audio track from video file..."));
         audioPath = QDir::tempPath() + "/video_audio_" + TAlgorithm::randomString(12) + ".aac";
         TupAudioCutter *audioCutter = new TupAudioCutter(videoPath, audioPath);
         connect(audioCutter, SIGNAL(extractionIsDone(const QString &)),

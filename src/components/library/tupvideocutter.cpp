@@ -89,16 +89,6 @@ bool TupVideoCutter::loadFile(const QString &videoFile, const QString &outputPat
         return false;
     }
 
-    // Now we have access to some information about our file
-    // since we read its header we can say what format (container) it's
-    // and some other information related to the format itself.
-    #ifdef TUP_DEBUG
-        qDebug() << "[TupVideoCutter::loadFile()] - Format: " << formatContext->iformat->name
-                 << ", Duration: " << formatContext->duration
-                 << ", Bitrate: " << formatContext->bit_rate;
-        qDebug() << "[TupVideoCutter::loadFile()] - Finding stream info from format...";
-    #endif
-
     // Read Packets from the Format to get stream information
     // this function populates pFormatContext->streams
     // (of size equals to pFormatContext->nb_streams)
@@ -115,6 +105,20 @@ bool TupVideoCutter::loadFile(const QString &videoFile, const QString &outputPat
 
         return false;
     }
+
+    // Now we have access to some information about our file
+    // since we read its header we can say what format (container) it's
+    // and some other information related to the format itself.
+    #ifdef TUP_DEBUG
+        double duration = -1;
+        if (duration != AV_NOPTS_VALUE)
+            duration = formatContext->duration / (double)AV_TIME_BASE;
+
+        qDebug() << "[TupVideoCutter::loadFile()] - Format: " << formatContext->iformat->name
+                 << ", Duration: " << duration
+                 << ", Bitrate: " << formatContext->bit_rate;
+        qDebug() << "[TupVideoCutter::loadFile()] - Finding stream info from format...";
+    #endif
 
     // The component that knows how to enCOde and DECode the stream
     // it's the codec (audio or video)

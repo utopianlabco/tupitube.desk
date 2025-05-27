@@ -57,6 +57,8 @@ TupLibraryWidget::TupLibraryWidget(QWidget *parent) : TupModuleWidgetBase(parent
     renaming = false;
     mkdir = false;
     isEffectSound = false;
+    videoSoundImported = false;
+    videoSoundPath = "";
     currentMode = TupProject::FRAMES_MODE;
     nativeFromFileSystem = false;
     isExternalLibraryAsset = false;
@@ -969,7 +971,6 @@ void TupLibraryWidget::createVectorObject()
             #endif
             return;
         }
-
     }
 }
 
@@ -1743,6 +1744,17 @@ void TupLibraryWidget::importLocalSoundFile(const QString &filePath)
     importSoundFileFromFolder(filePath);
 }
 
+void TupLibraryWidget::importLocalVideoSoundFile(const QString &filePath)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupLibraryWidget::importLocalVideoSoundFile()] - filePath ->" << filePath;
+    #endif
+
+    videoSoundPath = filePath;
+    videoSoundImported = true;
+    importSoundFileFromFolder(filePath);
+}
+
 void TupLibraryWidget::importSoundFileFromFolder(const QString &filePath, const QString &folder)
 {
     #ifdef TUP_DEBUG
@@ -1782,7 +1794,7 @@ void TupLibraryWidget::importVideoFileFromFolder(const QString &videoPath)
             connect(dialog, SIGNAL(imageExtractionIsDone(ImageImportAction, const QString &, bool)),
                     SLOT(loadSequenceFromDirectory(ImageImportAction, const QString &, bool)));
             connect(dialog, SIGNAL(audioExtractionIsDone(const QString &)),
-                    SLOT(importLocalSoundFile(const QString &)));
+                    SLOT(importLocalVideoSoundFile(const QString &)));
             connect(dialog, SIGNAL(projectSizeHasChanged(const QSize)), this, SIGNAL(projectSizeHasChanged(const QSize)));
             connect(this, SIGNAL(imagesImportationDone()), dialog, SLOT(endProcedure()));
             connect(this, SIGNAL(msgSent(const QString &)), dialog, SLOT(updateStatus(const QString &)));
@@ -1994,6 +2006,32 @@ void TupLibraryWidget::libraryResponse(TupLibraryResponse *response)
                          item->setIcon(0, QIcon(THEME_DIR + "icons/sound_object.png"));
                          libraryTree->setCurrentItem(item);
                          previewItem(item);
+
+                         if (videoSoundImported && !videoSoundPath.isEmpty()) {
+                             QFile *audioFile = new QFile(videoSoundPath);
+                             if (audioFile->exists()) {
+                                 if (!audioFile->remove()) {
+                                     #ifdef TUP_DEBUG
+                                        qCritical() << "[TupLibraryWidget::libraryResponse()] - "
+                                                       "Fatal Error: Can't remove temporary video sound file! ->" << videoSoundPath;
+                                     #endif
+                                 } else {
+                                     #ifdef TUP_DEBUG
+                                        qDebug() << "[TupLibraryWidget::libraryResponse()] - "
+                                                    "Temporary video sound file has been removed successfully! ->" << videoSoundPath;
+                                     #endif
+                                 }
+                             } else {
+                                 #ifdef TUP_DEBUG
+                                    qWarning() << "[TupLibraryWidget::libraryResponse()] - "
+                                                  "Warning: Temporary video sound file doesn't exist! ->" << videoSoundPath;
+                                 #endif
+                             }
+
+                             audioFile->close();
+                             videoSoundImported = false;
+                             videoSoundPath = "";
+                         }
                        }
                      break;
                      default:

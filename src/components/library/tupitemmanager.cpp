@@ -262,7 +262,8 @@ void TupItemManager::mousePressEvent(QMouseEvent *event)
                 bool isSound = false;
                 bool isNative = false;
 
-                if ((extension.compare("OGG") == 0) || (extension.compare("MP3") == 0) || (extension.compare("WAV") == 0))
+                if ((extension.compare("OGG") == 0) || (extension.compare("MP3") == 0) ||
+                    (extension.compare("WAV") == 0) || (extension.compare("AAC") == 0))
                     isSound = true; 
                 if (extension.compare("TOBJ") == 0)
                     isNative = true; 

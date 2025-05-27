@@ -210,7 +210,7 @@ void TupSoundDialog::loadSoundFile()
     #endif
     */
 
-    QString filter = tr("Audio file") + " (*.ogg *.wav *.mp3)";
+    QString filter = tr("Audio file") + " (*.ogg *.wav *.mp3 *.aac)";
     dialog.setNameFilter(filter);
     dialog.setFileMode(QFileDialog::ExistingFile);
 

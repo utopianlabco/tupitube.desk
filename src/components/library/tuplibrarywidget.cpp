@@ -437,7 +437,8 @@ void TupLibraryWidget::insertObjectInWorkspace()
         return;
     }
 
-    if ((extension.compare("OGG") == 0) || (extension.compare("WAV") == 0) || (extension.compare("MP3") == 0)) {
+    if ((extension.compare("OGG") == 0) || (extension.compare("WAV") == 0) ||
+        (extension.compare("MP3") == 0) || (extension.compare("AAC") == 0)) {
         TOsd::self()->display(TOsd::Error, tr("It's an audio file! Please, pick a graphic object"));
         #ifdef TUP_DEBUG
             qDebug() << "[TupLibraryWidget::insertObjectInWorkspace()] - It's an audio file!";
@@ -494,7 +495,8 @@ void TupLibraryWidget::removeCurrentItem()
             type = TupLibraryObject::Svg;
         if (extension.compare("TOBJ")==0)
             type = TupLibraryObject::Item;
-        if ((extension.compare("OGG") == 0) || (extension.compare("WAV") == 0) || (extension.compare("MP3") == 0))
+        if ((extension.compare("OGG") == 0) || (extension.compare("WAV") == 0) ||
+            (extension.compare("MP3") == 0) || (extension.compare("AAC") == 0))
             type = TupLibraryObject::Audio;
     } 
 
@@ -666,6 +668,8 @@ void TupLibraryWidget::exportObject(QTreeWidgetItem *item)
                         filter += "(*.mp3)";
                     if (fileExtension.compare("WAV") == 0)
                         filter += "(*.wav)";
+                    if (fileExtension.compare("AAC") == 0)
+                        filter += "(*.aac)";
                 } else if (type == TupLibraryObject::Item) {
                     filter = tr("Native Objects") + " " + "(*.tobj)";
                 }
@@ -698,6 +702,8 @@ void TupLibraryWidget::exportObject(QTreeWidgetItem *item)
                         target += ".mp3";
                     if (fileExtension.compare("WAV") == 0 && !filename.endsWith(".WAV"))
                         target += ".wav";
+                    if (fileExtension.compare("AAC") == 0 && !filename.endsWith(".AAC"))
+                        target += ".aac";
                 } else if (type == TupLibraryObject::Item && !filename.endsWith(".TOBJ")) {
                     target += ".tobj";
                 }
@@ -1384,7 +1390,7 @@ bool TupLibraryWidget::fileIsImage(const QString &extension)
     return false;
 }
 
-void TupLibraryWidget::loadSequenceFromDirectory(ImportAction action, const QString &path, bool resizeFlag)
+void TupLibraryWidget::loadSequenceFromDirectory(ImageImportAction action, const QString &path, bool resizeFlag)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupLibraryWidget::loadSequenceFromDirectory()] - path ->" << path;
@@ -1773,8 +1779,10 @@ void TupLibraryWidget::importVideoFileFromFolder(const QString &videoPath)
         QString imagesPath = CACHE_DIR + tempFolder + "/";
         if (videoCutter->loadFile(videoPath, imagesPath)) {
             TupVideoImporterDialog *dialog = new TupVideoImporterDialog(videoPath, imagesPath, project->getDimension(), videoCutter);
-            connect(dialog, SIGNAL(extractionDone(ImportAction, const QString &, bool)),
-                    SLOT(loadSequenceFromDirectory(ImportAction, const QString &, bool)));
+            connect(dialog, SIGNAL(imageExtractionIsDone(ImageImportAction, const QString &, bool)),
+                    SLOT(loadSequenceFromDirectory(ImageImportAction, const QString &, bool)));
+            connect(dialog, SIGNAL(audioExtractionIsDone(const QString &)),
+                    SLOT(importLocalSoundFile(const QString &)));
             connect(dialog, SIGNAL(projectSizeHasChanged(const QSize)), this, SIGNAL(projectSizeHasChanged(const QSize)));
             connect(this, SIGNAL(imagesImportationDone()), dialog, SLOT(endProcedure()));
             connect(this, SIGNAL(msgSent(const QString &)), dialog, SLOT(updateStatus(const QString &)));

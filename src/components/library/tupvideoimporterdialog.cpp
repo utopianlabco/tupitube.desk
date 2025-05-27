@@ -36,10 +36,11 @@
 #include "tconfig.h"
 #include "tseparator.h"
 #include "tapptheme.h"
-// #include "talgorithm.h"
 #include "tosd.h"
 #include "tupprojectrequest.h"
 #include "tseparator.h"
+#include "talgorithm.h"
+#include "tupaudiocutter.h"
 
 #include <QPushButton>
 
@@ -63,11 +64,10 @@ TupVideoImporterDialog::TupVideoImporterDialog(const QString &filename, const QS
     setStyleSheet(TAppTheme::themeSettings());
 
     videoCutter = cutter;
-    // connect(videoCutter, SIGNAL(msgSent(const QString &)), this, SLOT(updateStatus(const QString &)));
     connect(videoCutter, SIGNAL(imageExtracted(int)), this, SLOT(updateUI(int)));
-    connect(videoCutter, SIGNAL(extractionDone()), this, SLOT(startImageImportation()));
+    connect(videoCutter, SIGNAL(imageExtractionIsDone()), this, SLOT(startImageImportation()));
 
-    imagesPath = photogramsPath;
+    assetsPath = photogramsPath;
     videoSize = videoCutter->getVideoSize();
 
     layout = new QVBoxLayout(this);
@@ -128,10 +128,15 @@ void TupVideoImporterDialog::setUI(bool fixSize)
         groupBox->setLayout(optionsBox);
 
         sizeLayout->addWidget(div);
+
         sizeLayout->addWidget(sizeLabel);
         sizeLayout->addWidget(canvasLabel);
         sizeLayout->addWidget(videoLabel);
         sizeLayout->addWidget(groupBox);
+
+        audioCheck = new QCheckBox(tr("Import audio if it's available"));
+        sizeLayout->addWidget(audioCheck);
+        sizeLayout->addWidget(div);
 
         layout->addWidget(sizeWidget);
     }
@@ -199,12 +204,12 @@ void TupVideoImporterDialog::startExtraction()
     progressWidget->setVisible(true);
     progressLabel->setText(tr("Starting procedure..."));
 
-    if (!QFile::exists(imagesPath)) {
+    if (!QFile::exists(assetsPath)) {
         QDir dir;
-        if (!dir.mkpath(imagesPath)) {
+        if (!dir.mkpath(assetsPath)) {
             #ifdef TUP_DEBUG
                 qDebug() << "[TupVideoImporterDialog::startExtraction()] - Fatal Error: Couldn't create images directory -> "
-                         << imagesPath;
+                         << assetsPath;
             #endif
             TOsd::self()->display(TOsd::Error, tr("Couldn't create temporary directory!"));
 
@@ -212,15 +217,23 @@ void TupVideoImporterDialog::startExtraction()
         }
     }
 
-    videoCutter->setPhotogramsTotal(imagesTotal);
+    videoCutter->setExtractionParams(imagesTotal);
     if (!videoCutter->startExtraction()) {
         TOsd::self()->display(TOsd::Error, tr("Can't extract photograms!"));
         videoCutter->releaseResources();
 
         return;
     }
-
     videoCutter->releaseResources();
+
+    // Audio extraction
+    if (audioCheck->isChecked()) {
+        audioPath = QDir::tempPath() + "/video_audio_" + TAlgorithm::randomString(12) + ".aac";
+        TupAudioCutter *audioCutter = new TupAudioCutter(videoPath, audioPath);
+        connect(audioCutter, SIGNAL(extractionIsDone(const QString &)),
+                this, SIGNAL(audioExtractionIsDone(const QString &)));
+        audioCutter->startExtraction();
+    }
 }
 
 void TupVideoImporterDialog::updateUI(int index)
@@ -244,7 +257,7 @@ void TupVideoImporterDialog::startImageImportation()
 
     progressLabel->setText(tr("Importing images..."));
     progressBar->setValue(0);
-    emit extractionDone(VideoAction, imagesPath, sizeFlag);
+    emit imageExtractionIsDone(VideoAction, assetsPath, sizeFlag);
 }
 
 void TupVideoImporterDialog::updateStatus(const QString &msg)
@@ -256,15 +269,15 @@ void TupVideoImporterDialog::updateStatus(const QString &msg)
 
 void TupVideoImporterDialog::endProcedure()
 {
-    QDir imgDir(imagesPath);
+    QDir imgDir(assetsPath);
     #ifdef TUP_DEBUG
-        qDebug() << "[TupVideoImporterDialog::removeTempFolder()] - Removing temporary (images) folder -> " << imagesPath;
+        qDebug() << "[TupVideoImporterDialog::removeTempFolder()] - Removing temporary (images) folder -> " << assetsPath;
     #endif
     if (imgDir.exists()) {
         if (!imgDir.removeRecursively()) {
             #ifdef TUP_DEBUG
                 qWarning() << "[TupVideoImporterDialog::removeTempFolder()] - Error: Can't remove temporary (images) folder -> "
-                           << imagesPath;
+                           << assetsPath;
             #endif
         }
     }

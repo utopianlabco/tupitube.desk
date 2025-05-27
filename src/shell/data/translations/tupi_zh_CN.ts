@@ -4962,10 +4962,6 @@ until reaches at least 3 seconds.</source>
         <translation>唇型同步项目已更新！</translation>
     </message>
     <message>
-        <source>Audio files (*.mp3 *.wav)</source>
-        <translation>音频文件 (*.mp3 *.wav)</translation>
-    </message>
-    <message>
         <source>Mouth images are unset!</source>
         <translation>口型图片未设置！</translation>
     </message>
@@ -5080,6 +5076,10 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Scene:</source>
         <translation>场景：</translation>
+    </message>
+    <message>
+        <source>Audio files (*.mp3 *.wav *.aac)</source>
+        <translation>音频文件（*.mp3 *.wav *.aac）</translation>
     </message>
 </context>
 <context>
@@ -6056,6 +6056,10 @@ Cover</source>
     <message>
         <source>Select the number of photograms to import:</source>
         <translation>选择要导入的照片数量：</translation>
+    </message>
+    <message>
+        <source>Import audio if it&apos;s available</source>
+        <translation>如果有音频，请导入</translation>
     </message>
 </context>
 <context>

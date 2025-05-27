@@ -148,7 +148,7 @@ enum ProjectDimension {
 #endif
 
 enum SafeLevel { Background = 0, Foreground };
-enum ImportAction {VideoAction=0, FolderAction};
+enum ImageImportAction {VideoAction=0, FolderAction};
 
 enum PenTool { PencilMode = 0, EraserMode };
 

@@ -32,8 +32,8 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#ifndef TUPVIDEOCUTTER_H
-#define TUPVIDEOCUTTER_H
+#ifndef TUPAUDIOCUTTER_H
+#define TUPAUDIOCUTTER_H
 
 #include "tglobal.h"
 
@@ -45,50 +45,25 @@ extern "C" {
 // Libav libraries
 #include "libavcodec/avcodec.h"
 #include "libavformat/avformat.h"
-#include "libswscale/swscale.h"
-
-// Required to create the PNG files
-#include "png.h"
 }
 #endif
 
-class TUPITUBE_EXPORT TupVideoCutter : public QObject
+class TUPITUBE_EXPORT TupAudioCutter : public QObject
 {
     Q_OBJECT
 
     public:
-        TupVideoCutter();
-        ~TupVideoCutter();
+        TupAudioCutter(const QString &inputFile, const QString &audioFile);
+        ~TupAudioCutter();
 
-        bool loadFile(const QString &videoFile, const QString &outputPath);
-        void setExtractionParams(int frames);
         bool startExtraction();
-        QSize getVideoSize() const;
-        void releaseResources();
 
     signals:
-        void imageExtracted(int index);
-        void imageExtractionIsDone();
+        void extractionIsDone(const QString &);
 
     private:
-        // Decode video packets into frames
-        int decodeVideoPacket(AVPacket *packet, AVCodecContext *codecContext, AVFrame *frame);
-        // Save a frame into a .png file
-        int saveVideoFrameToPng(AVFrame *frame, const QString &filename);
-
-        QString filename;
-        QString outputFolder;
-        int imagesTotal;
-
-        AVFormatContext *formatContext;
-        AVCodecContext *inputVideoCodecContext;
-
-        int videoStreamIndex;
-        int audioStreamIndex;
-        AVFrame *inputFrame;
-        AVPacket *inputPacket;
-
-        QSize videoSize;
+        QString videoFilePath;
+        QString audioFilePath;
 };
 
 #endif

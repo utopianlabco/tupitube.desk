@@ -4210,66 +4210,66 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <location filename="../../../components/library/tupitemmanager.cpp" line="249"/>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="403"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="404"/>
         <source>Options</source>
         <translation>Opciones</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupitemmanager.cpp" line="252"/>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="321"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="322"/>
         <source>Rename</source>
         <translation>Renombrar</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupitemmanager.cpp" line="255"/>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="324"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="325"/>
         <source>Delete</source>
         <translation>Eliminar</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="271"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="272"/>
         <source>Edit with Inkscape</source>
         <translation>Editar con Inkscape</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="281"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="282"/>
         <source>Edit with Gimp</source>
         <translation>Editar con Gimp</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="291"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="292"/>
         <source>Edit with Krita</source>
         <translation>Editar con Krita</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="301"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="302"/>
         <source>Edit with MyPaint</source>
         <translation>Editar con MyPaint</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="313"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="314"/>
         <source>Clone</source>
         <translation>Clonar</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="318"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="319"/>
         <source>Export</source>
         <translation>Exportar</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="335"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="336"/>
         <source>Open lip-sync editor</source>
         <translation>Abrir editor de lip-sync</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="344"/>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="407"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="345"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="408"/>
         <source>Create new raster item</source>
         <translation>Crear un nuevo objeto raster</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="350"/>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="412"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="351"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="413"/>
         <source>Create new svg item</source>
         <translation>Crear un nuevo objeto svg</translation>
     </message>
@@ -4375,37 +4375,37 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="198"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2124"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2130"/>
         <source>Image</source>
         <translation>Imagen</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="199"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2134"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2140"/>
         <source>Svg File</source>
         <translation>Archivo Svg</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="200"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2144"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2150"/>
         <source>Native Object</source>
         <translation>Objeto Nativo</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="201"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2129"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2135"/>
         <source>Image Sequence</source>
         <translation>Sequencia de Imágenes</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="202"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2139"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2145"/>
         <source>Svg Sequence</source>
         <translation>Secuencia SVG</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="204"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2154"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2160"/>
         <source>Video File</source>
         <translation>Archivo de Vídeo</translation>
     </message>
@@ -4426,7 +4426,7 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="333"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2190"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2196"/>
         <source>Directory</source>
         <translation>Directorio</translation>
     </message>
@@ -4447,24 +4447,24 @@ until reaches at least 3 seconds.</source>
         <translation>No hay selección activa!</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="470"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="471"/>
         <source>Do you want to remove this object from Library?</source>
         <translation>Deseas remover este objeto de la biblioteca?</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="470"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="471"/>
         <source>Confirmation</source>
         <translation>Confirmación</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="648"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="976"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="650"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="982"/>
         <source>Images</source>
         <translation>Imágenes</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="203"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2149"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2155"/>
         <source>Audio File</source>
         <translation>Audio</translation>
     </message>
@@ -4474,198 +4474,198 @@ until reaches at least 3 seconds.</source>
         <translation>Escogiste un directorio! Por favor, selecciona un objeto de la librería</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="441"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="442"/>
         <source>It&apos;s an audio file! Please, pick a graphic object</source>
         <translation>Escogiste un archivo de audio! Por favor, selecciona un objeto gráfico</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="662"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="664"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="670"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1231"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="674"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1237"/>
         <source>Native Objects</source>
         <translation>Objetos Nativos</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="675"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="679"/>
         <source>Export object...</source>
         <translation>Exportar objeto...</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="716"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="722"/>
         <source>Item exported successfully!</source>
         <translation>Objeto exportado satisfactoriamente!</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="785"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="791"/>
         <source>Couldn&apos;t create images directory!</source>
         <translation>No se pudo crear el directorio de imágenes!</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="879"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="885"/>
         <source>Couldn&apos;t create vector directory!</source>
         <translation>No se pudo crear el directorio de imágenes!</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="898"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="904"/>
         <source>TupiTube library item</source>
         <translation>Objeto de la biblioteca TupiTube</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="975"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="981"/>
         <source>Import images...</source>
         <translation>Importar imágenes...</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1434"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1440"/>
         <source>Information</source>
         <translation>Información</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1079"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1085"/>
         <source>Image is bigger than workspace.</source>
         <translation>La imagen es más grande que el área de trabajo.</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1077"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1083"/>
         <source>File:</source>
         <translation>Archivo:</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1080"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1086"/>
         <source>Do you want to resize it?</source>
         <translation>Desea redimensionarla?</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1161"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1219"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1281"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1167"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1225"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1287"/>
         <source>Cannot open file: %1</source>
         <translation>No es posible abrir archivo: %1</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1170"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1176"/>
         <source>Import SVG files...</source>
         <translation>Importar archivos SVG...</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1171"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1177"/>
         <source>Vector</source>
         <translation>Vectorial</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1230"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1236"/>
         <source>Import objects...</source>
         <translation>Importar objetos...</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1295"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1301"/>
         <source>Frame</source>
         <translation>Marco</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1317"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1323"/>
         <source>Choose the images directory...</source>
         <translation>Escoge el directorio de imágenes...</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1416"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1422"/>
         <source>Image files found: %1.</source>
         <translation>Archivos de imágenes encontrados: %1.</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1427"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1433"/>
         <source>Files are too big, so they will be resized.</source>
         <translation>Los archivos son demasiado grandes, serán redimensionados.</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1428"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1434"/>
         <source>Note: This task can take a while.</source>
         <translation>Nota: Este procedimiento puede tomar algún tiempo.</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1437"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1583"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1443"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1589"/>
         <source>Do you want to continue?</source>
         <translation>Deseas continuar?</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1367"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1634"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1373"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1640"/>
         <source>ERROR!</source>
         <translation>ERROR!</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1368"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1634"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1374"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1640"/>
         <source>ERROR: Can&apos;t open file %1. Please, check file permissions and try again.</source>
         <translation>ERROR: No se puede abrir el archivo %1. Por favor, revisa los permisos de archivo e intenta de nuevo.</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1410"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1416"/>
         <source>No image files were found.&lt;br/&gt;Please, try another directory</source>
         <translation>Ninguna imagen fue encontrada.&lt;br/&gt;Por favor, intenta con otro directorio</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1484"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1490"/>
         <source>Video</source>
         <translation>Vídeo</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1493"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1499"/>
         <source>Importing image %1 of %2</source>
         <translation>Importando imagen %1 de %2</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1549"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1555"/>
         <source>Choose the SVG files directory...</source>
         <translation>Escoge el directorio de archivos SVG...</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1576"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1582"/>
         <source>%1 SVG files will be loaded.</source>
         <translation>%1 archivos SVG serán cargados.</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1580"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1586"/>
         <source>Question</source>
         <translation>Pregunta</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1650"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1656"/>
         <source>No SVG files were found.&lt;br/&gt;Please, try another directory</source>
         <translation>Ningún archivo SVG fue encontrado.&lt;br/&gt;Por favor, intenta con otro directorio</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1679"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1685"/>
         <source>Choose a video file...</source>
         <translation>Escoge un archivo de vídeo...</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1712"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1718"/>
         <source>Couldn&apos;t create temporary directory!</source>
         <translation>No se pudo crear el directorio temporal!</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1784"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1790"/>
         <source>Can&apos;t load video file!</source>
         <translation>No se pudo cargar el archivo de vídeo!</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1787"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1793"/>
         <source>Video file is larger than 2 MB. Too big!</source>
         <translation>El tamaño del vídeo es superior a 2 MB. Demasiado grande!</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1758"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1764"/>
         <source>Error while opening file: %1</source>
         <translation>Error mientras se abría el archivo: %1</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1957"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1963"/>
         <source>Raster Objects</source>
         <translation>Objetos Raster</translation>
     </message>
@@ -6366,8 +6366,8 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="767"/>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="769"/>
-        <source>Audio files (*.mp3 *.wav)</source>
-        <translation>Archivos de Audio (*.mp3 *.wav)</translation>
+        <source>Audio files (*.mp3 *.wav *.aac)</source>
+        <translation>Archivos de audio (*.mp3 *.wav *.aac)</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="784"/>
@@ -7690,37 +7690,42 @@ Storyboard</translation>
         <translation>Ajustar la dimensión del proyecto a la dimensión del vídeo</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="158"/>
+        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="137"/>
+        <source>Import audio if it&apos;s available</source>
+        <translation>Importar audio si está disponible</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="163"/>
         <source>Close</source>
         <translation>Cerrar</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="200"/>
+        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="205"/>
         <source>Starting procedure...</source>
         <translation>Iniciar procedimiento...</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="209"/>
+        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="214"/>
         <source>Couldn&apos;t create temporary directory!</source>
         <translation>No se pudo crear el directorio temporal!</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="217"/>
+        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="222"/>
         <source>Can&apos;t extract photograms!</source>
         <translation>No se pueden extraer los fotogramas!</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="232"/>
+        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="237"/>
         <source>Extracting photogram %1 of %2</source>
         <translation>Extrayendo fotograma %1 de %2</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="245"/>
+        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="250"/>
         <source>Importing images...</source>
         <translation>Importando imágenes...</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="273"/>
+        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="278"/>
         <source>Video imported successfully!</source>
         <translation>Vídeo importado satisfactoriamente!</translation>
     </message>

@@ -18,6 +18,7 @@ HEADERS += tupsounddialog.h \
            tupsoundplayer.h \
            tupsearchdialog.h \
            tupvideocutter.h \
+           tupaudiocutter.h \
            tupvideoimporterdialog.h 
 
 SOURCES += tupsounddialog.cpp \
@@ -31,6 +32,7 @@ SOURCES += tupsounddialog.cpp \
            tupsoundplayer.cpp \
            tupsearchdialog.cpp \
            tupvideocutter.cpp \
+           tupaudiocutter.cpp \ 
            tupvideoimporterdialog.cpp
            
 FRAMEWORK_DIR = "../../framework"

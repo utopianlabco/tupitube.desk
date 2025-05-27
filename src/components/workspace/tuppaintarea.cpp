@@ -2038,7 +2038,7 @@ void TupPaintArea::getLocalAsset(const QString &path)
             type = TupLibraryObject::Svg;
         else if (lowercase.endsWith(".tobj"))
             type = TupLibraryObject::Item;
-        else if (lowercase.endsWith(".mp3") || lowercase.endsWith(".wav"))
+        else if (lowercase.endsWith(".mp3") || lowercase.endsWith(".wav") || lowercase.endsWith(".aac"))
             type = TupLibraryObject::Audio;
         else if (lowercase.endsWith(".mp4") || lowercase.endsWith(".mov"))
             type = TupLibraryObject::Video;
@@ -2129,7 +2129,7 @@ void TupPaintArea::processWebAsset(QNetworkReply *reply)
             type = TupLibraryObject::Svg;
         else if (lowercase.endsWith(".tobj"))
             type = TupLibraryObject::Item;
-        else if (lowercase.endsWith(".mp3") || lowercase.endsWith(".wav"))
+        else if (lowercase.endsWith(".mp3") || lowercase.endsWith(".wav") || lowercase.endsWith(".aac"))
             type = TupLibraryObject::Audio;
         else if (lowercase.endsWith(".mp4") || lowercase.endsWith(".mov"))
             type = TupLibraryObject::Video;

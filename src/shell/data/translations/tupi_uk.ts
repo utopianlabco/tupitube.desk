@@ -4210,66 +4210,66 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <location filename="../../../components/library/tupitemmanager.cpp" line="249"/>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="403"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="404"/>
         <source>Options</source>
         <translation>Параметри</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupitemmanager.cpp" line="252"/>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="321"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="322"/>
         <source>Rename</source>
         <translation>Перейменувати</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupitemmanager.cpp" line="255"/>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="324"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="325"/>
         <source>Delete</source>
         <translation>Видалити</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="271"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="272"/>
         <source>Edit with Inkscape</source>
         <translation>Змінити в Inkscape</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="281"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="282"/>
         <source>Edit with Gimp</source>
         <translation>Змінити в GIMP</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="291"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="292"/>
         <source>Edit with Krita</source>
         <translation>Змінити в Krita</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="301"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="302"/>
         <source>Edit with MyPaint</source>
         <translation>Змінити в MyPaint</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="313"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="314"/>
         <source>Clone</source>
         <translation>Клонувати</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="318"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="319"/>
         <source>Export</source>
         <translation>Експортувати</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="335"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="336"/>
         <source>Open lip-sync editor</source>
         <translation>Відкрити редактор синхронізації губ</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="344"/>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="407"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="345"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="408"/>
         <source>Create new raster item</source>
         <translation>Створити новий растровий елемент</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="350"/>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="412"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="351"/>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="413"/>
         <source>Create new svg item</source>
         <translation>Створити новий елемент svg</translation>
     </message>
@@ -4375,37 +4375,37 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="198"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2124"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2130"/>
         <source>Image</source>
         <translation>Зображення</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="199"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2134"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2140"/>
         <source>Svg File</source>
         <translation>Файл SVG</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="200"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2144"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2150"/>
         <source>Native Object</source>
         <translation>Власний об&apos;єкт</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="201"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2129"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2135"/>
         <source>Image Sequence</source>
         <translation>Послідовність зображень</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="202"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2139"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2145"/>
         <source>Svg Sequence</source>
         <translation>Послідовність файлів SVG</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="204"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2154"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2160"/>
         <source>Video File</source>
         <translation>Відеофайл</translation>
     </message>
@@ -4426,7 +4426,7 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="333"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2190"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2196"/>
         <source>Directory</source>
         <translation>Каталог</translation>
     </message>
@@ -4447,24 +4447,24 @@ until reaches at least 3 seconds.</source>
         <translation>Нічого не вибрано!</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="470"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="471"/>
         <source>Do you want to remove this object from Library?</source>
         <translation>Вилучити цей об&apos;єкт із бібліотеки?</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="470"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="471"/>
         <source>Confirmation</source>
         <translation>Підтвердження</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="648"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="976"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="650"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="982"/>
         <source>Images</source>
         <translation>Зображення</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="203"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2149"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2155"/>
         <source>Audio File</source>
         <translation>Звуковий файл</translation>
     </message>
@@ -4474,198 +4474,198 @@ until reaches at least 3 seconds.</source>
         <translation>Це каталог! Будь ласка, виберіть бібліотечний об&apos;єкт</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="441"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="442"/>
         <source>It&apos;s an audio file! Please, pick a graphic object</source>
         <translation>Це звуковий файл! Виберіть графічний об&apos;єкт</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="662"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="664"/>
         <source>Audio</source>
         <translation>Звук</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="670"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1231"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="674"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1237"/>
         <source>Native Objects</source>
         <translation>Власні об&apos;єкти</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="675"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="679"/>
         <source>Export object...</source>
         <translation>Експорт об&apos;єкта…</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="716"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="722"/>
         <source>Item exported successfully!</source>
         <translation>Елемент експортовано успішно!</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="785"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="791"/>
         <source>Couldn&apos;t create images directory!</source>
         <translation>Не вдалося створити каталог для зображень!</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="879"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="885"/>
         <source>Couldn&apos;t create vector directory!</source>
         <translation>Не вдалося створити каталог для векторних зображень!</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="898"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="904"/>
         <source>TupiTube library item</source>
         <translation>Елемент бібліотеки TupiTube</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="975"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="981"/>
         <source>Import images...</source>
         <translation>Імпорт зображень…</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1434"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1440"/>
         <source>Information</source>
         <translation>Інформація</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1079"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1085"/>
         <source>Image is bigger than workspace.</source>
         <translation>Зображення більше від робочого простору.</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1077"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1083"/>
         <source>File:</source>
         <translation>Файл:</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1080"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1086"/>
         <source>Do you want to resize it?</source>
         <translation>Змінити його розміри?</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1161"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1219"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1281"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1167"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1225"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1287"/>
         <source>Cannot open file: %1</source>
         <translation>Не вдалося відкрити файл: %1</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1170"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1176"/>
         <source>Import SVG files...</source>
         <translation>Імпорт файлів SVG…</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1171"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1177"/>
         <source>Vector</source>
         <translation>Векторне зображення</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1230"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1236"/>
         <source>Import objects...</source>
         <translation>Імпорт об&apos;єктів…</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1295"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1301"/>
         <source>Frame</source>
         <translation>Кадр</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1317"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1323"/>
         <source>Choose the images directory...</source>
         <translation>Вибір каталогу зображень…</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1416"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1422"/>
         <source>Image files found: %1.</source>
         <translation>Знайдено файлів зображень: %1.</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1427"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1433"/>
         <source>Files are too big, so they will be resized.</source>
         <translation>Файли занадто великі, тому їхні розміри буде змінено.</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1428"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1434"/>
         <source>Note: This task can take a while.</source>
         <translation>Примітка: Виконання займе деякий час.</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1437"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1583"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1443"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1589"/>
         <source>Do you want to continue?</source>
         <translation>Продовжити?</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1367"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1634"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1373"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1640"/>
         <source>ERROR!</source>
         <translation>ПОМИЛКА!</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1368"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1634"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1374"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1640"/>
         <source>ERROR: Can&apos;t open file %1. Please, check file permissions and try again.</source>
         <translation>ПОМИЛКА: Не вдалося відкрити файл %1. Перевірте дозволи файлу і повторіть спробу.</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1410"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1416"/>
         <source>No image files were found.&lt;br/&gt;Please, try another directory</source>
         <translation>Не вдалося знайти файлів зображень. &lt;br/&gt;Спробуйте відкрити інший каталог</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1484"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1490"/>
         <source>Video</source>
         <translation>Відео</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1493"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1499"/>
         <source>Importing image %1 of %2</source>
         <translation>Імпортується зображення %1 з %2</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1549"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1555"/>
         <source>Choose the SVG files directory...</source>
         <translation>Вибір каталогу файлів SVG…</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1576"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1582"/>
         <source>%1 SVG files will be loaded.</source>
         <translation>Буде завантажено файлів SVG: %1.</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1580"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1586"/>
         <source>Question</source>
         <translation>Питання</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1650"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1656"/>
         <source>No SVG files were found.&lt;br/&gt;Please, try another directory</source>
         <translation>Не вдалося знайти файлів SVG.&lt;br/&gt;Спробуйте відкрити інший каталог</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1679"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1685"/>
         <source>Choose a video file...</source>
         <translation>Виберіть відеофайл...</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1712"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1718"/>
         <source>Couldn&apos;t create temporary directory!</source>
         <translation>Не вдалося створити тимчасовий каталог!</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1758"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1764"/>
         <source>Error while opening file: %1</source>
         <translation>Помилка при відкритті файлу: %1</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1784"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1790"/>
         <source>Can&apos;t load video file!</source>
         <translation>Не вдалося завантажити відеофайл!</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1787"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1793"/>
         <source>Video file is larger than 2 MB. Too big!</source>
         <translation>Розмір відеофайлу перевищує 2 МБ. Завеликий!</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1957"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1963"/>
         <source>Raster Objects</source>
         <translation>Растрові об&apos;єкти</translation>
     </message>
@@ -6366,8 +6366,8 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="767"/>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="769"/>
-        <source>Audio files (*.mp3 *.wav)</source>
-        <translation>Звукові файли (*.mp3 *.wav)</translation>
+        <source>Audio files (*.mp3 *.wav *.aac)</source>
+        <translation>Аудіофайли (*.mp3 *.wav *.aac)</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="784"/>
@@ -7690,37 +7690,42 @@ Cover</source>
         <translation>Змінити розмір проєкту відповідно до розміру відео</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="158"/>
+        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="137"/>
+        <source>Import audio if it&apos;s available</source>
+        <translation>Імпортувати аудіо, якщо воно доступне</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="163"/>
         <source>Close</source>
         <translation>Закрити</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="200"/>
+        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="205"/>
         <source>Starting procedure...</source>
         <translation>Початок роботи...</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="209"/>
+        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="214"/>
         <source>Couldn&apos;t create temporary directory!</source>
         <translation>Не вдалося створити тимчасовий каталог!</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="217"/>
+        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="222"/>
         <source>Can&apos;t extract photograms!</source>
         <translation>Не вдалося витягти фотограми!</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="232"/>
+        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="237"/>
         <source>Extracting photogram %1 of %2</source>
         <translation>Витягання фотограми %1 з %2</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="245"/>
+        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="250"/>
         <source>Importing images...</source>
         <translation>Імпортуються зображення...</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="273"/>
+        <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="278"/>
         <source>Video imported successfully!</source>
         <translation>Відео імпортовано успішно!</translation>
     </message>

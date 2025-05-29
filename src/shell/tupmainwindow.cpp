@@ -101,7 +101,7 @@ TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
     isNetworked = false;
     exportWidget = nullptr;
 
-    uiStyleSheet = TAppTheme::themeSettings();
+    uiStyleSheet = TAppTheme::themeStyles();
     setStyleSheet(uiStyleSheet);
 
 #ifdef Q_OS_WIN

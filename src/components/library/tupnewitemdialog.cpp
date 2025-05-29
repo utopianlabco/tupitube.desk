@@ -44,7 +44,7 @@ TupNewItemDialog::TupNewItemDialog(QString &item, DialogType type, QSize size) :
         qDebug() << "[TupNewItemDialog()]";
     #endif
 
-    QString themeStr = TAppTheme::themeSettings();
+    QString themeStr = TAppTheme::themeStyles();
     setStyleSheet(themeStr);
 
     name = item;

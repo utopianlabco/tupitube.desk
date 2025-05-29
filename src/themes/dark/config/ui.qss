@@ -1,0 +1,59 @@
+QWidget { 
+    background-color: BG_PARAM;
+    color: #ffffff;
+} 
+
+QLineEdit, QSpinBox, QDoubleSpinBox, QComboBox, QTableView, QListWidget, QTextEdit, QPlainTextEdit { 
+    background: rgb(200,200,200); 
+    color: #000000;
+}
+
+QGraphicsView {
+    background-color: rgb(80,80,80);
+    color: #ffffff;
+}
+
+QListWidget { 
+    background-color: rgb(220,220,220);
+    color: #000000;
+}
+
+QPushButton {
+    background-color: rgb(89,89,89);
+    color: #ffffff;
+}
+
+QRadioButton {
+    color: #ffffff;
+    background-color: transparent;
+}
+
+QRadioButton::indicator:unchecked {
+    border: 1px solid #ffffff;
+    background-color: #3c3f41;
+}
+
+QRadioButton::indicator:checked {
+    border: 1px solid #ffffff;
+    background-color: #ffffff;
+}
+
+QCheckBox {
+    color: #ffffff;
+    background-color: transparent;
+}
+
+QCheckBox::indicator:unchecked {
+    border: 1px solid #ffffff;
+    background-color: #3c3f41;
+}
+
+QCheckBox::indicator:checked {
+    border: 1px solid #ffffff;
+    background-color: #ffffff;
+}
+
+QCheckBox::indicator:indeterminate {
+    border: 1px solid #ffffff;
+    background-color: #888888;
+}

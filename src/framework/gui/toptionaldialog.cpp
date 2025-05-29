@@ -39,7 +39,7 @@
 TOptionalDialog::TOptionalDialog(const QString &text,const QString &title, bool showAgainBox,
                                  bool showDiscardButton, QWidget *parent) : QDialog(parent)
 {
-    setStyleSheet(TAppTheme::themeSettings());
+    setStyleSheet(TAppTheme::themeStyles());
 
     setWindowTitle(title);
     mainLayout = new QVBoxLayout;

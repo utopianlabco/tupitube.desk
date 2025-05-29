@@ -184,7 +184,7 @@ void TupExportModule::setScenesIndexes(const QList<int> &indexes)
             #endif
 
             QMessageBox msgBox;
-            msgBox.setStyleSheet(TAppTheme::themeSettings());
+            msgBox.setStyleSheet(TAppTheme::themeStyles());
             msgBox.setWindowTitle(tr("Can't export project"));
             msgBox.setIcon(QMessageBox::Critical);
             msgBox.setTextFormat(Qt::RichText);
@@ -482,7 +482,7 @@ void TupExportModule::exportIt()
             #endif
 
             QMessageBox msgBox;
-            msgBox.setStyleSheet(TAppTheme::themeSettings());
+            msgBox.setStyleSheet(TAppTheme::themeStyles());
             msgBox.setWindowTitle(tr("Fatal Error: Can't export video"));
             msgBox.setIcon(QMessageBox::Critical);
             msgBox.setTextFormat(Qt::RichText);

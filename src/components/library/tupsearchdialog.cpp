@@ -64,7 +64,7 @@ TupSearchDialog::TupSearchDialog(const QSize &size, QWidget *parent) : QDialog(p
 
     extStrings << "jpg" << "png" << "svg" << "tobj";
 
-    setStyleSheet(TAppTheme::themeSettings());
+    setStyleSheet(TAppTheme::themeStyles());
 
     QVBoxLayout *layout = new QVBoxLayout(this);
 

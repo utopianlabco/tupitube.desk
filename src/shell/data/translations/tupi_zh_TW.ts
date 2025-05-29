@@ -5992,6 +5992,10 @@ Cover</source>
         <source>Orange</source>
         <translation>橘色</translation>
     </message>
+    <message>
+        <source>Black</source>
+        <translation type="unfinished">黑色</translation>
+    </message>
 </context>
 <context>
     <name>TupTimeLine</name>
@@ -6100,6 +6104,10 @@ Cover</source>
     <message>
         <source>Import audio if it&apos;s available</source>
         <translation>如果有音頻，請匯入</translation>
+    </message>
+    <message>
+        <source>Importing audio track from video file...</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

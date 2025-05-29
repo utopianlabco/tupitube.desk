@@ -61,7 +61,7 @@ TupVideoImporterDialog::TupVideoImporterDialog(const QString &filename, const QS
     QFileInfo fileInfo(videoPath);
     setWindowTitle(tr("Photograms Extractor") + " (" + fileInfo.fileName() + ")");
     setWindowIcon(QIcon(QPixmap(THEME_DIR + "icons/scenes.png")));
-    setStyleSheet(TAppTheme::themeSettings());
+    setStyleSheet(TAppTheme::themeStyles());
 
     videoCutter = cutter;
     connect(videoCutter, SIGNAL(imageExtracted(int)), this, SLOT(updateUI(int)));

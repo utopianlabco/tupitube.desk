@@ -47,7 +47,7 @@ TupProjectImporterDialog::TupProjectImporterDialog(const QString &projectName, Q
     setWindowTitle(projectName + " - " + tr("Project Assets"));
     setWindowIcon(QIcon(QPixmap(THEME_DIR + "icons/open.png")));
 
-    setStyleSheet(TAppTheme::themeSettings());
+    setStyleSheet(TAppTheme::themeStyles());
 
     includeLibrary = libraryFlag;
     layout = new QVBoxLayout(this);

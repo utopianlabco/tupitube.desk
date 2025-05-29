@@ -66,7 +66,7 @@ TupSoundDialog::TupSoundDialog(QWidget *parent) : QDialog(parent)
     #endif
 
     setModal(true);
-    setStyleSheet(TAppTheme::themeSettings());
+    setStyleSheet(TAppTheme::themeStyles());
 
     setWindowTitle(tr("Import Audio Asset"));
     setWindowIcon(QIcon(QPixmap(THEME_DIR + "icons/sound_object.png")));
@@ -235,7 +235,7 @@ void TupSoundDialog::importSoundAsset()
 
                 QScreen *screen = QGuiApplication::screens().at(0);
                 QMessageBox msgBox;
-                msgBox.setStyleSheet(TAppTheme::themeSettings());
+                msgBox.setStyleSheet(TAppTheme::themeStyles());
                 msgBox.setWindowTitle(tr("File:") + " " + path);
                 msgBox.setIcon(QMessageBox::Warning);
                 msgBox.setText(tr("Audio file only has one channel (Mono). The file must have two channels (Stereo)."));

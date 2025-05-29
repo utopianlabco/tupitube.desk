@@ -63,7 +63,7 @@ void TImageDialog::setupGUI()
 {
     setWindowTitle(tr("Breaking News!"));
     setWindowIcon(QPixmap(THEME_DIR + "icons/bubble.png"));
-    setStyleSheet(TAppTheme::themeSettings());
+    setStyleSheet(TAppTheme::themeStyles());
     QVBoxLayout *layout = new QVBoxLayout(this);
 
     QString imgPath = QDir::homePath() + "/." + QCoreApplication::applicationName() + "/images/" + imageName + ".png";

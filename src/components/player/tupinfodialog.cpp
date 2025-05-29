@@ -41,7 +41,7 @@
 
 TupInfoDialog::TupInfoDialog(const QString &author, const QString &desc, QWidget *parent) : QDialog(parent)
 {
-    setStyleSheet(TAppTheme::themeSettings());
+    setStyleSheet(TAppTheme::themeStyles());
 
     setWindowTitle(tr("Project Information"));
     setModal(true);

@@ -49,7 +49,7 @@ TupNewProject::TupNewProject(QWidget *parent) : TabDialog(parent)
     setWindowTitle(tr("Create New Project"));
     setModal(true);
 
-    setStyleSheet(TAppTheme::themeSettings());
+    setStyleSheet(TAppTheme::themeStyles());
 
     QFrame *infoContainer = new QFrame();
     QGridLayout *layout = new QGridLayout(infoContainer);

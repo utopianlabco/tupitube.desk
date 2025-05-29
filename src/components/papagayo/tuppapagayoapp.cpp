@@ -150,7 +150,7 @@ void TupPapagayoApp::setUICore(const QString &filePath)
         qDebug() << "[TupPapagayoApp::setUICore()] - filePath ->" << filePath;
     #endif
 
-    setStyleSheet(TAppTheme::themeSettings());
+    setStyleSheet(TAppTheme::themeStyles());
 
     setupActions();
     setupUI();

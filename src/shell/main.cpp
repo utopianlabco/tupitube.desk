@@ -156,7 +156,13 @@ int main(int argc, char ** argv)
     else
         kAppProp->setDataDir(xmlDir + locale + "/");
 
-    QString themePath = kAppProp->shareDir() + "themes/default/";
+    QString themePath = "";
+    TCONFIG->beginGroup("Theme");
+    int theme = TCONFIG->value("UITheme").toInt();
+    if (theme == LIGHT_THEME)
+        themePath = kAppProp->shareDir() + "themes/default/";
+    else
+        themePath = kAppProp->shareDir() + "themes/dark/";
 
     kAppProp->setThemeDir(themePath);
     QPair<int, int> dimension = TAlgorithm::screenDimension();

@@ -80,6 +80,9 @@
 
 #define DEFAULT_FONT_SIZE 36
 
+#define DARK_THEME 0
+#define LIGHT_THEME 1
+
 enum PlayMode { PlayAll = 0, OneScene };
 enum PlayDirection { Forward = 0, Backward };
 enum MediaType {Video = 0, Audio};
@@ -138,9 +141,6 @@ enum ProjectDimension {
 #define MOUTHS_PACKAGE_SIZE 10
 #define MOUTH_WIDTH 200
 #define MOUTH_HEIGHT 200
-
-#define DARK_THEME 0
-#define LIGHT_THEME 1
 
 #ifdef Q_OS_WIN
   #define __STDC_FORMAT_MACROS 1

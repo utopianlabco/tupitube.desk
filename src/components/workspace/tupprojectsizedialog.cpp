@@ -43,7 +43,7 @@ TupProjectSizeDialog::TupProjectSizeDialog(const QSize &size, QWidget *parent) :
     setWindowTitle(tr("Project Canvas Size"));
     setWindowIcon(QIcon(QPixmap(ICONS_DIR + "size.png")));
 
-    QString uiStyleSheet = TAppTheme::themeSettings();
+    QString uiStyleSheet = TAppTheme::themeStyles();
     setStyleSheet(uiStyleSheet);
 
     projectSize = size;

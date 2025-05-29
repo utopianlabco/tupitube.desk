@@ -1080,7 +1080,7 @@ void TupLibraryWidget::importImageFromByteArray(const QString &imageName, const 
         if (!isExternalLibraryAsset) {
             if (picWidth > projectWidth || picHeight > projectHeight) {
                 QMessageBox msgBox;
-                msgBox.setStyleSheet(TAppTheme::themeSettings());
+                msgBox.setStyleSheet(TAppTheme::themeStyles());
                 msgBox.setWindowTitle(tr("File:") + " " + imageName);
                 msgBox.setIcon(QMessageBox::Question);
                 msgBox.setText(tr("Image is bigger than workspace."));
@@ -1437,7 +1437,7 @@ void TupLibraryWidget::loadSequenceFromDirectory(ImageImportAction action, const
         }
 
         QMessageBox msgBox;
-        msgBox.setStyleSheet(TAppTheme::themeSettings());
+        msgBox.setStyleSheet(TAppTheme::themeStyles());
         msgBox.setWindowTitle(tr("Information"));
         msgBox.setIcon(QMessageBox::Question);
         msgBox.setText(text);
@@ -1583,7 +1583,7 @@ void TupLibraryWidget::importSvgSequence()
             QString text = tr("%1 SVG files will be loaded.").arg(svgCounter);
 
             QMessageBox msgBox;
-            msgBox.setStyleSheet(TAppTheme::themeSettings());
+            msgBox.setStyleSheet(TAppTheme::themeStyles());
             msgBox.setWindowTitle(tr("Question"));
             msgBox.setIcon(QMessageBox::Information);
             msgBox.setText(text);

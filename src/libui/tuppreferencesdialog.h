@@ -57,7 +57,7 @@ class TUPITUBE_EXPORT TupPreferencesDialog : public TConfigurationDialog
         void apply();
 
     private slots:
-        void testThemeColor(const QColor &);
+        void testThemeColor(int appTheme, const QColor &);
 
     signals:
         void timerChanged();

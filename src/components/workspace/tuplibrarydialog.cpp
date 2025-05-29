@@ -51,7 +51,7 @@ TupLibraryDialog::TupLibraryDialog(TupLibrary *assets) : QDialog()
     setWindowTitle(tr("Library Object"));
     setWindowIcon(QIcon(QPixmap(THEME_DIR + "icons/polyline.png")));
 
-    setStyleSheet(TAppTheme::themeSettings());
+    setStyleSheet(TAppTheme::themeStyles());
 
     QVBoxLayout *layout = new QVBoxLayout(this);
 

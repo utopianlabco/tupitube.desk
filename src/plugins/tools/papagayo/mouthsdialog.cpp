@@ -45,7 +45,7 @@ MouthsDialog::MouthsDialog(QWidget *parent) : QDialog(parent)
     setWindowTitle(tr("Lip-Sync Mouth Examples"));
     setWindowIcon(QIcon(QPixmap(THEME_DIR + "icons/papagayo.png")));
 
-    setStyleSheet(TAppTheme::themeSettings());
+    setStyleSheet(TAppTheme::themeStyles());
 
     mouthLabels << "AI" << "E" << "etc" << "FV" << "L" << "MBP" << "O" << "rest" << "U" << "WQ";
     #ifdef Q_OS_UNIX

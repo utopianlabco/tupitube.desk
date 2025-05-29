@@ -46,6 +46,7 @@ TupLibraryDisplay::TupLibraryDisplay() : QWidget()
     #endif
 
     previewPanel = new TupItemPreview(this);
+
     soundPlayer = new TupSoundPlayer();
     connect(soundPlayer, SIGNAL(muteEnabled(bool)), this, SIGNAL(muteEnabled(bool)));
     connect(soundPlayer, SIGNAL(soundResourceModified(SoundResource)),

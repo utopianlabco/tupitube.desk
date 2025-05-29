@@ -33,12 +33,19 @@
  ***************************************************************************/
 
 #include "tupitempreview.h"
+#include "tconfig.h"
 
 #include <QStyleOptionGraphicsItem>
 
 TupItemPreview::TupItemPreview(QWidget *parent) : QWidget(parent)
 {
     item = new QGraphicsTextItem;
+
+    TCONFIG->beginGroup("Theme");
+    appTheme = TCONFIG->value("UITheme", 1).toInt();
+    if (appTheme == DARK_THEME)
+        item->setDefaultTextColor(Qt::white);
+
     reset();
 }
 
@@ -64,6 +71,8 @@ void TupItemPreview::reset()
     }
 
     item = new QGraphicsTextItem(tr("Library is empty :("));
+    if (appTheme == DARK_THEME)
+        item->setDefaultTextColor(Qt::white);
     render(item);
 }
 
@@ -196,7 +205,7 @@ void TupItemPreview::paintEvent(QPaintEvent *)
         proxy->paint(&painter, &opt, this);
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupItemPreview::paintEvent()] - Warning: proxy is nullptr]";
+            qDebug() << "[TupItemPreview::paintEvent()] - Warning: proxy is NULL";
         #endif
     }
 }

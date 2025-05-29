@@ -62,6 +62,7 @@ void TupThemePreferences::setupPage()
     currentColor = QColor(bgColor);
     oldColor = currentColor;
     colorPos = TCONFIG->value("ColorPos", 0).toInt();
+    appTheme = TCONFIG->value("UITheme", 1).toInt();
 
     themeChanged = false;
 

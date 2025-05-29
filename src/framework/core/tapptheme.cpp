@@ -35,6 +35,7 @@
 #include "tapptheme.h"
 #include "tconfig.h"
 #include "tapplicationproperties.h"
+#include <QColor>
 
 QString TAppTheme::themeStyles()
 {
@@ -51,11 +52,21 @@ QString TAppTheme::themeStyles()
         file.open(QFile::ReadOnly);
         themeStyles = QLatin1String(file.readAll());
         if (themeStyles.length() == 0) {
-        #ifdef TUP_DEBUG
-            qWarning() << "[TAppTheme::themeStyles()] - Fatal Error: Theme settings input is empty!";
-        #endif
+            #ifdef TUP_DEBUG
+                qWarning() << "[TAppTheme::themeStyles()] - Fatal Error: Theme settings input is empty!";
+            #endif
         }
         file.close();
+
+        if (THEME_DIR.contains("dark")) {
+            QColor buttonBgColor(bgColor);
+            buttonBgColor.setRed(buttonBgColor.red() + 30);
+            buttonBgColor.setGreen(buttonBgColor.green() + 30);
+            buttonBgColor.setBlue(buttonBgColor.blue() + 30);
+            themeStyles = themeStyles.replace("BUTTON_BG", buttonBgColor.name());
+        }
+
+        return themeStyles.replace("BG_PARAM", bgColor);
     } else {
         #ifdef TUP_DEBUG 
             qWarning() << "[TAppTheme::themeStyles()] - "
@@ -63,13 +74,14 @@ QString TAppTheme::themeStyles()
         #endif
     }
 
-    return themeStyles.replace("BG_PARAM", bgColor);
+    return "";
 }
 
-QString TAppTheme::themeStyles(const QString &theme, const QString &bgColor)
+QString TAppTheme::themeStyles(const QString &theme, const QColor &bgColor)
 {
     QString themePath = kAppProp->shareDir() + "themes/" + theme + "/config/ui.qss";
     #ifdef TUP_DEBUG
+        qDebug() << "[TAppTheme::themeStyles()] - bgColor ->" << bgColor;
         qDebug() << "[TAppTheme::themeStyles()] - Testing ui.qss ->" << themePath;
     #endif
 
@@ -84,12 +96,19 @@ QString TAppTheme::themeStyles(const QString &theme, const QString &bgColor)
             #endif
         }
         file.close();
+
+        if (theme.compare("dark") == 0) {
+            QColor buttonBgColor(150, 150, 150);
+            themeStyles = themeStyles.replace("BUTTON_BG", buttonBgColor.name());
+        }
+
+        return themeStyles.replace("BG_PARAM", bgColor.name());
     } else {
         #ifdef TUP_DEBUG
             qWarning() << "[TAppTheme::themeStyles()] - "
-                          "Fatal Error: Theme file doesn't exist -> " << themePath;
+                          "Fatal Error: Theme file doesn't exist ->" << themePath;
         #endif
     }
 
-    return themeStyles.replace("BG_PARAM", bgColor);
+    return "";
 }

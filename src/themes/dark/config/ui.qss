@@ -19,7 +19,7 @@ QListWidget {
 }
 
 QPushButton {
-    background-color: rgb(89,89,89);
+    background-color: BUTTON_BG;
     color: #ffffff;
 }
 
@@ -56,4 +56,18 @@ QCheckBox::indicator:checked {
 QCheckBox::indicator:indeterminate {
     border: 1px solid #ffffff;
     background-color: #888888;
+}
+
+QComboBox {
+    color: #ffffff;
+    background-color: #3c3f41;
+    border: 1px solid #555;
+    border-radius: 3px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #2b2b2b;
+    color: #ffffff;
+    selection-background-color: #555555;
+    selection-color: #ffffff;
 }

@@ -35,12 +35,11 @@
 #include "txyspinbox.h"
 
 TXYSpinBox::TXYSpinBox(const QString &title, const QString &xLabel, const QString &yLabel,
-                       QWidget *parent) : QGroupBox(title, parent), m_modifyTogether(false)
+                       QWidget *parent) : QGroupBox(title, parent), isChecked(false)
 {
     QHBoxLayout *layout = new QHBoxLayout(this);
 
     QGridLayout *internal = new QGridLayout;
-    // m_textX = new QLabel("X: ");
     m_textX = new QLabel(xLabel + " ");
     internal->addWidget(m_textX, 0, 0, Qt::AlignRight);
 
@@ -51,7 +50,6 @@ TXYSpinBox::TXYSpinBox(const QString &title, const QString &xLabel, const QStrin
 
     m_textX->setBuddy(m_x);
 
-    // m_textY = new QLabel("Y: ");
     m_textY = new QLabel(yLabel + " ");
     internal->addWidget(m_textY, 1, 0, Qt::AlignRight);
 
@@ -63,14 +61,14 @@ TXYSpinBox::TXYSpinBox(const QString &title, const QString &xLabel, const QStrin
     m_textY->setBuddy(m_y);
     layout->addLayout(internal);
 
-    m_separator = new QPushButton;
-    // m_separator->setFlat(true);
-    m_separator->setMaximumWidth(20);
-    m_separator->setIcon(QPixmap(ICONS_DIR + "open_padlock.png"));
+    button = new QPushButton;
+    button->setMaximumWidth(20);
+    button->setIcon(QPixmap(ICONS_DIR + "rectangle_dimension.png"));
+    button->setToolTip(tr("Rectangle Dimension"));
 
-    layout->addWidget(m_separator);
+    layout->addWidget(button);
 
-    connect(m_separator, SIGNAL(clicked()), this, SLOT(toggleModify()));
+    connect(button, SIGNAL(clicked()), this, SLOT(toggleModify()));
     setLayout(layout);
 
     connect(m_x, SIGNAL(editingFinished()), this, SLOT(updateYValue()));
@@ -85,10 +83,7 @@ TXYSpinBox::~TXYSpinBox()
 
 void TXYSpinBox::updateXValue()
 {
-     // int value = (int) m_x->value()*380/520;
-     // m_y->setValue(value);
-
-     if (m_modifyTogether) {
+     if (isChecked) {
          int y = m_y->value();
          if (m_x->value() != y)
              m_x->setValue(y);
@@ -97,35 +92,33 @@ void TXYSpinBox::updateXValue()
 
 void TXYSpinBox::updateYValue()
 {
-     // int value = (int) m_y->value()*520/380; 
-     // m_x->setValue(value);
-
-     if (m_modifyTogether) {
+     if (isChecked) {
          int x = m_x->value();
          if (m_y->value() != x)
              m_y->setValue(x);
      }
 }
 
-void TXYSpinBox::setModifyTogether(bool enable)
+bool TXYSpinBox::buttonIsChecked()
 {
-    m_modifyTogether = enable;
-    toggleModify();
+    return isChecked;
 }
 
 void TXYSpinBox::toggleModify()
 {
-    if (!m_modifyTogether) {
-        m_modifyTogether = true;
-        m_separator->setIcon(QPixmap(ICONS_DIR + "padlock.png"));
+    if (!isChecked) {
+        isChecked = true;
+        button->setIcon(QPixmap(ICONS_DIR + "square_dimension.png"));
+        button->setToolTip(tr("Square Dimension"));
 
         int x = m_x->value();
         if (m_y->value() != x)
             m_y->setValue(x);
 
     } else {
-        m_modifyTogether = false;
-        m_separator->setIcon(QPixmap(ICONS_DIR + "open_padlock.png")); // open padlock
+        isChecked = false;
+        button->setIcon(QPixmap(ICONS_DIR + "rectangle_dimension.png"));
+        button->setToolTip(tr("Rectangle Dimension"));
     }
 }
 
@@ -166,3 +159,4 @@ int TXYSpinBox::y()
 {
     return m_y->value();
 }
+

@@ -350,11 +350,11 @@ void TupNewProject::setBgColor()
      }
 }
 
-void TupNewProject::setPresets(int index)
+void TupNewProject::setPresets(int format)
 {
     size->blockSignals(true);
 
-    switch(index) {
+    switch(format) {
            case FREE:
            break;
            case FORMAT_520:
@@ -413,6 +413,14 @@ void TupNewProject::setPresets(int index)
                fps->setValue(24);
            }
            break;
+    }
+
+    if (format != FORMAT_MOBILE) {
+        if (size->buttonIsChecked())
+            size->toggleModify();
+    } else {
+        if (!size->buttonIsChecked())
+            size->toggleModify();
     }
 
     size->blockSignals(false);

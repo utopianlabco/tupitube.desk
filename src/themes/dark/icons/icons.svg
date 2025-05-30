@@ -2901,9 +2901,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.2403194"
-     inkscape:cx="-611.13293"
-     inkscape:cy="39.102833"
+     inkscape:zoom="7.0163058"
+     inkscape:cx="-329.66066"
+     inkscape:cy="42.401231"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -2935,12 +2935,12 @@
      id="layer1"
      transform="translate(0,947.63782)">
     <rect
-       style="fill:#595959;stroke:none;stroke-width:64.5147;stroke-linecap:round;stroke-linejoin:round"
+       style="fill:#595959;stroke:none;stroke-width:64.515;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
        id="rect6890"
        width="897.58502"
        height="897.58545"
-       x="-1038.3563"
-       y="-970.26306" />
+       x="-1017.9929"
+       y="-933.16394" />
     <g
        id="g7141"
        transform="translate(-2.1347656e-5)"
@@ -22084,5 +22084,96 @@
          inkscape:connector-curvature="0"
          sodipodi:nodetypes="cccc" />
     </g>
+    <g
+       id="g58634"
+       inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/dark/icons/padlock.png"
+       inkscape:export-xdpi="87.589996"
+       inkscape:export-ydpi="87.589996">
+      <path
+         inkscape:export-ydpi="170"
+         inkscape:export-xdpi="170"
+         inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/dark/icons/padlock.png"
+         sodipodi:nodetypes="ccccccccccc"
+         inkscape:connector-curvature="0"
+         id="path5253-3-85"
+         d="m -392.14146,-918.57016 -19.53409,0.0878 -0.30914,18.95212 27.40032,0.37794 -0.40364,-19.77283 -6.0766,-0.17275 1.94502,15.59934 h -17.76297 l -1.39153,-11.58238 20.36267,-0.37794 z"
+         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:4.27585" />
+      <path
+         inkscape:export-ydpi="170"
+         inkscape:export-xdpi="170"
+         inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/dark/icons/padlock.png"
+         sodipodi:nodetypes="cc"
+         inkscape:connector-curvature="0"
+         id="path5255-6-8"
+         d="m -405.30679,-918.49388 c -0.012,-9.13185 13.0493,-9.96071 13.45652,0.0945"
+         style="fill:none;stroke:#ffffff;stroke-width:4.70344;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         sodipodi:nodetypes="ccccc"
+         inkscape:export-ydpi="170"
+         inkscape:export-xdpi="170"
+         inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/dark/icons/padlock.png"
+         inkscape:connector-curvature="0"
+         id="path5259-7-22"
+         d="m -399.71998,-911.8361 -0.0278,7.21042 3.02348,-0.0945 -0.44475,-7.39938 z"
+         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:4.27585" />
+    </g>
+    <g
+       id="g60316"
+       inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/dark/icons/open_padlock.png"
+       inkscape:export-xdpi="79.389999"
+       inkscape:export-ydpi="79.389999">
+      <path
+         inkscape:export-ydpi="170"
+         inkscape:export-xdpi="170"
+         inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/dark/icons/padlock.png"
+         sodipodi:nodetypes="ccccccccccc"
+         inkscape:connector-curvature="0"
+         id="path5253-3-8-7-0"
+         d="m -354.44955,-919.37646 -19.53409,0.0878 -0.30914,18.95212 27.40032,0.37794 -0.40364,-19.77283 -6.0766,-0.17275 1.94502,15.59934 h -17.76297 l -1.39153,-11.58238 20.36267,-0.37794 z"
+         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:4.27585" />
+      <path
+         inkscape:export-ydpi="170"
+         inkscape:export-xdpi="170"
+         inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/dark/icons/padlock.png"
+         sodipodi:nodetypes="cc"
+         inkscape:connector-curvature="0"
+         id="path5255-6-7-3-5"
+         d="m -360.73988,-926.55018 c 0,0 6.4243,-0.35472 6.58152,7.3445"
+         style="fill:none;stroke:#ffffff;stroke-width:4.70344;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         sodipodi:nodetypes="ccccc"
+         inkscape:export-ydpi="170"
+         inkscape:export-xdpi="170"
+         inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/dark/icons/padlock.png"
+         inkscape:connector-curvature="0"
+         id="path5259-7-2-9-7"
+         d="m -362.02807,-912.6424 -0.0278,7.21042 3.02348,-0.0945 -0.44475,-7.39938 z"
+         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:4.27585" />
+      <rect
+         y="-929.84821"
+         x="-375.70703"
+         height="30.935921"
+         width="30.228815"
+         id="rect12508-3-4"
+         style="fill:#000000;fill-opacity:0;stroke:none;stroke-width:1.477;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    </g>
+    <rect
+       style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect66458"
+       width="19.907038"
+       height="19.907038"
+       x="-331.41061"
+       y="-920.36578"
+       inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/dark/icons/square_dimension.png"
+       inkscape:export-xdpi="123.62"
+       inkscape:export-ydpi="123.62" />
+    <path
+       id="rect66458-2"
+       style="fill:none;stroke:#ffffff;stroke-width:4;stroke-linecap:round;stroke-linejoin:round"
+       d="m -298.3501,-916.36578 h 19.90704 v 11.90704 h -19.90704 z"
+       sodipodi:nodetypes="ccccc"
+       inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/dark/icons/rectangle_dimension.png"
+       inkscape:export-xdpi="123.62"
+       inkscape:export-ydpi="123.62" />
   </g>
 </svg>

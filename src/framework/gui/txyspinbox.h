@@ -51,7 +51,8 @@ class T_GUI_EXPORT TXYSpinBox : public QGroupBox
     Q_OBJECT
 
     public:
-        TXYSpinBox(const QString &title, const QString &xLabel, const QString &yLabel, QWidget *parent = nullptr);
+        TXYSpinBox(const QString &title, const QString &xLabel, const QString &yLabel,
+                   QWidget *parent = nullptr);
         ~TXYSpinBox();
 
         void setSingleStep(int step);
@@ -61,23 +62,25 @@ class T_GUI_EXPORT TXYSpinBox : public QGroupBox
         void setY(int y);
         int x();
         int y();
-        void setModifyTogether(bool enable);
+        bool buttonIsChecked();
 
     signals:
         void valuesHaveChanged();
 
+    public slots:
+        void toggleModify();
+
     private slots:
         void updateXValue();
         void updateYValue();
-        void toggleModify();
 
     private:
         QLabel *m_textX;
         QLabel *m_textY;
         QSpinBox *m_x;
         QSpinBox *m_y;
-        QPushButton *m_separator;
-        bool m_modifyTogether;
+        QPushButton *button;
+        bool isChecked;
 };
 
 #endif

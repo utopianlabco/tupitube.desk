@@ -2901,9 +2901,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.4806387"
-     inkscape:cx="668.77938"
-     inkscape:cy="1551.8181"
+     inkscape:zoom="1.28"
+     inkscape:cx="43.75"
+     inkscape:cy="1704.2969"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -21636,5 +21636,23 @@
        inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/default/icons/duplicate_scene.png"
        inkscape:export-xdpi="53.419998"
        inkscape:export-ydpi="53.419998" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:#000002;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect66458"
+       width="19.907038"
+       height="19.907038"
+       x="25.458557"
+       y="633.79144"
+       inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/default/icons/square_dimension.png"
+       inkscape:export-xdpi="123.62"
+       inkscape:export-ydpi="123.62" />
+    <path
+       id="rect66458-2"
+       style="fill:none;stroke:#000002;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 58.519071,637.7914 h 19.90704 v 11.90704 h -19.90704 z"
+       sodipodi:nodetypes="ccccc"
+       inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/default/icons/rectangle_dimension.png"
+       inkscape:export-xdpi="123.62"
+       inkscape:export-ydpi="123.62" />
   </g>
 </svg>

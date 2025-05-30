@@ -150,11 +150,11 @@ void TupProjectSizeDialog::checkDimensions(const QSize &size)
     enableOkButton();
 }
 
-void TupProjectSizeDialog::setPresets(int index)
+void TupProjectSizeDialog::setPresets(int format)
 {
     sizeSpin->blockSignals(true);
 
-    switch(index) {
+    switch(format) {
            case FREE:
            break;
            case FORMAT_520:
@@ -205,6 +205,14 @@ void TupProjectSizeDialog::setPresets(int index)
                sizeSpin->setY(1080);
            }
            break;
+    }
+
+    if (format != FORMAT_MOBILE) {
+        if (sizeSpin->buttonIsChecked())
+            sizeSpin->toggleModify();
+    } else {
+        if (!sizeSpin->buttonIsChecked())
+            sizeSpin->toggleModify();
     }
 
     sizeSpin->blockSignals(false);

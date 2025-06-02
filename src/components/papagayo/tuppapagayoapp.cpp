@@ -52,6 +52,7 @@ TupPapagayoApp::TupPapagayoApp(PapagayoAppMode mode, TupProject *project, const 
         qDebug() << "[TupPapagayoApp::TupPapagayoApp()] - Adding new record...";
     #endif
 
+    setWindowIcon(QPixmap(THEME_DIR + "icons/papagayo.png"));
     this->mode = mode;
     tupProject = project;
     document = new TupLipsyncDoc;

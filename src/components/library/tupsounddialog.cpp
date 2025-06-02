@@ -95,7 +95,13 @@ QWidget* TupSoundDialog::soundFileTab()
     filePathInput = new QLabel;
     filePathInput->setMinimumWidth(260);
     filePathInput->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
-    filePathInput->setStyleSheet("background-color:#dddddd; padding-left:3px;");
+
+    TCONFIG->beginGroup("Theme");
+    int theme = TCONFIG->value("UITheme", 1).toInt();
+    if (theme == LIGHT_THEME) 
+        filePathInput->setStyleSheet("background-color:#dddddd; padding-left:3px;");
+    else
+        filePathInput->setStyleSheet("background-color:#555555; padding-left:3px; border: 1px solid #fff;");
 
     fileButton = new QToolButton;
     fileButton->setIcon(QIcon(THEME_DIR + "icons/open.png"));

@@ -202,11 +202,12 @@ void TupCameraWidget::addTimerPanel()
     currentFrameBox->setAlignment(Qt::AlignCenter);
     currentFrameBox->setMinimumWidth(40);
 
-    QString labelColor = "#ffffff";
+    QString style = "";
     if (uiTheme == DARK_THEME)
-        labelColor = "#c8c8c8";
-    QString style = "QLabel { background-color: " + labelColor
-                    + "; border: 1px solid #777777; border-radius: 2px; }";
+        style = "QLabel { background-color: #c8c8c8; color: #000000; border: 1px solid #777777; border-radius: 2px; }";
+    else
+        style = "QLabel { background-color: #ffffff; border: 1px solid #777777; border-radius: 2px; }";
+
     currentFrameBox->setStyleSheet(style);
 
     framesCount = new QLabel;

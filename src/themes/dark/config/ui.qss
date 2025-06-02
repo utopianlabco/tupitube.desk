@@ -8,6 +8,21 @@ QLineEdit, QSpinBox, QDoubleSpinBox, QComboBox, QTableView, QListWidget, QTextEd
     color: #000000;
 }
 
+QSlider::handle:horizontal {
+    background: #ffffff;
+    border: 1px solid #888;
+}
+
+QSlider::sub-page:horizontal {
+    background: #555555;
+    border: 1px solid #888;
+}
+
+QSlider::add-page:horizontal {
+    background: #3c3f41;
+    border: 1px solid #888;
+}
+
 QGraphicsView {
     background-color: rgb(80,80,80);
     color: #ffffff;
@@ -21,6 +36,11 @@ QListWidget {
 QPushButton {
     background-color: BUTTON_BG;
     color: #ffffff;
+}
+
+QPushButton:disabled {
+    color: #777777; 
+    background-color: #2b2b2b; 
 }
 
 QRadioButton {
@@ -70,4 +90,9 @@ QComboBox QAbstractItemView {
     color: #ffffff;
     selection-background-color: #555555;
     selection-color: #ffffff;
+}
+
+QMenu::item:disabled {
+    color: #aaaaaa;
+    background-color: transparent;
 }

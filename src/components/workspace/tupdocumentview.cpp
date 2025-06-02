@@ -459,8 +459,8 @@ void TupDocumentView::createLateralToolBar()
     connect(motionMenu, SIGNAL(triggered(QAction*)), this, SLOT(selectToolFromMenu(QAction*)));
 
     // Misc Tools menu
-    miscMenu = new QMenu(tr("Misc Tools"), toolbar);
-    miscMenu->setIcon(QPixmap(THEME_DIR + "icons/export_frame.png"));
+    // miscMenu = new QMenu(tr("Misc Tools"), toolbar);
+    // miscMenu->setIcon(QPixmap(THEME_DIR + "icons/export_frame.png"));
     // connect(miscMenu, SIGNAL(triggered(QAction *)), this, SLOT(selectToolFromMenu(QAction*)));
 }
 
@@ -675,9 +675,9 @@ void TupDocumentView::loadPlugins()
     for (int i = 0; i < 6; ++i)
          motionMenu->addAction(tweenTools.at(i));
 
-    miscMenu->addAction(actionManager->find("export_image"));
-    miscMenu->addAction(actionManager->find("post_image"));
-    miscMenu->addAction(actionManager->find("export_storyboard"));
+//    miscMenu->addAction(actionManager->find("export_image"));
+//    miscMenu->addAction(actionManager->find("post_image"));
+//    miscMenu->addAction(actionManager->find("export_storyboard"));
 
     foreach (QObject *plugin, TupPluginManager::instance()->getFilters()) {
         AFilterInterface *filterInterface = qobject_cast<AFilterInterface *>(plugin);
@@ -735,7 +735,8 @@ void TupDocumentView::loadPlugins()
     toolbar->addAction(papagayoAction);
 
     toolbar->addSeparator();
-    toolbar->addAction(miscMenu->menuAction());
+    // toolbar->addAction(miscMenu->menuAction());
+    toolbar->addAction(actionManager->find("export_storyboard"));
 
     geometricTools.clear();
     tweenTools.clear();
@@ -1987,63 +1988,64 @@ void TupDocumentView::selectScene(int scene)
     paintArea->goToScene(scene);
 }
 
-void TupDocumentView::updateToolsMenu(TAction::ActionId id, const QString &actionId)
-{
-    if (configurationArea->isVisible())
-        configurationArea->close();
+//void TupDocumentView::updateToolsMenu(TAction::ActionId id, const QString &actionId)
+//{
+//    if (configurationArea->isVisible())
+//        configurationArea->close();
 
-    currentTool->setToolId(id);
-    QAction *action = actionManager->find(actionId);
-    miscMenu->setDefaultAction(action);
-    miscMenu->setActiveAction(action);
-    if (!action->icon().isNull())
-        miscMenu->menuAction()->setIcon(action->icon());
-}
+//    currentTool->setToolId(id);
+//    QAction *action = actionManager->find(actionId);
 
-void TupDocumentView::exportImage()
-{
-    #ifdef TUP_DEBUG
-        qDebug() << "[TupDocumentView::exportImage()]";
-    #endif
+//    miscMenu->setDefaultAction(action);
+//    miscMenu->setActiveAction(action);
+//    if (!action->icon().isNull())
+//        miscMenu->menuAction()->setIcon(action->icon());
+//}
 
-    paintArea->viewport()->setCursor(Qt::ArrowCursor);
+//void TupDocumentView::exportImage()
+//{
+//    #ifdef TUP_DEBUG
+//        qDebug() << "[TupDocumentView::exportImage()]";
+//    #endif
 
-    updateToolsMenu(TAction::ExportImage, "export_image");
-    int sceneIndex = paintArea->currentSceneIndex();
-    int frameIndex = paintArea->currentFrameIndex();
+//    paintArea->viewport()->setCursor(Qt::ArrowCursor);
 
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Export Frame As"), QDir::homePath(),
-                                                    tr("Images") + " (*.png *.jpg *.svg)");
-    if (!fileName.isNull()) {
-        bool isOk = imagePlugin->exportFrame(frameIndex, project->getCurrentBgColor(), fileName, project->sceneAt(sceneIndex),
-                                             project->getDimension(), project);
-        updatePaintArea();
-        if (isOk)
-            TOsd::self()->display(TOsd::Info, tr("Frame has been exported successfully"));
-        else
-            TOsd::self()->display(TOsd::Error, tr("Can't export frame as image"));
-    }
-}
+//    // updateToolsMenu(TAction::ExportImage, "export_image");
+//    int sceneIndex = paintArea->currentSceneIndex();
+//    int frameIndex = paintArea->currentFrameIndex();
 
-void TupDocumentView::postImage()
-{
-    #ifdef TUP_DEBUG
-        qDebug() << "[TupDocumentView::postImage()]";
-    #endif
+//    QString fileName = QFileDialog::getSaveFileName(this, tr("Export Frame As"), QDir::homePath(),
+//                                                    tr("Images") + " (*.png *.jpg *.svg)");
+//    if (!fileName.isNull()) {
+//        bool isOk = imagePlugin->exportFrame(frameIndex, project->getCurrentBgColor(), fileName, project->sceneAt(sceneIndex),
+//                                             project->getDimension(), project);
+//        updatePaintArea();
+//        if (isOk)
+//            TOsd::self()->display(TOsd::Info, tr("Frame has been exported successfully"));
+//        else
+//            TOsd::self()->display(TOsd::Error, tr("Can't export frame as image"));
+//    }
+//}
 
-    paintArea->viewport()->setCursor(Qt::ArrowCursor);
-    updateToolsMenu(TAction::PostImage, "post_image");
+//void TupDocumentView::postImage()
+//{
+//    #ifdef TUP_DEBUG
+//        qDebug() << "[TupDocumentView::postImage()]";
+//    #endif
 
-    int sceneIndex = paintArea->graphicsScene()->currentSceneIndex();
-    int frameIndex = paintArea->graphicsScene()->currentFrameIndex();
-    QString fileName = CACHE_DIR + TAlgorithm::randomString(8) + ".png";
+//    paintArea->viewport()->setCursor(Qt::ArrowCursor);
+//    // updateToolsMenu(TAction::PostImage, "post_image");
 
-    bool isOk = imagePlugin->exportFrame(frameIndex, project->getCurrentBgColor(), fileName, project->sceneAt(sceneIndex),
-                                         project->getDimension(), project);
-    updatePaintArea();
-    if (isOk)
-        emit imagePostRequested(fileName);
-}
+//    int sceneIndex = paintArea->graphicsScene()->currentSceneIndex();
+//    int frameIndex = paintArea->graphicsScene()->currentFrameIndex();
+//    QString fileName = CACHE_DIR + TAlgorithm::randomString(8) + ".png";
+
+//    bool isOk = imagePlugin->exportFrame(frameIndex, project->getCurrentBgColor(), fileName, project->sceneAt(sceneIndex),
+//                                         project->getDimension(), project);
+//    updatePaintArea();
+//    if (isOk)
+//        emit imagePostRequested(fileName);
+//}
 
 void TupDocumentView::storyboardSettings()
 {
@@ -2517,11 +2519,11 @@ void TupDocumentView::papagayoManager()
     #endif
 
     if (currentTool->toolId() != TAction::LipSyncTool) {
-        QAction *action = actionManager->find("export_image");
-        miscMenu->setDefaultAction(action);
-        miscMenu->setActiveAction(action);
-        if (!action->icon().isNull())
-            miscMenu->menuAction()->setIcon(action->icon());
+//        QAction *action = actionManager->find("export_image");
+//        miscMenu->setDefaultAction(action);
+//        miscMenu->setActiveAction(action);
+//        if (!action->icon().isNull())
+//            miscMenu->menuAction()->setIcon(action->icon());
 
         TupProject::Mode mode = TupProject::Mode(spaceModeCombo->currentIndex());
         if (mode != TupProject::FRAMES_MODE)
@@ -2665,7 +2667,7 @@ void TupDocumentView::enableEyeDropperTool(TColorCell::FillType fillType)
 
     shapesMenu->setActiveAction(nullptr);
     motionMenu->setActiveAction(nullptr);
-    miscMenu->setActiveAction(nullptr);
+    // miscMenu->setActiveAction(nullptr);
 
     if (eyedropperAction) {
         emit eyeDropperLaunched();

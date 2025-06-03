@@ -195,12 +195,8 @@ void TupExposureHeader::mousePressEvent(QMouseEvent *event)
         int x = sectionViewportPosition(section) + 3;
         QFont font = this->font();
         font.setPointSize(8);
-        QFontMetrics fm(font);
-        QString text = m_sections[section].title;
-        int w = fm.horizontalAdvance(text);
-        int limit = sectionSize(section)/2 - w/2;
 
-        QRect rect(x + limit - 12, 3, 12, height()-3);
+        QRect rect(x, 0, height(), height());
         if (rect.contains(event->pos())) {
             notifyVisibilityChange(section);
         } else {
@@ -211,7 +207,8 @@ void TupExposureHeader::mousePressEvent(QMouseEvent *event)
         }
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupExposureHeader::mousePressEvent()] - Fatal Error: Section index is invalid ->" << section;
+            qDebug() << "[TupExposureHeader::mousePressEvent()] - "
+                        "Fatal Error: Section index is invalid ->" << section;
         #endif
     }
 }
@@ -242,10 +239,11 @@ void TupExposureHeader::paintSection(QPainter *painter, const QRect & rect, int 
     font.setPointSize(8);
     QFontMetrics fm(font);
 
-    if (((section == m_currentSection) || (m_sections.size() == 1)) && m_sections[section].isVisible) { // Header selected
+    // Header selected
+    if (((section == m_currentSection) || (m_sections.size() == 1)) && m_sections[section].isVisible) {
         QColor color(0, 136, 0, 40);
         if (uiTheme == DARK_THEME)
-            color = QColor(200, 220, 200);
+            color = QColor(180, 180, 180);
 
         painter->fillRect(rect.normalized().adjusted(0, 0, 0, -1), color);
     }
@@ -267,10 +265,12 @@ void TupExposureHeader::paintSection(QPainter *painter, const QRect & rect, int 
     int y = rect.normalized().bottomLeft().y() - (1 + (rect.normalized().height() - fm.height())/2);
 
     painter->setFont(font);
+
     painter->setPen(QPen(Qt::black, 1, Qt::SolidLine));
     painter->drawText(x, y, text);
 
-    buttonOption.rect = QRect(rect.x() + width - 4, rect.y() + ((rect.normalized().height()-buttonWidth)/2) + 1, buttonWidth, buttonWidth);
+    buttonOption.rect = QRect(rect.x(), rect.y(),
+                              rect.normalized().height(), rect.normalized().height());
 
     style()->drawControl(QStyle::CE_PushButton, &buttonOption, painter);
 }

@@ -41,13 +41,18 @@ TupTimeLineRuler::TupTimeLineRuler(int fps, QWidget *parent): QHeaderView(Qt::Ho
         qDebug() << "[TupTimeLineRuler()]";
     #endif
 
+    TCONFIG->beginGroup("Theme");
+    uiTheme = TCONFIG->value("UITheme", DARK_THEME).toInt();
+
     this->fps = fps;
-    TCONFIG->beginGroup("General");
-    themeName = TCONFIG->value("Theme", "Light").toString();
 
     setSectionResizeMode(QHeaderView::Custom);
     setHighlightSections(true);
-    setStyleSheet("QHeaderView { background-color: #cccccc; }");
+
+    if (uiTheme == DARK_THEME)
+        setStyleSheet("QHeaderView { background-color: #aaaaaa; }");
+    else
+        setStyleSheet("QHeaderView { background-color: #cccccc; }");
 }
 
 TupTimeLineRuler::~TupTimeLineRuler()
@@ -81,11 +86,16 @@ void TupTimeLineRuler::paintSection(QPainter *painter, const QRect & rect, int l
         painter->fillRect(rect, QBrush(QColor(0, 135, 0, 80))); // Light Green
     } else {
         // Cell contains a number
-        if ((logicalIndex + 1) == 1 || (logicalIndex + 1) % 5 == 0) {
-            painter->fillRect(rect, QBrush(QColor(150, 150, 150, 255))); // Gray
-        } else if ((logicalIndex + 1) % fps == 0) {
-            painter->fillRect(rect, QBrush(QColor(48, 140, 198)));
+        if (uiTheme == DARK_THEME) {
+            if ((logicalIndex + 1) == 1 || (logicalIndex + 1) % 5 == 0)
+                painter->fillRect(rect, QBrush(QColor(50, 50, 50, 255))); // Dark Gray
+        } else {
+            if ((logicalIndex + 1) == 1 || (logicalIndex + 1) % 5 == 0)
+                painter->fillRect(rect, QBrush(QColor(150, 150, 150, 255))); // Gray
         }
+
+        if ((logicalIndex + 1) % fps == 0) // FPS mark
+            painter->fillRect(rect, QBrush(QColor(48, 140, 198)));
     }
 
     logicalIndex++;
@@ -103,7 +113,13 @@ void TupTimeLineRuler::paintSection(QPainter *painter, const QRect & rect, int l
         QFontMetrics fm(font);
 
         QString number = QString::number(logicalIndex);
-        painter->setFont(font);	
+        painter->setFont(font);
+
+        if (uiTheme == DARK_THEME)
+            painter->setPen(QPen(QColor(255, 255, 255)));
+        else
+            painter->setPen(QPen(QColor(150, 150, 150)));
+
         painter->drawText((rect.center().x() - (fm.horizontalAdvance(number)/2)),
                           (rect.center().y() + (fm.height()/2)) - 2, number);
     }

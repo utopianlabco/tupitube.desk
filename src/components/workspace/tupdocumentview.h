@@ -183,9 +183,9 @@ class Q_DECL_EXPORT TupDocumentView: public QMainWindow
         void updateBgSettings(QList<TupBackground::BgType>, QList<bool>);
         void clearFrame();
         void enableEyeDropperTool(TColorCell::FillType fillType);
-        // void exportImage();
+        void exportImage();
         // void exportAnimaticVideo(const QString &path, const QPixmap &pixmap, int fps);
-        // void postImage();
+        void postImage();
         void launchLipsyncModule(PapagayoAppMode mode, const QString &soundFile);
         void editProjectSize();
 

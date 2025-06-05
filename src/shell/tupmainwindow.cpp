@@ -320,11 +320,12 @@ void TupMainWindow::setWorkSpace(const QStringList &users)
         qDebug() << "[TupMainWindow::setWorkSpace()]";
     #endif
 
-    // Downloading TupiTube news 
+    // Downloading TupiTube news
     TupNewsCollector *newsCollector = new TupNewsCollector();
     newsCollector->start();
     connect(newsCollector, SIGNAL(pageReady()), this, SLOT(enableUpdatesDialog()));
     connect(newsCollector, SIGNAL(newUpdate(bool)), this, SLOT(setUpdateFlag(bool)));
+    connect(newsCollector, SIGNAL(downloadsFinished()), newsCollector, SLOT(deleteLater()));
 
     if (m_projectManager->isOpen()) {
         if (TupMainWindow::requestType == NewLocalProject || TupMainWindow::requestType == NewNetProject)

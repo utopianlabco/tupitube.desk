@@ -52,10 +52,10 @@ QString TupNewsCollector::TUPITUBE_IMAGES = QString("updates/images/");
 TupNewsCollector::TupNewsCollector(QWidget *parent): QWidget(parent)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupNewsCollector()] - SSL enabled? -> " << QSslSocket::supportsSsl();
-        qDebug() << "[TupNewsCollector()] - SSL version use for build -> " << QSslSocket::sslLibraryBuildVersionString();
-        qDebug() << "[TupNewsCollector()] - SSL version use for run-time -> " << QSslSocket::sslLibraryVersionNumber();
-        qDebug() << "[TupNewsCollector()] - Library Paths -> " << QCoreApplication::libraryPaths();
+        qDebug() << "[TupNewsCollector()] - SSL enabled? ->" << QSslSocket::supportsSsl();
+        qDebug() << "[TupNewsCollector()] - SSL version use for build ->" << QSslSocket::sslLibraryBuildVersionString();
+        qDebug() << "[TupNewsCollector()] - SSL version use for run-time ->" << QSslSocket::sslLibraryVersionNumber();
+        qDebug() << "[TupNewsCollector()] - Library Paths ->" << QCoreApplication::libraryPaths();
     #endif
 
     update = false;
@@ -80,7 +80,7 @@ void TupNewsCollector::start()
     QString url = UPDATES_URL + IS_HOST_UP_URL;
 
     #ifdef TUP_DEBUG
-        qWarning() << "[TupNewsCollector::start()] - Getting news updates...";
+        qDebug() << "[TupNewsCollector::start()] - Getting news updates...";
     #endif
 
     manager = new QNetworkAccessManager(this);
@@ -105,17 +105,12 @@ TupNewsCollector::~TupNewsCollector()
     #ifdef TUP_DEBUG
         qDebug() << "[~TupNewsCollector()]";
     #endif
-
-    delete manager;
-    manager = nullptr;
-    delete reply;
-    reply = nullptr;
 }
 
 void TupNewsCollector::requestFile(const QString &target)
 {
     #ifdef TUP_DEBUG
-        qWarning() << "[TupNewsCollector::requestFile()] - Requesting url -> " << target;
+        qDebug() << "[TupNewsCollector::requestFile()] - Requesting url ->" << target;
     #endif
 
     request.setUrl(QUrl(target));
@@ -134,6 +129,15 @@ void TupNewsCollector::closeRequest(QNetworkReply *reply)
     #endif
 
     QByteArray array = reply->readAll();
+
+    /*
+    #ifdef TUP_DEBUG
+        QString debug(array);
+        qDebug() << "*** DEBUG - URL ->" << reply->url().toString();
+        qDebug() << "*** DEBUG:";
+        qDebug() << debug;
+    #endif
+    */
 
     // Reading banner image from server
     QString imageName = reply->url().fileName();
@@ -162,9 +166,10 @@ void TupNewsCollector::closeRequest(QNetworkReply *reply)
             file.close();
         } else {
             #ifdef TUP_DEBUG
-                qDebug() << "[TupNewsCollector::closeRequest()] - Can't create file -> " << image;
+                qWarning() << "[TupNewsCollector::closeRequest()] - Can't create file -> " << image;
             #endif
         }
+        emit downloadsFinished();
 
         return;
     }
@@ -205,7 +210,7 @@ void TupNewsCollector::closeRequest(QNetworkReply *reply)
                         formatStatus(array);
                     } else {
                         #ifdef TUP_DEBUG
-                            qDebug() << "[TupNewsCollector::closeRequest()] - Network Error: Twitter output is NULL!";
+                            qWarning() << "[TupNewsCollector::closeRequest()] - Network Error: Twitter output is NULL!";
                         #endif
                     }
                     requestFile(UPDATES_URL + TUPITUBE_WEB_AD + locale + ".html");
@@ -220,7 +225,13 @@ void TupNewsCollector::closeRequest(QNetworkReply *reply)
                                     if (!QFile::exists(imgPath)) {
                                         requestFile(UPDATES_URL + TUPITUBE_IMAGES + code);
                                         return;
+                                    } else {
+                                        emit downloadsFinished();
                                     }
+                                } else {
+                                    #ifdef TUP_DEBUG
+                                        qWarning() << "[TupNewsCollector::closeRequest()] - Fatal Error: Image code is empty!";
+                                    #endif
                                 }
                             }
                         }
@@ -230,7 +241,7 @@ void TupNewsCollector::closeRequest(QNetworkReply *reply)
         }
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupNewsCollector::closeRequest()] - Network Error: Gosh! No Internet? :S";
+            qWarning() << "[TupNewsCollector::closeRequest()] - Network Error: Gosh! No Internet? :S";
         #endif
     } 
 }
@@ -238,7 +249,7 @@ void TupNewsCollector::closeRequest(QNetworkReply *reply)
 void TupNewsCollector::slotError(QNetworkReply::NetworkError error)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupNewsCollector::slotError()] - Error -> " << error;
+        qDebug() << "[TupNewsCollector::slotError()] - Error ->" << error;
     #endif
 
     switch (error) {
@@ -284,7 +295,7 @@ void TupNewsCollector::slotError(QNetworkReply::NetworkError error)
 void TupNewsCollector::checkSoftwareUpdates(QByteArray array)
 {
     #ifdef TUP_DEBUG
-        qWarning() << "[TupNewsCollector::checkSoftwareUpdates()] - Processing updates file...";
+        qDebug() << "[TupNewsCollector::checkSoftwareUpdates()] - Processing updates file...";
     #endif
 
     QDomDocument doc;
@@ -312,9 +323,9 @@ void TupNewsCollector::checkSoftwareUpdates(QByteArray array)
         }
 
         #ifdef TUP_DEBUG
-            qWarning() << "[TupNewsCollector::checkSoftwareUpdates()] - Update Flag -> " << update;
-            qWarning() << "*** Server Version: " << version << " - Revision: " << revision << " - Code Name: " << codeName;
-            qWarning() << "*** Local Version: " << kAppProp->version() << " - Revision: " << kAppProp->revision();
+            qDebug() << "[TupNewsCollector::checkSoftwareUpdates()] - Update Flag -> " << update;
+            qDebug() << "*** Server Version: " << version << " - Revision: " << revision << " - Code Name: " << codeName;
+            qDebug() << "*** Local Version: " << kAppProp->version() << " - Revision: " << kAppProp->revision();
         #endif
 
         emit newUpdate(update);
@@ -324,7 +335,7 @@ void TupNewsCollector::checkSoftwareUpdates(QByteArray array)
 void TupNewsCollector::formatStatus(QByteArray array)
 {
     #ifdef TUP_DEBUG
-        qWarning() << "[TupNewsCollector::formatStatus()] - Formatting news file...";
+        qDebug() << "[TupNewsCollector::formatStatus()] - Formatting news file...";
     #endif
 
     QString tweets = QString(array);
@@ -401,8 +412,8 @@ void TupNewsCollector::formatStatus(QByteArray array)
     }
 
     #ifdef TUP_DEBUG
-        qWarning() << "[TupNewsCollector::formatStatus()] - Saving file -> " << releasePath;
-        qWarning() << "[TupNewsCollector::formatStatus()] - Saving file -> " << newsPath;
+        qDebug() << "[TupNewsCollector::formatStatus()] - Saving file ->" << releasePath;
+        qDebug() << "[TupNewsCollector::formatStatus()] - Saving file ->" << newsPath;
     #endif
 
     emit pageReady();
@@ -411,11 +422,17 @@ void TupNewsCollector::formatStatus(QByteArray array)
 bool TupNewsCollector::saveFile(const QString &answer, const QString &fileName)
 {
     QString msgPath = QDir::homePath() + "/." + QCoreApplication::applicationName() + "/" + fileName;
+
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupNewsCollector::saveFile()] - msgPath ->" << msgPath;
+    #endif
+
     QFile file(msgPath);
     if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QTextStream out(&file);
         out << answer;
         file.close();
+
         return true;
     }
 
@@ -424,11 +441,20 @@ bool TupNewsCollector::saveFile(const QString &answer, const QString &fileName)
 
 QString TupNewsCollector::getImageCode(const QString &answer) const
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupNewsCollector::getImageCode()] - answer ->" << answer;
+    #endif
+
     QDomDocument doc;
     if (doc.setContent(answer)) {
         QDomNode root = doc.namedItem("webmsg");
         QDomElement element = root.firstChildElement("image");
         QString image = element.text();
+
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupNewsCollector::getImageCode()] - answer ->" << image;
+        #endif
+
         return image;
     }
 

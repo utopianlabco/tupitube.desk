@@ -2002,50 +2002,50 @@ void TupDocumentView::selectScene(int scene)
 //        miscMenu->menuAction()->setIcon(action->icon());
 //}
 
-//void TupDocumentView::exportImage()
-//{
-//    #ifdef TUP_DEBUG
-//        qDebug() << "[TupDocumentView::exportImage()]";
-//    #endif
+void TupDocumentView::exportImage()
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupDocumentView::exportImage()]";
+    #endif
 
-//    paintArea->viewport()->setCursor(Qt::ArrowCursor);
+    paintArea->viewport()->setCursor(Qt::ArrowCursor);
 
-//    // updateToolsMenu(TAction::ExportImage, "export_image");
-//    int sceneIndex = paintArea->currentSceneIndex();
-//    int frameIndex = paintArea->currentFrameIndex();
+    // updateToolsMenu(TAction::ExportImage, "export_image");
+    int sceneIndex = paintArea->currentSceneIndex();
+    int frameIndex = paintArea->currentFrameIndex();
 
-//    QString fileName = QFileDialog::getSaveFileName(this, tr("Export Frame As"), QDir::homePath(),
-//                                                    tr("Images") + " (*.png *.jpg *.svg)");
-//    if (!fileName.isNull()) {
-//        bool isOk = imagePlugin->exportFrame(frameIndex, project->getCurrentBgColor(), fileName, project->sceneAt(sceneIndex),
-//                                             project->getDimension(), project);
-//        updatePaintArea();
-//        if (isOk)
-//            TOsd::self()->display(TOsd::Info, tr("Frame has been exported successfully"));
-//        else
-//            TOsd::self()->display(TOsd::Error, tr("Can't export frame as image"));
-//    }
-//}
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Export Frame As"), QDir::homePath(),
+                                                    tr("Images") + " (*.png *.jpg *.svg)");
+    if (!fileName.isNull()) {
+        bool isOk = imagePlugin->exportFrame(frameIndex, project->getCurrentBgColor(), fileName, project->sceneAt(sceneIndex),
+                                             project->getDimension(), project);
+        updatePaintArea();
+        if (isOk)
+            TOsd::self()->display(TOsd::Info, tr("Frame has been exported successfully"));
+        else
+            TOsd::self()->display(TOsd::Error, tr("Can't export frame as image"));
+    }
+}
 
-//void TupDocumentView::postImage()
-//{
-//    #ifdef TUP_DEBUG
-//        qDebug() << "[TupDocumentView::postImage()]";
-//    #endif
+void TupDocumentView::postImage()
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupDocumentView::postImage()]";
+    #endif
 
-//    paintArea->viewport()->setCursor(Qt::ArrowCursor);
-//    // updateToolsMenu(TAction::PostImage, "post_image");
+    paintArea->viewport()->setCursor(Qt::ArrowCursor);
+    // updateToolsMenu(TAction::PostImage, "post_image");
 
-//    int sceneIndex = paintArea->graphicsScene()->currentSceneIndex();
-//    int frameIndex = paintArea->graphicsScene()->currentFrameIndex();
-//    QString fileName = CACHE_DIR + TAlgorithm::randomString(8) + ".png";
+    int sceneIndex = paintArea->graphicsScene()->currentSceneIndex();
+    int frameIndex = paintArea->graphicsScene()->currentFrameIndex();
+    QString fileName = CACHE_DIR + TAlgorithm::randomString(8) + ".png";
 
-//    bool isOk = imagePlugin->exportFrame(frameIndex, project->getCurrentBgColor(), fileName, project->sceneAt(sceneIndex),
-//                                         project->getDimension(), project);
-//    updatePaintArea();
-//    if (isOk)
-//        emit imagePostRequested(fileName);
-//}
+    bool isOk = imagePlugin->exportFrame(frameIndex, project->getCurrentBgColor(), fileName, project->sceneAt(sceneIndex),
+                                         project->getDimension(), project);
+    updatePaintArea();
+    if (isOk)
+        emit imagePostRequested(fileName);
+}
 
 void TupDocumentView::storyboardSettings()
 {

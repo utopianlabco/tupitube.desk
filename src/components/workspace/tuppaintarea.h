@@ -107,6 +107,7 @@ class TUPITUBE_EXPORT TupPaintArea : public TupPaintAreaBase, public TupAbstract
         void getLocalAsset(const QString &path);
         void getWebAsset(const QString &webPath);
         void importLocalProject(const QString &path, bool onlyLibrary = false);
+        void drawCurrentPhotogram();
 
     protected:
         virtual void keyPressEvent(QKeyEvent *event);

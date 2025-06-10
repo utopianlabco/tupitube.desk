@@ -63,9 +63,12 @@ class TUPITUBE_PLUGIN PencilTool : public TupToolPlugin
         
         virtual void init(TupGraphicsScene *gScene);
         virtual QList<TAction::ActionId> keys() const;
-        virtual void press(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene);
-        virtual void move(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene);
-        virtual void release(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene);
+        virtual void press(const TupInputDeviceInformation *input, TupBrushManager *brushManager,
+                           TupGraphicsScene *gScene);
+        virtual void move(const TupInputDeviceInformation *input, TupBrushManager *brushManager,
+                          TupGraphicsScene *gScene);
+        virtual void release(const TupInputDeviceInformation *input, TupBrushManager *brushManager,
+                             TupGraphicsScene *gScene);
         virtual QMap<TAction::ActionId, TAction *>actions() const;
         TAction * getAction(TAction::ActionId toolId);
 
@@ -76,8 +79,6 @@ class TUPITUBE_PLUGIN PencilTool : public TupToolPlugin
         virtual QCursor toolCursor();
         virtual void frameResponse(const TupFrameResponse *event);
         virtual void sceneResponse(const TupSceneResponse *event);
-
-        void addKeyPoints(TupPathItem *item);
 
     protected:
         virtual void keyPressEvent(QKeyEvent *event);
@@ -92,16 +93,24 @@ class TUPITUBE_PLUGIN PencilTool : public TupToolPlugin
         void closeHugeCanvas();
         void callForPlugin(int menu, int index);
         void penWidthChanged(int width);
+        void pencilModeUpdated(PenTool tool);
 
     private slots:
         void updatePenTool(PenTool tool);
         void updateSmoothness(double value);
         void updateEraserSize(int value);
 
+    // public slots:
+        // void enableEraserMode();
+        // void enablePencilMode();
+
     private:
         void storePathItems();
-        void activeEraser(const QPointF &point);
+        void runEraser(const QPointF &point);
         TupFrame* getCurrentFrame();
+
+        void addKeyPoints(TupPathItem *item);
+        void removeKeyPoints();
 
         QPointF firstPoint;
         QPointF previousPos;
@@ -109,7 +118,10 @@ class TUPITUBE_PLUGIN PencilTool : public TupToolPlugin
         PencilSettings *settings;
         QMap<TAction::ActionId, TAction *> penActions;
         TupPathItem *item;
+
         QCursor penCursor;
+        QCursor eraserCursor;
+
         TupGraphicsScene *scene;
         TupBrushManager *brushManager;
         TupInputDeviceInformation *input;

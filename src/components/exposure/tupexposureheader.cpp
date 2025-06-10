@@ -259,10 +259,10 @@ void TupExposureHeader::paintSection(QPainter *painter, const QRect & rect, int 
         painter->fillRect(rect.normalized().adjusted(0, 0, 0, -1), color);
     }
 
-    int buttonWidth = 12;
-    int width = (rect.normalized().width() - (fm.horizontalAdvance(text) + buttonWidth) + 4)/ 2;
+    int buttonWidth = rect.normalized().height();
+    int width = (rect.normalized().width() - (buttonWidth + fm.horizontalAdvance(text)))/ 2;
     int x = rect.normalized().x() + width + buttonWidth;
-    int y = rect.normalized().bottomLeft().y() - (1 + (rect.normalized().height() - fm.height())/2);
+    int y = rect.normalized().bottomLeft().y() - (2 + (rect.normalized().height() - fm.height())/2);
 
     painter->setFont(font);
 

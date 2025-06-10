@@ -49,12 +49,15 @@ class TUPITUBE_EXPORT TupPathItem : public TupAbstractSerializable, public QGrap
         
         virtual void fromXml(const QString &xml);
         virtual QDomElement toXml(QDomDocument &doc) const;
-        virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr);
+        virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+                           QWidget *widget = nullptr);
         bool contains(const QPointF &point) const;
         bool isNotEdited();
         void saveOriginalPath();
+
         QString pathToString() const;
         void setPathFromString(const QString &route);
+
         void undoPath();
         void redoPath();
 
@@ -66,7 +69,8 @@ class TUPITUBE_EXPORT TupPathItem : public TupAbstractSerializable, public QGrap
         QString changeNodeTypeFromPath(int index);
         bool pointMatchesPath(QPointF pos, float tolerance, PenTool tool);
         QString addInnerNode(int tolerance, NodeType node);
-        bool pointIsContainedBetweenRange(const QPointF &point1, const QPointF &point2, const QPointF &newPoint, float tolerance);
+        bool pointIsContainedBetweenRange(const QPointF &point1, const QPointF &point2,
+                                          const QPointF &newPoint, float tolerance);
         QString appendNode(const QPointF &pos);
         QPair<QPointF,QPointF> calculateEndPathCPoints(const QPointF &pos);
 
@@ -88,13 +92,15 @@ class TUPITUBE_EXPORT TupPathItem : public TupAbstractSerializable, public QGrap
         
     private:
         QPair<QPointF, QPointF> getCurveElements(QPointF initPos, QPointF endPos);
-        bool pointIsContainedBetweenNodes(const QPointF &node1, const QPointF &node2, const QPointF &point, float tolerance);
-        bool pointIsContainedBetweenFlatNodes(const QPointF &node1, const QPointF &node2, const QPointF &point,
-                                              int tolerance, bool eraserMode = false);
+        bool pointIsContainedBetweenNodes(const QPointF &node1, const QPointF &node2,
+                                          const QPointF &point, float tolerance);
+        bool pointIsContainedBetweenFlatNodes(const QPointF &node1, const QPointF &node2,
+                                              const QPointF &point, int tolerance, bool eraserMode = false);
         QPair<QPointF,QPointF> calculateCPoints(const QPointF &pos1, const QPointF &pos2);
         QPair<QPointF,QPointF> calculatePlainCPoints(const QPointF &pos1, const QPointF &pos2);
         bool pointIsPartOfLine(const QPainterPath &route, const QPointF &point, int tolerance, PenTool tool);
-        bool findPointAtLine(const QPointF &point1, const QPointF &point2, const QPointF &target, int tolerance, PenTool tool);
+        bool findPointAtLine(const QPointF &point1, const QPointF &point2, const QPointF &target, int tolerance,
+                             PenTool tool);
         QPointF getNewC1Element(const QPointF &c1, const QPointF &c2, float tolerance);
 
         bool dragOver;

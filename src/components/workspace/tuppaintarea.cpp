@@ -612,6 +612,10 @@ void TupPaintArea::itemResponse(TupItemResponse *response)
             break;
             default:
               {
+                  #ifdef TUP_DEBUG
+                      qDebug() << "[TupPaintArea::itemResponse()] - Executing default case...";
+                  #endif
+
                   if (spaceMode == TupProject::FRAMES_MODE) {
                       guiScene->drawCurrentPhotogram();
                   } else if (spaceMode == TupProject::VECTOR_FG_MODE) {
@@ -1537,6 +1541,8 @@ void TupPaintArea::keyPressEvent(QKeyEvent *event)
     if (currentToolID == TAction::Polyline) {
         if (event->key() == Qt::Key_X)
             emit closePolyLine();
+
+        return;
     }
 
     TupPaintAreaBase::keyPressEvent(event);
@@ -2195,4 +2201,9 @@ void TupPaintArea::slotError(QNetworkReply::NetworkError error)
 
     QApplication::restoreOverrideCursor();
     webLock = false;
+}
+
+void TupPaintArea::drawCurrentPhotogram()
+{
+    graphicsScene()->drawCurrentPhotogram();
 }

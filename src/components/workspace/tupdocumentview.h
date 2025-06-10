@@ -188,6 +188,7 @@ class Q_DECL_EXPORT TupDocumentView: public QMainWindow
         void postImage();
         void launchLipsyncModule(PapagayoAppMode mode, const QString &soundFile);
         void editProjectSize();
+        void updatePencilToolCursor(PenTool tool);
 
     signals:
         void pluginsLoaded();

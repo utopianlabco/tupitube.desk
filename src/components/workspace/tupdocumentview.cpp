@@ -554,8 +554,11 @@ void TupDocumentView::loadPlugins()
                       // if (toolId == TAction::Scheme)
                       //     schemeAction = action;
 
-                      if (toolId == TAction::Pencil)
+                      if (toolId == TAction::Pencil) {
                           pencilAction = action;
+                          connect(tool, SIGNAL(pencilModeUpdated(PenTool)),
+                                  this, SLOT(updatePencilToolCursor(PenTool)));
+                      }
 
                       if (toolId == TAction::Ink)
                           inkAction = action;
@@ -983,8 +986,19 @@ void TupDocumentView::selectTool()
         TAction::ActionId toolId = action->actionId();
 
         if (currentTool) {
-            if (toolId == currentTool->toolId())
+            if (toolId == currentTool->toolId()) {
                 return;
+
+//                if (toolName.compare(tr("Pencil")) == 0) {
+//                    qDebug() << "[TupDocumentView::selectTool()] - Enabling PencilMode...";
+//                    emit pencilActivated();
+//                } else {
+//                    #ifdef TUP_DEBUG
+//                        qDebug() << "[TupDocumentView::selectTool()] - Tool is already active ->" << toolName;
+//                    #endif
+//                    return;
+//                }
+            }
 
             if (currentTool->toolId() == TAction::Pencil)
                 disconnect(currentTool, SIGNAL(penWidthChanged(int)), this, SIGNAL(penWidthChanged(int)));
@@ -2598,6 +2612,26 @@ void TupDocumentView::updateActiveDock(TupDocumentView::DockType dock)
 void TupDocumentView::updateCameraMode()
 {
     cameraMode = false;
+}
+
+void TupDocumentView::updatePencilToolCursor(PenTool tool)
+{
+    if (currentTool) {
+        if (currentTool->currentToolName().compare(tr("Pencil"))==0) {
+            QCursor cursor;
+            QString cursorImg;
+            if (tool == PencilMode) {
+                cursorImg = "target.png";
+                cursor = QCursor(CURSORS_DIR + cursorImg, 4, 4);
+            } else {
+                cursorImg = "eraser.png";
+                cursor = QCursor(CURSORS_DIR + cursorImg, 4, 4);
+                paintArea->drawCurrentPhotogram();
+            }
+
+            paintArea->viewport()->setCursor(cursor);
+        }
+    }
 }
 
 void TupDocumentView::setBucketTool(TColorCell::FillType type)

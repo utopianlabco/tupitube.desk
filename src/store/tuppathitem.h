@@ -84,6 +84,8 @@ class TUPITUBE_EXPORT TupPathItem : public TupAbstractSerializable, public QGrap
         int nodesCount();
 
         QPair<QString, QString> recalculatePath(const QPointF &limitPoint, int tolerance);
+        bool isBlocked();
+        void updateBlockingFlag(bool flag);
 
     protected:
         virtual void dragEnterEvent(QGraphicsSceneDragDropEvent *event);
@@ -91,18 +93,48 @@ class TUPITUBE_EXPORT TupPathItem : public TupAbstractSerializable, public QGrap
         virtual void dropEvent(QGraphicsSceneDragDropEvent *event);
         
     private:
+        enum CuttingPointType { None, Begin, End, Middle };
+        enum PathSegment { FirstSegment, SecondSegment };
+
         QPair<QPointF, QPointF> getCurveElements(QPointF initPos, QPointF endPos);
-        bool pointIsContainedBetweenNodes(const QPointF &node1, const QPointF &node2,
-                                          const QPointF &point, float tolerance);
-        bool pointIsContainedBetweenFlatNodes(const QPointF &node1, const QPointF &node2,
+        bool isPointContainedBetweenCurveNodes(const QPointF &node1, const QPointF &node2,
+                                               const QPointF &point, float tolerance);
+        bool isPointContainedBetweenFlatNodes(const QPointF &node1, const QPointF &node2,
                                               const QPointF &point, int tolerance, bool eraserMode = false);
         QPair<QPointF,QPointF> calculateCPoints(const QPointF &pos1, const QPointF &pos2);
         QPair<QPointF,QPointF> calculatePlainCPoints(const QPointF &pos1, const QPointF &pos2);
-        bool pointIsPartOfLine(const QPainterPath &route, const QPointF &point, int tolerance, PenTool tool);
-        bool findPointAtLine(const QPointF &point1, const QPointF &point2, const QPointF &target, int tolerance,
-                             PenTool tool);
+        bool isPointPartOfStraightLine(const QPainterPath &route, const QPointF &point, int tolerance,
+                                       PenTool tool);
+        bool findPointAtStraightLine(const QPointF &point1, const QPointF &point2, const QPointF &cuttingPoint,
+                                     int tolerance, PenTool tool);
         QPointF getNewC1Element(const QPointF &c1, const QPointF &c2, float tolerance);
+        QPointF pointAtPercentage(const QPointF &startPoint, const QPointF &endPoint, int percentage);
+        QList<QPointF> generateCurvePoints(const QPointF &c0, const QPointF &c1, const QPointF &c2);
+        bool findPointAtCurve(const QPointF &c0, const QPointF &c1, const QPointF &c2,
+                              const QPointF &cuttingPoint, int tolerance, QList<QPointF> curvePoints);
+        bool pathIsTooShort(const QPointF &cuttingPoint, int tolerance);
 
+        QString mToString(PathSegment segment, QPointF point);
+        QString lineToString(PathSegment segment, QPointF point);
+        QString curveToString(PathSegment segment, QList<QPointF> curvePoints);
+
+        QList<QPointF> shortenCurveFromStart(const QPointF& C1, const QPointF& C2, const QPointF& C3,
+                                             const QPointF& cuttingPoint, double tolerance,
+                                             const QList<QPointF>& curvePoints);
+        QList<QPointF> shortenCurveFromEnd(const QPointF& C1, const QPointF& C2, const QPointF& C3,
+                                           const QPointF& cuttingPoint, double tolerance,
+                                           const QList<QPointF>& curvePoints);
+        QPair<QList<QPointF>, QList<QPointF>>
+                       splitCurveBetween(const QPointF& C1, const QPointF& C2,
+                                         const QPointF& C3, const QPointF& cuttingPoint, double tolerance,
+                                         const QList<QPointF>& curvePoints);
+
+        QPair<QList<QPointF>, QList<QPointF>>
+                       splitStraightLine(const QPointF &startPoint, const QPointF &endPoint,
+                                         const QPointF &cuttingPoint, double tolerance);        
+        void generatePathPoints(QPainterPath route, int tolerance);
+
+        QChar t1, t2;
         bool dragOver;
         QList<QString> undoList;
         QList<QString> doList;
@@ -110,14 +142,19 @@ class TUPITUBE_EXPORT TupPathItem : public TupAbstractSerializable, public QGrap
 
         bool straightLineFlag;
         bool flatCurveFlag;
+        QPointF curvePointFound;
         QPointF newNode;
 
         QList<QColor> colors;
         QList<QString> tips;
+
+        QPointF c0, c1, c2;
+
         QList<QPair<QPointF,QPointF>> curvePoints;
-        QPair<QString, QString> pathSegments;
+        QPair<QString, QString> pathSegments;                
 
         QPolygonF pathPoints;
+        bool pathBlocked;
 };
 
 #endif

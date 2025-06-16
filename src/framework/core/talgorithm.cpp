@@ -293,6 +293,7 @@ float TAlgorithm::calculateYFromLine(float x, float m, float b)
     return (m*x + b);
 }
 
+/*
 float TAlgorithm::distanceFromLine(QPointF linePoint1, QPointF linePoint2, QPointF point)
 {
     qreal top = fabs(((linePoint2.x() - linePoint1.x())*(linePoint1.y() - point.y()))
@@ -300,6 +301,51 @@ float TAlgorithm::distanceFromLine(QPointF linePoint1, QPointF linePoint2, QPoin
     qreal bottom = sqrt(pow(linePoint2.x() - linePoint1.x(), 2) + pow(linePoint2.y() - linePoint1.y(), 2));
 
     return (top / bottom);
+}
+*/
+
+float TAlgorithm::distanceFromLine(QPointF linePoint1, QPointF linePoint2, QPointF point)
+{
+    // Calculate differences
+    qreal dx = linePoint2.x() - linePoint1.x();
+    qreal dy = linePoint2.y() - linePoint1.y();
+
+    // Calculate the numerator of the distance formula
+    qreal numerator = fabs(dx * (linePoint1.y() - point.y()) - (linePoint1.x() - point.x()) * dy);
+
+    // Calculate the denominator of the distance formula
+    qreal denominator = sqrt(dx * dx + dy * dy);
+
+    // Check for division by zero
+    if (denominator == 0) {
+         return 0.0f; // or handle as an error, depending on your application's needs
+    }
+
+    return static_cast<float>(numerator / denominator);
+}
+
+QPointF TAlgorithm::projectPointOntoLine(QPointF linePoint1, QPointF linePoint2, QPointF point)
+{
+    // Calculate differences
+    qreal dx = linePoint2.x() - linePoint1.x();
+    qreal dy = linePoint2.y() - linePoint1.y();
+
+    // Calculate the line length squared
+    qreal lineLengthSquared = dx * dx + dy * dy;
+
+    // Check for degenerate line segment
+    if (lineLengthSquared == 0) {
+         return linePoint1; // The line points are the same, return one of them
+    }
+
+    // Calculate the projection factor t
+    qreal t = ((point.x() - linePoint1.x()) * dx + (point.y() - linePoint1.y()) * dy) / lineLengthSquared;
+
+    // Calculate the projection point
+    qreal projX = linePoint1.x() + t * dx;
+    qreal projY = linePoint1.y() + t * dy;
+
+    return QPointF(projX, projY);
 }
 
 QPair<int, int> TAlgorithm::screenDimension()

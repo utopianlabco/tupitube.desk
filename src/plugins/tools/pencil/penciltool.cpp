@@ -434,16 +434,30 @@ void PencilTool::sceneResponse(const TupSceneResponse *event)
     Q_UNUSED(event)
 }
 
-void PencilTool::updateEraserSize(int value)
-{
-    eraserSize = value;
-}
-
 void PencilTool::frameResponse(const TupFrameResponse *event)
 {
     Q_UNUSED(event)
 
     setZValueReferences();
+}
+
+void PencilTool::itemResponse(const TupItemResponse *event)
+{
+    if (currentTool == EraserMode) {
+        scene->drawCurrentPhotogram();
+        if (event->getAction() == TupProjectRequest::Add)
+            storePathItems();
+        for (int i=0; i<lineItems.size(); i++) {
+            TupPathItem *item = lineItems.at(i);
+            if (item->isBlocked())
+                item->updateBlockingFlag(false);
+        }
+    }
+}
+
+void PencilTool::updateEraserSize(int value)
+{
+    eraserSize = value;
 }
 
 TupFrame* PencilTool::getCurrentFrame()
@@ -483,7 +497,12 @@ void PencilTool::runEraser(const QPointF &point)
     qDebug() << "PencilTool::runEraser() - lineItems.size() ->" << lineItems.size();
     // Checking if the point matches any of the frame paths
     for (int i=0; i<lineItems.size(); i++) {
-        TupPathItem *item = lineItems.at(i);        
+        TupPathItem *item = lineItems.at(i);
+        if (item->isBlocked()) {
+            qDebug() << "PencilTool::runEraser() - Path is blocked... ignoring...";
+            continue;
+        }
+
         if (item->pointMatchesPath(point, eraserSize/2, EraserMode)) {
             // Path matches the point
             qDebug() << "-------------------------------------------------------";
@@ -514,6 +533,28 @@ void PencilTool::runEraser(const QPointF &point)
 
                 if (!segment1.isEmpty() && !segment2.isEmpty()) {
                     qDebug() << "PencilTool::runEraser() - Adding TWO segments!";
+                    TupProjectRequest event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(),
+                                                                                   currentLayer, currentFrame, itemIndex,
+                                                                                   QPointF(), scene->getSpaceContext(), TupLibraryObject::Item,
+                                                                                   TupProjectRequest::EditNodes, segment1);
+                    emit requested(&event);
+
+                    TupPathItem *lineItem = new TupPathItem;
+                    lineItem->setPen(brushManager->pen());
+                    lineItem->setBrush(brushManager->brush());
+                    lineItem->setPathFromString(segment2);
+
+                    QDomDocument doc;
+                    doc.appendChild(lineItem->toXml(doc));
+
+                    qDebug() << "PencilTool::runEraser() - Creating additional path segment!";
+                    qDebug() << "PencilTool::runEraser() - segment2 ->" << segment2;
+                    qDebug() << "PencilTool::runEraser() - path definition ->" << doc.toString();
+
+                    event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(), scene->currentLayerIndex(), scene->currentFrameIndex(),
+                                                                 0, QPoint(), scene->getSpaceContext(), TupLibraryObject::Item, TupProjectRequest::Add,
+                                                                 doc.toString());
+                    emit requested(&event);
                 } else if (segment2.isEmpty() && !segment1.isEmpty()) {
                     qDebug() << "PencilTool::runEraser() - Adding segment1";
                     TupProjectRequest event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(),
@@ -523,8 +564,8 @@ void PencilTool::runEraser(const QPointF &point)
                     emit requested(&event);
 
                     // Temporary code for debugging
-                    TupPathItem *debugPath = new TupPathItem;
-                    debugPath->setPathFromString(segment1);
+                    // TupPathItem *debugPath = new TupPathItem;
+                    // debugPath->setPathFromString(segment1);
                     // addKeyPoints(debugPath);
                 } else {
                     qDebug() << "PencilTool::runEraser() - Removing item...";

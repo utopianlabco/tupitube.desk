@@ -242,6 +242,7 @@ void PencilTool::release(const TupInputDeviceInformation *input, TupBrushManager
             emit requested(&request);
 
             // addKeyPoints(item);
+            // addCurvePoints(item);
         }
     } else { // Eraser Mode
         gScene->removeItem(eraserCircle);
@@ -301,8 +302,14 @@ void PencilTool::updatePenTool(PenTool tool)
     emit pencilModeUpdated(tool);
 
     currentTool = tool;
-    if (tool == EraserMode)
+    if (tool == EraserMode) {
         storePathItems();
+        for (int i=0; i<lineItems.size(); i++) {
+            TupPathItem *item = lineItems.at(i);
+            addCurvePoints(item);
+            addKeyPoints(item);
+        }
+    }
 }
 
 void PencilTool::storePathItems()
@@ -564,9 +571,10 @@ void PencilTool::runEraser(const QPointF &point)
                     emit requested(&event);
 
                     // Temporary code for debugging
-                    // TupPathItem *debugPath = new TupPathItem;
-                    // debugPath->setPathFromString(segment1);
-                    // addKeyPoints(debugPath);
+                    TupPathItem *debugPath = new TupPathItem;
+                    debugPath->setPathFromString(segment1);
+                    addCurvePoints(debugPath);
+                    addKeyPoints(debugPath);
                 } else {
                     qDebug() << "PencilTool::runEraser() - Removing item...";
                     qDebug() << "currentLayer ->" << currentLayer;
@@ -576,7 +584,7 @@ void PencilTool::runEraser(const QPointF &point)
                     scene->removeItem(item);
                     lineItems.removeAt(i);
 
-                    // removeKeyPoints();
+                    removeKeyPoints();
 
                     TupProjectRequest event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(),
                                                                                    currentLayer, currentFrame, itemIndex, QPointF(), scene->getSpaceContext(),
@@ -602,9 +610,9 @@ void PencilTool::addKeyPoints(TupPathItem *item)
         qDebug() << "[PencilTool::addKeyPoints()]";
     #endif
 
-    foreach (TupEllipseItem *item, route)
+    foreach (TupEllipseItem *item, pathEllipsesList)
         scene->removeItem(item);
-    route.clear();
+    pathEllipsesList.clear();
 
     if (!item) {
         #ifdef TUP_DEBUG
@@ -645,7 +653,7 @@ void PencilTool::addKeyPoints(TupPathItem *item)
         ellipse->setBrush(pointPen.brush());
         ellipse->setToolTip(tips.at(pointsCounter));
         scene->includeObject(ellipse);
-        route << ellipse;
+        pathEllipsesList << ellipse;
 
         if (pointsCounter > 0) {
            path.lineTo(point);
@@ -666,6 +674,76 @@ void PencilTool::addKeyPoints(TupPathItem *item)
     lineAdded = true;
 }
 
+void PencilTool::addCurvePoints(TupPathItem *item)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[PencilTool::addCurvePoints()]";
+    #endif
+
+    foreach (TupEllipseItem *item, curveEllipsesList)
+        scene->removeItem(item);
+    curveEllipsesList.clear();
+
+    if (!item) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[PencilTool::addCurvePoints()] - Fatal Error: Path is NULL!";
+        #endif
+
+        return;
+    }
+
+    qDebug() << "[PencilTool::addCurvePoints()] - path ->" << item->pathToString();
+
+    QList<QPointF> points = item->debuggingCurvePoints(eraserSize/2);
+    if (points.isEmpty()) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[PencilTool::addCurvePoints()] - Fatal Error: Path item has no points!";
+        #endif
+
+        return;
+    }
+
+    // QList<QColor> colors = item->nodeColors();
+    // QList<QString> tips = item->nodeTips();
+    int pointsCounter = 0;
+
+    if (lineAdded)
+        scene->removeItem(lineItem);
+
+    QPainterPath path;
+    path.moveTo(points.at(0));
+
+    foreach (QPointF point, points) {
+        qreal radius = penWidth;
+        QPointF distance((radius + 2)/2, (radius + 2)/2);
+        QPen pointPen(Qt::blue, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+        TupEllipseItem *ellipse = new TupEllipseItem(QRectF(point - distance,
+                                                            QSize(static_cast<int>(radius + 2), static_cast<int>(radius + 2))));
+        ellipse->setPen(pointPen);
+        ellipse->setBrush(pointPen.brush());
+        // ellipse->setToolTip(tips.at(pointsCounter));
+        scene->includeObject(ellipse);
+        curveEllipsesList << ellipse;
+
+        if (pointsCounter > 0) {
+           path.lineTo(point);
+        }
+
+        pointsCounter++;
+    }
+
+    qDebug() << "[PencilTool::addCurvePoints()] - Adding axis line!";
+    qDebug() << "[PencilTool::addCurvePoints()] - pointsCounter ->" << pointsCounter;
+    qDebug() << "[PencilTool::addCurvePoints()] - points.size() ->" << points.size();
+
+    QPen linePen(Qt::red, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    lineItem = new TupPathItem;
+    lineItem->setPen(linePen);
+    lineItem->setPath(path);
+    scene->includeObject(lineItem);
+    lineAdded = true;
+}
+
 void PencilTool::removeKeyPoints()
 {
     if (lineAdded) {
@@ -673,10 +751,23 @@ void PencilTool::removeKeyPoints()
         lineAdded = false;
     }
 
-    foreach (TupEllipseItem *ellipse, route)
+    foreach (TupEllipseItem *ellipse, pathEllipsesList)
         scene->removeItem(ellipse);
 
-    route.clear();
+    pathEllipsesList.clear();
+}
+
+void PencilTool::removeCurveKeyPoints()
+{
+    if (lineAdded) {
+        scene->removeItem(lineItem);
+        lineAdded = false;
+    }
+
+    foreach (TupEllipseItem *ellipse, curveEllipsesList)
+        scene->removeItem(ellipse);
+
+    curveEllipsesList.clear();
 }
 
 //void PencilTool::enableEraserMode()

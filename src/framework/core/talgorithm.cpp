@@ -261,9 +261,9 @@ QStringList TAlgorithm::naturalSort(QStringList elements)
     return elements;
 }
 
-float TAlgorithm::distance(const QPointF &p1, const QPointF &p2)
+double TAlgorithm::distance(const QPointF &p1, const QPointF &p2)
 {
-    float vx, vy;
+    double vx, vy;
 
     vx = p2.x() - p1.x();
     vy = p2.y() - p1.y();
@@ -271,30 +271,30 @@ float TAlgorithm::distance(const QPointF &p1, const QPointF &p2)
     return sqrt((vx * vx) + (vy * vy));
 }
 
-float TAlgorithm::slope(const QPointF &p1, const QPointF &p2)
+double TAlgorithm::slope(const QPointF &p1, const QPointF &p2)
 {
     return (p2.y() - p1.y())/(p2.x() - p1.x());
 }
 
-float TAlgorithm::inverseSlope(const QPointF &p1, const QPointF &p2)
+double TAlgorithm::inverseSlope(const QPointF &p1, const QPointF &p2)
 {
-    float m = (p2.y() - p1.y())/(p2.x() - p1.x());
+    double m = (p2.y() - p1.y())/(p2.x() - p1.x());
 
     return -(1/m);
 }
 
-float TAlgorithm::calculateBFromLine(const QPointF &point, float slope)
+double TAlgorithm::calculateBFromLine(const QPointF &point, double slope)
 {
     return (point.y() - (slope*point.x()));
 }
 
-float TAlgorithm::calculateYFromLine(float x, float m, float b)
+double TAlgorithm::calculateYFromLine(double x, double m, double b)
 {
     return (m*x + b);
 }
 
 /*
-float TAlgorithm::distanceFromLine(QPointF linePoint1, QPointF linePoint2, QPointF point)
+double TAlgorithm::distanceFromLine(QPointF linePoint1, QPointF linePoint2, QPointF point)
 {
     qreal top = fabs(((linePoint2.x() - linePoint1.x())*(linePoint1.y() - point.y()))
                      - ((linePoint1.x() - point.x())*(linePoint2.y() - linePoint1.y())));
@@ -304,7 +304,7 @@ float TAlgorithm::distanceFromLine(QPointF linePoint1, QPointF linePoint2, QPoin
 }
 */
 
-float TAlgorithm::distanceFromLine(QPointF linePoint1, QPointF linePoint2, QPointF point)
+double TAlgorithm::distanceFromLine(QPointF linePoint1, QPointF linePoint2, QPointF point)
 {
     // Calculate differences
     qreal dx = linePoint2.x() - linePoint1.x();
@@ -321,7 +321,7 @@ float TAlgorithm::distanceFromLine(QPointF linePoint1, QPointF linePoint2, QPoin
          return 0.0f; // or handle as an error, depending on your application's needs
     }
 
-    return static_cast<float>(numerator / denominator);
+    return static_cast<double>(numerator / denominator);
 }
 
 QPointF TAlgorithm::projectPointOntoLine(QPointF linePoint1, QPointF linePoint2, QPointF point)

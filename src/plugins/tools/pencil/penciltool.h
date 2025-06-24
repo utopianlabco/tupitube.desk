@@ -111,7 +111,9 @@ class TUPITUBE_PLUGIN PencilTool : public TupToolPlugin
         TupFrame* getCurrentFrame();
 
         void addKeyPoints(TupPathItem *item);
+        void addCurvePoints(TupPathItem *item);
         void removeKeyPoints();
+        void removeCurveKeyPoints();
 
         QPointF firstPoint;
         QPointF previousPos;
@@ -148,7 +150,8 @@ class TUPITUBE_PLUGIN PencilTool : public TupToolPlugin
         QGraphicsEllipseItem *eraserCircle;
         QPointF eraserDistance;
 
-        QList<TupEllipseItem *> route;
+        QList<TupEllipseItem *> pathEllipsesList;
+        QList<TupEllipseItem *> curveEllipsesList;
         TupPathItem *lineItem;
         bool lineAdded;
 };

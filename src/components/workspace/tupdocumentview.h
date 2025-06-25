@@ -133,6 +133,7 @@ class Q_DECL_EXPORT TupDocumentView: public QMainWindow
 
         void refreshEyeDropperPanel();
         void launchEyeDropperTool();
+        void launchSelectionTool();
 
     private slots: 
         // Plugins

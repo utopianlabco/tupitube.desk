@@ -94,14 +94,14 @@ void SelectionTool::initItems(TupGraphicsScene *gScene)
     settingsPanel->enableFormControls(false);
 }
 
-void SelectionTool::removeTarget()
+void SelectionTool::removeTargetForMultipleSelection()
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[SelectionTool::removeTarget()]";
+        qDebug() << "[SelectionTool::removeTargetForMultipleSelection()]";
     #endif
 
     if (targetIsIncluded) {
-        scene->removeItem(center);
+        scene->removeItem(targetCenter);
         scene->removeItem(target1);
         scene->removeItem(target2);
 
@@ -123,7 +123,8 @@ QList<TAction::ActionId> SelectionTool::keys() const
     return QList<TAction::ActionId>() << TAction::ObjectSelection;
 }
 
-void SelectionTool::press(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
+void SelectionTool::press(const TupInputDeviceInformation *input, TupBrushManager *brushManager,
+                          TupGraphicsScene *gScene)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[SelectionTool::press()]";
@@ -153,62 +154,8 @@ void SelectionTool::press(const TupInputDeviceInformation *input, TupBrushManage
             selectedObjects = gScene->selectedItems();
     }
 
-    foreach (QGraphicsItem *item, selectedObjects) {
-        QDomDocument doc;
-        doc.appendChild(TupSerializer::properties(item, doc));
-
-        TupSvgItem *svg = qgraphicsitem_cast<TupSvgItem *>(item);
-        int itemIndex = -1;
-        TupLibraryObject::ObjectType type = TupLibraryObject::Item;
-        if (svg) {
-            type = TupLibraryObject::Svg;
-            itemIndex = frame->indexOf(svg);
-        } else {
-            itemIndex = frame->indexOf(item);
-        }
-
-        if (itemIndex >= 0)
-            frame->checkTransformationStatus(type, itemIndex);
-
-        if (item && (dynamic_cast<TupAbstractSerializable* > (item))) {
-            if (item->group())
-                item = qgraphicsitem_cast<QGraphicsItem *>(item->group());
-            bool found = false;
-            // Checking if item selected already has nodes
-            foreach (NodeManager *nodeManager, nodeManagers) {
-                if (item == nodeManager->parentItem()) {
-                    found = true;
-                    break;
-                }
-            }
-            
-            if (!found) {
-                #ifdef TUP_DEBUG
-                    qDebug() << "[SelectionTool::press()] - Adding node manager to item!";
-                #endif
-
-                item->setFlag(QGraphicsItem::ItemIsMovable, false); // To avoid initial awkward movement
-                NodeManager *manager = new NodeManager(SelectionNode, item, gScene, nodeZValue);
-                connect(manager, SIGNAL(rotationUpdated(int)), settingsPanel, SLOT(updateRotationAngle(int)));
-                connect(manager, SIGNAL(scaleUpdated(double,double)), settingsPanel, SLOT(updateScaleFactor(double,double)));
-
-                // SQA: These connections don't work on Windows
-                // connect(manager, &NodeManager::rotationUpdated, settingsPanel, &SelectionSettings::updateRotationAngle);
-                // connect(manager, &NodeManager::scaleUpdated, settingsPanel, &SelectionSettings::updateScaleFactor);
-                manager->show();
-                manager->resizeNodes(realFactor);
-                nodeManagers << manager;
-            } else {
-                #ifdef TUP_DEBUG
-                    qDebug() << "[SelectionTool::press()] - Item already has node manager!";
-                #endif
-            }
-        } else {
-            #ifdef TUP_DEBUG
-                qDebug() << "[SelectionTool::press()] - Fatal Error: can't serialize item!";
-            #endif
-        }
-    }
+    foreach (QGraphicsItem *item, selectedObjects)
+        addNodeManager(item);
 }
 
 void SelectionTool::move(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
@@ -353,7 +300,7 @@ TupFrame* SelectionTool::frameAt(int sceneIndex, int layerIndex, int frameIndex)
                 frame = layer->frameAt(frameIndex);
             } else {
                 #ifdef TUP_DEBUG
-                    qDebug() << "[SelectionTool::frameAt()] - Fatal Error: Layer is NULL! -> " << layerIndex;
+                    qDebug() << "[SelectionTool::frameAt()] - Fatal Error: Layer is NULL! ->" << layerIndex;
                 #endif
             }
         } else {
@@ -369,7 +316,7 @@ TupFrame* SelectionTool::frameAt(int sceneIndex, int layerIndex, int frameIndex)
        }
     } else {
        #ifdef TUP_DEBUG
-           qDebug() << "[SelectionTool::frameAt()] - Fatal Error: Scene is NULL! -> " << sceneIndex;
+           qDebug() << "[SelectionTool::frameAt()] - Fatal Error: Scene is NULL! ->" << sceneIndex;
        #endif
     }
 
@@ -459,7 +406,7 @@ void SelectionTool::aboutToChangeTool()
 void SelectionTool::itemResponse(const TupItemResponse *response)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[SelectionTool::itemResponse()] - action -> " << response->getAction();
+        qDebug() << "[SelectionTool::itemResponse()] - action ->" << response->getAction();
     #endif
 
     if (response->getAction() == TupProjectRequest::Remove) {
@@ -562,8 +509,8 @@ void SelectionTool::itemResponse(const TupItemResponse *response)
                 manager->show();
                 manager->resizeNodes(realFactor);
                 nodeManagers << manager;
-            } else {
-                addTarget();
+            } else { // Adding red marks for selection
+                addTargetForMultipleSelection();
             }
         }
         break;
@@ -582,7 +529,7 @@ void SelectionTool::itemResponse(const TupItemResponse *response)
 void SelectionTool::layerResponse(const TupLayerResponse *response)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[SelectionTool::layerResponse()] - action -> " << response->getAction();
+        qDebug() << "[SelectionTool::layerResponse()] - action ->" << response->getAction();
     #endif
 
     switch (response->getAction()) {
@@ -721,7 +668,7 @@ bool SelectionTool::selectionIsActive()
 void SelectionTool::applyAlignAction(SelectionSettings::Align align)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[SelectionTool::applyAlignAction()] - align -> " << align;
+        qDebug() << "[SelectionTool::applyAlignAction()] - align ->" << align;
     #endif
 
     QPointF distance;
@@ -747,7 +694,7 @@ void SelectionTool::applyAlignAction(SelectionSettings::Align align)
 void SelectionTool::applyFlip(SelectionSettings::Flip flip)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[SelectionTool::applyFlip()] - flip -> " << flip;
+        qDebug() << "[SelectionTool::applyFlip()] - flip ->" << flip;
     #endif
 
     selectedObjects = scene->selectedItems();
@@ -793,7 +740,7 @@ void SelectionTool::applyOrderAction(SelectionSettings::Order action)
     selectedObjects = scene->selectedItems();
 
     #ifdef TUP_DEBUG
-        qDebug() << "[SelectionTool::applyOrderAction()] - Selected Objects Size -> " << selectedObjects.count();
+        qDebug() << "[SelectionTool::applyOrderAction()] - Selected Objects Size ->" << selectedObjects.count();
     #endif
 
     foreach (QGraphicsItem *item, selectedObjects) {
@@ -818,7 +765,7 @@ void SelectionTool::applyOrderAction(SelectionSettings::Order action)
 void SelectionTool::applyGroupAction(SelectionSettings::Group action)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[SelectionTool::applyGroupAction()] - action -> " << action;
+        qDebug() << "[SelectionTool::applyGroupAction()] - action ->" << action;
     #endif
 
     foreach (QGraphicsItem *item, selectedObjects) {
@@ -922,7 +869,8 @@ void SelectionTool::updateZoomFactor(qreal scaleFactor)
 void SelectionTool::sceneResponse(const TupSceneResponse *event)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[SelectionTool::sceneResponse()] - event->getAction() -> " << event->getAction();
+        qDebug() << "[SelectionTool::sceneResponse()] "
+                    "- event->getAction() ->" << event->getAction();
     #endif
 
     if (event->getAction() == TupProjectRequest::Select)
@@ -941,11 +889,11 @@ void SelectionTool::updateItemPosition()
         QPoint point = item->mapToScene(item->boundingRect().center()).toPoint();
         settingsPanel->setPos(point.x(), point.y());
     } else { 
-        addTarget();
+        addTargetForMultipleSelection();
     }
 }
 
-void SelectionTool::addTarget()
+void SelectionTool::addTargetForMultipleSelection()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[SelectionTool::addTarget()]";
@@ -981,7 +929,7 @@ void SelectionTool::addTarget()
         settingsPanel->setPos(x, y);
 
         if (!targetIsIncluded) {
-            center = new TupEllipseItem(QRectF(QPointF(x - 2, y - 2), QSize(4, 4)));
+            targetCenter = new TupEllipseItem(QRectF(QPointF(x - 2, y - 2), QSize(4, 4)));
             target1 = new QGraphicsLineItem(x, y - 6, x, y + 6);
             target2 = new QGraphicsLineItem(x - 6, y, x + 6, y);
             topLeftX = new QGraphicsLineItem(minX, minY, minX + 10, minY);
@@ -994,10 +942,10 @@ void SelectionTool::addTarget()
             bottomLeftY = new QGraphicsLineItem(minX, maxY, minX, maxY - 10);
 
             QPen pen(QColor(255, 0, 0), 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-            center->setPen(pen);
-            center->setBrush(QColor(255, 0, 0));
-            center->setZValue(nodeZValue);
-            scene->includeObject(center);
+            targetCenter->setPen(pen);
+            targetCenter->setBrush(QColor(255, 0, 0));
+            targetCenter->setZValue(nodeZValue);
+            scene->includeObject(targetCenter);
 
             target1->setPen(pen);
             target1->setZValue(nodeZValue);
@@ -1035,10 +983,10 @@ void SelectionTool::addTarget()
 
             targetIsIncluded = true;
         } else {
-            QPoint current = center->mapToScene(center->boundingRect().topLeft()).toPoint();
+            QPoint current = targetCenter->mapToScene(targetCenter->boundingRect().topLeft()).toPoint();
             int deltaX = x - current.x() - 1;
             int deltaY = y - current.y() - 1;
-            center->moveBy(deltaX, deltaY);
+            targetCenter->moveBy(deltaX, deltaY);
             target1->moveBy(deltaX, deltaY);
             target2->moveBy(deltaX, deltaY);
 
@@ -1111,7 +1059,7 @@ void SelectionTool::setItemPosition(int x, int y)
                 manager->syncNodesFromParent();
                 requestTransformation(manager->parentItem(), frame);
             }
-            center->moveBy(x, y);
+            targetCenter->moveBy(x, y);
             target1->moveBy(x, y);
             target2->moveBy(x, y);
 
@@ -1217,26 +1165,6 @@ void SelectionTool::requestTransformation(QGraphicsItem *item, TupFrame *frame)
     }
 }
 
-void SelectionTool::clearSelection()
-{
-    #ifdef TUP_DEBUG
-        qDebug() << "[SelectionTool::clearSelection()]";
-    #endif
-
-    if (activeSelection) {
-        if (!nodeManagers.isEmpty()) {
-            foreach (NodeManager *nodeManager, nodeManagers) {
-                nodeManager->parentItem()->setSelected(false);
-                nodeManagers.removeAll(nodeManager);
-            }
-            nodeManagers.clear();
-        }
-        selectedObjects.clear();
-        activeSelection = false;
-        scene->drawCurrentPhotogram();
-    }
-}
-
 void SelectionTool::enableProportion(bool flag)
 {
     key = "NONE";
@@ -1274,7 +1202,7 @@ void SelectionTool::updateColorOnSelection(TupProjectRequest::Action action, con
     if (activeSelection) {
         specialSelection.clear();
         #ifdef TUP_DEBUG
-            qDebug() << "[SelectionTool::updateColorOnSelection()] - selectedObjects.size() -> " << selectedObjects.size();
+            qDebug() << "[SelectionTool::updateColorOnSelection()] - selectedObjects.size() ->" << selectedObjects.size();
         #endif
         foreach (QGraphicsItem *item, selectedObjects) {
             int itemIndex = -1;
@@ -1306,7 +1234,8 @@ void SelectionTool::updateColorOnSelection(TupProjectRequest::Action action, con
             TupProjectRequest event;
             if (qgraphicsitem_cast<TupItemGroup *>(item)) {
                 #ifdef TUP_DEBUG
-                    qDebug() << "[SelectionTool::updateColorOnSelection()] - Warning: Group item has been selected!";
+                    qDebug() << "[SelectionTool::updateColorOnSelection()] "
+                                "- Warning: Group item has been selected!";
                 #endif
             } else if (qgraphicsitem_cast<TupTextItem *>(item)) {
                 event = TupRequestBuilder::createItemRequest(
@@ -1345,7 +1274,7 @@ void SelectionTool::updateColorOnSelection(TupProjectRequest::Action action, con
 void SelectionTool::updatePenOnSelection(const QPen &pen)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[SelectionTool::updatePenOnSelection()] - pen -> " << pen;
+        qDebug() << "[SelectionTool::updatePenOnSelection()] - pen ->" << pen;
     #endif
 
     if (activeSelection) {        
@@ -1405,6 +1334,127 @@ void SelectionTool::updatePenOnSelection(const QPen &pen)
     } else {
         #ifdef TUP_DEBUG
             qDebug() << "[SelectionTool::updatePenOnSelection()] - Warning: No active selection!";
+        #endif
+    }
+}
+
+void SelectionTool::selectAll()
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[SelectionTool::selectAll()]";
+    #endif
+
+    if (activeSelection) {
+        clearSelection();
+    } else {
+        QList<QGraphicsItem *> items = scene->items();
+        if (!items.isEmpty()) {
+            activeSelection = true;
+            frame = getCurrentFrame();
+            if (items.size() == 1) {
+                QGraphicsItem *item = items.first();
+                selectItem(item);
+            } else {
+                foreach (QGraphicsItem *item, items) {
+                    item->setFlag(QGraphicsItem::ItemIsSelectable, true);
+                    item->setSelected(true);
+                    selectedObjects << item;
+                }
+                addTargetForMultipleSelection();
+            }
+            settingsPanel->enableFormControls(true);
+        }
+    }
+}
+
+void SelectionTool::clearSelection()
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[SelectionTool::clearSelection()]";
+    #endif
+
+    if (activeSelection) {
+        if (!nodeManagers.isEmpty()) {
+            foreach (NodeManager *nodeManager, nodeManagers) {
+                nodeManager->parentItem()->setSelected(false);
+                nodeManagers.removeAll(nodeManager);
+            }
+            nodeManagers.clear();
+        }
+        selectedObjects.clear();
+        activeSelection = false;
+        scene->drawCurrentPhotogram();
+    }
+}
+
+void SelectionTool::selectItem(QGraphicsItem *item)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[SelectionTool::selectItem()]";
+    #endif
+
+    item->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    item->setSelected(true);
+    selectedObjects << item;
+
+    addNodeManager(item);
+}
+
+void SelectionTool::addNodeManager(QGraphicsItem *item)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[SelectionTool::addNodeManager()]";
+    #endif
+
+    QDomDocument doc;
+    doc.appendChild(TupSerializer::properties(item, doc));
+
+    TupSvgItem *svg = qgraphicsitem_cast<TupSvgItem *>(item);
+    int itemIndex = -1;
+    TupLibraryObject::ObjectType type = TupLibraryObject::Item;
+    if (svg) {
+        type = TupLibraryObject::Svg;
+        itemIndex = frame->indexOf(svg);
+    } else {
+        itemIndex = frame->indexOf(item);
+    }
+
+    if (itemIndex >= 0)
+        frame->checkTransformationStatus(type, itemIndex);
+
+    if (item && (dynamic_cast<TupAbstractSerializable* > (item))) {
+        if (item->group())
+            item = qgraphicsitem_cast<QGraphicsItem *>(item->group());
+        bool found = false;
+        // Checking if item selected already has nodes
+        foreach (NodeManager *nodeManager, nodeManagers) {
+            if (item == nodeManager->parentItem()) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            #ifdef TUP_DEBUG
+                qDebug() << "[SelectionTool::selectItem()] - Adding node manager to item!";
+            #endif
+
+            item->setFlag(QGraphicsItem::ItemIsMovable, false); // To avoid initial awkward movement
+            NodeManager *manager = new NodeManager(SelectionNode, item, scene, nodeZValue);
+            connect(manager, SIGNAL(rotationUpdated(int)), settingsPanel, SLOT(updateRotationAngle(int)));
+            connect(manager, SIGNAL(scaleUpdated(double,double)), settingsPanel, SLOT(updateScaleFactor(double,double)));
+
+            manager->show();
+            manager->resizeNodes(realFactor);
+            nodeManagers << manager;
+        } else {
+            #ifdef TUP_DEBUG
+                qDebug() << "[SelectionTool::selectItem()] - Item already has node manager!";
+            #endif
+        }
+    } else {
+        #ifdef TUP_DEBUG
+            qDebug() << "[SelectionTool::selectItem()] - Fatal Error: can't serialize item!";
         #endif
     }
 }

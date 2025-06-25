@@ -1432,6 +1432,11 @@ void TupPaintArea::keyPressEvent(QKeyEvent *event)
     }
 
     if (event->modifiers() == Qt::ControlModifier) {
+        if (event->key() == Qt::Key_A) {
+            emit selectToolLaunched();
+            return;
+        }
+
         if (event->key() == Qt::Key_C) {
             copyItems();
             return;

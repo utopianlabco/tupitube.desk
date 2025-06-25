@@ -139,6 +139,7 @@ TupDocumentView::TupDocumentView(TupProject *work, TActionManager *actionMng, bo
     connect(paintArea, SIGNAL(zoomOut()), this, SLOT(applyZoomOut()));
     connect(paintArea, SIGNAL(newPerspective(int)), this, SIGNAL(newPerspective(int)));
     connect(paintArea, SIGNAL(eyeDropperLaunched()), this, SLOT(launchEyeDropperTool()));
+    connect(paintArea, SIGNAL(selectToolLaunched()), this, SLOT(launchSelectionTool()));
 
     connect(paintArea, SIGNAL(localAssetDropped(const QString &, TupLibraryObject::ObjectType)),
             this, SIGNAL(localAssetDropped(const QString &, TupLibraryObject::ObjectType)));
@@ -2831,4 +2832,10 @@ void TupDocumentView::editProjectSize()
     TupProjectSizeDialog *dialog = new TupProjectSizeDialog(project->getDimension());
     if (dialog->exec() == QDialog::Accepted)
         resizeProjectDimension(dialog->getSize());
+}
+
+void TupDocumentView::launchSelectionTool()
+{
+    selectionAction->trigger();
+    currentTool->selectAll();
 }

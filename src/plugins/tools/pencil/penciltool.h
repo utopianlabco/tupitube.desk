@@ -99,21 +99,20 @@ class TUPITUBE_PLUGIN PencilTool : public TupToolPlugin
     private slots:
         void updatePenTool(PenTool tool);
         void updateSmoothness(double value);
-        void updateEraserSize(int value);
-
-    // public slots:
-        // void enableEraserMode();
-        // void enablePencilMode();
+        void updateEraserSize(int size);
 
     private:
         void storePathItems();
         void runEraser(const QPointF &point);
         TupFrame* getCurrentFrame();
 
+        /*
+        // Method for debugging purposes
         void addKeyPoints(TupPathItem *item);
         void addCurvePoints(TupPathItem *item);
         void removeKeyPoints();
         void removeCurveKeyPoints();
+        */
 
         QPointF firstPoint;
         QPointF previousPos;

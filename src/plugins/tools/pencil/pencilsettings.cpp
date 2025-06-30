@@ -128,7 +128,7 @@ PencilSettings::PencilSettings(QWidget *parent) : QWidget(parent)
     updateEraserSizeFromSlider(eraserValue);
 
     eraserWidget = new QWidget;
-    eraserWidget->setFixedWidth(120);
+    // eraserWidget->setFixedWidth(120);
     QVBoxLayout *eraserLayout = new QVBoxLayout(eraserWidget);
     eraserLayout->addWidget(eraserPreview, Qt::AlignHCenter);
     eraserLayout->addWidget(eraserSlider, Qt::AlignHCenter);

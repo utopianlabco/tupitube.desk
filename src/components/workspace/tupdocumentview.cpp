@@ -557,8 +557,8 @@ void TupDocumentView::loadPlugins()
 
                       if (toolId == TAction::Pencil) {
                           pencilAction = action;
-                          connect(tool, SIGNAL(pencilModeUpdated(PenTool)),
-                                  this, SLOT(updatePencilToolCursor(PenTool)));
+                          connect(tool, SIGNAL(toolModeUpdated(ToolMode)),
+                                  this, SLOT(updateToolCursor(ToolMode)));
                       }
 
                       if (toolId == TAction::Ink)
@@ -597,6 +597,8 @@ void TupDocumentView::loadPlugins()
                           TupToolPlugin *tool = qobject_cast<TupToolPlugin *>(action->parent());
                           connect(paintArea, SIGNAL(closeLine()), tool, SLOT(endItem()));
                           connect(this, SIGNAL(closeLine()), tool, SLOT(endItem()));
+                          connect(tool, SIGNAL(toolModeUpdated(ToolMode)),
+                                  this, SLOT(updateToolCursor(ToolMode)));
                       }
 
                       if (toolId == TAction::Triangle)
@@ -2615,15 +2617,20 @@ void TupDocumentView::updateCameraMode()
     cameraMode = false;
 }
 
-void TupDocumentView::updatePencilToolCursor(PenTool tool)
+void TupDocumentView::updateToolCursor(ToolMode tool)
 {
     if (currentTool) {
-        if (currentTool->currentToolName().compare(tr("Pencil"))==0) {
+        TAction::ActionId tooldId= currentTool->toolId();
+        if (tooldId == TAction::Pencil || tooldId == TAction::Line) {
             QCursor cursor;
             QString cursorImg;
             if (tool == PencilMode) {
                 cursorImg = "target.png";
                 cursor = QCursor(CURSORS_DIR + cursorImg, 4, 4);
+
+            } else if (tool == LineMode) {
+                cursorImg = "line.png";
+                cursor = QCursor(CURSORS_DIR + cursorImg, 0, 15);
             } else {
                 cursorImg = "eraser.png";
                 cursor = QCursor(CURSORS_DIR + cursorImg, 4, 4);
@@ -2765,9 +2772,11 @@ void TupDocumentView::enableEyeDropperTool(TColorCell::FillType fillType)
 
 void TupDocumentView::refreshEyeDropperPanel()
 {
+    /*
     #ifdef TUP_DEBUG
        qDebug() << "[TupDocumentView::refreshEyeDropperPanel()]";
     #endif
+    */
 
     currentTool->refreshEyeDropperPanel();
 }

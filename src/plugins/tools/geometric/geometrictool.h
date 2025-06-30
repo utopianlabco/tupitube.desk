@@ -73,6 +73,7 @@ class TUPITUBE_PLUGIN GeometricTool : public TupToolPlugin
         virtual void sceneResponse(const TupSceneResponse *event);
         virtual void layerResponse(const TupLayerResponse *event);
         virtual void frameResponse(const TupFrameResponse *event);
+        virtual void itemResponse(const TupItemResponse *event);
 
         virtual QMap<TAction::ActionId, TAction *> actions() const;
         TAction * getAction(TAction::ActionId toolId);
@@ -90,13 +91,16 @@ class TUPITUBE_PLUGIN GeometricTool : public TupToolPlugin
         void endItem();
 
     private slots:
+        void updateToolMode(ToolMode tool);
         void updateLineMode(GeometricSettings::LineType type);
         void updateTriangleType(GeometricSettings::TriangleType type);
         void updateHexagonType(GeometricSettings::HexagonType type);
+        void updateEraserSize(int size);
 
     signals:
         void closeHugeCanvas();
         void callForPlugin(int, int);
+        void toolModeUpdated(ToolMode);
 
     private:
         void setupActions();
@@ -104,7 +108,12 @@ class TUPITUBE_PLUGIN GeometricTool : public TupToolPlugin
     private:
         QBrush setLiteBrush(QColor color, Qt::BrushStyle style);
         void saveLineSettings();
+        void storePathItems();
+        TupFrame* getCurrentFrame();
+        void runEraser(const QPointF &point);
+        void setZValueReferences();
 
+        ToolMode currentToolMode;
         QBrush fillBrush;
         TupRectItem *rect;
         TupEllipseItem *ellipse;
@@ -116,7 +125,9 @@ class TUPITUBE_PLUGIN GeometricTool : public TupToolPlugin
         QPainterPath hexagonPath;
 
         TupGraphicsScene *scene;
-        GeometricSettings *configPanel;
+        TupBrushManager *brushManager;
+
+        GeometricSettings *settings;
         bool added;
         QPointF currentPoint;
         QPointF lastPoint;
@@ -133,10 +144,25 @@ class TUPITUBE_PLUGIN GeometricTool : public TupToolPlugin
         QCursor lineCursor;
         QCursor triangleCursor;
         QCursor hexagonCursor;
+        QCursor eraserCursor;
+
+        QPen eraserPen;
+        QGraphicsEllipseItem *eraserCircle;
+        QPointF eraserDistance;
+
         GeometricSettings::TriangleType triangleType;
         GeometricSettings::HexagonType hexagonType;
 
         bool straightMode;
+        int eraserSize;
+        QList<TupPathItem *> lineItems;
+
+        int baseZValue;
+        int topZValue;
+        int circleZValue;
+
+        int currentLayer;
+        int currentFrame;
 };
 
 #endif

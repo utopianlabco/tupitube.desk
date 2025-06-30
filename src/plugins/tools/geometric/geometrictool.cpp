@@ -78,17 +78,34 @@ void GeometricTool::init(TupGraphicsScene *gScene)
     proportion = false;
     side = false;
 
-    straightMode = false;
-    TCONFIG->beginGroup("GeometricTool");
-    int type = TCONFIG->value("LineType", 0).toInt();
-    if (type)
-        straightMode = true;
-
     triangleType = GeometricSettings::Top;
     hexagonType = GeometricSettings::Horizontal;
 
-    if (configPanel && toolId() == TAction::Line)
-        configPanel->updateLineType(type);
+    if (settings && toolId() == TAction::Line) {
+        setZValueReferences();
+        straightMode = false;
+        TCONFIG->beginGroup("GeometricTool");
+        int type = TCONFIG->value("LineType", 0).toInt();
+        if (type)
+            straightMode = true;
+
+        TCONFIG->beginGroup("BrushParameters");
+        eraserSize = TCONFIG->value("EraserSize", 10).toInt();
+
+        circleZValue = ZLAYER_BASE + (scene->layersCount() * ZLAYER_LIMIT);
+
+        currentToolMode = LineMode;
+        settings->enableLineMode();
+        settings->updateLineType(type);
+
+        brushManager = scene->getBrushManager();
+
+        qreal radius = eraserSize/2;
+        eraserDistance = QPointF(radius + 2, radius + 2);
+        eraserPen = QPen(Qt::red, 3, Qt::DotLine, Qt::RoundCap, Qt::RoundJoin);
+        eraserCircle = new QGraphicsEllipseItem(0, 0, eraserSize, eraserSize);
+        eraserCircle->setPen(eraserPen);
+    }
 
     foreach (QGraphicsView *view, scene->views())
         view->setDragMode(QGraphicsView::NoDrag);
@@ -96,6 +113,8 @@ void GeometricTool::init(TupGraphicsScene *gScene)
 
 void GeometricTool::setupActions()
 {
+    eraserCursor = QCursor(QPixmap(kAppProp->themeDir() + "cursors/eraser.png"), 4, 4);
+
     TAction *action1 = new TAction(QIcon(ICONS_DIR + "square.png"), tr("Rectangle"), this);
     action1->setShortcut(QKeySequence(tr("R")));
     action1->setToolTip(tr("Rectangle") + " - " + tr("R"));
@@ -142,18 +161,25 @@ void GeometricTool::setupActions()
     geoActions.insert(TAction::Hexagon, action5);
 }
 
-QBrush GeometricTool::setLiteBrush(QColor c, Qt::BrushStyle style)
+void GeometricTool::setZValueReferences()
+{
+    baseZValue = scene->getFrameZLevel(scene->currentLayerIndex(), scene->currentFrameIndex());
+    topZValue = baseZValue + ITEMS_PER_FRAME;
+}
+
+QBrush GeometricTool::setLiteBrush(QColor color, Qt::BrushStyle style)
 {
     QBrush brush;
-    QColor color = c;
-    color.setAlpha(50);
-    brush.setColor(color);
+    QColor pathColor = color;
+    pathColor.setAlpha(50);
+    brush.setColor(pathColor);
     brush.setStyle(style);
 
     return brush;
 }
 
-void GeometricTool::press(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
+void GeometricTool::press(const TupInputDeviceInformation *input, TupBrushManager *brushManager,
+                          TupGraphicsScene *gScene)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[GeometricTool::press()]";
@@ -187,39 +213,52 @@ void GeometricTool::press(const TupInputDeviceInformation *input, TupBrushManage
         } else if (toolId() == TAction::Line) {
             currentPoint = input->pos();
 
-            if (linePath) {
-                QPainterPath painterPath = linePath->path();
-                if (straightMode)
-                    painterPath.lineTo(lastPoint);
-                else
-                    painterPath.cubicTo(lastPoint, lastPoint, lastPoint);
+            if (currentToolMode == LineMode) {
+                qDebug() << "[GeometricTool::press()] *** Drawing line...";
+                if (linePath) {
+                    QPainterPath painterPath = linePath->path();
+                    if (straightMode)
+                        painterPath.lineTo(lastPoint);
+                    else
+                        painterPath.cubicTo(lastPoint, lastPoint, lastPoint);
 
-                linePath->setPath(painterPath);
-            } else {
-                linePath = new TupPathItem;
-                linePath->setPen(brushManager->pen());
-                if (brushManager->brush().color().alpha() > 0)
-                   linePath->setBrush(setLiteBrush(brushManager->brush().color(), brushManager->brush().style()));
-                else
-                   linePath->setBrush(brushManager->brush());
-
-                QPainterPath painterPath;
-                painterPath.moveTo(currentPoint);
-                linePath->setPath(painterPath);
-                gScene->includeObject(linePath);
-
-                guideLine = new TupLineItem();
-                if (brushManager->pen().color().alpha() == 0) { // Show border guide line
-                    QPen pen;
-                    pen.setWidth(1);
-                    pen.setBrush(QBrush(Qt::black));
-                    guideLine->setPen(pen);
+                    linePath->setPath(painterPath);
                 } else {
-                    guideLine->setPen(brushManager->pen());
-                }
+                    linePath = new TupPathItem;
+                    linePath->setPen(brushManager->pen());
+                    if (brushManager->brush().color().alpha() > 0)
+                        linePath->setBrush(setLiteBrush(brushManager->brush().color(),
+                                                        brushManager->brush().style()));
+                    else
+                        linePath->setBrush(brushManager->brush());
 
-                guideLine->setLine(QLineF(input->pos().x(), input->pos().y(), input->pos().x(), input->pos().y()));
-                gScene->includeObject(guideLine);
+                    QPainterPath painterPath;
+                    painterPath.moveTo(currentPoint);
+                    linePath->setPath(painterPath);
+                    gScene->includeObject(linePath);
+
+                    guideLine = new TupLineItem();
+                    if (brushManager->pen().color().alpha() == 0) { // Show border guide line
+                        QPen pen;
+                        pen.setWidth(1);
+                        pen.setBrush(QBrush(Qt::black));
+                        guideLine->setPen(pen);
+                    } else {
+                        guideLine->setPen(brushManager->pen());
+                    }
+
+                    guideLine->setLine(QLineF(input->pos().x(), input->pos().y(), input->pos().x(),
+                                              input->pos().y()));
+                    gScene->includeObject(guideLine);
+                }
+            } else { // Eraser mode
+                qDebug() << "[GeometricTool::press()] *** Erasing line...";
+                qDebug() << "[GeometricTool::press()] *** lineItems.size() ->" << lineItems.size();
+
+                eraserCircle->setPos(currentPoint - eraserDistance);
+                gScene->includeObject(eraserCircle);
+                if (!lineItems.isEmpty())
+                    runEraser(currentPoint);
             }
         } else if (toolId() == TAction::Triangle) {
             added = false;
@@ -255,8 +294,17 @@ void GeometricTool::move(const TupInputDeviceInformation *input, TupBrushManager
 
     Q_UNUSED(brushManager)
     Q_UNUSED(gScene)
-    
-    if (toolId() == TAction::Rectangle || toolId() == TAction::Ellipse ||
+
+    if (toolId() == TAction::Line) {
+        if (currentToolMode == EraserMode) {
+            qDebug() << "[GeometricTool::move()] *** Erasing line...";
+            qDebug() << "[GeometricTool::move()] *** lineItems.size() ->" << lineItems.size();
+            QPointF currentPoint = input->pos();
+            eraserCircle->setPos(currentPoint - eraserDistance);
+            if (!lineItems.isEmpty())
+                runEraser(currentPoint);
+        }
+    } else if (toolId() == TAction::Rectangle || toolId() == TAction::Ellipse ||
         toolId() == TAction::Triangle || toolId() == TAction::Hexagon) {
         if (!added) {
             if (toolId() == TAction::Rectangle)
@@ -570,13 +618,24 @@ void GeometricTool::release(const TupInputDeviceInformation *input, TupBrushMana
         doc.appendChild(dynamic_cast<TupAbstractSerializable *>(hexagon)->toXml(doc));
         point = hexagon->pos();
     } else if (toolId() == TAction::Line) {
+        if (currentToolMode == EraserMode) {
+            qDebug() << "[GeometricTool::release()] *** Erasing line...";
+            qDebug() << "[GeometricTool::release()] *** lineItems.size() ->" << lineItems.size();
+            gScene->removeItem(eraserCircle);
+            if (!lineItems.isEmpty())
+                runEraser(input->pos());
+        } else {
+            qDebug() << "[GeometricTool::release()] *** LineMode ON!";
+        }
         return;
     }
 
-    TupProjectRequest event = TupRequestBuilder::createItemRequest(gScene->currentSceneIndex(), gScene->currentLayerIndex(),
-                              gScene->currentFrameIndex(), 0, point, gScene->getSpaceContext(), TupLibraryObject::Item,
-                              TupProjectRequest::Add, doc.toString());
-    emit requested(&event);
+    if (!doc.toString().isEmpty()) {
+        TupProjectRequest event = TupRequestBuilder::createItemRequest(gScene->currentSceneIndex(), gScene->currentLayerIndex(),
+                                  gScene->currentFrameIndex(), 0, point, gScene->getSpaceContext(), TupLibraryObject::Item,
+                                  TupProjectRequest::Add, doc.toString());
+        emit requested(&event);
+    }
 }
 
 QMap<TAction::ActionId, TAction *> GeometricTool::actions() const
@@ -607,15 +666,20 @@ QWidget *GeometricTool::configurator()
     else if (toolId() == TAction::Hexagon)
         toolType = GeometricSettings::Hexagon;
 
-    configPanel = new GeometricSettings(toolType);
-    connect(configPanel, SIGNAL(lineTypeChanged(GeometricSettings::LineType)),
+    settings = new GeometricSettings(toolType);
+    connect(settings, SIGNAL(lineTypeChanged(GeometricSettings::LineType)),
             this, SLOT(updateLineMode(GeometricSettings::LineType)));
-    connect(configPanel, SIGNAL(triangleTypeChanged(GeometricSettings::TriangleType)),
+    connect(settings, SIGNAL(triangleTypeChanged(GeometricSettings::TriangleType)),
             this, SLOT(updateTriangleType(GeometricSettings::TriangleType)));
-    connect(configPanel, SIGNAL(hexagonTypeChanged(GeometricSettings::HexagonType)),
+    connect(settings, SIGNAL(hexagonTypeChanged(GeometricSettings::HexagonType)),
             this, SLOT(updateHexagonType(GeometricSettings::HexagonType)));
 
-    return configPanel;
+    connect(settings, SIGNAL(toolEnabled(ToolMode)),
+            this, SLOT(updateToolMode(ToolMode)));
+    connect(settings, SIGNAL(eraserSizeChanged(int)),
+            this, SLOT(updateEraserSize(int)));
+
+    return settings;
 }
 
 void GeometricTool::aboutToChangeScene(TupGraphicsScene *scene)
@@ -679,10 +743,12 @@ QCursor GeometricTool::toolCursor()
     } else if (this->toolId() == TAction::Ellipse) {
         return circleCursor;
     } else if (this->toolId() == TAction::Line) {
+        if (currentToolMode == EraserMode)
+            return eraserCursor;
         return lineCursor;
     } else if (this->toolId() == TAction::Hexagon) {
         return hexagonCursor;
-    }
+    }    
 
     return QCursor(Qt::ArrowCursor);
 }
@@ -770,8 +836,24 @@ void GeometricTool::frameResponse(const TupFrameResponse *event)
 {
     Q_UNUSED(event)
 
-    if (toolId() == TAction::Line)
+    if (toolId() == TAction::Line) {
         init(scene);
+        setZValueReferences();
+    }
+}
+
+void GeometricTool::itemResponse(const TupItemResponse *event)
+{
+    if (currentToolMode == EraserMode) {
+        scene->drawCurrentPhotogram();
+        if (event->getAction() == TupProjectRequest::Add)
+            storePathItems();
+        for (int i=0; i<lineItems.size(); i++) {
+            TupPathItem *item = lineItems.at(i);
+            if (item->isBlocked())
+                item->updateBlockingFlag(false);
+        }
+    }
 }
 
 void GeometricTool::updateLineMode(GeometricSettings::LineType type)
@@ -803,4 +885,168 @@ void GeometricTool::updateTriangleType(GeometricSettings::TriangleType type)
 void GeometricTool::updateHexagonType(GeometricSettings::HexagonType type)
 {
     hexagonType = type;
+}
+
+void GeometricTool::updateToolMode(ToolMode tool)
+{
+    #ifdef TUP_DEBUG
+        QString toolName = "Eraser";
+        if (tool == 0)
+            toolName = "Line";
+
+        qDebug() << "---";
+        qDebug() << "[GeometricTool::updateToolMode()] - Switching to tool ->" << toolName;
+    #endif
+
+    emit toolModeUpdated(tool);
+
+    currentToolMode = tool;
+    if (tool == EraserMode) {
+        endItem();
+        storePathItems();
+    }
+}
+
+void GeometricTool::storePathItems()
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[GeometricTool::storePathItems()]";
+    #endif
+
+    // Store all the path items of the current frame in a list
+    lineItems.clear();
+    foreach (QGraphicsItem *item, scene->items()) {
+        qDebug() << "scene->items().count() ->" << scene->items().count();
+        if (TupPathItem *line = qgraphicsitem_cast<TupPathItem *> (item)) {
+            int zVal = line->zValue();
+            qDebug() << "*** zVal ->" << zVal;
+            qDebug() << "*** baseZValue ->" << baseZValue;
+            qDebug() << "*** topZValue ->" << topZValue;
+            if (baseZValue <= zVal && zVal < topZValue)
+                lineItems << line;
+        }
+    }
+
+    #ifdef TUP_DEBUG
+        qDebug() << "[GeometricTool::storePathItems()] - lineItems.size() ->" << lineItems.size();
+    #endif
+}
+
+TupFrame* GeometricTool::getCurrentFrame()
+{
+    TupFrame *frame = nullptr;
+    if (scene->getSpaceContext() == TupProject::FRAMES_MODE) {
+        frame = scene->currentFrame();
+        currentLayer = scene->currentLayerIndex();
+        currentFrame = scene->currentFrameIndex();
+    } else {
+        currentLayer = -1;
+        currentFrame = -1;
+
+        TupScene *tupScene = scene->currentScene();
+        TupBackground *bg = tupScene->sceneBackground();
+        if (tupScene && bg) {
+            if (scene->getSpaceContext() == TupProject::VECTOR_STATIC_BG_MODE) {
+                frame = bg->vectorStaticFrame();
+            } else if (scene->getSpaceContext() == TupProject::VECTOR_FG_MODE) {
+                frame = bg->vectorForegroundFrame();
+            } else if (scene->getSpaceContext() == TupProject::VECTOR_DYNAMIC_BG_MODE) {
+                frame = bg->vectorDynamicFrame();
+            }
+        }
+    }
+
+    return frame;
+}
+
+void GeometricTool::runEraser(const QPointF &point)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[GeometricTool::runEraser()] - Evaluating point ->" << point;
+    #endif
+
+    // Checking if the point matches any of the frame paths
+    for (int i=0; i<lineItems.size(); i++) {
+        TupPathItem *item = lineItems.at(i);
+        if (item->isBlocked())
+            continue;
+
+        if (item->pointMatchesPath(point, eraserSize/2, EraserMode)) {
+            #ifdef TUP_DEBUG
+                qDebug() << "****************************";
+                qDebug() << "[GeometricTool::runEraser()] - MATCH with path!";
+            #endif
+            // Path matches the point
+            QPair<QString, QString> segments = item->recalculatePath(point, eraserSize/2);
+            QString segment1 = segments.first;
+            QString segment2 = segments.second;
+
+            if (segment1.compare("-1") != 0) {
+                TupFrame *frame = getCurrentFrame();
+                int itemIndex = frame->indexOf(item);
+
+                if (itemIndex == -1) {
+                    #ifdef TUP_DEBUG
+                        qDebug() << "[GeometricTool::runEraser()] - Fatal Error: Invalid item index -> -1";
+                    #endif
+                    return;
+                }
+
+                if (!segment1.isEmpty() && !segment2.isEmpty()) {
+                    TupProjectRequest event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(),
+                                                                                   currentLayer, currentFrame, itemIndex,
+                                                                                   QPointF(), scene->getSpaceContext(), TupLibraryObject::Item,
+                                                                                   TupProjectRequest::EditNodes, segment1);
+                    emit requested(&event);
+
+                    TupPathItem *lineItem = new TupPathItem;
+                    lineItem->setPen(brushManager->pen());
+                    lineItem->setBrush(brushManager->brush());
+                    lineItem->setPathFromString(segment2);
+
+                    QDomDocument doc;
+                    doc.appendChild(lineItem->toXml(doc));
+                    event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(), scene->currentLayerIndex(), scene->currentFrameIndex(),
+                                                                 0, QPoint(), scene->getSpaceContext(), TupLibraryObject::Item, TupProjectRequest::Add,
+                                                                 doc.toString());
+                    emit requested(&event);
+                } else if (segment2.isEmpty() && !segment1.isEmpty()) {
+                    TupProjectRequest event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(),
+                                                                                   currentLayer, currentFrame, itemIndex,
+                                                                                   QPointF(), scene->getSpaceContext(), TupLibraryObject::Item,
+                                                                                   TupProjectRequest::EditNodes, segment1);
+                    emit requested(&event);
+                } else {
+                    scene->removeItem(item);
+                    lineItems.removeAt(i);
+
+                    TupProjectRequest event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(),
+                                                                                   currentLayer, currentFrame, itemIndex, QPointF(), scene->getSpaceContext(),
+                                                                                   TupLibraryObject::Item, TupProjectRequest::Remove);
+                    emit requested(&event);
+                }
+            } else {
+                #ifdef TUP_DEBUG
+                    qDebug() << "[GeometricTool::runEraser()] - Warning: Eraser action FAILED!";
+                #endif
+            }
+        } else {
+            #ifdef TUP_DEBUG
+                qDebug() << "---";
+                qDebug() << "[GeometricTool::runEraser()] - NO match!!!";
+            #endif
+        }
+    }
+}
+
+void GeometricTool::updateEraserSize(int size)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[GeometricTool::updateEraserSize()] - size ->" << size;
+    #endif
+
+    eraserSize = size;
+    qreal radius = eraserSize/2;
+    eraserDistance = QPointF(radius, radius);
+    eraserCircle->setRect(radius/2, radius/2, radius, radius);
 }

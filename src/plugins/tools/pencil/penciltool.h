@@ -94,10 +94,10 @@ class TUPITUBE_PLUGIN PencilTool : public TupToolPlugin
         void closeHugeCanvas();
         void callForPlugin(int menu, int index);
         void penWidthChanged(int width);
-        void pencilModeUpdated(PenTool tool);
+        void toolModeUpdated(ToolMode tool);
 
     private slots:
-        void updatePenTool(PenTool tool);
+        void updateToolMode(ToolMode tool);
         void updateSmoothness(double value);
         void updateEraserSize(int size);
 
@@ -137,10 +137,10 @@ class TUPITUBE_PLUGIN PencilTool : public TupToolPlugin
         int penWidth;
         int eraserSize;
         double smoothness;
-        PenTool currentTool;
+        ToolMode currentToolMode;
 
         QList<TupPathItem *> lineItems;
-        QList<QGraphicsItem *> graphicItems;
+        // QList<QGraphicsItem *> graphicItems;
 
         int currentLayer;
         int currentFrame;

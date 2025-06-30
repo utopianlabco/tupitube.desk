@@ -57,7 +57,7 @@ class TUPITUBE_PLUGIN PencilSettings : public QWidget
 
     signals:
         void smoothnessUpdated(double value);
-        void toolEnabled(PenTool tool);
+        void toolEnabled(ToolMode tool);
         void eraserSizeChanged(int value);
 
     public slots:
@@ -67,8 +67,8 @@ class TUPITUBE_PLUGIN PencilSettings : public QWidget
 
     private slots:
         void updateSmoothBox(bool enabled);
-        void updateEraserSizeFromSlider(int value);
-        void updateEraserSizeFromBox(int value);
+        void updateEraserSizeFromSlider(int size);
+        void updateEraserSizeFromBox(int size);
 
     private:
         QWidget *pencilWidget;

@@ -150,7 +150,7 @@ enum ProjectDimension {
 enum SafeLevel { Background = 0, Foreground };
 enum ImageImportAction {VideoAction=0, FolderAction};
 
-enum PenTool { PencilMode = 0, EraserMode };
+enum ToolMode { PencilMode = 0, LineMode, EraserMode };
 
 enum NodeLocation { FirstNode = 0, MiddleNode, RandomNode, LastNode };
 enum NodeContext { SelectionNode = 0, PapagayoNode, TextNode };

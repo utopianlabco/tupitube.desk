@@ -74,7 +74,7 @@ void PencilTool::init(TupGraphicsScene *gScene)
         qDebug() << "[PencilTool::init()]";
     #endif
 
-    currentTool = PencilMode;
+    currentToolMode = PencilMode;
     settings->enablePencilMode();
 
     scene = gScene;
@@ -119,12 +119,12 @@ QList<TAction::ActionId> PencilTool::keys() const
 void PencilTool::press(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PencilTool::press()] - currentTool ->" << currentTool;
+        qDebug() << "[PencilTool::press()] - currentTool ->" << currentToolMode;
     #endif
 
     firstPoint = input->pos();
 
-    if (currentTool == PencilMode) {
+    if (currentToolMode == PencilMode) {
         if (!resizeMode) {
             path = QPainterPath();
             path.moveTo(firstPoint);
@@ -160,7 +160,7 @@ void PencilTool::move(const TupInputDeviceInformation *input, TupBrushManager *b
     Q_UNUSED(gScene)
 
     QPointF currentPoint = input->pos();
-    if (currentTool == PencilMode) {
+    if (currentToolMode == PencilMode) {
         if (resizeMode) {
             QPointF result = penCirclePos - currentPoint;
             penWidth = static_cast<int>(sqrt(pow(result.x(), 2) + pow(result.y(), 2)));
@@ -191,13 +191,13 @@ void PencilTool::move(const TupInputDeviceInformation *input, TupBrushManager *b
 void PencilTool::release(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PencilTool::release()] - currentTool ->" << currentTool;
+        qDebug() << "[PencilTool::release()] - currentTool ->" << currentToolMode;
     #endif
 
     Q_UNUSED(brushManager)
 
     QPointF currentPoint = input->pos();
-    if (currentTool == PencilMode) {
+    if (currentToolMode == PencilMode) {
         if (!resizeMode) {
             if (!item)
                 return;
@@ -273,7 +273,7 @@ QWidget *PencilTool::configurator()
 
     if (!settings) {
         settings = new PencilSettings;
-        connect(settings, SIGNAL(toolEnabled(PenTool)), this, SLOT(updatePenTool(PenTool)));
+        connect(settings, SIGNAL(toolEnabled(ToolMode)), this, SLOT(updateToolMode(ToolMode)));
         connect(settings, SIGNAL(smoothnessUpdated(double)), this, SLOT(updateSmoothness(double)));
         connect(settings, SIGNAL(eraserSizeChanged(int)), this, SLOT(updateEraserSize(int)));
 
@@ -287,7 +287,7 @@ QWidget *PencilTool::configurator()
     return settings;
 }
 
-void PencilTool::updatePenTool(PenTool tool)
+void PencilTool::updateToolMode(ToolMode tool)
 {
     #ifdef TUP_DEBUG
         QString toolName = "Eraser";
@@ -295,12 +295,12 @@ void PencilTool::updatePenTool(PenTool tool)
             toolName = "Pencil";
 
         qDebug() << "---";
-        qDebug() << "[PencilTool::updatePenTool()] - Switching to tool ->" << toolName;
+        qDebug() << "[PencilTool::updateToolMode()] - Switching to tool ->" << toolName;
     #endif
 
-    emit pencilModeUpdated(tool);
+    emit toolModeUpdated(tool);
 
-    currentTool = tool;
+    currentToolMode = tool;
     if (tool == EraserMode) {
         storePathItems();
         /*
@@ -372,7 +372,7 @@ void PencilTool::keyPressEvent(QKeyEvent *event)
         qDebug() << "[PencilTool::keyPressEvent()]";
     #endif
 
-    if (event->modifiers() == Qt::ShiftModifier && currentTool == PencilMode) {
+    if (event->modifiers() == Qt::ShiftModifier && currentToolMode == PencilMode) {
         resizeMode = true;
         input = scene->inputDeviceInformation();
         int diameter = brushManager->penWidth();
@@ -418,9 +418,9 @@ void PencilTool::keyReleaseEvent(QKeyEvent *event)
 
 QCursor PencilTool::toolCursor() // const
 {    
-    if (currentTool == PencilMode) {
+    if (currentToolMode == PencilMode) {
         return penCursor;
-    } else if (currentTool == EraserMode) {
+    } else if (currentToolMode == EraserMode) {
         return eraserCursor;
     }
 
@@ -441,7 +441,7 @@ void PencilTool::frameResponse(const TupFrameResponse *event)
 
 void PencilTool::itemResponse(const TupItemResponse *event)
 {
-    if (currentTool == EraserMode) {
+    if (currentToolMode == EraserMode) {
         scene->drawCurrentPhotogram();
         if (event->getAction() == TupProjectRequest::Add)
             storePathItems();

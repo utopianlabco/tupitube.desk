@@ -1496,10 +1496,10 @@ void TupPaintArea::keyPressEvent(QKeyEvent *event)
         }
     }
 
-    if (event->key() == Qt::Key_E) {
-        emit eyeDropperLaunched();
-        return;
-    }
+//    if (event->key() == Qt::Key_E) {
+//        emit eyeDropperLaunched();
+//        return;
+//    }
 
     if (event->key() == Qt::Key_PageUp) {
         if (event->modifiers() == Qt::ControlModifier)

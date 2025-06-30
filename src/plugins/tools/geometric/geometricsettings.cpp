@@ -59,43 +59,43 @@ GeometricSettings::GeometricSettings(GeometricSettings::ToolType type, QWidget *
         helpHeight = (screenHeight * 52)/100;
 
     QBoxLayout *mainLayout = new QBoxLayout(QBoxLayout::TopToBottom, this);
-    QBoxLayout *layout = new QBoxLayout(QBoxLayout::TopToBottom);
+    QBoxLayout *innerLayout = new QBoxLayout(QBoxLayout::TopToBottom);
 
     QLabel *toolTitle = new QLabel;
     toolTitle->setAlignment(Qt::AlignHCenter);
-    QPixmap pic;
+    QPixmap titlePic;
 
     if (type == GeometricSettings::Rectangle) {
-        pic = QPixmap(THEME_DIR + "icons/square.png");
+        titlePic = QPixmap(THEME_DIR + "icons/square.png");
         toolTitle->setToolTip(tr("Rectangle Properties"));
     } else if (type == GeometricSettings::Ellipse) {
-        pic = QPixmap(THEME_DIR + "icons/ellipse.png");
+        titlePic = QPixmap(THEME_DIR + "icons/ellipse.png");
         toolTitle->setToolTip(tr("Ellipse Properties"));
     } else if (type == GeometricSettings::Line) {
-        pic = QPixmap(THEME_DIR + "icons/line.png");
+        titlePic = QPixmap(THEME_DIR + "icons/line.png");
         toolTitle->setToolTip(tr("Line Properties"));
         if (screenHeight < HD_HEIGHT)
             helpHeight = (screenHeight * 39)/100;
     } else if (type == GeometricSettings::Triangle) {
-        pic = QPixmap(THEME_DIR + "icons/triangle.png");
+        titlePic = QPixmap(THEME_DIR + "icons/triangle.png");
         toolTitle->setToolTip(tr("Triangle Properties"));
         if (screenHeight < HD_HEIGHT)
             helpHeight = (screenHeight * 28)/100;
     } else if (type == GeometricSettings::Hexagon) {
-        pic = QPixmap(THEME_DIR + "icons/hexagon.png");
+        titlePic = QPixmap(THEME_DIR + "icons/hexagon.png");
         toolTitle->setToolTip(tr("Hexagon Properties"));
         if (screenHeight < HD_HEIGHT)
             helpHeight = (screenHeight * 32)/100;
     }
 
-    toolTitle->setPixmap(pic.scaledToWidth(TResponsiveUI::fitTitleIconSize(), Qt::SmoothTransformation));
-    layout->addWidget(toolTitle);
-    layout->addWidget(new TSeparator(Qt::Horizontal));
+    toolTitle->setPixmap(titlePic.scaledToWidth(TResponsiveUI::fitTitleIconSize(), Qt::SmoothTransformation));
+    innerLayout->addWidget(toolTitle);
+    innerLayout->addWidget(new TSeparator(Qt::Horizontal));
 
     if (type == GeometricSettings::Triangle) {
         QLabel *label = new QLabel(tr("Direction"));
         label->setAlignment(Qt::AlignHCenter);
-        layout->addWidget(label);
+        innerLayout->addWidget(label);
 
         QGridLayout *toolboxLayout = new QGridLayout;
         buttonsGroup = new QButtonGroup(this);
@@ -125,14 +125,14 @@ GeometricSettings::GeometricSettings(GeometricSettings::ToolType type, QWidget *
                 button->setChecked(true);
         }
 
-        layout->addLayout(toolboxLayout);
-        layout->addSpacing(5);
+        innerLayout->addLayout(toolboxLayout);
+        innerLayout->addSpacing(5);
     }
 
     if (type == GeometricSettings::Hexagon) {
         QLabel *label = new QLabel(tr("Direction"));
         label->setAlignment(Qt::AlignHCenter);
-        layout->addWidget(label);
+        innerLayout->addWidget(label);
 
         QGridLayout *toolboxLayout = new QGridLayout;
         buttonsGroup = new QButtonGroup(this);
@@ -160,11 +160,123 @@ GeometricSettings::GeometricSettings(GeometricSettings::ToolType type, QWidget *
                 button->setChecked(true);
         }
 
-        layout->addLayout(toolboxLayout);
-        layout->addSpacing(5);
+        innerLayout->addLayout(toolboxLayout);
+        innerLayout->addSpacing(5);
     }
 
-    if (type == GeometricSettings::Line || type == GeometricSettings::Triangle || type == GeometricSettings::Hexagon) {
+    if (type == GeometricSettings::Line) {
+        QPixmap linePic(THEME_DIR + "icons/target.png");
+        lineButton = new QPushButton(linePic, "");
+        lineButton->setCheckable(true);
+        lineButton->setToolTip(tr("Line Mode"));
+        connect(lineButton, SIGNAL(clicked()), this, SLOT(enableLineMode()));
+
+        QPixmap eraserPic(THEME_DIR + "icons/eraser.png");
+        eraserButton = new QPushButton(eraserPic, "");
+        eraserButton->setShortcut(QKeySequence(tr("E")));
+        eraserButton->setCheckable(true);
+        eraserButton->setToolTip(tr("Eraser Mode"));
+        connect(eraserButton, SIGNAL(clicked()), this, SLOT(switchMode()));
+
+        QHBoxLayout *buttonsLayout = new QHBoxLayout;
+        buttonsLayout->addWidget(lineButton);
+        buttonsLayout->addWidget(eraserButton);
+
+        innerLayout->addLayout(buttonsLayout);
+
+        // Line Settings
+
+        lineWidget = new QWidget;
+        QVBoxLayout *lineLayout = new QVBoxLayout(lineWidget);
+
+        QGroupBox *groupBox = new QGroupBox(tr("Line Options"));
+        QVBoxLayout *groupBoxLayout = new QVBoxLayout(groupBox);
+        option1 = new QRadioButton(tr("Bendable"));
+        option2 = new QRadioButton(tr("Straight"));
+
+        TCONFIG->beginGroup("GeometricTool");
+        int type = TCONFIG->value("LineType", 0).toInt();
+        if (type)
+            option2->setChecked(true);
+        else
+            option1->setChecked(true);
+
+        connect(option1, SIGNAL(toggled(bool)), this, SLOT(sendLineState(bool)));
+        connect(option2, SIGNAL(toggled(bool)), this, SLOT(sendLineState(bool)));
+
+        groupBoxLayout->addWidget(option1);
+        groupBoxLayout->addWidget(option2);
+        lineLayout->addWidget(groupBox, Qt::AlignHCenter);
+
+        // Tips
+
+        QLabel *tipsLabel = new QLabel(tr("Tips"));
+        tipsLabel->setAlignment(Qt::AlignHCenter);
+        lineLayout->addSpacing(10);
+        lineLayout->addWidget(tipsLabel);
+
+        int minWidth = TResponsiveUI::fitRightPanelWidth();
+        QTextEdit *helpComponent = new QTextEdit;
+        helpComponent->setMinimumWidth(minWidth);
+        helpComponent->setMaximumWidth(minWidth*2);
+        helpComponent->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+
+        QFont font = this->font();
+        font.setPointSize(8);
+        if (screenHeight < HD_HEIGHT)
+            helpComponent->setFont(font);
+
+        helpComponent->append("<p><b>" + tr("Mouse Right Click or X Key") + ":</b> " +  tr("Close the line path") + "</p>");
+        helpComponent->append("<p><b>" + tr("Shift") + ":</b> " +  tr("Align line to horizontal/vertical axis") + "</p>");
+
+        helpComponent->setFixedHeight(helpHeight);
+
+        lineLayout->addWidget(helpComponent);
+        lineLayout->addStretch(2);
+        innerLayout->addWidget(lineWidget);
+
+        // Eraser settings
+
+        TCONFIG->beginGroup("BrushParameters");
+        int eraserValue = TCONFIG->value("EraserSize", 10).toInt();
+        if (eraserValue > 100)
+            eraserValue = 10;
+
+        eraserPreview = new TupPenThicknessWidget(this);
+        eraserPreview->setColor(Qt::white);
+        eraserPreview->setBrush(Qt::SolidPattern);
+        eraserPreview->render(eraserValue);
+
+        eraserSlider = new QSlider(Qt::Horizontal, this);
+        eraserSlider->setRange(10, 100);
+        connect(eraserSlider, SIGNAL(valueChanged(int)), this, SLOT(updateEraserSizeFromSlider(int)));
+        connect(eraserSlider, SIGNAL(valueChanged(int)), eraserPreview, SLOT(render(int)));
+
+        eraserSizeBox = new QSpinBox;
+        eraserSizeBox->setAlignment(Qt::AlignHCenter);
+        eraserSizeBox->setMinimum(10);
+        eraserSizeBox->setMaximum(100);
+        connect(eraserSizeBox, SIGNAL(valueChanged(int)), this, SLOT(updateEraserSizeFromBox(int)));
+        connect(eraserSizeBox, SIGNAL(valueChanged(int)), eraserPreview, SLOT(render(int)));
+
+        eraserSlider->setValue(eraserValue);
+        updateEraserSizeFromSlider(eraserValue);
+
+        eraserWidget = new QWidget;
+        QVBoxLayout *eraserLayout = new QVBoxLayout(eraserWidget);
+        eraserLayout->addWidget(eraserPreview, Qt::AlignHCenter);
+        eraserLayout->addWidget(eraserSlider, Qt::AlignHCenter);
+        eraserLayout->addWidget(eraserSizeBox, Qt::AlignHCenter);
+        eraserLayout->addStretch(2);
+
+        innerLayout->addWidget(eraserWidget, Qt::AlignHCenter);
+        innerLayout->addStretch(2);
+
+        mainLayout->addLayout(innerLayout, Qt::AlignHCenter);
+        mainLayout->addStretch(2);
+    }
+
+    if (type == GeometricSettings::Triangle || type == GeometricSettings::Hexagon) {
         QGroupBox *groupBox = new QGroupBox(tr("Line Options"));
         QVBoxLayout *lineLayout = new QVBoxLayout(groupBox);
         option1 = new QRadioButton(tr("Bendable"));
@@ -182,42 +294,98 @@ GeometricSettings::GeometricSettings(GeometricSettings::ToolType type, QWidget *
 
         lineLayout->addWidget(option1);
         lineLayout->addWidget(option2);
-        layout->addWidget(groupBox);
+        innerLayout->addWidget(groupBox);
+
+        // Tips
+
+        QLabel *label = new QLabel(tr("Tips"));
+        label->setAlignment(Qt::AlignHCenter);
+        innerLayout->addSpacing(10);
+        innerLayout->addWidget(label);
+
+        mainLayout->addLayout(innerLayout);
+
+        int minWidth = TResponsiveUI::fitRightPanelWidth();
+        QTextEdit *helpComponent = new QTextEdit;
+        helpComponent->setMinimumWidth(minWidth);
+        helpComponent->setMaximumWidth(minWidth*2);
+        helpComponent->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+
+        QFont font = this->font();
+        font.setPointSize(8);
+        if (screenHeight < HD_HEIGHT)
+            helpComponent->setFont(font);
+
+        if (type == GeometricSettings::Line) {
+            helpComponent->append("<p><b>" + tr("Mouse Right Click or X Key") + ":</b> " +  tr("Close the line path") + "</p>");
+            helpComponent->append("<p><b>" + tr("Shift") + ":</b> " +  tr("Align line to horizontal/vertical axis") + "</p>");
+        } else {
+            helpComponent->append("<p><b>" + tr("Ctrl + Left Mouse Button") + ":</b> " +  tr("Set width/height proportional dimensions") + "</p>");
+        }
+
+        helpComponent->setFixedHeight(helpHeight);
+
+        mainLayout->addWidget(helpComponent);
     }
 
-    QLabel *label = new QLabel(tr("Tips"));
-    label->setAlignment(Qt::AlignHCenter);
-    layout->addSpacing(10);
-    layout->addWidget(label);
-
-    mainLayout->addLayout(layout);
-
-    int minWidth = TResponsiveUI::fitRightPanelWidth();
-    QTextEdit *helpComponent = new QTextEdit;
-    helpComponent->setMinimumWidth(minWidth);
-    helpComponent->setMaximumWidth(minWidth*2);
-    helpComponent->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-
-    QFont font = this->font();
-    font.setPointSize(8);
-    if (screenHeight < HD_HEIGHT)
-        helpComponent->setFont(font);
-
-    if (type == GeometricSettings::Line) {
-        helpComponent->append("<p><b>" + tr("Mouse Right Click or X Key") + ":</b> " +  tr("Close the line path") + "</p>");
-        helpComponent->append("<p><b>" + tr("Shift") + ":</b> " +  tr("Align line to horizontal/vertical axis") + "</p>");
-    } else {
-        helpComponent->append("<p><b>" + tr("Ctrl + Left Mouse Button") + ":</b> " +  tr("Set width/height proportional dimensions") + "</p>");
-    }
-
-    helpComponent->setFixedHeight(helpHeight);
-
-    mainLayout->addWidget(helpComponent);
     mainLayout->addStretch(2);
 }
 
 GeometricSettings::~GeometricSettings()
 {
+}
+
+void GeometricSettings::enableLineMode()
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[GeometricSettings::enableLineMode()]";
+    #endif
+
+    lineButton->setChecked(true);
+    if (eraserButton->isChecked())
+        eraserButton->setChecked(false);
+
+    eraserWidget->setVisible(false);
+    lineWidget->setVisible(true);
+
+    emit toolEnabled(LineMode);
+}
+
+void GeometricSettings::enableEraserMode()
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[GeometricSettings::enableEraserMode()]";
+    #endif
+
+    eraserButton->setChecked(true);
+    if (lineButton->isChecked())
+        lineButton->setChecked(false);
+
+    lineWidget->setVisible(false);
+    eraserWidget->setVisible(true);
+
+    emit toolEnabled(EraserMode);
+}
+
+void GeometricSettings::switchMode()
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[GeometricSettings::switchMode()]";
+    #endif
+
+    if (lineButton->isChecked())
+        enableEraserMode();
+    else
+        enableLineMode();
+}
+
+void GeometricSettings::updateEraserSizeFromSlider(int size)
+{
+    emit eraserSizeChanged(size);
+
+    eraserSizeBox->blockSignals(true);
+    eraserSizeBox->setValue(size);
+    eraserSizeBox->blockSignals(false);
 }
 
 void GeometricSettings::sendLineState(bool state)
@@ -263,3 +431,13 @@ void GeometricSettings::setHexagonDirection()
     hexagonType = static_cast<HexagonType>(buttonsGroup->checkedId());
     emit hexagonTypeChanged(hexagonType);
 }
+
+void GeometricSettings::updateEraserSizeFromBox(int size)
+{
+    emit eraserSizeChanged(size);
+
+    eraserSlider->blockSignals(true);
+    eraserSlider->setValue(size);
+    eraserSlider->blockSignals(false);
+}
+

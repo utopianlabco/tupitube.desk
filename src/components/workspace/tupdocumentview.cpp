@@ -2619,6 +2619,10 @@ void TupDocumentView::updateCameraMode()
 
 void TupDocumentView::updateToolCursor(ToolMode tool)
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupDocumentView::updateToolCursor()]";
+    #endif
+
     if (currentTool) {
         TAction::ActionId tooldId= currentTool->toolId();
         if (tooldId == TAction::Pencil || tooldId == TAction::Line) {

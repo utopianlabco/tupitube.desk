@@ -116,7 +116,8 @@ QList<TAction::ActionId> PencilTool::keys() const
     return QList<TAction::ActionId>() << TAction::Pencil;
 }
 
-void PencilTool::press(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
+void PencilTool::press(const TupInputDeviceInformation *input, TupBrushManager *brushManager,
+                       TupGraphicsScene *gScene)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[PencilTool::press()] - currentTool ->" << currentToolMode;
@@ -150,7 +151,8 @@ void PencilTool::press(const TupInputDeviceInformation *input, TupBrushManager *
     }
 }
 
-void PencilTool::move(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
+void PencilTool::move(const TupInputDeviceInformation *input, TupBrushManager *brushManager,
+                      TupGraphicsScene *gScene)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[PencilTool::move()]";
@@ -188,7 +190,8 @@ void PencilTool::move(const TupInputDeviceInformation *input, TupBrushManager *b
     }
 }
 
-void PencilTool::release(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
+void PencilTool::release(const TupInputDeviceInformation *input, TupBrushManager *brushManager,
+                         TupGraphicsScene *gScene)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[PencilTool::release()] - currentTool ->" << currentToolMode;
@@ -324,19 +327,9 @@ void PencilTool::storePathItems()
     lineItems.clear();
     foreach (QGraphicsItem *item, scene->items()) {
         if (TupPathItem *line = qgraphicsitem_cast<TupPathItem *> (item)) {
-            qDebug() << "---";
-            qDebug() << "   BASE Z Value -> " << baseZValue;
-            qDebug() << "   -- line Z Value -> " << line->zValue();
-            qDebug() << "   TOP Z Value -> " << topZValue;
-            qDebug() << "---";
-
             int zVal = line->zValue();
-            if (baseZValue <= zVal && zVal < topZValue) {
-                qDebug() << "Storing line!";
+            if (baseZValue <= zVal && zVal < topZValue)
                 lineItems << line;
-            } else {
-                qDebug() << "Path is NOT part of the same frame!";
-            }
         }
     }
 }
@@ -499,34 +492,26 @@ void PencilTool::runEraser(const QPointF &point)
         qDebug() << "[PencilTool::runEraser()] - Evaluating point ->" << point;
     #endif
 
-    qDebug() << "PencilTool::runEraser() - lineItems.size() ->" << lineItems.size();
     // Checking if the point matches any of the frame paths
     for (int i=0; i<lineItems.size(); i++) {
         TupPathItem *item = lineItems.at(i);
-        if (item->isBlocked()) {
-            qDebug() << "PencilTool::runEraser() - Path is blocked... ignoring...";
+        if (item->isBlocked())
             continue;
-        }
 
         if (item->pointMatchesPath(point, eraserSize/2, EraserMode)) {
             // Path matches the point
-            qDebug() << "-------------------------------------------------------";
-            qDebug() << "PencilTool::runEraser() - MATCH!!! MATCH!!! MATCH!!!";
-            // qDebug() << "PencilTool::runEraser() - eraser size ->" << eraserSize;
+            #ifdef TUP_DEBUG
+                qDebug() << "---";
+                qDebug() << "[PencilTool::runEraser()] - MATCH!!!";
+            #endif
+
             QPair<QString, QString> segments = item->recalculatePath(point, eraserSize/2);
             QString segment1 = segments.first;
             QString segment2 = segments.second;
 
-            qDebug() << "  *** segment1 ->" << segment1;
-            qDebug() << "  *** segment2 ->" << segment2;
-
             if (segment1.compare("-1") != 0) {
                 TupFrame *frame = getCurrentFrame();
                 int itemIndex = frame->indexOf(item);
-
-                qDebug() << "  *** itemIndex ->" << itemIndex;
-                qDebug() << "  *** item zValue ->" << item->zValue();
-                qDebug() << "  *** frame total count ->" << frame->itemsTotalCount();
 
                 if (itemIndex == -1) {
                     #ifdef TUP_DEBUG
@@ -537,7 +522,6 @@ void PencilTool::runEraser(const QPointF &point)
                 }
 
                 if (!segment1.isEmpty() && !segment2.isEmpty()) {
-                    qDebug() << "PencilTool::runEraser() - Adding TWO segments!";
                     TupProjectRequest event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(),
                                                                                    currentLayer, currentFrame, itemIndex,
                                                                                    QPointF(), scene->getSpaceContext(), TupLibraryObject::Item,
@@ -552,16 +536,11 @@ void PencilTool::runEraser(const QPointF &point)
                     QDomDocument doc;
                     doc.appendChild(lineItem->toXml(doc));
 
-                    qDebug() << "PencilTool::runEraser() - Creating additional path segment!";
-                    qDebug() << "PencilTool::runEraser() - segment2 ->" << segment2;
-                    qDebug() << "PencilTool::runEraser() - path definition ->" << doc.toString();
-
                     event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(), scene->currentLayerIndex(), scene->currentFrameIndex(),
                                                                  0, QPoint(), scene->getSpaceContext(), TupLibraryObject::Item, TupProjectRequest::Add,
                                                                  doc.toString());
                     emit requested(&event);
                 } else if (segment2.isEmpty() && !segment1.isEmpty()) {
-                    qDebug() << "PencilTool::runEraser() - Adding segment1";
                     TupProjectRequest event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(),
                                                                                    currentLayer, currentFrame, itemIndex,
                                                                                    QPointF(), scene->getSpaceContext(), TupLibraryObject::Item,
@@ -576,11 +555,6 @@ void PencilTool::runEraser(const QPointF &point)
                     addKeyPoints(debugPath);
                     */
                 } else {
-                    qDebug() << "PencilTool::runEraser() - Removing item...";
-                    qDebug() << "currentLayer ->" << currentLayer;
-                    qDebug() << "currentFrame ->" << currentFrame;
-                    qDebug() << "position ->" << itemIndex;
-
                     scene->removeItem(item);
                     lineItems.removeAt(i);
 
@@ -593,14 +567,16 @@ void PencilTool::runEraser(const QPointF &point)
                     emit requested(&event);
                 }
             } else {
-                qDebug() << "PencilTool::runEraser() - Warning: Eraser action FAILED!";
+                #ifdef TUP_DEBUG
+                    qDebug() << "[PencilTool::runEraser()] - Warning: Eraser action FAILED!";
+                #endif
             }
 
-            qDebug() << "---";
-            qDebug() << "";
         } else {
-            qDebug() << "---";
-            qDebug() << "PencilTool::runEraser() - NO match!!!";
+            #ifdef TUP_DEBUG
+                qDebug() << "---";
+                qDebug() << "[PencilTool::runEraser()] - NO match!!!";
+            #endif
         }
     }
 }

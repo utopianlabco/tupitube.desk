@@ -214,7 +214,6 @@ void GeometricTool::press(const TupInputDeviceInformation *input, TupBrushManage
             currentPoint = input->pos();
 
             if (currentToolMode == LineMode) {
-                qDebug() << "[GeometricTool::press()] *** Drawing line...";
                 if (linePath) {
                     QPainterPath painterPath = linePath->path();
                     if (straightMode)
@@ -252,9 +251,6 @@ void GeometricTool::press(const TupInputDeviceInformation *input, TupBrushManage
                     gScene->includeObject(guideLine);
                 }
             } else { // Eraser mode
-                qDebug() << "[GeometricTool::press()] *** Erasing line...";
-                qDebug() << "[GeometricTool::press()] *** lineItems.size() ->" << lineItems.size();
-
                 eraserCircle->setPos(currentPoint - eraserDistance);
                 gScene->includeObject(eraserCircle);
                 if (!lineItems.isEmpty())
@@ -297,8 +293,6 @@ void GeometricTool::move(const TupInputDeviceInformation *input, TupBrushManager
 
     if (toolId() == TAction::Line) {
         if (currentToolMode == EraserMode) {
-            qDebug() << "[GeometricTool::move()] *** Erasing line...";
-            qDebug() << "[GeometricTool::move()] *** lineItems.size() ->" << lineItems.size();
             QPointF currentPoint = input->pos();
             eraserCircle->setPos(currentPoint - eraserDistance);
             if (!lineItems.isEmpty())
@@ -619,13 +613,9 @@ void GeometricTool::release(const TupInputDeviceInformation *input, TupBrushMana
         point = hexagon->pos();
     } else if (toolId() == TAction::Line) {
         if (currentToolMode == EraserMode) {
-            qDebug() << "[GeometricTool::release()] *** Erasing line...";
-            qDebug() << "[GeometricTool::release()] *** lineItems.size() ->" << lineItems.size();
             gScene->removeItem(eraserCircle);
             if (!lineItems.isEmpty())
                 runEraser(input->pos());
-        } else {
-            qDebug() << "[GeometricTool::release()] *** LineMode ON!";
         }
         return;
     }
@@ -909,19 +899,11 @@ void GeometricTool::updateToolMode(ToolMode tool)
 
 void GeometricTool::storePathItems()
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "[GeometricTool::storePathItems()]";
-    #endif
-
     // Store all the path items of the current frame in a list
     lineItems.clear();
     foreach (QGraphicsItem *item, scene->items()) {
-        qDebug() << "scene->items().count() ->" << scene->items().count();
         if (TupPathItem *line = qgraphicsitem_cast<TupPathItem *> (item)) {
             int zVal = line->zValue();
-            qDebug() << "*** zVal ->" << zVal;
-            qDebug() << "*** baseZValue ->" << baseZValue;
-            qDebug() << "*** topZValue ->" << topZValue;
             if (baseZValue <= zVal && zVal < topZValue)
                 lineItems << line;
         }
@@ -973,9 +955,10 @@ void GeometricTool::runEraser(const QPointF &point)
 
         if (item->pointMatchesPath(point, eraserSize/2, EraserMode)) {
             #ifdef TUP_DEBUG
-                qDebug() << "****************************";
-                qDebug() << "[GeometricTool::runEraser()] - MATCH with path!";
+                qDebug() << "---";
+                qDebug() << "[GeometricTool::runEraser()] - MATCH!!!";
             #endif
+
             // Path matches the point
             QPair<QString, QString> segments = item->recalculatePath(point, eraserSize/2);
             QString segment1 = segments.first;

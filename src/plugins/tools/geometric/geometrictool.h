@@ -84,7 +84,7 @@ class TUPITUBE_PLUGIN GeometricTool : public TupToolPlugin
         void aboutToChangeScene(TupGraphicsScene *scene);
         virtual void aboutToChangeTool();
         virtual void saveConfig();
-        virtual QCursor toolCursor(); // const;
+        virtual QCursor toolCursor();
         void updatePos(QPointF pos);
 
     public slots:

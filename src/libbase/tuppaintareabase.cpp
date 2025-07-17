@@ -36,8 +36,6 @@
 #include "tuptextitem.h"
 #include "tupgraphicsscene.h"
 #include "tupgraphicalgorithm.h"
-
-// TupiTube Framework 
 #include "tupscene.h"
 #include "tconfig.h"
 #include "tapplication.h"
@@ -88,7 +86,6 @@ TupPaintAreaBase::TupPaintAreaBase(QWidget *parent, QSize dimension, TupLibrary 
     centerDrawingArea();
     setInteractive(true);
     setMouseTracking(true);
-    // setAcceptDrops(true);
 
     setRenderHints(QPainter::RenderHints(QPainter::Antialiasing));
 
@@ -201,7 +198,6 @@ void TupPaintAreaBase::mouseMoveEvent(QMouseEvent *event)
         mouseEvent.setButton(event->button());
         mouseEvent.setModifiers(event->modifiers());
         mouseEvent.setAccepted(false);
-        // QApplication::sendEvent(gScene, &mouseEvent);
         gScene->mouseMoved(&mouseEvent);
     }
     */
@@ -225,7 +221,6 @@ void TupPaintAreaBase::mouseReleaseEvent(QMouseEvent *event)
         mouseEvent.setButton(event->button());
         mouseEvent.setModifiers(event->modifiers());
         mouseEvent.setAccepted(false);
-        // QApplication::sendEvent(gScene, &mouseEvent);
         gScene->mouseReleased(&mouseEvent);
     }
     */
@@ -243,7 +238,6 @@ void TupPaintAreaBase::keyPressEvent(QKeyEvent *event)
     }
 
     if (!gScene->userIsDrawing() && (event->modifiers () == (Qt::AltModifier | Qt::ControlModifier))) {
-        // QDesktopWidget desktop;
         dial->setAngle(static_cast<int>(angle));
         dial->show();
 
@@ -329,11 +323,11 @@ void TupPaintAreaBase::wheelEvent(QWheelEvent *event)
 {
     /*
     #ifdef TUP_DEBUG
-        qDebug() << "[TupPaintAreaBase::wheelEvent()] - angleDelta -> " << event->angleDelta();
+        qDebug() << "[TupPaintAreaBase::wheelEvent()] - angleDelta ->" << event->angleDelta();
     #endif
     */
 
-    // SQA: Evaluate this replacemente
+    // SQA: Evaluate this replacement
     // scaleView(pow(2.0, event->delta() / 520.0));
     scaleView(pow(2.0, event->angleDelta().y() / 520.0));
 }
@@ -349,15 +343,6 @@ void TupPaintAreaBase::drawBackground(QPainter *painter, const QRectF &rect)
     painter->setPen(blackPen);
     painter->fillRect(drawingRect, bgcolor);
     painter->drawRect(drawingRect);
-
-    // if enabled action safe area
-    if (safeAreaEnabled) {
-        if (safeLevel == Background) {
-            int width = drawingRect.width();
-            int height = drawingRect.height();
-            drawSafeArea(painter, width, height);
-        }
-    }
 
     emit changedZero(painter->worldTransform().map(QPointF(0, 0)));
 
@@ -382,49 +367,12 @@ void TupPaintAreaBase::drawForeground(QPainter *painter, const QRectF &rect)
                             int height = drawingRect.height();
 
                             // if enabled draw grid
-                            if (gridEnabled) {
-//                                painter->setPen(gridPen);
-//                                int maxX = static_cast<int> (width + 100);
-//                                int maxY = static_cast<int> (height + 100);
-//                                for (int i = -100; i <= maxX; i += gridSeparation)
-//                                     painter->drawLine(i, -100, i, maxY);
-//                                for (int i = -100; i <= maxY; i += gridSeparation)
-//                                     painter->drawLine(-100, i, maxX, i);
-
-                                int midX = width / 2;
-                                int midY = height / 2;
-                                int minX = midX - (width/2);
-                                int maxX = midX + (width/2);
-                                int minY = midY - (height/2);
-                                int maxY = midY + (height/2);
-
-                                painter->setPen(gridPen);
-
-                                int initX = midX - gridSeparation;
-                                for (int i=initX; i > minX; i -= gridSeparation)
-                                     painter->drawLine(i, minY, i, maxY);
-
-                                initX = midX + gridSeparation;
-                                for (int i=initX; i < maxX; i += gridSeparation)
-                                     painter->drawLine(i, minY, i, maxY);
-
-                                int initY = midY - gridSeparation;
-                                for (int i=initY; i > minY; i -= gridSeparation)
-                                     painter->drawLine(minX, i, maxX, i);
-
-                                initY = midY + gridSeparation;
-                                for (int i=initY; i < maxY; i += gridSeparation)
-                                     painter->drawLine(minX, i, maxX, i);
-
-                                painter->setPen(gridAxisPen);
-                                painter->drawLine(midX, minY, midX, maxY);
-                                painter->drawLine(minX, midY, maxX, midY);
-                            }
+                            if (gridEnabled)
+                                drawGrid(painter, width, height);
 
                             // if enabled action safe area
-                            if (safeLevel == Foreground) {
-                                if (safeAreaEnabled)
-                                    drawSafeArea(painter, width, height);
+                            if (safeAreaEnabled) {
+                                drawSafeArea(painter, width, height);
                             }
                         }
                     } 
@@ -618,6 +566,38 @@ void TupPaintAreaBase::updateAngle(int degree)
 {
     setRotationAngle(degree);
     emit rotated(degree);
+}
+
+void TupPaintAreaBase::drawGrid(QPainter *painter, int width, int height)
+{
+    int midX = width / 2;
+    int midY = height / 2;
+    int minX = midX - (width/2);
+    int maxX = midX + (width/2);
+    int minY = midY - (height/2);
+    int maxY = midY + (height/2);
+
+    painter->setPen(gridPen);
+
+    int initX = midX - gridSeparation;
+    for (int i=initX; i > minX; i -= gridSeparation)
+        painter->drawLine(i, minY, i, maxY);
+
+    initX = midX + gridSeparation;
+    for (int i=initX; i < maxX; i += gridSeparation)
+        painter->drawLine(i, minY, i, maxY);
+
+    int initY = midY - gridSeparation;
+    for (int i=initY; i > minY; i -= gridSeparation)
+        painter->drawLine(minX, i, maxX, i);
+
+    initY = midY + gridSeparation;
+    for (int i=initY; i < maxY; i += gridSeparation)
+        painter->drawLine(minX, i, maxX, i);
+
+    painter->setPen(gridAxisPen);
+    painter->drawLine(midX, minY, midX, maxY);
+    painter->drawLine(minX, midY, maxX, midY);
 }
 
 void TupPaintAreaBase::drawSafeArea(QPainter *painter, int width, int height)

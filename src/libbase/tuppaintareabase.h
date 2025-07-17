@@ -116,6 +116,7 @@ class TUPITUBE_EXPORT TupPaintAreaBase : public QGraphicsView
         virtual bool canPaint() const;
 
     private:
+        void drawGrid(QPainter *painter, int width, int height);
         void drawSafeArea(QPainter *painter, int width, int height);
 
         QGraphicsRectItem *grid;

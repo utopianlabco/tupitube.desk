@@ -1288,8 +1288,16 @@ void TupMainWindow::releaseAudioResources()
 void TupMainWindow::openRecentProject()
 {
     QAction *action = qobject_cast<QAction *>(sender());
-    if (action)
-        openProject(action->text());
+    if (action) {
+        QString recentProjectPath = action->text();
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupMainWindow::openRecentProject()] - recent project path ->" << recentProjectPath;
+        #endif
+        if (recentProjectPath.compare(m_fileName) != 0)
+            openProject(recentProjectPath);
+        else
+            TOsd::self()->display(TOsd::Warning, tr("Project is already opened!"));
+    }
 }
 
 // SQA: Check if this method is still used for something

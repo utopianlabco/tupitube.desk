@@ -67,11 +67,13 @@ class TUPITUBE_EXPORT TupGraphicsScene : public QGraphicsScene
         void setCurrentScene(TupScene *currentScene);
         void drawCurrentPhotogram();
         
-        void drawPhotogram(int photogram, bool drawContext);
+        void drawPhotogram(int photogram, bool drawContext, bool drawForeground = true);
         void drawSceneBackground(int photogram);
+        void drawVectorFgContext();
         void drawVectorFg();
+        void setVectorFgEnvironment();
 
-        void cleanWorkSpace();
+        void clearWorkSpace();
         void removeScene();
         int currentFrameIndex() const;
         int currentLayerIndex() const;
@@ -209,6 +211,7 @@ class TUPITUBE_EXPORT TupGraphicsScene : public QGraphicsScene
         QGraphicsPixmapItem *vectorDynamicBg;
         QGraphicsPixmapItem *rasterStaticBg;
         QGraphicsPixmapItem *rasterDynamicBg;
+        QGraphicsPixmapItem *vectorFgContextImg;
 
         bool showWaterMark;
 };

@@ -185,7 +185,7 @@ bool ImagePlugin::exportToFormat(int colorAlpha, const QString &filePath, const 
 }
 
 bool ImagePlugin::exportFrame(int frameIndex, const QColor color, const QString &filePath, TupScene *scene,
-                              const QSize &size, TupProject *project, bool waterMark)
+                              const QSize &size, TupProject *project, bool waterMark, bool showForegroundView)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[ImagePlugin::exportToFrame()] - size ->" << size;
@@ -200,7 +200,7 @@ bool ImagePlugin::exportFrame(int frameIndex, const QColor color, const QString 
 
     TupAnimationRenderer renderer(project->getLibrary(), waterMark);
     renderer.setScene(scene, size, scene->getBgColor());
-    renderer.renderPhotogram(frameIndex);
+    renderer.renderPhotogram(frameIndex, showForegroundView);
 
     if (filePath.endsWith(".SVG", Qt::CaseInsensitive)) {
         QSvgGenerator generator;

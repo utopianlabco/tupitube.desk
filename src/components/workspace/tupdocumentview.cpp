@@ -1460,10 +1460,20 @@ void TupDocumentView::createToolBar()
     fgEmpty1->setFixedWidth(5);
     QWidget *fgEmpty2 = new QWidget();
     fgEmpty2->setFixedWidth(5);
+    QWidget *fgEmpty3 = new QWidget();
+    fgEmpty3->setFixedWidth(5);
 
     QLabel *fgOpacityLabel = new QLabel();
     fgOpacityLabel->setToolTip(tr("Foreground Opacity"));
     fgOpacityLabel->setPixmap(QPixmap(THEME_DIR + "icons/bg_opacity.png"));
+
+    QCheckBox *fgContextCheckBox = new QCheckBox("");
+    fgContextCheckBox->setToolTip(tr("Show Background Context"));
+    fgContextCheckBox->setIcon(QPixmap(THEME_DIR + "icons/frames_mode.png"));
+    TCONFIG->beginGroup("PaintArea");
+    fgContextCheckBox->setChecked(TCONFIG->value("ShowVectorFgContext", true).toBool());
+    connect(fgContextCheckBox, SIGNAL(stateChanged(int)),
+            this, SLOT(showFgContextImage(int)));
 
     QDoubleSpinBox *fgOpacityBox = new QDoubleSpinBox(this);
     fgOpacityBox->setRange(0.1, 1.0);
@@ -1477,11 +1487,26 @@ void TupDocumentView::createToolBar()
     fgPropertiesBar->addWidget(fgEmpty1);
     fgPropertiesBar->addWidget(fgOpacityBox);
     fgPropertiesBar->addWidget(fgEmpty2);
+    fgPropertiesBar->addSeparator();
+    fgPropertiesBar->addWidget(fgEmpty3);
+    fgPropertiesBar->addWidget(fgContextCheckBox);
     fgPropertiesBar->setVisible(false);
 
     addToolBar(staticPropertiesBar);
     addToolBar(dynamicPropertiesBar);
     addToolBar(fgPropertiesBar);
+}
+
+void TupDocumentView::showFgContextImage(int state)
+{
+    bool showContext = true;
+    if (state == Qt::Unchecked)
+        showContext = false;
+    TCONFIG->beginGroup("PaintArea");
+    TCONFIG->setValue("ShowVectorFgContext", showContext);
+    TCONFIG->sync();
+
+    paintArea->updatePaintArea();
 }
 
 void TupDocumentView::showModesSettings()
@@ -1790,6 +1815,8 @@ void TupDocumentView::setSpaceContext()
         break;
         case TupProject::VECTOR_FG_MODE:
         {
+            generateForegroundContext();
+
             project->updateSpaceContext(TupProject::VECTOR_FG_MODE);
             staticPropertiesBar->setVisible(false);
             dynamicPropertiesBar->setVisible(false);
@@ -2027,7 +2054,7 @@ void TupDocumentView::exportImage()
 
     paintArea->viewport()->setCursor(Qt::ArrowCursor);
 
-    // updateToolsMenu(TAction::ExportImage, "export_image");
+    // updateToolsMenu(TAction::ExportImage, "export_´image");
     int sceneIndex = paintArea->currentSceneIndex();
     int frameIndex = paintArea->currentFrameIndex();
 
@@ -2042,6 +2069,42 @@ void TupDocumentView::exportImage()
         else
             TOsd::self()->display(TOsd::Error, tr("Can't export frame as image"));
     }
+}
+
+void TupDocumentView::generateForegroundContext()
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupDocumentView::generateForegroundContext()]";
+    #endif
+
+    paintArea->viewport()->setCursor(Qt::ArrowCursor);
+    int sceneIndex = paintArea->currentSceneIndex();
+    int frameIndex = paintArea->currentFrameIndex();
+
+    QString imgPath = VECTOR_FG_DIR + QString::number(sceneIndex) + "/fg";
+    QDir imgDir(imgPath);
+    if (!imgDir.exists()) {
+        if (!imgDir.mkpath(imgPath)) {
+            #ifdef TUP_DEBUG
+                qWarning() << "[TupBackground::generateForegroundContext()] - Error creating image path ->" << imgPath;
+            #endif
+            return;
+        }
+    }
+
+    imgPath += "/fg.png";
+    bool isOk = imagePlugin->exportFrame(frameIndex, project->getCurrentBgColor(), imgPath,
+                                         project->sceneAt(sceneIndex),
+                                         project->getDimension(), project, false, false);
+    if (!isOk) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupDocumentView::generateForegroundContext()] - Fatal Error: Can't create context image ->" << imgPath;
+        #endif
+    } else {
+        qDebug() << "[TupDocumentView::generateForegroundContext()] - Foreground context image created successfully! ->" << imgPath;
+    }
+
+    updatePaintArea();
 }
 
 void TupDocumentView::postImage()

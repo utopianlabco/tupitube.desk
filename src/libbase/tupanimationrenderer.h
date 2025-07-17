@@ -52,7 +52,7 @@ class TUPITUBE_EXPORT TupAnimationRenderer
         void setScene(TupScene *scene, QSize dimension, const QColor &bgColor);
 
         bool nextPhotogram();
-        void renderPhotogram(int index);
+        void renderPhotogram(int index, bool includeForegroundView = true);
         void render(QPainter *painter);
 
         int getCurrentPhotogram() const;

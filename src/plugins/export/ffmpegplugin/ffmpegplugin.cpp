@@ -270,7 +270,7 @@ bool FFmpegPlugin::exportToFormat(int colorAlpha, const QString &filePath, const
 }
 
 bool FFmpegPlugin::exportFrame(int frameIndex, const QColor color, const QString &filePath, TupScene *scene,
-                               const QSize &size, TupProject *project, bool waterMark = false)
+                               const QSize &size, TupProject *project, bool waterMark, bool showForegroundView)
 {
     Q_UNUSED(frameIndex)
     Q_UNUSED(color)
@@ -279,6 +279,7 @@ bool FFmpegPlugin::exportFrame(int frameIndex, const QColor color, const QString
     Q_UNUSED(size)
     Q_UNUSED(project)
     Q_UNUSED(waterMark)
+    Q_UNUSED(showForegroundView)
 
     return false;
 }

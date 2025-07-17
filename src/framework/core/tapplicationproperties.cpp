@@ -84,6 +84,11 @@ void TApplicationProperties::setVectorBgDir(const QString &path)
     vectorBgPath = path;
 }
 
+void TApplicationProperties::setVectorFgDir(const QString &path)
+{
+    vectorFgPath = path;
+}
+
 void TApplicationProperties::setRasterResourcesDir(const QString &path)
 {
     rasterResourcesPath = path;
@@ -189,6 +194,11 @@ QString TApplicationProperties::rasterResourcesDir() const
 }
 
 QString TApplicationProperties::vectorBgDir() const
+{
+    return projectPath + "/images/vector/";
+}
+
+QString TApplicationProperties::vectorFgDir() const
 {
     return projectPath + "/images/vector/";
 }

@@ -137,7 +137,7 @@ QGridLayout * TupPaintAreaPreferences::gridPanel()
 
     gridForm->addWidget(new QLabel(tr("Grid Separation:")), 2, 0, Qt::AlignLeft);
     gridSeparation = new QSpinBox(this);
-    gridSeparation->setMinimum(5);
+    gridSeparation->setMinimum(20);
     gridSeparation->setMaximum(100);
     gridSeparation->setValue(separation);
     gridForm->addWidget(gridSeparation, 2, 1, Qt::AlignLeft);
@@ -186,7 +186,6 @@ QGridLayout * TupPaintAreaPreferences::safeAreaPanel()
     colorName = TCONFIG->value("SafeAreaLineColor", "#969696").toString();
     safeAreaLineColor = QColor(colorName);
     int thickness = TCONFIG->value("SafeLineThickness", 1).toInt();
-    int safeLevel = TCONFIG->value("SafeLevel", 0).toInt();
 
     QGridLayout *safeForm = new QGridLayout;
 
@@ -211,13 +210,6 @@ QGridLayout * TupPaintAreaPreferences::safeAreaPanel()
     safeThickness->setValue(thickness);
     safeForm->addWidget(safeThickness, 2, 1, Qt::AlignLeft);
 
-    safeForm->addWidget(new QLabel(tr("Safe Area Level:")), 3, 0, Qt::AlignLeft);
-    safeLevelCombo = new QComboBox(this);
-    safeLevelCombo->addItem(tr("Background"));
-    safeLevelCombo->addItem(tr("Foreground"));
-    safeLevelCombo->setCurrentIndex(safeLevel);
-    safeForm->addWidget(safeLevelCombo, 3, 1, Qt::AlignLeft);
-
     return safeForm;
 }
 
@@ -236,7 +228,6 @@ void TupPaintAreaPreferences::saveValues()
     TCONFIG->setValue("SafeAreaRectColor", safeAreaRectColor.name());
     TCONFIG->setValue("SafeAreaLineColor", safeAreaLineColor.name());
     TCONFIG->setValue("SafeLineThickness", safeThickness->value());
-    TCONFIG->setValue("SafeLevel", safeLevelCombo->currentIndex());
 
     TCONFIG->sync();
 }

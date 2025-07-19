@@ -5,47 +5,7 @@
     <name>BucketTool</name>
     <message>
         <source>F</source>
-        <translation>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-F</translation>
+        <translation>F</translation>
     </message>
     <message>
         <source>Sorry, only native objects can be filled</source>
@@ -339,6 +299,18 @@ F</translation>
     <message>
         <source>Vertical</source>
         <translation>垂直的</translation>
+    </message>
+    <message>
+        <source>Line Mode</source>
+        <translation>線路模式</translation>
+    </message>
+    <message>
+        <source>E</source>
+        <translation>E</translation>
+    </message>
+    <message>
+        <source>Eraser Mode</source>
+        <translation>橡皮擦模式</translation>
     </message>
 </context>
 <context>
@@ -857,6 +829,18 @@ F</translation>
     <message>
         <source>Smoothness</source>
         <translation>平滑度</translation>
+    </message>
+    <message>
+        <source>Pencil Mode</source>
+        <translation>鉛筆模式</translation>
+    </message>
+    <message>
+        <source>E</source>
+        <translation>E</translation>
+    </message>
+    <message>
+        <source>Eraser Mode</source>
+        <translation>橡皮擦模式</translation>
     </message>
 </context>
 <context>
@@ -1831,6 +1815,17 @@ F</translation>
     </message>
 </context>
 <context>
+    <name>TXYSpinBox</name>
+    <message>
+        <source>Rectangle Dimension</source>
+        <translation>矩形尺寸</translation>
+    </message>
+    <message>
+        <source>Square Dimension</source>
+        <translation>平方尺寸</translation>
+    </message>
+</context>
+<context>
     <name>TabDialog</name>
     <message>
         <source>OK</source>
@@ -2648,10 +2643,6 @@ F</translation>
         <translation>未偵測到相機</translation>
     </message>
     <message>
-        <source>Misc Tools</source>
-        <translation>其他工具</translation>
-    </message>
-    <message>
         <source>Can&apos;t export frame as image</source>
         <translation>無法將帧动画匯出為影像</translation>
     </message>
@@ -2766,6 +2757,10 @@ F</translation>
     <message>
         <source>Foreground Opacity</source>
         <translation>前景不透明度</translation>
+    </message>
+    <message>
+        <source>Show Background Context</source>
+        <translation>顯示背景上下文</translation>
     </message>
 </context>
 <context>
@@ -4194,6 +4189,10 @@ until reaches at least 3 seconds.</source>
         <source>This information will help us to enhance our project. Go to the Preferences dialog to enable/disable it any time.</source>
         <translation>這些資訊將幫助我們改進我們的專案。轉到“首選項”對話框隨時啟用/停用它。</translation>
     </message>
+    <message>
+        <source>Project is already opened!</source>
+        <translation>項目已開啟！</translation>
+    </message>
 </context>
 <context>
     <name>TupMicManager</name>
@@ -4806,18 +4805,6 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Rect Color:</source>
         <translation>矩形顏色：</translation>
-    </message>
-    <message>
-        <source>Safe Area Level:</source>
-        <translation>安全區域等級：</translation>
-    </message>
-    <message>
-        <source>Background</source>
-        <translation>背景</translation>
-    </message>
-    <message>
-        <source>Foreground</source>
-        <translation>前景</translation>
     </message>
     <message>
         <source>Grid Axis Color:</source>
@@ -5994,7 +5981,7 @@ Cover</source>
     </message>
     <message>
         <source>Black</source>
-        <translation type="unfinished">黑色</translation>
+        <translation>黑色</translation>
     </message>
 </context>
 <context>
@@ -6107,7 +6094,7 @@ Cover</source>
     </message>
     <message>
         <source>Importing audio track from video file...</source>
-        <translation type="unfinished"></translation>
+        <translation>從影片檔案匯入音軌...</translation>
     </message>
 </context>
 <context>

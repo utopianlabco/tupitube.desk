@@ -300,6 +300,18 @@
         <source>Vertical</source>
         <translation>垂直的</translation>
     </message>
+    <message>
+        <source>Line Mode</source>
+        <translation>线路模式</translation>
+    </message>
+    <message>
+        <source>E</source>
+        <translation>E</translation>
+    </message>
+    <message>
+        <source>Eraser Mode</source>
+        <translation>橡皮擦模式</translation>
+    </message>
 </context>
 <context>
     <name>GeometricTool</name>
@@ -817,6 +829,18 @@
     <message>
         <source>Smoothness</source>
         <translation>光滑度</translation>
+    </message>
+    <message>
+        <source>Pencil Mode</source>
+        <translation>铅笔模式</translation>
+    </message>
+    <message>
+        <source>E</source>
+        <translation>E</translation>
+    </message>
+    <message>
+        <source>Eraser Mode</source>
+        <translation>橡皮擦模式</translation>
     </message>
 </context>
 <context>
@@ -1791,6 +1815,17 @@
     </message>
 </context>
 <context>
+    <name>TXYSpinBox</name>
+    <message>
+        <source>Rectangle Dimension</source>
+        <translation>矩形尺寸</translation>
+    </message>
+    <message>
+        <source>Square Dimension</source>
+        <translation>平方尺寸</translation>
+    </message>
+</context>
+<context>
     <name>TabDialog</name>
     <message>
         <source>OK</source>
@@ -2608,10 +2643,6 @@
         <translation>未检测到摄像机</translation>
     </message>
     <message>
-        <source>Misc Tools</source>
-        <translation>其他工具</translation>
-    </message>
-    <message>
         <source>Can&apos;t export frame as image</source>
         <translation>无法将帧动画导出为图像</translation>
     </message>
@@ -2726,6 +2757,10 @@
     <message>
         <source>Foreground Opacity</source>
         <translation>前景不透明度</translation>
+    </message>
+    <message>
+        <source>Show Background Context</source>
+        <translation>显示背景上下文</translation>
     </message>
 </context>
 <context>
@@ -4154,6 +4189,10 @@ until reaches at least 3 seconds.</source>
         <source>This information will help us to enhance our project. Go to the Preferences dialog to enable/disable it any time.</source>
         <translation>这些信息将有助于我们改进项目。您可以随时前往“首选项”对话框启用/禁用此功能。</translation>
     </message>
+    <message>
+        <source>Project is already opened!</source>
+        <translation>项目已开启！</translation>
+    </message>
 </context>
 <context>
     <name>TupMicManager</name>
@@ -4766,18 +4805,6 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Rect Color:</source>
         <translation>矩形颜色：</translation>
-    </message>
-    <message>
-        <source>Safe Area Level:</source>
-        <translation>安全区域等级：</translation>
-    </message>
-    <message>
-        <source>Background</source>
-        <translation>背景</translation>
-    </message>
-    <message>
-        <source>Foreground</source>
-        <translation>前景</translation>
     </message>
     <message>
         <source>Grid Axis Color:</source>
@@ -5954,7 +5981,7 @@ Cover</source>
     </message>
     <message>
         <source>Black</source>
-        <translation type="unfinished">黑色</translation>
+        <translation>黑色</translation>
     </message>
 </context>
 <context>
@@ -6067,7 +6094,7 @@ Cover</source>
     </message>
     <message>
         <source>Importing audio track from video file...</source>
-        <translation type="unfinished"></translation>
+        <translation>从视频文件导入音轨...</translation>
     </message>
 </context>
 <context>

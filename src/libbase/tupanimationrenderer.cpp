@@ -83,13 +83,13 @@ bool TupAnimationRenderer::nextPhotogram()
     return true;
 }
 
-void TupAnimationRenderer::renderPhotogram(int index) 
+void TupAnimationRenderer::renderPhotogram(int index, bool includeForegroundView)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupAnimationRenderer::renderPhotogram()] - index -> " << index;
     #endif
 
-    gScene->drawPhotogram(index, false);
+    gScene->drawPhotogram(index, false, includeForegroundView);
 }
 
 void TupAnimationRenderer::render(QPainter *painter)

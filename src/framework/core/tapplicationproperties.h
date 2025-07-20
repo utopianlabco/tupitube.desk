@@ -63,6 +63,7 @@ class T_CORE_EXPORT TApplicationProperties
         void setRevision(const QString &revision);
         void setCodeName(const QString &code);
         void setVectorBgDir(const QString &path);
+        void setVectorFgDir(const QString &path);
         void setRasterResourcesDir(const QString &path);
         void setProjectDir(const QString &projectName);
         void setTempProjectDir(const QString &tempFolder, const QString &projectName);
@@ -77,6 +78,7 @@ class T_CORE_EXPORT TApplicationProperties
         virtual QString rasterResourcesDir() const;
         virtual QString rasterBgDir() const;
         virtual QString vectorBgDir() const;
+        virtual QString vectorFgDir() const;
         virtual QString pluginDir() const;
         virtual QString configDir() const;
         virtual QString cacheDir() const;
@@ -99,6 +101,7 @@ class T_CORE_EXPORT TApplicationProperties
         QString iconsPath;
         QString cursorsPath;
         QString vectorBgPath;
+        QString vectorFgPath;
         QString rasterResourcesPath;
         QString repositoryPath;
         QString pluginPath;
@@ -120,6 +123,7 @@ class T_CORE_EXPORT TApplicationProperties
 #define VECTOR_BG_DIR kAppProp->vectorBgDir()
 #define RASTER_RESOURCES_DIR kAppProp->rasterResourcesDir()
 #define RASTER_BG_DIR kAppProp->rasterBgDir()
+#define VECTOR_FG_DIR kAppProp->vectorFgDir()
 #define CONFIG_DIR kAppProp->configDir()
 #define PLUGINS_DIR kAppProp->pluginDir()
 #define CACHE_DIR kAppProp->cacheDir()

@@ -70,6 +70,7 @@ class TUPITUBE_EXPORT TupVideoSurface: public QAbstractVideoSurface
         void updateGridLineThickness(int thickness);
         void updateGridColor(const QColor color);
         void flipSurface();
+        int getCurrentFlipValue();
 
     private:
         void loadGridParameters();
@@ -99,7 +100,7 @@ class TUPITUBE_EXPORT TupVideoSurface: public QAbstractVideoSurface
 
         QColor gridColor;
         QPen gridPen;
-        QPen gridAxesPen;
+        QPen gridAxisPen;
         int gridSeparation;
         int gridLineThickness;
 

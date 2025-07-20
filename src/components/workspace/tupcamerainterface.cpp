@@ -37,6 +37,7 @@
 #include "tapplicationproperties.h"
 #include "talgorithm.h"
 #include "tosd.h"
+#include "tapptheme.h"
 
 #include <QBoxLayout>
 #include <QIcon>
@@ -58,6 +59,7 @@ TupCameraInterface::TupCameraInterface(const QString &title, QList<QCameraInfo> 
 
     setWindowTitle(cameraModel + " | " + tr("Resolution:") + " " + title);
     setWindowIcon(QIcon(QPixmap(THEME_DIR + "icons/camera.png")));
+    setStyleSheet(TAppTheme::themeStyles());
 
     counter = i;
 

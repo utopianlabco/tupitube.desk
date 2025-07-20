@@ -128,7 +128,7 @@ void TupVideoProperties::setProgressBar()
 
     progressBar = new QProgressBar;
     progressBar->setTextVisible(true);
-    progressBar->setStyleSheet(TAppTheme::themeSettings());
+    progressBar->setStyleSheet(TAppTheme::themeStyles());
     progressBar->setRange(1, 100);
 
     progressLayout->addSpacing(50);
@@ -857,7 +857,7 @@ void TupVideoProperties::setScenesIndexes(const QList<int> &indexes)
         #endif
 
         QMessageBox msgBox;
-        msgBox.setStyleSheet(TAppTheme::themeSettings());
+        msgBox.setStyleSheet(TAppTheme::themeStyles());
         msgBox.setWindowTitle(tr("Can't post project"));
         msgBox.setIcon(QMessageBox::Critical);
         msgBox.setTextFormat(Qt::RichText);

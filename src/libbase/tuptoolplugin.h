@@ -112,6 +112,7 @@ class TUPITUBE_EXPORT TupToolPlugin : public QObject, public TupToolInterface
         virtual void setCurrentItem(const QString &id);
 
         virtual void updateWorkSpaceContext();
+        virtual void selectAll();
         virtual void clearSelection();
 
         virtual void setColorMode(TColorCell::FillType mode);

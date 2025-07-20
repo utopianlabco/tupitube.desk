@@ -55,12 +55,13 @@ class T_CORE_EXPORT TAlgorithm
         static bool copyFolder(const QString &src, const QString &dst);
         static QStringList naturalSort(QStringList elements);
 
-        static float distance(const QPointF &p1, const QPointF &p2);
-        static float slope(const QPointF &p1, const QPointF &p2);
-        static float inverseSlope(const QPointF &p1, const QPointF &p2);
-        static float calculateBFromLine(const QPointF &point, float slope);
-        static float calculateYFromLine(float x, float m, float b);
-        static float distanceFromLine(QPointF linePoint1, QPointF linePoint2, QPointF point);
+        static double distance(const QPointF &p1, const QPointF &p2);
+        static double slope(const QPointF &p1, const QPointF &p2);
+        static double inverseSlope(const QPointF &p1, const QPointF &p2);
+        static double calculateBFromLine(const QPointF &point, double slope);
+        static double calculateYFromLine(double x, double m, double b);
+        static double distanceFromLine(QPointF linePoint1, QPointF linePoint2, QPointF point);
+        static QPointF projectPointOntoLine(QPointF linePoint1, QPointF linePoint2, QPointF point);
         static QPair<int, int> screenDimension();
 
         static QString refactorDuplicatedSceneName(QString sceneName);

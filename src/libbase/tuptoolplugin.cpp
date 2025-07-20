@@ -356,6 +356,10 @@ void TupToolPlugin::updateWorkSpaceContext()
 {
 }
 
+void TupToolPlugin::selectAll()
+{
+}
+
 void TupToolPlugin::clearSelection()
 {
 }

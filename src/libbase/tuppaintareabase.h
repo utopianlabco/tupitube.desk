@@ -50,7 +50,6 @@ class TUPITUBE_EXPORT TupPaintAreaBase : public QGraphicsView
     Q_OBJECT
 
     public:
-        // enum SafeLevel { Background = 0, Foreground };
         TupPaintAreaBase(QWidget *parent = nullptr, QSize dimension = QSize(0, 0), TupLibrary *library = nullptr);
         ~TupPaintAreaBase();
 
@@ -116,6 +115,7 @@ class TUPITUBE_EXPORT TupPaintAreaBase : public QGraphicsView
         virtual bool canPaint() const;
 
     private:
+        void drawGrid(QPainter *painter, int width, int height);
         void drawSafeArea(QPainter *painter, int width, int height);
 
         QGraphicsRectItem *grid;
@@ -125,7 +125,6 @@ class TUPITUBE_EXPORT TupPaintAreaBase : public QGraphicsView
 
         bool gridEnabled;
         bool safeAreaEnabled;
-        SafeLevel safeLevel;
         double angle;
 
         QStringList copiesXml;
@@ -137,7 +136,9 @@ class TUPITUBE_EXPORT TupPaintAreaBase : public QGraphicsView
 
         bool spaceBar;
         QPen gridPen;
+        QPen gridAxisPen;
         QPen rotPen;
+        QPen numberPen;
         int target;
         int gridSeparation;
         QColor rotColor;

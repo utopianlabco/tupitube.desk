@@ -225,7 +225,7 @@ void TupCrashHandler::setConfig(const QString &filePath)
 
 QString loadStyle()
 {
-    return TAppTheme::themeSettings();
+    return TAppTheme::themeStyles();
 }
 
 static QString runCommand(const QString &command, QStringList parameters)

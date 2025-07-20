@@ -108,7 +108,7 @@ TupCameraStatus::TupCameraStatus(int scenesTotal, QWidget *parent) : QFrame(pare
     sceneInfoLayout->addSpacing(15);
 
     exportButton = new QPushButton(tr("Export"));
-    exportButton->setIcon(QIcon(ICONS_DIR + "export_button.png"));
+    exportButton->setIcon(QIcon(ICONS_DIR + "export.png"));
     exportButton->setToolTip(tr("Export Project as Video File"));
     connect(exportButton, SIGNAL(pressed()), this, SIGNAL(exportClicked()));
 

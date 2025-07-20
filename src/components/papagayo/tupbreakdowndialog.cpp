@@ -39,7 +39,7 @@ TupBreakdownDialog::TupBreakdownDialog(const QString &word, const QString &phone
     currentIndex = 0;
 
     setInitVars(word, mouthsPath);
-    setStyleSheet(TAppTheme::themeSettings());
+    setStyleSheet(TAppTheme::themeStyles());
     setUI(word, phonemes);
 }
 
@@ -59,7 +59,7 @@ TupBreakdownDialog::TupBreakdownDialog(int wordIndex, QStringList wordsList, QSt
     QString phonemes = phonemesList.at(wordIndex);
 
     setInitVars(word, mouthsPath);
-    setStyleSheet(TAppTheme::themeSettings());
+    setStyleSheet(TAppTheme::themeStyles());
     setUI(word, phonemes);
 }
 

@@ -33,6 +33,7 @@
  ***************************************************************************/
 
 #include "tupgraphicsscene.h"
+#include "tconfig.h"
 #include "tupitemgroup.h"
 #include "tupprojectloader.h"
 #include "tupitemfactory.h"
@@ -79,6 +80,7 @@ TupGraphicsScene::TupGraphicsScene() : QGraphicsScene()
     vectorDynamicBg = new QGraphicsPixmapItem;
     rasterStaticBg = new QGraphicsPixmapItem;
     rasterDynamicBg = new QGraphicsPixmapItem;
+    vectorFgContextImg = new QGraphicsPixmapItem;
 }
 
 TupGraphicsScene::~TupGraphicsScene()
@@ -151,10 +153,9 @@ void TupGraphicsScene::drawCurrentPhotogram()
         if (spaceContext == TupProject::FRAMES_MODE) {
             drawPhotogram(framePosition.frame, true);
         } else if (spaceContext == TupProject::VECTOR_FG_MODE) {
-            cleanWorkSpace();
-            drawVectorFg();
+            setVectorFgEnvironment();
         } else {
-            cleanWorkSpace();
+            clearWorkSpace();
             drawSceneBackground(framePosition.frame);
         }
     } else {
@@ -165,7 +166,7 @@ void TupGraphicsScene::drawCurrentPhotogram()
     }
 }
 
-void TupGraphicsScene::drawPhotogram(int photogram, bool drawContext)
+void TupGraphicsScene::drawPhotogram(int photogram, bool drawContext, bool drawForeground)
 { 
     #ifdef TUP_DEBUG
         qDebug() << "[TupGraphicsScene::drawPhotogram()] - photogram -> " << photogram;
@@ -178,7 +179,7 @@ void TupGraphicsScene::drawPhotogram(int photogram, bool drawContext)
         return;
     }
 
-    cleanWorkSpace();
+    clearWorkSpace();
     // Painting the background
     drawSceneBackground(photogram);
 
@@ -269,7 +270,7 @@ void TupGraphicsScene::drawPhotogram(int photogram, bool drawContext)
          }
     }
 
-    if (background->isLayerVisible(TupBackground::VectorForeground))
+    if (drawForeground && background->isLayerVisible(TupBackground::VectorForeground))
         drawVectorFg();
 
     if (showWaterMark) {
@@ -284,13 +285,13 @@ void TupGraphicsScene::drawPhotogram(int photogram, bool drawContext)
 void TupGraphicsScene::drawSceneBackground(int photogram)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupGraphicsScene::drawSceneBackground()] - photogram -> " << photogram;
+        qDebug() << "[TupGraphicsScene::drawSceneBackground()] - photogram ->" << photogram;
         qDebug() << "*** spaceContext -> " << spaceContext;
     #endif
 
     if (!tupScene) {
         #ifdef TUP_DEBUG
-            qWarning() << "TupGraphicsScene::drawSceneBackground() - Warning: gScene is nullptr!";
+            qWarning() << "TupGraphicsScene::drawSceneBackground() - Warning: gScene is NULL!";
         #endif
         return;
     }
@@ -306,11 +307,11 @@ void TupGraphicsScene::drawSceneBackground(int photogram)
             // SQA: Include option "show" raster static bg as option
             // drawRasterStaticBg();
             drawVectorStaticBg(0);
-        } else { // Frames Mode
+        } else { // Frames Mode or Foreground
             QList<TupBackground::BgType> bgLayerIndex = background->layerIndexes();
             for (int i=0; i < bgLayerIndex.count(); i++) {
                 #ifdef TUP_DEBUG
-                    qDebug() << "[TupGraphicsScene::drawSceneBackground()] - Processing BG index -> " << bgLayerIndex.at(i);
+                    qDebug() << "[TupGraphicsScene::drawSceneBackground()] - Processing BG index ->" << bgLayerIndex.at(i);
                 #endif
 
                 switch(bgLayerIndex.at(i)) {
@@ -350,7 +351,7 @@ void TupGraphicsScene::drawSceneBackground(int photogram)
 void TupGraphicsScene::drawVectorStaticBg(int index)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupGraphicsScene::drawVectorStaticBg()] - index -> " << index;
+        qDebug() << "[TupGraphicsScene::drawVectorStaticBg()] - index ->" << index;
     #endif
 
     // Vector Static Bg
@@ -485,6 +486,26 @@ void TupGraphicsScene::drawRasterDynamicBgOnMovement(int index, int photogram)
     #endif
 }
 
+void TupGraphicsScene::drawVectorFgContext()
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupGraphicsScene::drawVectorFgContext()]";
+    #endif
+
+    QString imgPath = VECTOR_FG_DIR + QString::number(currentSceneIndex()) + "/fg/fg.png";
+    QFile imgFile(imgPath);
+    if (imgFile.exists()) {
+        vectorFgContextImg = new QGraphicsPixmapItem(imgPath);
+        vectorFgContextImg->setZValue(0);
+        addItem(vectorFgContextImg);
+    } else {
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupGraphicsScene::drawVectorFgContext()] - "
+                        "Fg context image NOT found! ->" << imgPath;
+        #endif
+    }
+}
+
 void TupGraphicsScene::drawVectorFg()
 {
     #ifdef TUP_DEBUG
@@ -497,7 +518,7 @@ void TupGraphicsScene::drawVectorFg()
         if (frame) {
             zLevel = (tupScene->layersCount() + BG_LAYERS + 1) * ZLAYER_LIMIT;
             #ifdef TUP_DEBUG
-                qDebug() << "[TupGraphicsScene::drawVectorFg()] - zLevel -> " << zLevel;
+                qDebug() << "[TupGraphicsScene::drawVectorFg()] - zLevel ->" << zLevel;
             #endif
 
             addFrame(frame, frame->frameOpacity());
@@ -515,6 +536,22 @@ void TupGraphicsScene::drawVectorFg()
     #ifdef TUP_DEBUG
         qDebug() << "---";
     #endif
+}
+
+void TupGraphicsScene::setVectorFgEnvironment()
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupGraphicsScene::setVectorFgEnvironment()]";
+    #endif
+
+    clearWorkSpace();
+
+    TCONFIG->beginGroup("PaintArea");
+    bool showVectorFgContext = TCONFIG->value("ShowVectorFgContext", true).toBool();
+    if (showVectorFgContext)
+        drawVectorFgContext();
+
+    drawVectorFg();
 }
 
 void TupGraphicsScene::addFrame(TupFrame *frame, double opacityFactor, Context mode)
@@ -1231,7 +1268,7 @@ void TupGraphicsScene::addLipSyncObjects(TupLayer *layer, int photogram, int zVa
     }
 }
 
-void TupGraphicsScene::cleanWorkSpace()
+void TupGraphicsScene::clearWorkSpace()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupGraphicsScene::cleanWorkSpace()]";
@@ -1240,6 +1277,11 @@ void TupGraphicsScene::cleanWorkSpace()
     if (vectorDynamicBg) {
         vectorDynamicBg = nullptr;
         delete vectorDynamicBg;
+    }
+
+    if (vectorFgContextImg) {
+        vectorFgContextImg = nullptr;
+        delete vectorFgContextImg;
     }
 
     onionSkin.accessMap.clear();
@@ -1365,7 +1407,7 @@ void TupGraphicsScene::setCurrentScene(TupScene *scene)
         qDeleteAll(lines);
         lines.clear();
 
-        cleanWorkSpace();
+        // cleanWorkSpace();
         tupScene = scene;
 
         background = tupScene->sceneBackground();
@@ -1379,10 +1421,9 @@ void TupGraphicsScene::setCurrentScene(TupScene *scene)
         if (spaceContext == TupProject::FRAMES_MODE) {
             drawCurrentPhotogram();
         } else if (spaceContext == TupProject::VECTOR_FG_MODE) {
-            cleanWorkSpace();
-            drawVectorFg();
+            setVectorFgEnvironment();
         } else {
-            cleanWorkSpace();
+            clearWorkSpace();
             drawSceneBackground(framePosition.frame);
         }
     }
@@ -1411,10 +1452,9 @@ void TupGraphicsScene::setTool(TupToolPlugin *plugin)
     if (spaceContext == TupProject::FRAMES_MODE) {
         drawCurrentPhotogram();
     } else if (spaceContext == TupProject::VECTOR_FG_MODE) {
-        cleanWorkSpace();
-        drawVectorFg();
+        setVectorFgEnvironment();
     } else {
-        cleanWorkSpace();
+        clearWorkSpace();
         drawSceneBackground(framePosition.frame);
     }
 
@@ -1857,7 +1897,7 @@ void TupGraphicsScene::includeObject(QGraphicsItem *object, bool isPolyLine) // 
 
 void TupGraphicsScene::removeScene()
 {
-    cleanWorkSpace();
+    clearWorkSpace();
     tupScene = nullptr;
 }
 

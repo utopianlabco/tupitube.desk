@@ -49,7 +49,7 @@ TupExportWidget::TupExportWidget(TupProject *work, QWidget *parent, ExportType t
         case Local:
         {
             setWindowTitle(tr("Export To Video"));
-            setWindowIcon(QIcon(THEME_DIR + "icons/export_wi.png"));
+            setWindowIcon(QIcon(THEME_DIR + "icons/export.png"));
 
             pluginPage = new TupPluginSelector();
             addPage(pluginPage);

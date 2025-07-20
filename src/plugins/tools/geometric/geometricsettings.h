@@ -36,11 +36,15 @@
 #define INFOPANEL_H
 
 #include "tglobal.h"
+#include "tuppenthicknesswidget.h"
 
 #include <QLabel>
 #include <QBoxLayout>
 #include <QTextEdit>
+#include <QPushButton>
 #include <QRadioButton>
+#include <QSlider>
+#include <QSpinBox>
 
 /**
  * @author Gustav Gonzalez 
@@ -62,14 +66,23 @@ class TUPITUBE_PLUGIN GeometricSettings : public QWidget
         void updateLineType(int type);
 
     signals:
+        void toolEnabled(ToolMode tool);
+        void eraserSizeChanged(int size);
         void lineTypeChanged(GeometricSettings::LineType type);
         void triangleTypeChanged(GeometricSettings::TriangleType type);
         void hexagonTypeChanged(GeometricSettings::HexagonType type);
+
+    public slots:
+        void enableLineMode();
+        void enableEraserMode();
+        void switchMode();
 
     private slots:
         void sendLineState(bool state);
         void setTriangleDirection();
         void setHexagonDirection();
+        void updateEraserSizeFromSlider(int value);
+        void updateEraserSizeFromBox(int size);
 
     private:
         QRadioButton *option1;
@@ -78,6 +91,16 @@ class TUPITUBE_PLUGIN GeometricSettings : public QWidget
         QButtonGroup* buttonsGroup;
         TriangleType triangleType;
         HexagonType hexagonType;
+
+        QWidget *lineWidget;
+        QWidget *eraserWidget;
+
+        QPushButton *lineButton;
+        QPushButton *eraserButton;
+
+        TupPenThicknessWidget *eraserPreview;
+        QSlider *eraserSlider;
+        QSpinBox *eraserSizeBox;
 };
 
 #endif

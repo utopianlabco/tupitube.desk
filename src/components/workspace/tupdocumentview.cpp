@@ -139,6 +139,7 @@ TupDocumentView::TupDocumentView(TupProject *work, TActionManager *actionMng, bo
     connect(paintArea, SIGNAL(zoomOut()), this, SLOT(applyZoomOut()));
     connect(paintArea, SIGNAL(newPerspective(int)), this, SIGNAL(newPerspective(int)));
     connect(paintArea, SIGNAL(eyeDropperLaunched()), this, SLOT(launchEyeDropperTool()));
+    connect(paintArea, SIGNAL(selectToolLaunched()), this, SLOT(launchSelectionTool()));
 
     connect(paintArea, SIGNAL(localAssetDropped(const QString &, TupLibraryObject::ObjectType)),
             this, SIGNAL(localAssetDropped(const QString &, TupLibraryObject::ObjectType)));
@@ -459,8 +460,8 @@ void TupDocumentView::createLateralToolBar()
     connect(motionMenu, SIGNAL(triggered(QAction*)), this, SLOT(selectToolFromMenu(QAction*)));
 
     // Misc Tools menu
-    miscMenu = new QMenu(tr("Misc Tools"), toolbar);
-    miscMenu->setIcon(QPixmap(THEME_DIR + "icons/export_frame.png"));
+    // miscMenu = new QMenu(tr("Misc Tools"), toolbar);
+    // miscMenu->setIcon(QPixmap(THEME_DIR + "icons/export_frame.png"));
     // connect(miscMenu, SIGNAL(triggered(QAction *)), this, SLOT(selectToolFromMenu(QAction*)));
 }
 
@@ -554,8 +555,11 @@ void TupDocumentView::loadPlugins()
                       // if (toolId == TAction::Scheme)
                       //     schemeAction = action;
 
-                      if (toolId == TAction::Pencil)
+                      if (toolId == TAction::Pencil) {
                           pencilAction = action;
+                          connect(tool, SIGNAL(toolModeUpdated(ToolMode)),
+                                  this, SLOT(updateToolCursor(ToolMode)));
+                      }
 
                       if (toolId == TAction::Ink)
                           inkAction = action;
@@ -593,6 +597,8 @@ void TupDocumentView::loadPlugins()
                           TupToolPlugin *tool = qobject_cast<TupToolPlugin *>(action->parent());
                           connect(paintArea, SIGNAL(closeLine()), tool, SLOT(endItem()));
                           connect(this, SIGNAL(closeLine()), tool, SLOT(endItem()));
+                          connect(tool, SIGNAL(toolModeUpdated(ToolMode)),
+                                  this, SLOT(updateToolCursor(ToolMode)));
                       }
 
                       if (toolId == TAction::Triangle)
@@ -675,9 +681,9 @@ void TupDocumentView::loadPlugins()
     for (int i = 0; i < 6; ++i)
          motionMenu->addAction(tweenTools.at(i));
 
-    miscMenu->addAction(actionManager->find("export_image"));
-    miscMenu->addAction(actionManager->find("post_image"));
-    miscMenu->addAction(actionManager->find("export_storyboard"));
+//    miscMenu->addAction(actionManager->find("export_image"));
+//    miscMenu->addAction(actionManager->find("post_image"));
+//    miscMenu->addAction(actionManager->find("export_storyboard"));
 
     foreach (QObject *plugin, TupPluginManager::instance()->getFilters()) {
         AFilterInterface *filterInterface = qobject_cast<AFilterInterface *>(plugin);
@@ -735,7 +741,8 @@ void TupDocumentView::loadPlugins()
     toolbar->addAction(papagayoAction);
 
     toolbar->addSeparator();
-    toolbar->addAction(miscMenu->menuAction());
+    // toolbar->addAction(miscMenu->menuAction());
+    toolbar->addAction(actionManager->find("export_storyboard"));
 
     geometricTools.clear();
     tweenTools.clear();
@@ -982,8 +989,19 @@ void TupDocumentView::selectTool()
         TAction::ActionId toolId = action->actionId();
 
         if (currentTool) {
-            if (toolId == currentTool->toolId())
+            if (toolId == currentTool->toolId()) {
                 return;
+
+//                if (toolName.compare(tr("Pencil")) == 0) {
+//                    qDebug() << "[TupDocumentView::selectTool()] - Enabling PencilMode...";
+//                    emit pencilActivated();
+//                } else {
+//                    #ifdef TUP_DEBUG
+//                        qDebug() << "[TupDocumentView::selectTool()] - Tool is already active ->" << toolName;
+//                    #endif
+//                    return;
+//                }
+            }
 
             if (currentTool->toolId() == TAction::Pencil)
                 disconnect(currentTool, SIGNAL(penWidthChanged(int)), this, SIGNAL(penWidthChanged(int)));
@@ -1442,10 +1460,20 @@ void TupDocumentView::createToolBar()
     fgEmpty1->setFixedWidth(5);
     QWidget *fgEmpty2 = new QWidget();
     fgEmpty2->setFixedWidth(5);
+    QWidget *fgEmpty3 = new QWidget();
+    fgEmpty3->setFixedWidth(5);
 
     QLabel *fgOpacityLabel = new QLabel();
     fgOpacityLabel->setToolTip(tr("Foreground Opacity"));
     fgOpacityLabel->setPixmap(QPixmap(THEME_DIR + "icons/bg_opacity.png"));
+
+    QCheckBox *fgContextCheckBox = new QCheckBox("");
+    fgContextCheckBox->setToolTip(tr("Show Background Context"));
+    fgContextCheckBox->setIcon(QPixmap(THEME_DIR + "icons/frames_mode.png"));
+    TCONFIG->beginGroup("PaintArea");
+    fgContextCheckBox->setChecked(TCONFIG->value("ShowVectorFgContext", true).toBool());
+    connect(fgContextCheckBox, SIGNAL(stateChanged(int)),
+            this, SLOT(showFgContextImage(int)));
 
     QDoubleSpinBox *fgOpacityBox = new QDoubleSpinBox(this);
     fgOpacityBox->setRange(0.1, 1.0);
@@ -1459,11 +1487,26 @@ void TupDocumentView::createToolBar()
     fgPropertiesBar->addWidget(fgEmpty1);
     fgPropertiesBar->addWidget(fgOpacityBox);
     fgPropertiesBar->addWidget(fgEmpty2);
+    fgPropertiesBar->addSeparator();
+    fgPropertiesBar->addWidget(fgEmpty3);
+    fgPropertiesBar->addWidget(fgContextCheckBox);
     fgPropertiesBar->setVisible(false);
 
     addToolBar(staticPropertiesBar);
     addToolBar(dynamicPropertiesBar);
     addToolBar(fgPropertiesBar);
+}
+
+void TupDocumentView::showFgContextImage(int state)
+{
+    bool showContext = true;
+    if (state == Qt::Unchecked)
+        showContext = false;
+    TCONFIG->beginGroup("PaintArea");
+    TCONFIG->setValue("ShowVectorFgContext", showContext);
+    TCONFIG->sync();
+
+    paintArea->updatePaintArea();
 }
 
 void TupDocumentView::showModesSettings()
@@ -1772,6 +1815,8 @@ void TupDocumentView::setSpaceContext()
         break;
         case TupProject::VECTOR_FG_MODE:
         {
+            generateForegroundContext();
+
             project->updateSpaceContext(TupProject::VECTOR_FG_MODE);
             staticPropertiesBar->setVisible(false);
             dynamicPropertiesBar->setVisible(false);
@@ -1987,18 +2032,19 @@ void TupDocumentView::selectScene(int scene)
     paintArea->goToScene(scene);
 }
 
-void TupDocumentView::updateToolsMenu(TAction::ActionId id, const QString &actionId)
-{
-    if (configurationArea->isVisible())
-        configurationArea->close();
+//void TupDocumentView::updateToolsMenu(TAction::ActionId id, const QString &actionId)
+//{
+//    if (configurationArea->isVisible())
+//        configurationArea->close();
 
-    currentTool->setToolId(id);
-    QAction *action = actionManager->find(actionId);
-    miscMenu->setDefaultAction(action);
-    miscMenu->setActiveAction(action);
-    if (!action->icon().isNull())
-        miscMenu->menuAction()->setIcon(action->icon());
-}
+//    currentTool->setToolId(id);
+//    QAction *action = actionManager->find(actionId);
+
+//    miscMenu->setDefaultAction(action);
+//    miscMenu->setActiveAction(action);
+//    if (!action->icon().isNull())
+//        miscMenu->menuAction()->setIcon(action->icon());
+//}
 
 void TupDocumentView::exportImage()
 {
@@ -2008,7 +2054,7 @@ void TupDocumentView::exportImage()
 
     paintArea->viewport()->setCursor(Qt::ArrowCursor);
 
-    updateToolsMenu(TAction::ExportImage, "export_image");
+    // updateToolsMenu(TAction::ExportImage, "export_´image");
     int sceneIndex = paintArea->currentSceneIndex();
     int frameIndex = paintArea->currentFrameIndex();
 
@@ -2025,6 +2071,42 @@ void TupDocumentView::exportImage()
     }
 }
 
+void TupDocumentView::generateForegroundContext()
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupDocumentView::generateForegroundContext()]";
+    #endif
+
+    paintArea->viewport()->setCursor(Qt::ArrowCursor);
+    int sceneIndex = paintArea->currentSceneIndex();
+    int frameIndex = paintArea->currentFrameIndex();
+
+    QString imgPath = VECTOR_FG_DIR + QString::number(sceneIndex) + "/fg";
+    QDir imgDir(imgPath);
+    if (!imgDir.exists()) {
+        if (!imgDir.mkpath(imgPath)) {
+            #ifdef TUP_DEBUG
+                qWarning() << "[TupBackground::generateForegroundContext()] - Error creating image path ->" << imgPath;
+            #endif
+            return;
+        }
+    }
+
+    imgPath += "/fg.png";
+    bool isOk = imagePlugin->exportFrame(frameIndex, project->getCurrentBgColor(), imgPath,
+                                         project->sceneAt(sceneIndex),
+                                         project->getDimension(), project, false, false);
+    if (!isOk) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupDocumentView::generateForegroundContext()] - Fatal Error: Can't create context image ->" << imgPath;
+        #endif
+    } else {
+        qDebug() << "[TupDocumentView::generateForegroundContext()] - Foreground context image created successfully! ->" << imgPath;
+    }
+
+    updatePaintArea();
+}
+
 void TupDocumentView::postImage()
 {
     #ifdef TUP_DEBUG
@@ -2032,7 +2114,7 @@ void TupDocumentView::postImage()
     #endif
 
     paintArea->viewport()->setCursor(Qt::ArrowCursor);
-    updateToolsMenu(TAction::PostImage, "post_image");
+    // updateToolsMenu(TAction::PostImage, "post_image");
 
     int sceneIndex = paintArea->graphicsScene()->currentSceneIndex();
     int frameIndex = paintArea->graphicsScene()->currentFrameIndex();
@@ -2517,11 +2599,11 @@ void TupDocumentView::papagayoManager()
     #endif
 
     if (currentTool->toolId() != TAction::LipSyncTool) {
-        QAction *action = actionManager->find("export_image");
-        miscMenu->setDefaultAction(action);
-        miscMenu->setActiveAction(action);
-        if (!action->icon().isNull())
-            miscMenu->menuAction()->setIcon(action->icon());
+//        QAction *action = actionManager->find("export_image");
+//        miscMenu->setDefaultAction(action);
+//        miscMenu->setActiveAction(action);
+//        if (!action->icon().isNull())
+//            miscMenu->menuAction()->setIcon(action->icon());
 
         TupProject::Mode mode = TupProject::Mode(spaceModeCombo->currentIndex());
         if (mode != TupProject::FRAMES_MODE)
@@ -2598,6 +2680,35 @@ void TupDocumentView::updateCameraMode()
     cameraMode = false;
 }
 
+void TupDocumentView::updateToolCursor(ToolMode tool)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupDocumentView::updateToolCursor()]";
+    #endif
+
+    if (currentTool) {
+        TAction::ActionId tooldId= currentTool->toolId();
+        if (tooldId == TAction::Pencil || tooldId == TAction::Line) {
+            QCursor cursor;
+            QString cursorImg;
+            if (tool == PencilMode) {
+                cursorImg = "target.png";
+                cursor = QCursor(CURSORS_DIR + cursorImg, 4, 4);
+
+            } else if (tool == LineMode) {
+                cursorImg = "line.png";
+                cursor = QCursor(CURSORS_DIR + cursorImg, 0, 15);
+            } else {
+                cursorImg = "eraser.png";
+                cursor = QCursor(CURSORS_DIR + cursorImg, 4, 4);
+                paintArea->drawCurrentPhotogram();
+            }
+
+            paintArea->viewport()->setCursor(cursor);
+        }
+    }
+}
+
 void TupDocumentView::setBucketTool(TColorCell::FillType type)
 {
     if (currentTool) {
@@ -2665,7 +2776,7 @@ void TupDocumentView::enableEyeDropperTool(TColorCell::FillType fillType)
 
     shapesMenu->setActiveAction(nullptr);
     motionMenu->setActiveAction(nullptr);
-    miscMenu->setActiveAction(nullptr);
+    // miscMenu->setActiveAction(nullptr);
 
     if (eyedropperAction) {
         emit eyeDropperLaunched();
@@ -2728,9 +2839,11 @@ void TupDocumentView::enableEyeDropperTool(TColorCell::FillType fillType)
 
 void TupDocumentView::refreshEyeDropperPanel()
 {
+    /*
     #ifdef TUP_DEBUG
        qDebug() << "[TupDocumentView::refreshEyeDropperPanel()]";
     #endif
+    */
 
     currentTool->refreshEyeDropperPanel();
 }
@@ -2795,4 +2908,10 @@ void TupDocumentView::editProjectSize()
     TupProjectSizeDialog *dialog = new TupProjectSizeDialog(project->getDimension());
     if (dialog->exec() == QDialog::Accepted)
         resizeProjectDimension(dialog->getSize());
+}
+
+void TupDocumentView::launchSelectionTool()
+{
+    selectionAction->trigger();
+    currentTool->selectAll();
 }

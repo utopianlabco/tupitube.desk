@@ -328,10 +328,9 @@ void TupPaintArea::frameResponse(TupFrameResponse *response)
                   if (spaceMode == TupProject::FRAMES_MODE) {
                       guiScene->drawPhotogram(response->getFrameIndex(), true);
                   } else if (spaceMode == TupProject::VECTOR_FG_MODE) {
-                      guiScene->cleanWorkSpace();
-                      guiScene->drawVectorFg();
+                      guiScene->setVectorFgEnvironment();
                   } else {
-                      guiScene->cleanWorkSpace();
+                      guiScene->clearWorkSpace();
                       guiScene->drawSceneBackground(guiScene->currentFrameIndex());
                   }
 
@@ -390,10 +389,9 @@ void TupPaintArea::layerResponse(TupLayerResponse *response)
                       if (spaceMode == TupProject::FRAMES_MODE) {
                           guiScene->drawCurrentPhotogram();
                       } else if (spaceMode == TupProject::VECTOR_FG_MODE) {
-                          guiScene->cleanWorkSpace();
-                          guiScene->drawVectorFg();
+                          guiScene->setVectorFgEnvironment();
                       } else {
-                          guiScene->cleanWorkSpace();
+                          guiScene->clearWorkSpace();
                           guiScene->drawSceneBackground(frameIndex);
                       }
                   } else {
@@ -402,10 +400,9 @@ void TupPaintArea::layerResponse(TupLayerResponse *response)
                           if (spaceMode == TupProject::FRAMES_MODE) {
                               guiScene->drawCurrentPhotogram();
                           } else if (spaceMode == TupProject::VECTOR_FG_MODE) {
-                              guiScene->cleanWorkSpace();
-                              guiScene->drawVectorFg();
+                              guiScene->setVectorFgEnvironment();
                           } else {
-                              guiScene->cleanWorkSpace();
+                              guiScene->clearWorkSpace();
                               guiScene->drawSceneBackground(frameIndex);
                           }
                       }
@@ -428,10 +425,9 @@ void TupPaintArea::layerResponse(TupLayerResponse *response)
               if (spaceMode == TupProject::FRAMES_MODE) {
                   guiScene->drawCurrentPhotogram();
               } else if (spaceMode == TupProject::VECTOR_FG_MODE) {
-                  guiScene->cleanWorkSpace();
-                  guiScene->drawVectorFg();
+                  guiScene->setVectorFgEnvironment();
               } else {
-                  guiScene->cleanWorkSpace();
+                  guiScene->clearWorkSpace();
                   guiScene->drawSceneBackground(frameIndex);
               }
 
@@ -444,10 +440,9 @@ void TupPaintArea::layerResponse(TupLayerResponse *response)
               if (spaceMode == TupProject::FRAMES_MODE) {
                   guiScene->drawCurrentPhotogram();
               } else if (spaceMode == TupProject::VECTOR_FG_MODE) {
-                  guiScene->cleanWorkSpace();
-                  guiScene->drawVectorFg();
+                  guiScene->setVectorFgEnvironment();
               } else {
-                  guiScene->cleanWorkSpace();
+                  guiScene->clearWorkSpace();
                   guiScene->drawSceneBackground(frameIndex);
               }
 
@@ -465,10 +460,9 @@ void TupPaintArea::layerResponse(TupLayerResponse *response)
               if (spaceMode == TupProject::FRAMES_MODE) {
                   guiScene->drawCurrentPhotogram();
               } else if (spaceMode == TupProject::VECTOR_FG_MODE) {
-                  guiScene->cleanWorkSpace();
-                  guiScene->drawVectorFg();
+                  guiScene->setVectorFgEnvironment();
               } else {
-                  guiScene->cleanWorkSpace();
+                  guiScene->clearWorkSpace();
                   guiScene->drawSceneBackground(frameIndex);
               }
 
@@ -580,10 +574,9 @@ void TupPaintArea::itemResponse(TupItemResponse *response)
                       if (spaceMode == TupProject::FRAMES_MODE) {
                           guiScene->drawCurrentPhotogram();
                       } else if (spaceMode == TupProject::VECTOR_FG_MODE) {
-                          guiScene->cleanWorkSpace();
-                          guiScene->drawVectorFg();
+                          guiScene->setVectorFgEnvironment();
                       } else {
-                          guiScene->cleanWorkSpace();
+                          guiScene->clearWorkSpace();
                           guiScene->drawSceneBackground(guiScene->currentFrameIndex());
                       }
 
@@ -596,10 +589,9 @@ void TupPaintArea::itemResponse(TupItemResponse *response)
                   if (spaceMode == TupProject::FRAMES_MODE) {
                       guiScene->drawCurrentPhotogram();
                   } else if (spaceMode == TupProject::VECTOR_FG_MODE) {
-                      guiScene->cleanWorkSpace();
-                      guiScene->drawVectorFg();
+                      guiScene->setVectorFgEnvironment();
                   } else {
-                      guiScene->cleanWorkSpace();
+                      guiScene->clearWorkSpace();
                       guiScene->drawSceneBackground(guiScene->currentFrameIndex());
                   }
 
@@ -612,13 +604,16 @@ void TupPaintArea::itemResponse(TupItemResponse *response)
             break;
             default:
               {
+                  #ifdef TUP_DEBUG
+                      qDebug() << "[TupPaintArea::itemResponse()] - Executing default case...";
+                  #endif
+
                   if (spaceMode == TupProject::FRAMES_MODE) {
                       guiScene->drawCurrentPhotogram();
                   } else if (spaceMode == TupProject::VECTOR_FG_MODE) {
-                      guiScene->cleanWorkSpace();
-                      guiScene->drawVectorFg();
+                      guiScene->setVectorFgEnvironment();
                   } else {
-                      guiScene->cleanWorkSpace();
+                      guiScene->clearWorkSpace();
                       guiScene->drawSceneBackground(guiScene->currentFrameIndex());
                   }
 
@@ -661,11 +656,10 @@ void TupPaintArea::libraryResponse(TupLibraryResponse *response)
               {
                   if (spaceMode == TupProject::FRAMES_MODE) {
                       guiScene->drawCurrentPhotogram();
-                  } else if (spaceMode == TupProject::VECTOR_FG_MODE) {
-                      guiScene->cleanWorkSpace();
-                      guiScene->drawVectorFg();
+                  } else if (spaceMode == TupProject::VECTOR_FG_MODE) {                      
+                      guiScene->setVectorFgEnvironment();
                   } else {
-                      guiScene->cleanWorkSpace();
+                      guiScene->clearWorkSpace();
                       guiScene->drawSceneBackground(frameIndex);
                   }
 
@@ -680,11 +674,10 @@ void TupPaintArea::libraryResponse(TupLibraryResponse *response)
               {
                   if (spaceMode == TupProject::FRAMES_MODE) {
                       guiScene->drawCurrentPhotogram();
-                  } else if (spaceMode == TupProject::VECTOR_FG_MODE) {
-                      guiScene->cleanWorkSpace();
-                      guiScene->drawVectorFg();
+                  } else if (spaceMode == TupProject::VECTOR_FG_MODE) {                      
+                      guiScene->setVectorFgEnvironment();
                   } else {
-                      guiScene->cleanWorkSpace();
+                      guiScene->clearWorkSpace();
                       guiScene->drawSceneBackground(frameIndex);
                   }
 
@@ -1367,7 +1360,7 @@ void TupPaintArea::paintBackground()
     #endif
 
     TupGraphicsScene* currentScene = graphicsScene();
-    currentScene->cleanWorkSpace();
+    currentScene->clearWorkSpace();
     currentScene->drawSceneBackground(currentScene->currentFrameIndex());
 }
 
@@ -1377,15 +1370,14 @@ void TupPaintArea::paintForeground()
         qDebug() << "[TupPaintArea::paintForeground()]";
     #endif
 
-    TupGraphicsScene* currentScene = graphicsScene();
-    currentScene->cleanWorkSpace();
-    currentScene->drawVectorFg();
+    TupGraphicsScene* currentScene = graphicsScene();   
+    currentScene->setVectorFgEnvironment();
 }
 
 void TupPaintArea::setCurrentTool(TAction::ActionId tool)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupPaintArea::setCurrentTool()] - tool -> " << tool;
+        qDebug() << "[TupPaintArea::setCurrentTool()] - tool ->" << tool;
     #endif
 
     currentToolID = tool;
@@ -1428,6 +1420,11 @@ void TupPaintArea::keyPressEvent(QKeyEvent *event)
     }
 
     if (event->modifiers() == Qt::ControlModifier) {
+        if (event->key() == Qt::Key_A) {
+            emit selectToolLaunched();
+            return;
+        }
+
         if (event->key() == Qt::Key_C) {
             copyItems();
             return;
@@ -1487,10 +1484,10 @@ void TupPaintArea::keyPressEvent(QKeyEvent *event)
         }
     }
 
-    if (event->key() == Qt::Key_E) {
-        emit eyeDropperLaunched();
-        return;
-    }
+//    if (event->key() == Qt::Key_E) {
+//        emit eyeDropperLaunched();
+//        return;
+//    }
 
     if (event->key() == Qt::Key_PageUp) {
         if (event->modifiers() == Qt::ControlModifier)
@@ -1537,6 +1534,8 @@ void TupPaintArea::keyPressEvent(QKeyEvent *event)
     if (currentToolID == TAction::Polyline) {
         if (event->key() == Qt::Key_X)
             emit closePolyLine();
+
+        return;
     }
 
     TupPaintAreaBase::keyPressEvent(event);
@@ -2038,7 +2037,7 @@ void TupPaintArea::getLocalAsset(const QString &path)
             type = TupLibraryObject::Svg;
         else if (lowercase.endsWith(".tobj"))
             type = TupLibraryObject::Item;
-        else if (lowercase.endsWith(".mp3") || lowercase.endsWith(".wav"))
+        else if (lowercase.endsWith(".mp3") || lowercase.endsWith(".wav") || lowercase.endsWith(".aac"))
             type = TupLibraryObject::Audio;
         else if (lowercase.endsWith(".mp4") || lowercase.endsWith(".mov"))
             type = TupLibraryObject::Video;
@@ -2129,7 +2128,7 @@ void TupPaintArea::processWebAsset(QNetworkReply *reply)
             type = TupLibraryObject::Svg;
         else if (lowercase.endsWith(".tobj"))
             type = TupLibraryObject::Item;
-        else if (lowercase.endsWith(".mp3") || lowercase.endsWith(".wav"))
+        else if (lowercase.endsWith(".mp3") || lowercase.endsWith(".wav") || lowercase.endsWith(".aac"))
             type = TupLibraryObject::Audio;
         else if (lowercase.endsWith(".mp4") || lowercase.endsWith(".mov"))
             type = TupLibraryObject::Video;
@@ -2195,4 +2194,9 @@ void TupPaintArea::slotError(QNetworkReply::NetworkError error)
 
     QApplication::restoreOverrideCursor();
     webLock = false;
+}
+
+void TupPaintArea::drawCurrentPhotogram()
+{
+    graphicsScene()->drawCurrentPhotogram();
 }

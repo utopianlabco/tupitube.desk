@@ -56,7 +56,7 @@ class TheoraPlugin : public TupExportPluginObject
         virtual QString key() const;
         TupExportInterface::Formats availableFormats();
 
-        virtual bool exportToFormat(const QColor color, const QString &filePath, const QList<TupScene *> &scenes, TupExportInterface::Format format, 
+        virtual bool exportToFormat(int colorAlpha, const QString &filePath, const QList<TupScene *> &scenes, TupExportInterface::Format format, 
                                     const QSize &size, const QSize &newSize, int fps, TupLibrary *library);
         virtual bool exportFrame(int frameIndex, const QColor color, const QString &filePath, TupScene *scene, const QSize &size, TupLibrary *library);
 

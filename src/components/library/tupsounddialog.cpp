@@ -66,7 +66,7 @@ TupSoundDialog::TupSoundDialog(QWidget *parent) : QDialog(parent)
     #endif
 
     setModal(true);
-    setStyleSheet(TAppTheme::themeSettings());
+    setStyleSheet(TAppTheme::themeStyles());
 
     setWindowTitle(tr("Import Audio Asset"));
     setWindowIcon(QIcon(QPixmap(THEME_DIR + "icons/sound_object.png")));
@@ -95,7 +95,13 @@ QWidget* TupSoundDialog::soundFileTab()
     filePathInput = new QLabel;
     filePathInput->setMinimumWidth(260);
     filePathInput->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
-    filePathInput->setStyleSheet("background-color:#dddddd; padding-left:3px;");
+
+    TCONFIG->beginGroup("Theme");
+    int theme = TCONFIG->value("UITheme", 1).toInt();
+    if (theme == LIGHT_THEME) 
+        filePathInput->setStyleSheet("background-color:#dddddd; padding-left:3px;");
+    else
+        filePathInput->setStyleSheet("background-color:#555555; padding-left:3px; border: 1px solid #fff;");
 
     fileButton = new QToolButton;
     fileButton->setIcon(QIcon(THEME_DIR + "icons/open.png"));
@@ -210,7 +216,7 @@ void TupSoundDialog::loadSoundFile()
     #endif
     */
 
-    QString filter = tr("Audio file") + " (*.ogg *.wav *.mp3)";
+    QString filter = tr("Audio file") + " (*.ogg *.wav *.mp3 *.aac)";
     dialog.setNameFilter(filter);
     dialog.setFileMode(QFileDialog::ExistingFile);
 
@@ -235,7 +241,7 @@ void TupSoundDialog::importSoundAsset()
 
                 QScreen *screen = QGuiApplication::screens().at(0);
                 QMessageBox msgBox;
-                msgBox.setStyleSheet(TAppTheme::themeSettings());
+                msgBox.setStyleSheet(TAppTheme::themeStyles());
                 msgBox.setWindowTitle(tr("File:") + " " + path);
                 msgBox.setIcon(QMessageBox::Warning);
                 msgBox.setText(tr("Audio file only has one channel (Mono). The file must have two channels (Stereo)."));

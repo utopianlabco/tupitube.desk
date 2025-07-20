@@ -428,6 +428,10 @@ void TupScreen::stop()
         if (playDirection == Forward) {
             currentFramePosition = 0;
         } else { // Backward
+            if (photograms.isEmpty()) {
+                return;
+            }
+
             currentFramePosition = photograms.count();
             currentPhotogram = photograms.last();
         }

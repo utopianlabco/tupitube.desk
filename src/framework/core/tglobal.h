@@ -80,13 +80,16 @@
 
 #define DEFAULT_FONT_SIZE 36
 
+#define DARK_THEME 0
+#define LIGHT_THEME 1
+
 enum PlayMode { PlayAll = 0, OneScene };
 enum PlayDirection { Forward = 0, Backward };
 enum MediaType {Video = 0, Audio};
 enum SoundType {NoSound = 0, Lipsync = 1, Effect = 2};
 
 struct SoundScene {
-    int sceneIndex;
+    int sceneIndex = 0;
     QList<int> frames;
 };
 
@@ -139,18 +142,15 @@ enum ProjectDimension {
 #define MOUTH_WIDTH 200
 #define MOUTH_HEIGHT 200
 
-#define DARK_THEME 0
-#define LIGHT_THEME 1
-
 #ifdef Q_OS_WIN
   #define __STDC_FORMAT_MACROS 1
   #include <inttypes.h>
 #endif
 
 enum SafeLevel { Background = 0, Foreground };
-enum ImportAction {VideoAction=0, FolderAction};
+enum ImageImportAction {VideoAction=0, FolderAction};
 
-enum PenTool { PencilMode = 0, EraserMode };
+enum ToolMode { PencilMode = 0, LineMode, EraserMode };
 
 enum NodeLocation { FirstNode = 0, MiddleNode, RandomNode, LastNode };
 enum NodeContext { SelectionNode = 0, PapagayoNode, TextNode };

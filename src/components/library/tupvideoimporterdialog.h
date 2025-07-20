@@ -46,6 +46,7 @@
 #include <QProgressBar>
 #include <QGroupBox>
 #include <QRadioButton>
+#include <QCheckBox>
 
 class TUPITUBE_EXPORT TupVideoImporterDialog : public QDialog 
 {
@@ -59,7 +60,8 @@ class TUPITUBE_EXPORT TupVideoImporterDialog : public QDialog
         int getPhotogramsTotal();
 
     signals:
-        void extractionDone(ImportAction action, const QString &imagesPath, bool sizeFlag);
+        void imageExtractionIsDone(ImageImportAction action, const QString &imagesPath, bool sizeFlag);
+        void audioExtractionIsDone(const QString &audioPath);
         void projectSizeHasChanged(const QSize dimension);
 
     public slots:
@@ -84,7 +86,8 @@ class TUPITUBE_EXPORT TupVideoImporterDialog : public QDialog
 
         TupVideoCutter *videoCutter;
         QString videoPath;
-        QString imagesPath;
+        QString assetsPath;
+        QString audioPath;
         int imagesTotal;
         int advance;
         QSize projectSize;
@@ -96,6 +99,7 @@ class TUPITUBE_EXPORT TupVideoImporterDialog : public QDialog
         QRadioButton *checkButton1;
         QRadioButton *checkButton2;
         QRadioButton *checkButton3;
+        QCheckBox *audioCheck;
 };
 
 #endif

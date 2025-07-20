@@ -40,7 +40,8 @@
 class T_CORE_EXPORT TAppTheme
 {
     public:
-        static QString themeSettings();
+        static QString themeStyles();
+        static QString themeStyles(const QString &theme, const QColor &bgColor);
 };
 
 #endif

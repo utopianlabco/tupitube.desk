@@ -52,6 +52,7 @@ TupPapagayoApp::TupPapagayoApp(PapagayoAppMode mode, TupProject *project, const 
         qDebug() << "[TupPapagayoApp::TupPapagayoApp()] - Adding new record...";
     #endif
 
+    setWindowIcon(QPixmap(THEME_DIR + "icons/papagayo.png"));
     this->mode = mode;
     tupProject = project;
     document = new TupLipsyncDoc;
@@ -150,7 +151,7 @@ void TupPapagayoApp::setUICore(const QString &filePath)
         qDebug() << "[TupPapagayoApp::setUICore()] - filePath ->" << filePath;
     #endif
 
-    setStyleSheet(TAppTheme::themeSettings());
+    setStyleSheet(TAppTheme::themeStyles());
 
     setupActions();
     setupUI();
@@ -698,7 +699,7 @@ void TupPapagayoApp::dragEnterEvent(QDragEnterEvent *event)
     if (extension == "wav")
         event->acceptProposedAction();
 #else
-    if (extension == "mp3" || extension == "wav")
+    if (extension == "mp3" || extension == "wav" || extension == "aac")
         event->acceptProposedAction();
 #endif
 }
@@ -723,7 +724,7 @@ void TupPapagayoApp::dropEvent(QDropEvent *event)
             openFile(filePath);
     }
 #else
-    if (extension == "mp3" || extension == "wav") {
+    if (extension == "mp3" || extension == "wav" || extension == "aac") {
         event->acceptProposedAction();
         if (confirmCloseDocument())
             openFile(filePath);
@@ -764,9 +765,9 @@ void TupPapagayoApp::openFile()
     TCONFIG->beginGroup("General");
     QString path = TCONFIG->value("DefaultPath", QDir::homePath()).toString();
 #ifdef Q_OS_WIN
-    QString filter = tr("Audio files (*.mp3 *.wav)");
+    QString filter = tr("Audio files (*.mp3 *.wav *.aac)");
 #else
-    QString filter = tr("Audio files (*.mp3 *.wav)");
+    QString filter = tr("Audio files (*.mp3 *.wav *.aac)");
 #endif
     QString filePath = QFileDialog::getOpenFileName(this, tr("Open"), path, filter);
     if (filePath.isEmpty())

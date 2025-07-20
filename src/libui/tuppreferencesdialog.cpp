@@ -35,6 +35,7 @@
 #include "tuppreferencesdialog.h"
 #include "tapplicationproperties.h"
 #include "tosd.h"
+#include "tapptheme.h"
 
 TupPreferencesDialog::TupPreferencesDialog(QWidget *parent) : TConfigurationDialog(parent)
 {
@@ -44,7 +45,9 @@ TupPreferencesDialog::TupPreferencesDialog(QWidget *parent) : TConfigurationDial
     addPage(general, tr("General"), QPixmap(THEME_DIR + "icons/tupi_general_preferences.png"));
 
     theme = new TupThemePreferences;
-    connect(theme, SIGNAL(colorPicked(const QColor&)), this, SLOT(testThemeColor(const QColor&)));
+    connect(theme, SIGNAL(colorPicked(int, const QColor&)),
+            this, SLOT(testThemeColor(int, const QColor&)));
+
     addPage(theme, tr("Theme"), QPixmap(THEME_DIR + "icons/tupi_theme_preferences.png"));
 
     workspace = new TupPaintAreaPreferences;
@@ -75,12 +78,17 @@ QSize TupPreferencesDialog::sizeHint() const
     return QSize(600, 430);
 }
 
-void TupPreferencesDialog::testThemeColor(const QColor &color)
+void TupPreferencesDialog::testThemeColor(int appTheme, const QColor &color)
 {
-    QString r = QString::number(color.red());
-    QString g = QString::number(color.green());
-    QString b = QString::number(color.blue());
-    QString uiStyleSheet = "QWidget { background-color: rgb(" + r + "," + g + "," + b + ") }"
-                           "QListWidget { background-color: rgb(220,220,220) }";
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupPreferencesDialog::testThemeColor()] - appTheme ->" << appTheme;
+        qDebug() << "[TupPreferencesDialog::testThemeColor()] - color ->" << color.name();
+    #endif
+
+    QString theme = "default";
+    if (appTheme == 0)
+        theme = "dark";
+
+    QString uiStyleSheet = TAppTheme::themeStyles(theme, color);
     setStyleSheet(uiStyleSheet);
 }

@@ -61,7 +61,7 @@ void TMsgDialog::setupGUI()
 {
     setWindowTitle(tr("Breaking News!"));
     setWindowIcon(QPixmap(THEME_DIR + "icons/bubble.png"));
-    setStyleSheet(TAppTheme::themeSettings());
+    setStyleSheet(TAppTheme::themeStyles());
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     textBrowser = new QTextBrowser;

@@ -101,7 +101,7 @@ TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
     isNetworked = false;
     exportWidget = nullptr;
 
-    uiStyleSheet = TAppTheme::themeSettings();
+    uiStyleSheet = TAppTheme::themeStyles();
     setStyleSheet(uiStyleSheet);
 
 #ifdef Q_OS_WIN
@@ -320,11 +320,12 @@ void TupMainWindow::setWorkSpace(const QStringList &users)
         qDebug() << "[TupMainWindow::setWorkSpace()]";
     #endif
 
-    // Downloading TupiTube news 
+    // Downloading TupiTube news
     TupNewsCollector *newsCollector = new TupNewsCollector();
     newsCollector->start();
     connect(newsCollector, SIGNAL(pageReady()), this, SLOT(enableUpdatesDialog()));
     connect(newsCollector, SIGNAL(newUpdate(bool)), this, SLOT(setUpdateFlag(bool)));
+    connect(newsCollector, SIGNAL(downloadsFinished()), newsCollector, SLOT(deleteLater()));
 
     if (m_projectManager->isOpen()) {
         if (TupMainWindow::requestType == NewLocalProject || TupMainWindow::requestType == NewNetProject)
@@ -1287,8 +1288,16 @@ void TupMainWindow::releaseAudioResources()
 void TupMainWindow::openRecentProject()
 {
     QAction *action = qobject_cast<QAction *>(sender());
-    if (action)
-        openProject(action->text());
+    if (action) {
+        QString recentProjectPath = action->text();
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupMainWindow::openRecentProject()] - recent project path ->" << recentProjectPath;
+        #endif
+        if (recentProjectPath.compare(m_fileName) != 0)
+            openProject(recentProjectPath);
+        else
+            TOsd::self()->display(TOsd::Warning, tr("Project is already opened!"));
+    }
 }
 
 // SQA: Check if this method is still used for something

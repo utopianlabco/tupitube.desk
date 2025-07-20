@@ -99,7 +99,7 @@ void TOsd::display(Level level, const QString &message,int ms)
                     tail = tr("Information") + tail;
                     QString logo = ICONS_DIR + "info_message.png";
                     if (uiTheme == DARK_THEME)
-                        background = QColor(0, 80, 0);
+                        background = QColor(150, 150, 150);
                     else
                         background = QColor(0xc1e2fb);
 

@@ -35,6 +35,7 @@
 #include "tupexposuretable.h"
 #include "tconfig.h"
 #include "tresponsiveui.h"
+#include "tapptheme.h"
 
 #include <QPainterPath>
 
@@ -48,11 +49,15 @@ class TUPITUBE_EXPORT TupExposureVerticalHeader: public QHeaderView
         virtual void paintSection(QPainter *painter, const QRect &rect, int logicalIndex) const;
 
     private:
+        int uiTheme;
         int fps;
 };
 
 TupExposureVerticalHeader::TupExposureVerticalHeader(int value, QWidget *parent): QHeaderView(Qt::Vertical, parent)
 {
+    TCONFIG->beginGroup("Theme");
+    uiTheme = TCONFIG->value("UITheme", DARK_THEME).toInt();
+
     setFixedWidth(TResponsiveUI::fitExposureVerticalHeader());
     fps = value;
 }
@@ -100,11 +105,22 @@ void TupExposureVerticalHeader::paintSection(QPainter *painter, const QRect & re
     int y = rect.normalized().bottomLeft().y() - (1 + (rect.normalized().height() - fm.height())/2);
 
     painter->setFont(font);
-    if (label % fps == 0) {
-        painter->fillRect(rect, QBrush(QColor(140, 140, 140)));
-        painter->setPen(QPen(Qt::white, 1, Qt::SolidLine));
+
+    if (uiTheme == DARK_THEME) {
+        if (label % fps == 0) {
+            painter->fillRect(rect, QBrush(QColor(50, 50, 50)));
+            painter->setPen(QPen(Qt::white, 1, Qt::SolidLine));
+        } else {
+            painter->fillRect(rect, QBrush(QColor(160, 160, 160)));
+            painter->setPen(QPen(Qt::black, 1, Qt::SolidLine));
+        }
     } else {
-        painter->setPen(QPen(Qt::black, 1, Qt::SolidLine));
+        if (label % fps == 0) {
+            painter->fillRect(rect, QBrush(QColor(140, 140, 140)));
+            painter->setPen(QPen(Qt::white, 1, Qt::SolidLine));
+        } else {
+            painter->setPen(QPen(Qt::black, 1, Qt::SolidLine));
+        }
     }
 
     painter->drawText(x, y, text);

@@ -276,12 +276,14 @@ QPair<int, int> TAction::setKeyAction(int key, Qt::KeyboardModifiers modifiers)
             }
             break;
 
+            /*
             case Qt::Key_E:
             {
                 menu = TAction::ColorMenu;
                 tool = TAction::EyeDropper;
             }
             break;
+            */
 
             default:
             {

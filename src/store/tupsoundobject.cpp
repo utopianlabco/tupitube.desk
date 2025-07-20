@@ -40,6 +40,7 @@
 #include <QPainter>
 #include <QTextStream>
 #include <QDir>
+#include <QSet>
 
 TupSoundObject::TupSoundObject(QObject *parent) : QObject(parent)
 {
@@ -260,8 +261,8 @@ void TupSoundObject::fromXml(const QString &xml)
                                 }
                             }
 
-                            QSet<int> uniqueSet = QSet<int>::fromList(frames);
-                            frames = uniqueSet.toList();
+                            QSet<int> uniqueSet = QSet<int>(frames.begin(), frames.end());
+                            frames = uniqueSet.values();
 
                             record.frames = QList<int>(frames);
                         }

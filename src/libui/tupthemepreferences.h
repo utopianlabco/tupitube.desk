@@ -56,7 +56,7 @@ class TUPITUBE_EXPORT TupThemePreferences : public QWidget
         bool showWarning();
 
     signals:
-        void colorPicked(const QColor&);
+        void colorPicked(int appTheme, const QColor&);
 
     private slots:
         void updateCurrentRow(int row);
@@ -64,19 +64,28 @@ class TUPITUBE_EXPORT TupThemePreferences : public QWidget
         void restoreDefaultTheme();
 
     private:
-        void setupPage();
-        void addColorEntry(int id, const QString &label, const QColor &initColor, const QColor &endColor);
+        enum ThemeColors {
+            Gray=0, Brown, Chocolate, Blue, Honey, Green, Violet, Orange, Black
+        };
 
-        QGridLayout *formLayout;
+        void setupPage();
+        void addColorEntry(int theme, int id, const QString &label, const QColor &initColor,
+                           const QColor &endColor);
+        void updateUITheme(int row);
+
+        QGridLayout *lightFormLayout;
+        QGridLayout *darkFormLayout;
         QList<TRadioButton *> radioList;
         QList<TupColorButton *> cellList;
         QList<TSlider *> sliderList;
-        int currentRow;
-        int oldRow;
+
+        int currentColorRow;
+        int oldColorRow;
         int colorPos;
         QColor currentColor;
         QColor oldColor;
-        bool themeChanged;
+        int appTheme;
+        bool themeChanged;        
 };
 
 #endif

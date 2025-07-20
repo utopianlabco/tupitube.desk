@@ -59,7 +59,7 @@ class TUPITUBE_EXPORT TupTimeLineRuler: public QHeaderView
         void headerSelectionChanged(int section);
 
     private:
-        QString themeName;
+        int uiTheme;
         int fps;
 };
 

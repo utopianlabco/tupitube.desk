@@ -66,9 +66,12 @@ class TUPITUBE_PLUGIN SelectionTool : public TupToolPlugin
         
         virtual void init(TupGraphicsScene *scene);
         virtual QList<TAction::ActionId> keys() const;
-        virtual void press(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *scene);
-        virtual void move(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *scene);
-        virtual void release(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *scene);
+        virtual void press(const TupInputDeviceInformation *input, TupBrushManager *brushManager,
+                           TupGraphicsScene *scene);
+        virtual void move(const TupInputDeviceInformation *input, TupBrushManager *brushManager,
+                          TupGraphicsScene *scene);
+        virtual void release(const TupInputDeviceInformation *input, TupBrushManager *brushManager,
+                             TupGraphicsScene *scene);
         virtual void keyPressEvent(QKeyEvent *event);
         virtual void keyReleaseEvent(QKeyEvent *event);
 
@@ -98,6 +101,8 @@ class TUPITUBE_PLUGIN SelectionTool : public TupToolPlugin
         void updateColorOnSelection(TupProjectRequest::Action action, const QColor &color);
         void updatePenOnSelection(const QPen &pen);
 
+        void selectAll();
+
     signals:
         void closeHugeCanvas();
         void callForPlugin(int menu, int index);
@@ -121,11 +126,13 @@ class TUPITUBE_PLUGIN SelectionTool : public TupToolPlugin
         void updateItemPosition();
         void updateItemRotation();
         void updateItemScale();
-        void addTarget();
-        void removeTarget();
+        void addTargetForMultipleSelection();
+        void removeTargetForMultipleSelection();
         TupFrame* getCurrentFrame();
         TupFrame* frameAt(int sceneIndex, int layerIndex, int frameIndex);
         void requestTransformation(QGraphicsItem *item, TupFrame *frame);
+        void addNodeManager(QGraphicsItem *item);
+        void selectItem(QGraphicsItem *item);
 
         SelectionSettings *settingsPanel;
         QMap<TAction::ActionId, TAction *> selectActions;
@@ -136,7 +143,7 @@ class TUPITUBE_PLUGIN SelectionTool : public TupToolPlugin
         qreal realFactor;
         int nodeZValue;
 
-        TupEllipseItem *center;
+        TupEllipseItem *targetCenter;
         QGraphicsLineItem *target1;
         QGraphicsLineItem *target2;
         QGraphicsLineItem *topLeftX;

@@ -157,9 +157,10 @@ class TUPITUBE_EXPORT TupLibraryWidget : public TupModuleWidgetBase
         void openSearchDialog();
         void recoverMode();
         void importLocalSoundFile(const QString &filePath);
+        void importLocalVideoSoundFile(const QString &filePath);
         void importSoundFileFromFolder(const QString &filePath, const QString &folder = QString());
         void importVideoFileFromFolder(const QString &filePath);
-        void loadSequenceFromDirectory(ImportAction action, const QString &path, bool resizeFlag = false);
+        void loadSequenceFromDirectory(ImageImportAction action, const QString &path, bool resizeFlag = false);
 
     public slots:
         void updateSoundPlayer();
@@ -225,6 +226,8 @@ class TUPITUBE_EXPORT TupLibraryWidget : public TupModuleWidgetBase
         QFileSystemWatcher *watcher;
         QList<QString> editorItems;
         bool isEffectSound;
+        bool videoSoundImported;
+        QString videoSoundPath;
         TupLibraryObject *currentSound;
         QMap<QString, QPixmap> nativeMap;
 

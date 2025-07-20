@@ -133,6 +133,8 @@ class Q_DECL_EXPORT TupDocumentView: public QMainWindow
 
         void refreshEyeDropperPanel();
         void launchEyeDropperTool();
+        void launchSelectionTool();
+        void showFgContextImage(int state);
 
     private slots: 
         // Plugins
@@ -184,10 +186,12 @@ class Q_DECL_EXPORT TupDocumentView: public QMainWindow
         void clearFrame();
         void enableEyeDropperTool(TColorCell::FillType fillType);
         void exportImage();
+        void generateForegroundContext();
         // void exportAnimaticVideo(const QString &path, const QPixmap &pixmap, int fps);
         void postImage();
         void launchLipsyncModule(PapagayoAppMode mode, const QString &soundFile);
         void editProjectSize();
+        void updateToolCursor(ToolMode tool);
 
     signals:
         void pluginsLoaded();
@@ -238,12 +242,12 @@ class Q_DECL_EXPORT TupDocumentView: public QMainWindow
         void updateRotationAngleFromRulers(int angle);
         double backgroundOpacity(TupFrame::FrameType type);
         void updateOnionColorSchemeStatus(bool status);
-        void updateToolsMenu(TAction::ActionId id, const QString &actionId);
+        // void updateToolsMenu(TAction::ActionId id, const QString &actionId);
         QList<int> getContextIndexes();
 
         QMenu *shapesMenu;
         QMenu *motionMenu;
-        QMenu *miscMenu;
+        // QMenu *miscMenu;
         QMenu *filterMenu;
 
         TupPaintArea *paintArea;

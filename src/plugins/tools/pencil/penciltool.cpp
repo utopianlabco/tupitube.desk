@@ -57,6 +57,7 @@ PencilTool::~PencilTool()
 void PencilTool::setupActions()
 {
     penCursor = QCursor(QPixmap(kAppProp->themeDir() + "cursors/target.png"), 4, 4);
+    eraserCursor = QCursor(QPixmap(kAppProp->themeDir() + "cursors/eraser.png"), 4, 4);
 
     TAction *pencil = new TAction(QPixmap(ICONS_DIR + "pencil.png"), tr("Pencil"), this);
     pencil->setShortcut(QKeySequence(tr("P")));
@@ -73,8 +74,8 @@ void PencilTool::init(TupGraphicsScene *gScene)
         qDebug() << "[PencilTool::init()]";
     #endif
 
-    currentTool = PencilMode;
-    // settings->enablePencilMode();
+    currentToolMode = PencilMode;
+    settings->enablePencilMode();
 
     scene = gScene;
     brushManager = scene->getBrushManager();
@@ -106,8 +107,6 @@ void PencilTool::init(TupGraphicsScene *gScene)
 
 void PencilTool::setZValueReferences()
 {
-    // baseZValue = TupFrame::getFrameZLevel(scene->currentLayerIndex());
-
     baseZValue = scene->getFrameZLevel(scene->currentLayerIndex(), scene->currentFrameIndex());
     topZValue = baseZValue + ITEMS_PER_FRAME;
 }
@@ -117,15 +116,16 @@ QList<TAction::ActionId> PencilTool::keys() const
     return QList<TAction::ActionId>() << TAction::Pencil;
 }
 
-void PencilTool::press(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
+void PencilTool::press(const TupInputDeviceInformation *input, TupBrushManager *brushManager,
+                       TupGraphicsScene *gScene)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PencilTool::press()] - currentTool ->" << currentTool;
+        qDebug() << "[PencilTool::press()] - currentTool ->" << currentToolMode;
     #endif
 
     firstPoint = input->pos();
 
-    if (currentTool == PencilMode) {
+    if (currentToolMode == PencilMode) {
         if (!resizeMode) {
             path = QPainterPath();
             path.moveTo(firstPoint);
@@ -147,11 +147,12 @@ void PencilTool::press(const TupInputDeviceInformation *input, TupBrushManager *
         eraserCircle->setPos(firstPoint - eraserDistance);
         gScene->includeObject(eraserCircle);
         if (!lineItems.isEmpty())
-            activeEraser(firstPoint);
+            runEraser(firstPoint);
     }
 }
 
-void PencilTool::move(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
+void PencilTool::move(const TupInputDeviceInformation *input, TupBrushManager *brushManager,
+                      TupGraphicsScene *gScene)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[PencilTool::move()]";
@@ -161,7 +162,7 @@ void PencilTool::move(const TupInputDeviceInformation *input, TupBrushManager *b
     Q_UNUSED(gScene)
 
     QPointF currentPoint = input->pos();
-    if (currentTool == PencilMode) {
+    if (currentToolMode == PencilMode) {
         if (resizeMode) {
             QPointF result = penCirclePos - currentPoint;
             penWidth = static_cast<int>(sqrt(pow(result.x(), 2) + pow(result.y(), 2)));
@@ -185,20 +186,21 @@ void PencilTool::move(const TupInputDeviceInformation *input, TupBrushManager *b
     } else {
         eraserCircle->setPos(currentPoint - eraserDistance);
         if (!lineItems.isEmpty())
-            activeEraser(currentPoint);
+            runEraser(currentPoint);
     }
 }
 
-void PencilTool::release(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
+void PencilTool::release(const TupInputDeviceInformation *input, TupBrushManager *brushManager,
+                         TupGraphicsScene *gScene)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PencilTool::release()] - currentTool ->" << currentTool;
+        qDebug() << "[PencilTool::release()] - currentTool ->" << currentToolMode;
     #endif
 
     Q_UNUSED(brushManager)
 
     QPointF currentPoint = input->pos();
-    if (currentTool == PencilMode) {
+    if (currentToolMode == PencilMode) {
         if (!resizeMode) {
             if (!item)
                 return;
@@ -240,12 +242,14 @@ void PencilTool::release(const TupInputDeviceInformation *input, TupBrushManager
                                                                              doc.toString());
             emit requested(&request);
 
+            // Temporary code for debugging purposes
             // addKeyPoints(item);
+            // addCurvePoints(item);
         }
     } else { // Eraser Mode
         gScene->removeItem(eraserCircle);
         if (!lineItems.isEmpty())
-            activeEraser(currentPoint);
+            runEraser(currentPoint);
     }
 }
 
@@ -272,7 +276,7 @@ QWidget *PencilTool::configurator()
 
     if (!settings) {
         settings = new PencilSettings;
-        connect(settings, SIGNAL(toolEnabled(PenTool)), this, SLOT(updatePenTool(PenTool)));
+        connect(settings, SIGNAL(toolEnabled(ToolMode)), this, SLOT(updateToolMode(ToolMode)));
         connect(settings, SIGNAL(smoothnessUpdated(double)), this, SLOT(updateSmoothness(double)));
         connect(settings, SIGNAL(eraserSizeChanged(int)), this, SLOT(updateEraserSize(int)));
 
@@ -286,16 +290,31 @@ QWidget *PencilTool::configurator()
     return settings;
 }
 
-void PencilTool::updatePenTool(PenTool tool)
+void PencilTool::updateToolMode(ToolMode tool)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PencilTool::updatePenTool()] - tool -> " << tool;
+        QString toolName = "Eraser";
+        if (tool == 0)
+            toolName = "Pencil";
+
+        qDebug() << "---";
+        qDebug() << "[PencilTool::updateToolMode()] - Switching to tool ->" << toolName;
     #endif
 
-    currentTool = tool;
+    emit toolModeUpdated(tool);
 
-    if (tool == EraserMode)
+    currentToolMode = tool;
+    if (tool == EraserMode) {
         storePathItems();
+        /*
+        // Temporary code for debugging purposes
+        for (int i=0; i<lineItems.size(); i++) {
+            TupPathItem *item = lineItems.at(i);
+            addCurvePoints(item);
+            addKeyPoints(item);
+        }
+        */
+    }
 }
 
 void PencilTool::storePathItems()
@@ -308,18 +327,9 @@ void PencilTool::storePathItems()
     lineItems.clear();
     foreach (QGraphicsItem *item, scene->items()) {
         if (TupPathItem *line = qgraphicsitem_cast<TupPathItem *> (item)) {
-            qDebug() << "";
-            qDebug() << "BASE Z Value -> " << baseZValue;
-            qDebug() << "  line Z Value -> " << line->zValue();
-            qDebug() << "TOP Z Value -> " << topZValue;
-
             int zVal = line->zValue();
-            if (baseZValue <= zVal && zVal < topZValue) {
-                qDebug() << "Storing line!";
+            if (baseZValue <= zVal && zVal < topZValue)
                 lineItems << line;
-            } else {
-                qDebug() << "Line doesn't classify!";
-            }
         }
     }
 }
@@ -347,17 +357,6 @@ void PencilTool::saveConfig()
 
     TCONFIG->beginGroup("BrushParameters");
     TCONFIG->setValue("EraserSize", eraserSize);
-
-    /*
-    if (settings) {
-        settings = new PencilSettings;
-        connect(settings, SIGNAL(toolEnabled(PenTool)), this, SLOT(updatePenTool(PenTool)));
-        connect(settings, SIGNAL(smoothnessUpdated(double)), this, SLOT(updateSmoothness(double)));
-        connect(settings, SIGNAL(eraserSizeChanged(int)), this, SLOT(updateEraserSize(int)));
-
-        settings->updateSmoothness(smoothness);
-    }
-    */
 }
 
 void PencilTool::keyPressEvent(QKeyEvent *event)
@@ -366,7 +365,7 @@ void PencilTool::keyPressEvent(QKeyEvent *event)
         qDebug() << "[PencilTool::keyPressEvent()]";
     #endif
 
-    if (event->modifiers() == Qt::ShiftModifier && currentTool == PencilMode) {
+    if (event->modifiers() == Qt::ShiftModifier && currentToolMode == PencilMode) {
         resizeMode = true;
         input = scene->inputDeviceInformation();
         int diameter = brushManager->penWidth();
@@ -411,8 +410,14 @@ void PencilTool::keyReleaseEvent(QKeyEvent *event)
 }
 
 QCursor PencilTool::toolCursor() // const
-{
-    return penCursor;
+{    
+    if (currentToolMode == PencilMode) {
+        return penCursor;
+    } else if (currentToolMode == EraserMode) {
+        return eraserCursor;
+    }
+
+    return QCursor(Qt::ArrowCursor);
 }
 
 void PencilTool::sceneResponse(const TupSceneResponse *event)
@@ -420,16 +425,37 @@ void PencilTool::sceneResponse(const TupSceneResponse *event)
     Q_UNUSED(event)
 }
 
-void PencilTool::updateEraserSize(int value)
-{
-    eraserSize = value;
-}
-
 void PencilTool::frameResponse(const TupFrameResponse *event)
 {
     Q_UNUSED(event)
 
     setZValueReferences();
+}
+
+void PencilTool::itemResponse(const TupItemResponse *event)
+{
+    if (currentToolMode == EraserMode) {
+        scene->drawCurrentPhotogram();
+        if (event->getAction() == TupProjectRequest::Add)
+            storePathItems();
+        for (int i=0; i<lineItems.size(); i++) {
+            TupPathItem *item = lineItems.at(i);
+            if (item->isBlocked())
+                item->updateBlockingFlag(false);
+        }
+    }
+}
+
+void PencilTool::updateEraserSize(int size)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[PencilTool::updateEraserSize()] - size ->" << size;
+    #endif
+
+    eraserSize = size;
+    qreal radius = eraserSize/2;
+    eraserDistance = QPointF(radius, radius);
+    eraserCircle->setRect(radius/2, radius/2, radius, radius);
 }
 
 TupFrame* PencilTool::getCurrentFrame()
@@ -459,92 +485,113 @@ TupFrame* PencilTool::getCurrentFrame()
     return frame;
 }
 
-void PencilTool::activeEraser(const QPointF &point)
+void PencilTool::runEraser(const QPointF &point)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PencilTool::activeEraser()] - point ->" << point;
+        qDebug() << "---";
+        qDebug() << "[PencilTool::runEraser()] - Evaluating point ->" << point;
     #endif
 
-    qDebug() << "PencilTool::activeEraser() - lineItems.size() ->" << lineItems.size();
+    // Checking if the point matches any of the frame paths
     for (int i=0; i<lineItems.size(); i++) {
         TupPathItem *item = lineItems.at(i);
+        if (item->isBlocked())
+            continue;
+
         if (item->pointMatchesPath(point, eraserSize/2, EraserMode)) {
-            // Process item here
-            qDebug() << "-------------------------------------------------------";
-            qDebug() << "PencilTool::activeEraser() - MATCH!!! MATCH!!! MATCH!!!";
-            // qDebug() << "PencilTool::activeEraser() - eraser size ->" << eraserSize;
+            // Path matches the point
+            #ifdef TUP_DEBUG
+                qDebug() << "---";
+                qDebug() << "[PencilTool::runEraser()] - MATCH!!!";
+            #endif
+
             QPair<QString, QString> segments = item->recalculatePath(point, eraserSize/2);
             QString segment1 = segments.first;
             QString segment2 = segments.second;
-
-            qDebug() << "  *** segment1 ->" << segment1;
-            qDebug() << "  *** segment2 ->" << segment2;
 
             if (segment1.compare("-1") != 0) {
                 TupFrame *frame = getCurrentFrame();
                 int itemIndex = frame->indexOf(item);
 
-                qDebug() << "  *** itemIndex ->" << itemIndex;
-
                 if (itemIndex == -1) {
                     #ifdef TUP_DEBUG
-                        qDebug() << "[PencilTool::activeEraser()] - Fatal Error: Invalid item index -> -1";
+                        qDebug() << "[PencilTool::runEraser()] - Fatal Error: Invalid item index -> -1";
                     #endif
 
                     return;
                 }
 
                 if (!segment1.isEmpty() && !segment2.isEmpty()) {
-                    qDebug() << "PencilTool::activeEraser() - Adding TWO segments!";
-                } else if (segment2.isEmpty() && !segment1.isEmpty()) {
-                    qDebug() << "PencilTool::activeEraser() - Adding segment1";
                     TupProjectRequest event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(),
                                                                                    currentLayer, currentFrame, itemIndex,
                                                                                    QPointF(), scene->getSpaceContext(), TupLibraryObject::Item,
                                                                                    TupProjectRequest::EditNodes, segment1);
                     emit requested(&event);
-                } else {
-                    qDebug() << "PencilTool::activeEraser() - Removing item...";
-                    qDebug() << "currentLayer ->" << currentLayer;
-                    qDebug() << "currentFrame ->" << currentFrame;
-                    qDebug() << "position ->" << itemIndex;
 
+                    TupPathItem *lineItem = new TupPathItem;
+                    lineItem->setPen(brushManager->pen());
+                    lineItem->setBrush(brushManager->brush());
+                    lineItem->setPathFromString(segment2);
+
+                    QDomDocument doc;
+                    doc.appendChild(lineItem->toXml(doc));
+
+                    event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(), scene->currentLayerIndex(), scene->currentFrameIndex(),
+                                                                 0, QPoint(), scene->getSpaceContext(), TupLibraryObject::Item, TupProjectRequest::Add,
+                                                                 doc.toString());
+                    emit requested(&event);
+                } else if (segment2.isEmpty() && !segment1.isEmpty()) {
+                    TupProjectRequest event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(),
+                                                                                   currentLayer, currentFrame, itemIndex,
+                                                                                   QPointF(), scene->getSpaceContext(), TupLibraryObject::Item,
+                                                                                   TupProjectRequest::EditNodes, segment1);
+                    emit requested(&event);
+
+                    /*
+                    // Temporary code for debugging purposes
+                    TupPathItem *debugPath = new TupPathItem;
+                    debugPath->setPathFromString(segment1);
+                    addCurvePoints(debugPath);
+                    addKeyPoints(debugPath);
+                    */
+                } else {
                     scene->removeItem(item);
                     lineItems.removeAt(i);
+
+                    // Temporary code for debugging purposes
+                    // removeKeyPoints();
 
                     TupProjectRequest event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(),
                                                                                    currentLayer, currentFrame, itemIndex, QPointF(), scene->getSpaceContext(),
                                                                                    TupLibraryObject::Item, TupProjectRequest::Remove);
                     emit requested(&event);
                 }
-
-                {
-                    TupPathItem *test = new TupPathItem;
-                    test->setPathFromString(segment1);
-                    addKeyPoints(test);
-                }
             } else {
-                qDebug() << "PencilTool::activeEraser() - Warning: Eraser action FAILED!";
+                #ifdef TUP_DEBUG
+                    qDebug() << "[PencilTool::runEraser()] - Warning: Eraser action FAILED!";
+                #endif
             }
 
-            qDebug() << "---";
-            qDebug() << "";
         } else {
-            qDebug() << "---";
-            qDebug() << "PencilTool::activeEraser() - NO match!!!";
+            #ifdef TUP_DEBUG
+                qDebug() << "---";
+                qDebug() << "[PencilTool::runEraser()] - NO match!!!";
+            #endif
         }
     }
 }
 
+/*
+// Temporary code for debugging purposes
 void PencilTool::addKeyPoints(TupPathItem *item)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[PencilTool::addKeyPoints()]";
     #endif
 
-    foreach (TupEllipseItem *item, route)
+    foreach (TupEllipseItem *item, pathEllipsesList)
         scene->removeItem(item);
-    route.clear();
+    pathEllipsesList.clear();
 
     if (!item) {
         #ifdef TUP_DEBUG
@@ -567,9 +614,8 @@ void PencilTool::addKeyPoints(TupPathItem *item)
 
     QList<QColor> colors = item->nodeColors();
     QList<QString> tips = item->nodeTips();
-    int i = 0;
+    int pointsCounter = 0;
 
-    // if (lineItem)
     if (lineAdded)
         scene->removeItem(lineItem);
 
@@ -579,24 +625,136 @@ void PencilTool::addKeyPoints(TupPathItem *item)
     foreach (QPointF point, points) {
         qreal radius = penWidth;
         QPointF distance((radius + 2)/2, (radius + 2)/2);
-        QPen pointPen(colors.at(i), 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+        QPen pointPen(colors.at(pointsCounter), 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
         TupEllipseItem *ellipse = new TupEllipseItem(QRectF(point - distance,
-                                                                 QSize(static_cast<int>(radius + 2), static_cast<int>(radius + 2))));
+                                                     QSize(static_cast<int>(radius + 2), static_cast<int>(radius + 2))));
         ellipse->setPen(pointPen);
         ellipse->setBrush(pointPen.brush());
-        ellipse->setToolTip(tips.at(i));
+        ellipse->setToolTip(tips.at(pointsCounter));
         scene->includeObject(ellipse);
-        route << ellipse;
+        pathEllipsesList << ellipse;
 
-        if (i > 0) {
+        if (pointsCounter > 0) {
            path.lineTo(point);
         }
 
-        i++;
+        pointsCounter++;
     }
 
+    qDebug() << "[PencilTool::addKeyPoints()] - Adding axis line!";
+    qDebug() << "[PencilTool::addKeyPoints()] - pointsCounter ->" << pointsCounter;
+    qDebug() << "[PencilTool::addKeyPoints()] - points.size() ->" << points.size();
+
+    QPen linePen(Qt::red, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
     lineItem = new TupPathItem;
+    lineItem->setPen(linePen);
     lineItem->setPath(path);
     scene->includeObject(lineItem);
     lineAdded = true;
 }
+*/
+
+/*
+// Temporary code for debugging purposes
+void PencilTool::addCurvePoints(TupPathItem *item)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[PencilTool::addCurvePoints()]";
+    #endif
+
+    foreach (TupEllipseItem *item, curveEllipsesList)
+        scene->removeItem(item);
+    curveEllipsesList.clear();
+
+    if (!item) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[PencilTool::addCurvePoints()] - Fatal Error: Path is NULL!";
+        #endif
+
+        return;
+    }
+
+    qDebug() << "[PencilTool::addCurvePoints()] - path ->" << item->pathToString();
+
+    QList<QPointF> points = item->debuggingCurvePoints(eraserSize/2);
+    if (points.isEmpty()) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[PencilTool::addCurvePoints()] - Fatal Error: Path item has no points!";
+        #endif
+
+        return;
+    }
+
+    // QList<QColor> colors = item->nodeColors();
+    // QList<QString> tips = item->nodeTips();
+    int pointsCounter = 0;
+
+    if (lineAdded)
+        scene->removeItem(lineItem);
+
+    QPainterPath path;
+    path.moveTo(points.at(0));
+
+    foreach (QPointF point, points) {
+        qreal radius = penWidth;
+        QPointF distance((radius + 2)/2, (radius + 2)/2);
+        QPen pointPen(Qt::blue, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+        TupEllipseItem *ellipse = new TupEllipseItem(QRectF(point - distance,
+                                                            QSize(static_cast<int>(radius + 2), static_cast<int>(radius + 2))));
+        ellipse->setPen(pointPen);
+        ellipse->setBrush(pointPen.brush());
+        // ellipse->setToolTip(tips.at(pointsCounter));
+        scene->includeObject(ellipse);
+        curveEllipsesList << ellipse;
+
+        if (pointsCounter > 0) {
+           path.lineTo(point);
+        }
+
+        pointsCounter++;
+    }
+
+    qDebug() << "[PencilTool::addCurvePoints()] - Adding axis line!";
+    qDebug() << "[PencilTool::addCurvePoints()] - pointsCounter ->" << pointsCounter;
+    qDebug() << "[PencilTool::addCurvePoints()] - points.size() ->" << points.size();
+
+    QPen linePen(Qt::red, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    lineItem = new TupPathItem;
+    lineItem->setPen(linePen);
+    lineItem->setPath(path);
+    scene->includeObject(lineItem);
+    lineAdded = true;
+}
+*/
+
+/*
+// Temporary code for debugging purposes
+void PencilTool::removeKeyPoints()
+{
+    if (lineAdded) {
+        scene->removeItem(lineItem);
+        lineAdded = false;
+    }
+
+    foreach (TupEllipseItem *ellipse, pathEllipsesList)
+        scene->removeItem(ellipse);
+
+    pathEllipsesList.clear();
+}
+*/
+
+/*
+// Temporary code for debugging purposes
+void PencilTool::removeCurveKeyPoints()
+{
+    if (lineAdded) {
+        scene->removeItem(lineItem);
+        lineAdded = false;
+    }
+
+    foreach (TupEllipseItem *ellipse, curveEllipsesList)
+        scene->removeItem(ellipse);
+
+    curveEllipsesList.clear();
+}
+*/

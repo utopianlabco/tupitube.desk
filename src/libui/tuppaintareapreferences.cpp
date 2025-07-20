@@ -111,8 +111,11 @@ void TupPaintAreaPreferences::setupPage()
 QGridLayout * TupPaintAreaPreferences::gridPanel()
 {
     TCONFIG->beginGroup("PaintArea");
-    QString colorName = TCONFIG->value("GridColor", "#0000b4").toString();
-    gridColor = QColor(colorName);
+    QString gridColorName = TCONFIG->value("GridColor", "#0000b4").toString();
+    gridColor = QColor(gridColorName);
+    QString axisColorName = TCONFIG->value("GridAxisColor", "#0000b4").toString();
+    gridAxisColor = QColor(axisColorName);
+
     int separation = TCONFIG->value("GridSeparation", 20).toInt();
     int thickness = TCONFIG->value("GridLineThickness", 1).toInt();
 
@@ -125,19 +128,26 @@ QGridLayout * TupPaintAreaPreferences::gridPanel()
     connect(gridColorButton, SIGNAL(clicked()), this, SLOT(setGridColor()));
     gridForm->addWidget(gridColorButton, 0, 1, Qt::AlignLeft);
 
-    gridForm->addWidget(new QLabel(tr("Grid Separation:")), 1, 0, Qt::AlignLeft);
+    gridForm->addWidget(new QLabel(tr("Grid Axis Color:")), 1, 0, Qt::AlignLeft);
+    gridAxisColorButton = new QPushButton;
+    gridAxisColorButton->setText(gridAxisColor.name());
+    gridAxisColorButton->setStyleSheet("* { background-color: " + gridAxisColor.name() + " }");
+    connect(gridAxisColorButton, SIGNAL(clicked()), this, SLOT(setGridAxisColor()));
+    gridForm->addWidget(gridAxisColorButton, 1, 1, Qt::AlignLeft);
+
+    gridForm->addWidget(new QLabel(tr("Grid Separation:")), 2, 0, Qt::AlignLeft);
     gridSeparation = new QSpinBox(this);
-    gridSeparation->setMinimum(5);
+    gridSeparation->setMinimum(20);
     gridSeparation->setMaximum(100);
     gridSeparation->setValue(separation);
-    gridForm->addWidget(gridSeparation, 1, 1, Qt::AlignLeft);
+    gridForm->addWidget(gridSeparation, 2, 1, Qt::AlignLeft);
 
-    gridForm->addWidget(new QLabel(tr("Grid Line Thickness:")), 2, 0, Qt::AlignLeft);
+    gridForm->addWidget(new QLabel(tr("Grid Line Thickness:")), 3, 0, Qt::AlignLeft);
     gridThickness = new QSpinBox(this);
     gridThickness->setMinimum(1);
     gridThickness->setMaximum(5);
     gridThickness->setValue(thickness);
-    gridForm->addWidget(gridThickness, 2, 1, Qt::AlignLeft);
+    gridForm->addWidget(gridThickness, 3, 1, Qt::AlignLeft);
 
     return gridForm;
 }
@@ -176,7 +186,6 @@ QGridLayout * TupPaintAreaPreferences::safeAreaPanel()
     colorName = TCONFIG->value("SafeAreaLineColor", "#969696").toString();
     safeAreaLineColor = QColor(colorName);
     int thickness = TCONFIG->value("SafeLineThickness", 1).toInt();
-    int safeLevel = TCONFIG->value("SafeLevel", 0).toInt();
 
     QGridLayout *safeForm = new QGridLayout;
 
@@ -201,13 +210,6 @@ QGridLayout * TupPaintAreaPreferences::safeAreaPanel()
     safeThickness->setValue(thickness);
     safeForm->addWidget(safeThickness, 2, 1, Qt::AlignLeft);
 
-    safeForm->addWidget(new QLabel(tr("Safe Area Level:")), 3, 0, Qt::AlignLeft);
-    safeLevelCombo = new QComboBox(this);
-    safeLevelCombo->addItem(tr("Background"));
-    safeLevelCombo->addItem(tr("Foreground"));
-    safeLevelCombo->setCurrentIndex(safeLevel);
-    safeForm->addWidget(safeLevelCombo, 3, 1, Qt::AlignLeft);
-
     return safeForm;
 }
 
@@ -216,6 +218,7 @@ void TupPaintAreaPreferences::saveValues()
     TCONFIG->beginGroup("PaintArea");
 
     TCONFIG->setValue("GridColor", gridColor.name());
+    TCONFIG->setValue("GridAxisColor", gridAxisColor.name());
     TCONFIG->setValue("GridSeparation", gridSeparation->value());
     TCONFIG->setValue("GridLineThickness", gridThickness->value());
 
@@ -225,7 +228,6 @@ void TupPaintAreaPreferences::saveValues()
     TCONFIG->setValue("SafeAreaRectColor", safeAreaRectColor.name());
     TCONFIG->setValue("SafeAreaLineColor", safeAreaLineColor.name());
     TCONFIG->setValue("SafeLineThickness", safeThickness->value());
-    TCONFIG->setValue("SafeLevel", safeLevelCombo->currentIndex());
 
     TCONFIG->sync();
 }
@@ -257,6 +259,11 @@ void TupPaintAreaPreferences::restoreValues()
 void TupPaintAreaPreferences::setGridColor()
 {
     gridColor = setButtonColor(gridColorButton, gridColor);
+}
+
+void TupPaintAreaPreferences::setGridAxisColor()
+{
+    gridAxisColor = setButtonColor(gridAxisColorButton, gridAxisColor);
 }
 
 void TupPaintAreaPreferences::setRotColor()

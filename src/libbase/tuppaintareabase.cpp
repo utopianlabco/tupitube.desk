@@ -36,8 +36,6 @@
 #include "tuptextitem.h"
 #include "tupgraphicsscene.h"
 #include "tupgraphicalgorithm.h"
-
-// TupiTube Framework 
 #include "tupscene.h"
 #include "tconfig.h"
 #include "tapplication.h"
@@ -65,9 +63,6 @@ TupPaintAreaBase::TupPaintAreaBase(QWidget *parent, QSize dimension, TupLibrary 
 
     grid = nullptr;
 
-    TCONFIG->beginGroup("PaintArea");
-    safeLevel = SafeLevel(TCONFIG->value("SafeLevel", Foreground).toInt());
-
     updateGridParameters();
     updateRotParameters();
     updateSafeParameters();
@@ -88,7 +83,6 @@ TupPaintAreaBase::TupPaintAreaBase(QWidget *parent, QSize dimension, TupLibrary 
     centerDrawingArea();
     setInteractive(true);
     setMouseTracking(true);
-    // setAcceptDrops(true);
 
     setRenderHints(QPainter::RenderHints(QPainter::Antialiasing));
 
@@ -201,7 +195,6 @@ void TupPaintAreaBase::mouseMoveEvent(QMouseEvent *event)
         mouseEvent.setButton(event->button());
         mouseEvent.setModifiers(event->modifiers());
         mouseEvent.setAccepted(false);
-        // QApplication::sendEvent(gScene, &mouseEvent);
         gScene->mouseMoved(&mouseEvent);
     }
     */
@@ -225,7 +218,6 @@ void TupPaintAreaBase::mouseReleaseEvent(QMouseEvent *event)
         mouseEvent.setButton(event->button());
         mouseEvent.setModifiers(event->modifiers());
         mouseEvent.setAccepted(false);
-        // QApplication::sendEvent(gScene, &mouseEvent);
         gScene->mouseReleased(&mouseEvent);
     }
     */
@@ -243,7 +235,6 @@ void TupPaintAreaBase::keyPressEvent(QKeyEvent *event)
     }
 
     if (!gScene->userIsDrawing() && (event->modifiers () == (Qt::AltModifier | Qt::ControlModifier))) {
-        // QDesktopWidget desktop;
         dial->setAngle(static_cast<int>(angle));
         dial->show();
 
@@ -329,11 +320,11 @@ void TupPaintAreaBase::wheelEvent(QWheelEvent *event)
 {
     /*
     #ifdef TUP_DEBUG
-        qDebug() << "[TupPaintAreaBase::wheelEvent()] - angleDelta -> " << event->angleDelta();
+        qDebug() << "[TupPaintAreaBase::wheelEvent()] - angleDelta ->" << event->angleDelta();
     #endif
     */
 
-    // SQA: Evaluate this replacemente
+    // SQA: Evaluate this replacement
     // scaleView(pow(2.0, event->delta() / 520.0));
     scaleView(pow(2.0, event->angleDelta().y() / 520.0));
 }
@@ -349,15 +340,6 @@ void TupPaintAreaBase::drawBackground(QPainter *painter, const QRectF &rect)
     painter->setPen(blackPen);
     painter->fillRect(drawingRect, bgcolor);
     painter->drawRect(drawingRect);
-
-    // if enabled action safe area
-    if (safeAreaEnabled) {
-        if (safeLevel == Background) {
-            int width = drawingRect.width();
-            int height = drawingRect.height();
-            drawSafeArea(painter, width, height);
-        }
-    }
 
     emit changedZero(painter->worldTransform().map(QPointF(0, 0)));
 
@@ -382,20 +364,12 @@ void TupPaintAreaBase::drawForeground(QPainter *painter, const QRectF &rect)
                             int height = drawingRect.height();
 
                             // if enabled draw grid
-                            if (gridEnabled) {
-                                painter->setPen(gridPen);
-                                int maxX = static_cast<int> (width + 100);
-                                int maxY = static_cast<int> (height + 100);
-                                for (int i = -100; i <= maxX; i += gridSeparation)
-                                     painter->drawLine(i, -100, i, maxY);
-                                for (int i = -100; i <= maxY; i += gridSeparation)
-                                     painter->drawLine(-100, i, maxX, i);
-                            }
+                            if (gridEnabled)
+                                drawGrid(painter, width, height);
 
                             // if enabled action safe area
-                            if (safeLevel == Foreground) {
-                                if (safeAreaEnabled)
-                                    drawSafeArea(painter, width, height);
+                            if (safeAreaEnabled) {
+                                drawSafeArea(painter, width, height);
                             }
                         }
                     } 
@@ -549,12 +523,17 @@ void TupPaintAreaBase::updateCenter(const QPoint point)
 void TupPaintAreaBase::updateGridParameters()
 {
     TCONFIG->beginGroup("PaintArea");
-    QString colorName = TCONFIG->value("GridColor", "#0000b4").toString();
-    QColor gridColor(colorName);
+    QString gridColorName = TCONFIG->value("GridColor", "#0000b4").toString();
+    QString gridAxisColorName = TCONFIG->value("GridAxisColor", "#0000b4").toString();
+    QColor gridColor(gridColorName);
+    QColor gridAxisColor(gridAxisColorName);
     gridColor.setAlpha(50);
 
     gridPen = QPen(gridColor, TCONFIG->value("GridLineThickness", "1").toInt());
+    gridAxisPen = QPen(gridAxisColor, TCONFIG->value("GridLineThickness", "1").toInt());
     gridSeparation = TCONFIG->value("GridSeparation", "10").toInt();
+
+    numberPen = QPen(Qt::white, TCONFIG->value("GridLineThickness", "1").toInt());
 }
 
 void TupPaintAreaBase::updateRotParameters()
@@ -574,7 +553,6 @@ void TupPaintAreaBase::updateSafeParameters()
     QString rectColorName = TCONFIG->value("SafeAreaRectColor", "#008700").toString();
     QString lineColorName = TCONFIG->value("SafeAreaLineColor", "#969696").toString();
     int thickness = TCONFIG->value("SafeLineThickness", 1).toInt();
-    safeLevel = SafeLevel(TCONFIG->value("SafeLevel", Background).toInt());
 
     QColor safeRectColor = QColor(rectColorName);
     safeRectPen = QPen(safeRectColor, thickness);
@@ -586,6 +564,102 @@ void TupPaintAreaBase::updateAngle(int degree)
 {
     setRotationAngle(degree);
     emit rotated(degree);
+}
+
+void TupPaintAreaBase::drawGrid(QPainter *painter, int width, int height)
+{
+    bool showNumbers = true;
+    if (gridSeparation < 40)
+        showNumbers = false;
+
+    QFont font("Arial", 18, QFont::Bold);
+    painter->setFont(font);
+
+    int midX = width / 2;
+    int midY = height / 2;
+    int minX = midX - (width/2);
+    int maxX = midX + (width/2);
+    int minY = midY - (height/2);
+    int maxY = midY + (height/2);
+
+    // Vertical lines - first section
+    int initX = midX - gridSeparation;
+    int counter = 1;
+    int yPos = minY - 20;
+    for (int i=initX; i > minX; i -= gridSeparation) {
+        painter->setPen(gridPen);
+        painter->drawLine(i, minY, i, maxY);
+
+        if (showNumbers) {
+            painter->setPen(numberPen);
+            int xPos = i - 10;
+            if (counter < 10)
+                xPos = i - 5;
+            painter->drawText(QPointF(xPos, yPos), QString::number(counter));
+            counter++;
+        }
+    }
+
+    // Vertical lines - second section
+    counter = 1;
+    initX = midX + gridSeparation;
+    for (int i=initX; i < maxX; i += gridSeparation) {
+        painter->setPen(gridPen);
+        painter->drawLine(i, minY, i, maxY);
+
+        if (showNumbers) {
+            painter->setPen(numberPen);
+            int xPos = i - 10;
+            if (counter < 10)
+                xPos = i - 5;
+            painter->drawText(QPointF(xPos, yPos), QString::number(counter));
+            counter++;
+        }
+    }
+
+    // Horizontal lines - first section
+    counter = 1;
+    int initY = midY - gridSeparation;
+    for (int i=initY; i > minY; i -= gridSeparation) {
+        painter->setPen(gridPen);
+        painter->drawLine(minX, i, maxX, i);
+
+        if (showNumbers) {
+            int xPos = minX - 45;
+            if (counter < 10)
+                xPos = minX - 40;
+            painter->setPen(numberPen);
+            painter->drawText(QPointF(xPos, i + 5), QString::number(counter));
+            counter++;
+        }
+    }
+
+    // Horizontal lines - second section
+    counter = 1;
+    initY = midY + gridSeparation;
+    for (int i=initY; i < maxY; i += gridSeparation) {
+        painter->setPen(gridPen);
+        painter->drawLine(minX, i, maxX, i);
+
+        if (showNumbers) {
+            int xPos = minX - 45;
+            if (counter < 10)
+                xPos = minX - 40;
+            painter->setPen(numberPen);
+            painter->drawText(QPointF(xPos, i + 5), QString::number(counter));
+            counter++;
+        }
+    }
+
+    // Center (red) axis lines
+    painter->setPen(gridAxisPen);
+    painter->drawLine(midX, minY, midX, maxY);
+    painter->drawLine(minX, midY, maxX, midY);
+
+    if (showNumbers) {
+        painter->drawText(QPointF(midX - 5, yPos), "0");
+        painter->drawText(QPointF(minX - 40, midY + 10), "0");
+    }
 }
 
 void TupPaintAreaBase::drawSafeArea(QPainter *painter, int width, int height)

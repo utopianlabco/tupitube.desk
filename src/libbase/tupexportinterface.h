@@ -73,22 +73,22 @@ class TUPITUBE_EXPORT TupExportInterface
                APNG = 1 << 11
              };
 
-        Q_DECLARE_FLAGS(Formats, Format);
+        Q_DECLARE_FLAGS(Formats, Format)
 
-        virtual ~TupExportInterface() {};
+        virtual ~TupExportInterface() {}
         virtual QString formatName() const = 0;
         virtual Plugin key() = 0;
         virtual Formats availableFormats() = 0;
-        virtual bool exportToFormat(const QColor color, const QString &filePath, const QList<TupScene *> &scenes, 
+        virtual bool exportToFormat(int colorAlpha, const QString &filePath, const QList<TupScene *> &scenes,
                                     Format format, const QSize &size, const QSize &newSize, int fps, TupProject *project, 
                                     bool waterMark = false) = 0;
         virtual bool exportFrame(int frameIndex, const QColor color, const QString &filePath, TupScene *scene, const QSize &size, 
-                                 TupProject *project, bool waterMark = false) = 0;
+                                 TupProject *project, bool waterMark = false, bool showForegroundView = true) = 0;
         virtual bool exportToAnimatic(const QString &filePath, const QList<QImage> images, const QList<int> indexes,
                                       TupExportInterface::Format format, const QSize &size, int fps) = 0;
         virtual QString getExceptionMsg() const = 0;
 };
-        Q_DECLARE_OPERATORS_FOR_FLAGS(TupExportInterface::Formats);
-        Q_DECLARE_INTERFACE(TupExportInterface, "co.utopianlab.tupi.ExportInterface/0.1");
+        Q_DECLARE_OPERATORS_FOR_FLAGS(TupExportInterface::Formats)
+        Q_DECLARE_INTERFACE(TupExportInterface, "co.utopianlab.tupi.ExportInterface/0.1")
 
 #endif

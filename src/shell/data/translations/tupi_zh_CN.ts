@@ -300,6 +300,18 @@
         <source>Vertical</source>
         <translation>垂直的</translation>
     </message>
+    <message>
+        <source>Line Mode</source>
+        <translation>线路模式</translation>
+    </message>
+    <message>
+        <source>E</source>
+        <translation>E</translation>
+    </message>
+    <message>
+        <source>Eraser Mode</source>
+        <translation>橡皮擦模式</translation>
+    </message>
 </context>
 <context>
     <name>GeometricTool</name>
@@ -800,10 +812,6 @@
         <translation>帧</translation>
     </message>
     <message>
-        <source>lipsync:</source>
-        <translation>唇型同步校正</translation>
-    </message>
-    <message>
         <source>Ctrl+Shift+P</source>
         <translation>Ctrl+Shift+P</translation>
     </message>
@@ -821,6 +829,18 @@
     <message>
         <source>Smoothness</source>
         <translation>光滑度</translation>
+    </message>
+    <message>
+        <source>Pencil Mode</source>
+        <translation>铅笔模式</translation>
+    </message>
+    <message>
+        <source>E</source>
+        <translation>E</translation>
+    </message>
+    <message>
+        <source>Eraser Mode</source>
+        <translation>橡皮擦模式</translation>
     </message>
 </context>
 <context>
@@ -1795,6 +1815,17 @@
     </message>
 </context>
 <context>
+    <name>TXYSpinBox</name>
+    <message>
+        <source>Rectangle Dimension</source>
+        <translation>矩形尺寸</translation>
+    </message>
+    <message>
+        <source>Square Dimension</source>
+        <translation>平方尺寸</translation>
+    </message>
+</context>
+<context>
     <name>TabDialog</name>
     <message>
         <source>OK</source>
@@ -2612,10 +2643,6 @@
         <translation>未检测到摄像机</translation>
     </message>
     <message>
-        <source>Misc Tools</source>
-        <translation>其他工具</translation>
-    </message>
-    <message>
         <source>Can&apos;t export frame as image</source>
         <translation>无法将帧动画导出为图像</translation>
     </message>
@@ -2731,6 +2758,10 @@
         <source>Foreground Opacity</source>
         <translation>前景不透明度</translation>
     </message>
+    <message>
+        <source>Show Background Context</source>
+        <translation>显示背景上下文</translation>
+    </message>
 </context>
 <context>
     <name>TupExportModule</name>
@@ -2781,10 +2812,6 @@
     <message>
         <source>Animation path can&apos;t be unset! Please, choose one.</source>
         <translation>动画路径不能取消设置！请选择一个。</translation>
-    </message>
-    <message>
-        <source>Image sequence already exists. Overwrite it?</source>
-        <translation>图像序列已存在。 覆盖它？</translation>
     </message>
     <message>
         <source>was saved successful</source>
@@ -2855,6 +2882,10 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Sorry, animation is too short!</source>
         <translation>抱歉，动画太短了！</translation>
+    </message>
+    <message>
+        <source>Target folder already contains images. Continue?</source>
+        <translation>目标文件夹已包含图像。是否继续？</translation>
     </message>
 </context>
 <context>
@@ -3239,13 +3270,6 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Conical</source>
         <translation>锥形的</translation>
-    </message>
-</context>
-<context>
-    <name>TupGraphicsScene</name>
-    <message>
-        <source>lipsync:</source>
-        <translation>唇型同步校正</translation>
     </message>
 </context>
 <context>
@@ -4165,6 +4189,10 @@ until reaches at least 3 seconds.</source>
         <source>This information will help us to enhance our project. Go to the Preferences dialog to enable/disable it any time.</source>
         <translation>这些信息将有助于我们改进项目。您可以随时前往“首选项”对话框启用/禁用此功能。</translation>
     </message>
+    <message>
+        <source>Project is already opened!</source>
+        <translation>项目已开启！</translation>
+    </message>
 </context>
 <context>
     <name>TupMicManager</name>
@@ -4779,16 +4807,8 @@ until reaches at least 3 seconds.</source>
         <translation>矩形颜色：</translation>
     </message>
     <message>
-        <source>Safe Area Level:</source>
-        <translation>安全区域等级：</translation>
-    </message>
-    <message>
-        <source>Background</source>
-        <translation>背景</translation>
-    </message>
-    <message>
-        <source>Foreground</source>
-        <translation>前景</translation>
+        <source>Grid Axis Color:</source>
+        <translation>网格轴颜色：</translation>
     </message>
 </context>
 <context>
@@ -4969,10 +4989,6 @@ until reaches at least 3 seconds.</source>
         <translation>唇型同步项目已更新！</translation>
     </message>
     <message>
-        <source>Audio files (*.mp3 *.wav)</source>
-        <translation>音频文件 (*.mp3 *.wav)</translation>
-    </message>
-    <message>
         <source>Mouth images are unset!</source>
         <translation>口型图片未设置！</translation>
     </message>
@@ -5087,6 +5103,10 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Scene:</source>
         <translation>场景：</translation>
+    </message>
+    <message>
+        <source>Audio files (*.mp3 *.wav *.aac)</source>
+        <translation>音频文件（*.mp3 *.wav *.aac）</translation>
     </message>
 </context>
 <context>
@@ -5959,6 +5979,10 @@ Cover</source>
         <source>Orange</source>
         <translation>橘色</translation>
     </message>
+    <message>
+        <source>Black</source>
+        <translation>黑色</translation>
+    </message>
 </context>
 <context>
     <name>TupTimeLine</name>
@@ -6063,6 +6087,14 @@ Cover</source>
     <message>
         <source>Select the number of photograms to import:</source>
         <translation>选择要导入的照片数量：</translation>
+    </message>
+    <message>
+        <source>Import audio if it&apos;s available</source>
+        <translation>如果有音频，请导入</translation>
+    </message>
+    <message>
+        <source>Importing audio track from video file...</source>
+        <translation>从视频文件导入音轨...</translation>
     </message>
 </context>
 <context>

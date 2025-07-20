@@ -61,31 +61,33 @@ class TUPITUBE_EXPORT TupVideoCutter : public QObject
         ~TupVideoCutter();
 
         bool loadFile(const QString &videoFile, const QString &outputPath);
-        void setPhotogramsTotal(int frames);
+        void setExtractionParams(int frames);
         bool startExtraction();
         QSize getVideoSize() const;
         void releaseResources();
 
     signals:
-        // void msgSent(const QString &msg);
         void imageExtracted(int index);
-        void extractionDone();
+        void imageExtractionIsDone();
 
     private:
-        // Decode packets into frames
-        int decodePacket(AVPacket *packet, AVCodecContext *codecContext, AVFrame *frame);
+        // Decode video packets into frames
+        int decodeVideoPacket(AVPacket *packet, AVCodecContext *codecContext, AVFrame *frame);
         // Save a frame into a .png file
-        int saveFrameToPng(AVFrame *frame, const QString &filename);
+        int saveVideoFrameToPng(AVFrame *frame, const QString &filename);
 
         QString filename;
         QString outputFolder;
         int imagesTotal;
 
         AVFormatContext *formatContext;
-        AVCodecContext *inputCodecContext;
+        AVCodecContext *inputVideoCodecContext;
+
         int videoStreamIndex;
+        int audioStreamIndex;
         AVFrame *inputFrame;
         AVPacket *inputPacket;
+
         QSize videoSize;
 };
 

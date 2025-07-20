@@ -33,6 +33,7 @@
  ***************************************************************************/
 
 #include "tupcameradialog.h"
+#include "tapptheme.h"
 
 #include <QCameraImageCapture>
 #include <QCameraInfo>
@@ -50,6 +51,8 @@ TupCameraDialog::TupCameraDialog(QComboBox *devices, const QSize dimension, QLis
     setModal(true);
     setWindowTitle(tr("Camera Settings"));
     setWindowIcon(QIcon(QPixmap(THEME_DIR + "icons/photo.png")));
+
+    setStyleSheet(TAppTheme::themeStyles());
 
     useBasicInterface = false;
     projectSize = dimension;

@@ -56,7 +56,7 @@ TupSceneNameDialog::TupSceneNameDialog(DialogType type, const QString &name, QWi
 
     setWindowTitle(actionDesc);
     setWindowIcon(QIcon(QPixmap(THEME_DIR + "icons/scenes.png")));
-    setStyleSheet(TAppTheme::themeSettings());
+    setStyleSheet(TAppTheme::themeStyles());
 
     layout = new QVBoxLayout(this);
     setUI(sceneName);

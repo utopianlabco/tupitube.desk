@@ -63,6 +63,7 @@ class TUPITUBE_EXPORT TupItemPreview : public QWidget
     private:
         TupProxyItem *proxy;
         QGraphicsTextItem *item;
+        int appTheme;
 };
 
 #endif

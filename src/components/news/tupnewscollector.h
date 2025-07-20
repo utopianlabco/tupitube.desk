@@ -59,6 +59,7 @@ class TUPITUBE_EXPORT TupNewsCollector : public QWidget
     signals:
         void pageReady();
         void newUpdate(bool flag);
+        void downloadsFinished();
 
     private:
         void requestFile(const QString &target);
@@ -66,6 +67,7 @@ class TUPITUBE_EXPORT TupNewsCollector : public QWidget
         void formatStatus(QByteArray array);
         bool saveFile(const QString &answer, const QString &fileName);
         QString getImageCode(const QString &answer) const;
+        void cleanupNetwork();
 
         static QString IS_HOST_UP_URL;
         static QString USER_TIMELINE_URL;

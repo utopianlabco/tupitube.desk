@@ -109,15 +109,15 @@ fileSystem.CopyFile "c:\devel\sources\mediaservice\qtmedia_audioengine.dll", tup
 
 fileSystem.CopyFile "c:\devel\sources\audio\qtaudio_windows.dll", tupiPath & "audio\qtaudio_windows.dll"
 
-fileSystem.CopyFile "c:\devel\sources\ffmpeg\avcodec-58.dll", tupiPath & "avcodec-58.dll"
-fileSystem.CopyFile "c:\devel\sources\ffmpeg\avdevice-58.dll", tupiPath & "avdevice-58.dll"
-fileSystem.CopyFile "c:\devel\sources\ffmpeg\avfilter-7.dll", tupiPath & "avfilter-7.dll"
-fileSystem.CopyFile "c:\devel\sources\ffmpeg\avformat-58.dll", tupiPath & "avformat-58.dll"
-fileSystem.CopyFile "c:\devel\sources\ffmpeg\avutil-56.dll", tupiPath & "avutil-56.dll"
+fileSystem.CopyFile "c:\devel\sources\ffmpeg\avcodec-61.dll", tupiPath & "avcodec-61.dll"
+fileSystem.CopyFile "c:\devel\sources\ffmpeg\avdevice-61.dll", tupiPath & "avdevice-61.dll"
+fileSystem.CopyFile "c:\devel\sources\ffmpeg\avfilter-10.dll", tupiPath & "avfilter-10.dll"
+fileSystem.CopyFile "c:\devel\sources\ffmpeg\avformat-61.dll", tupiPath & "avformat-61.dll"
+fileSystem.CopyFile "c:\devel\sources\ffmpeg\avutil-59.dll", tupiPath & "avutil-59.dll"
 fileSystem.CopyFile "c:\devel\sources\ffmpeg\png.dll", tupiPath & "png.dll"
-fileSystem.CopyFile "c:\devel\sources\ffmpeg\postproc-55.dll", tupiPath & "postproc-55.dll"
-fileSystem.CopyFile "c:\devel\sources\ffmpeg\swresample-3.dll", tupiPath & "swresample-3.dll"
-fileSystem.CopyFile "c:\devel\sources\ffmpeg\swscale-5.dll", tupiPath & "swscale-5.dll"
+fileSystem.CopyFile "c:\devel\sources\ffmpeg\postproc-58.dll", tupiPath & "postproc-58.dll"
+fileSystem.CopyFile "c:\devel\sources\ffmpeg\swresample-5.dll", tupiPath & "swresample-5.dll"
+fileSystem.CopyFile "c:\devel\sources\ffmpeg\swscale-8.dll", tupiPath & "swscale-8.dll"
 fileSystem.CopyFile "c:\devel\sources\ffmpeg\zlib1.dll", tupiPath & "zlib1.dll"
 
 fileSystem.CreateFolder tupiPath & "data\themes\raster"

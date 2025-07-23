@@ -402,7 +402,7 @@ QWidget *Tweener::configurator()
         connect(configPanel, SIGNAL(clickedResetInterface()), this, SLOT(applyReset()));
         connect(configPanel, SIGNAL(setMode(TupToolPlugin::Mode)), this, SLOT(updateMode(TupToolPlugin::Mode)));
         connect(configPanel, SIGNAL(clickedApplyTween()), this, SLOT(applyTween()));
-        connect(configPanel, SIGNAL(tweenDataRequested(const QString &)), this, SLOT(setCurrentTween(QString)));
+        connect(configPanel, SIGNAL(tweenDataRequested(const QString &)), this, SLOT(setCurrentTween(const QString &)));
         connect(configPanel, SIGNAL(framesTotalChanged()), this, SLOT(updateTweenPoints()));
         connect(configPanel, SIGNAL(pathThicknessChanged(int)), this, SLOT(updatePathThickness(int)));
         connect(configPanel, SIGNAL(pathColorUpdated(const QColor &)), this, SLOT(updatePathColor(const QColor &)));

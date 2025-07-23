@@ -233,8 +233,8 @@ QWidget *Tweener::configurator()
         connect(configPanel, SIGNAL(clickedResetInterface()), this, SLOT(applyReset()));
         connect(configPanel, SIGNAL(setMode(TupToolPlugin::Mode)), this, SLOT(updateMode(TupToolPlugin::Mode)));
         connect(configPanel, SIGNAL(clickedDefineProperties()), this, SLOT(setPropertiesMode()));
-        connect(configPanel, SIGNAL(getTweenData(const QString&)), this, SLOT(setCurrentTween(const QString&)));
-        connect(configPanel, SIGNAL(clickedRemoveTween(const QString&)), this, SLOT(removeTween(const QString&)));
+        connect(configPanel, SIGNAL(getTweenData(const QString &)), this, SLOT(setCurrentTween(const QString &)));
+        connect(configPanel, SIGNAL(clickedRemoveTween(const QString &)), this, SLOT(removeTween(const QString &)));
 
         /* SQA: This connections don't work on Windows
         connect(configPanel, &Configurator::startingPointChanged, this, &Tweener::updateStartPoint);

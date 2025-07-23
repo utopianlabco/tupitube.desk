@@ -30,7 +30,7 @@
 
 RasterMainWindow::RasterMainWindow(TupProject *project, const QString &winKey, TupProject::Mode context, int scene,
                                    const QPen &pen, const QString &zoomFactor, QWidget *parent): TMainWindow(winKey, parent)
-{
+{    
     spaceContext = context;
     sceneIndex = scene;
     projectSize = project->getDimension();
@@ -205,6 +205,8 @@ void RasterMainWindow::createCentralWidget(TupProject *project, double thickness
         dEmpty4->setFixedWidth(5);
         QWidget *dEmpty5 = new QWidget();
         dEmpty5->setFixedWidth(5);
+        QWidget *dEmpty6 = new QWidget();
+        dEmpty6->setFixedWidth(5);
 
         QLabel *shiftLabel = new QLabel();
         QPixmap shiftPix(THEME_DIR + "icons/shift_length.png");
@@ -230,6 +232,7 @@ void RasterMainWindow::createCentralWidget(TupProject *project, double thickness
         topBar->addWidget(shiftLabel);
         topBar->addWidget(dEmpty5);
         topBar->addWidget(shiftSpin);
+        topBar->addWidget(dEmpty6);
     }
 
     if (QFile::exists(imgPath)) {

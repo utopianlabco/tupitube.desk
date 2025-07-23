@@ -220,6 +220,12 @@ TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
         TCONFIG->setValue("ConfirmRemoveScene", true); 
         TCONFIG->setValue("ConfirmRemoveObject", true);
 
+        TCONFIG->beginGroup("Theme");
+        TCONFIG->setValue("ColorRow", 0);
+        TCONFIG->setValue("ColorPos", 0);
+        TCONFIG->setValue("BgColor", "#a0a0a0");
+        TCONFIG->setValue("UITheme", 1);
+
         TCONFIG->beginGroup("PaintArea");
         TCONFIG->setValue("GridColor", "#0000b4");
         TCONFIG->setValue("GridSeparation", 20);

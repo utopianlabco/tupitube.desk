@@ -84,7 +84,7 @@ void TupThemePreferences::setupPage()
     labelFont = font();
     labelFont.setBold(true);
 
-    QLabel *lightThemeLabel = new QLabel(tr("Background Color"));
+    QLabel *lightThemeLabel = new QLabel(tr("Theme Color"));
     lightThemeLabel->setFont(labelFont);
     QHBoxLayout *lightThemeLayout = new QHBoxLayout;
     lightThemeLayout->addWidget(lightThemeLabel);

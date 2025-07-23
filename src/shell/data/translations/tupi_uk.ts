@@ -339,8 +339,8 @@
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="178"/>
-        <source>Eraser Mode</source>
-        <translation>Режим гумки</translation>
+        <source>Eraser Mode - E</source>
+        <translation>Режим гумки - E</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="192"/>
@@ -1071,8 +1071,8 @@
     </message>
     <message>
         <location filename="../../../plugins/tools/pencil/pencilsettings.cpp" line="74"/>
-        <source>Eraser Mode</source>
-        <translation>Режим гумки</translation>
+        <source>Eraser Mode - E</source>
+        <translation>Режим гумки - E</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/pencil/pencilsettings.cpp" line="85"/>
@@ -4515,6 +4515,11 @@ until reaches at least 3 seconds.</source>
         <translation>Зображення</translation>
     </message>
     <message>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1807"/>
+        <source>Video file is larger than 10 MB. Too big!</source>
+        <translation>Розмір відеофайлу перевищує 10 МБ. Завеликий!</translation>
+    </message>
+    <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="205"/>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="2195"/>
         <source>Audio File</source>
@@ -4712,11 +4717,6 @@ until reaches at least 3 seconds.</source>
         <translation>Не вдалося завантажити відеофайл!</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1807"/>
-        <source>Video file is larger than 2 MB. Too big!</source>
-        <translation>Розмір відеофайлу перевищує 2 МБ. Завеликий!</translation>
-    </message>
-    <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1977"/>
         <source>Raster Objects</source>
         <translation>Растрові об&apos;єкти</translation>
@@ -4733,87 +4733,87 @@ until reaches at least 3 seconds.</source>
 <context>
     <name>TupMainWindow</name>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="332"/>
+        <location filename="../../tupmainwindow.cpp" line="338"/>
         <source>Opening a new document...</source>
         <translation>Відкривається новий документ…</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="355"/>
-        <location filename="../../tupmainwindow.cpp" line="1306"/>
+        <location filename="../../tupmainwindow.cpp" line="361"/>
+        <location filename="../../tupmainwindow.cpp" line="1312"/>
         <location filename="../../tupmainwindow_gui.cpp" line="259"/>
         <source>Animation</source>
         <translation>Анімація</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="462"/>
+        <location filename="../../tupmainwindow.cpp" line="468"/>
         <location filename="../../tupmainwindow_gui.cpp" line="267"/>
         <source>Player</source>
         <translation>Програвач</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="485"/>
+        <location filename="../../tupmainwindow.cpp" line="491"/>
         <source>Project &lt;b&gt;%1&lt;/b&gt; opened!</source>
         <translation>Проєкт &lt;b&gt;«%1»&lt;/b&gt; відкрито!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="577"/>
+        <location filename="../../tupmainwindow.cpp" line="583"/>
         <source>The document has been modified.</source>
         <translation>Документ змінено.</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="578"/>
+        <location filename="../../tupmainwindow.cpp" line="584"/>
         <source>Do you want to save the project?</source>
         <translation>Зберегти проєкт?</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="580"/>
+        <location filename="../../tupmainwindow.cpp" line="586"/>
         <source>Save</source>
         <translation>Зберегти</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="581"/>
+        <location filename="../../tupmainwindow.cpp" line="587"/>
         <source>Discard</source>
         <translation>Відхилити</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="582"/>
+        <location filename="../../tupmainwindow.cpp" line="588"/>
         <source>Cancel</source>
         <translation>Скасувати</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="787"/>
-        <location filename="../../tupmainwindow.cpp" line="887"/>
-        <location filename="../../tupmainwindow.cpp" line="1143"/>
-        <location filename="../../tupmainwindow.cpp" line="1210"/>
-        <location filename="../../tupmainwindow.cpp" line="1885"/>
+        <location filename="../../tupmainwindow.cpp" line="793"/>
+        <location filename="../../tupmainwindow.cpp" line="893"/>
+        <location filename="../../tupmainwindow.cpp" line="1149"/>
+        <location filename="../../tupmainwindow.cpp" line="1216"/>
+        <location filename="../../tupmainwindow.cpp" line="1891"/>
         <source>by</source>
         <translation>Автор:</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="809"/>
+        <location filename="../../tupmainwindow.cpp" line="815"/>
         <source>Open TupiTube project</source>
         <translation>Відкрити проєкт TupiTube</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="810"/>
-        <location filename="../../tupmainwindow.cpp" line="939"/>
-        <location filename="../../tupmainwindow.cpp" line="1103"/>
+        <location filename="../../tupmainwindow.cpp" line="816"/>
+        <location filename="../../tupmainwindow.cpp" line="945"/>
+        <location filename="../../tupmainwindow.cpp" line="1109"/>
         <source>TupiTube Project Package (*.tup)</source>
         <translation>Файли проєктів TupiTube (*.tup)</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="844"/>
-        <location filename="../../tupmainwindow.cpp" line="908"/>
+        <location filename="../../tupmainwindow.cpp" line="850"/>
+        <location filename="../../tupmainwindow.cpp" line="914"/>
         <source>Cannot open project!</source>
         <translation>Не вдалося відкрити проєкт!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1741"/>
+        <location filename="../../tupmainwindow.cpp" line="1747"/>
         <source>Close</source>
         <translation>Закрити</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1014"/>
+        <location filename="../../tupmainwindow.cpp" line="1020"/>
         <source>Gimp Palette (*.gpl *.txt *.css)</source>
         <translation>Палітра GIMP (*.gpl *.txt *.css)</translation>
     </message>
@@ -4833,98 +4833,98 @@ until reaches at least 3 seconds.</source>
         <translation>Запит на статистику використання</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="575"/>
+        <location filename="../../tupmainwindow.cpp" line="581"/>
         <source>Confirmation Required</source>
         <translation>Потрібне підтвердження</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="717"/>
+        <location filename="../../tupmainwindow.cpp" line="723"/>
         <source>Error while clearing cache!</source>
         <translation>Помилка при очищенні кешу!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="938"/>
+        <location filename="../../tupmainwindow.cpp" line="944"/>
         <source>Select TupiTube project</source>
         <translation>Виберіть проєкт TupiTube</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1013"/>
+        <location filename="../../tupmainwindow.cpp" line="1019"/>
         <source>Import Gimp Palettes</source>
         <translation>Імпорт палітр GIMP</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1049"/>
+        <location filename="../../tupmainwindow.cpp" line="1055"/>
         <source>Gimp palette import was successful</source>
         <translation>Палітру GIMP імпортовано успішно</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1051"/>
+        <location filename="../../tupmainwindow.cpp" line="1057"/>
         <source>Gimp palette import was unsuccessful</source>
         <translation>Не вдалось імпортувати палітру GIMP</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1102"/>
+        <location filename="../../tupmainwindow.cpp" line="1108"/>
         <source>Save Project As</source>
         <translation>Зберегти проєкт як</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1120"/>
+        <location filename="../../tupmainwindow.cpp" line="1126"/>
         <source>Directory does not exist! Please, choose another path.</source>
         <translation>Каталогу не існує! Виберіть інший шлях.</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1129"/>
+        <location filename="../../tupmainwindow.cpp" line="1135"/>
         <source>Insufficient permissions. Please, pick another path.</source>
         <translation>Бракує дозволів. Виберіть інший шлях.</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1203"/>
+        <location filename="../../tupmainwindow.cpp" line="1209"/>
         <source>Project &lt;b&gt;%1&lt;/b&gt; saved</source>
         <translation>Проєкт &lt;b&gt;«%1»&lt;/b&gt; збережено</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1299"/>
+        <location filename="../../tupmainwindow.cpp" line="1305"/>
         <source>Project is already opened!</source>
         <translation>Проєкт вже відкрито!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1307"/>
+        <location filename="../../tupmainwindow.cpp" line="1313"/>
         <source>New camera</source>
         <translation>Нова камера</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1525"/>
+        <location filename="../../tupmainwindow.cpp" line="1531"/>
         <source>To post video add more frames!</source>
         <translation>Для опублікування відео слід додати більше кадрів!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1558"/>
-        <location filename="../../tupmainwindow.cpp" line="1610"/>
+        <location filename="../../tupmainwindow.cpp" line="1564"/>
+        <location filename="../../tupmainwindow.cpp" line="1616"/>
         <source>Post canceled by user!</source>
         <translation>Користувач скасував опублікування!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1577"/>
+        <location filename="../../tupmainwindow.cpp" line="1583"/>
         <source>Project is larger than 10 MB. Too big!</source>
         <translation>Проєкт займає більше 10 Mб. Це забагато!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1637"/>
+        <location filename="../../tupmainwindow.cpp" line="1643"/>
         <source>Error while posting image. File is too big!</source>
         <translation>Помилка при опублікуванні зображення. Занадто великий файл!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1737"/>
+        <location filename="../../tupmainwindow.cpp" line="1743"/>
         <source>Fatal Error</source>
         <translation>Критична помилка</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1739"/>
+        <location filename="../../tupmainwindow.cpp" line="1745"/>
         <source>The connection to the server has been lost.</source>
         <translation>Втрачено з&apos;єднання зі сервером.</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1740"/>
+        <location filename="../../tupmainwindow.cpp" line="1746"/>
         <source>Please, try to connect again in a while</source>
         <translation>Спробуйте через деякий час з&apos;єднатися ще раз</translation>
     </message>
@@ -7575,11 +7575,6 @@ Cover</source>
         <translation>Параметри теми</translation>
     </message>
     <message>
-        <location filename="../../../libui/tupthemepreferences.cpp" line="87"/>
-        <source>Background Color</source>
-        <translation>Колір тла</translation>
-    </message>
-    <message>
         <location filename="../../../libui/tupthemepreferences.cpp" line="100"/>
         <location filename="../../../libui/tupthemepreferences.cpp" line="117"/>
         <source>Black</source>
@@ -7595,6 +7590,11 @@ Cover</source>
         <location filename="../../../libui/tupthemepreferences.cpp" line="98"/>
         <source>Gray</source>
         <translation>Сірий</translation>
+    </message>
+    <message>
+        <location filename="../../../libui/tupthemepreferences.cpp" line="87"/>
+        <source>Theme Color</source>
+        <translation>Колір теми</translation>
     </message>
     <message>
         <location filename="../../../libui/tupthemepreferences.cpp" line="98"/>

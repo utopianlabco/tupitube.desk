@@ -71,7 +71,7 @@ PencilSettings::PencilSettings(QWidget *parent) : QWidget(parent)
     eraserButton = new QPushButton(eraserPic, "");
     eraserButton->setShortcut(QKeySequence(tr("E")));
     eraserButton->setCheckable(true);
-    eraserButton->setToolTip(tr("Eraser Mode"));
+    eraserButton->setToolTip(tr("Eraser Mode - E"));
     connect(eraserButton, SIGNAL(clicked()), this, SLOT(switchMode()));
 
     QHBoxLayout *buttonsLayout = new QHBoxLayout;

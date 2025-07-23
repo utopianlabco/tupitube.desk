@@ -309,8 +309,8 @@
         <translation>E</translation>
     </message>
     <message>
-        <source>Eraser Mode</source>
-        <translation>橡皮擦模式</translation>
+        <source>Eraser Mode - E</source>
+        <translation>橡皮擦模式 - E</translation>
     </message>
 </context>
 <context>
@@ -839,8 +839,8 @@
         <translation>E</translation>
     </message>
     <message>
-        <source>Eraser Mode</source>
-        <translation>橡皮擦模式</translation>
+        <source>Eraser Mode - E</source>
+        <translation>橡皮擦模式 - E</translation>
     </message>
 </context>
 <context>
@@ -3688,10 +3688,6 @@ until reaches at least 3 seconds.</source>
         <translation>无法加载视频文件！</translation>
     </message>
     <message>
-        <source>Video file is larger than 2 MB. Too big!</source>
-        <translation>视频文件大于 2 MB。 太大！</translation>
-    </message>
-    <message>
         <source>Importing image %1 of %2</source>
         <translation>正在导入图像 %1，共 %2</translation>
     </message>
@@ -3702,6 +3698,10 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Question</source>
         <translation>问题</translation>
+    </message>
+    <message>
+        <source>Video file is larger than 10 MB. Too big!</source>
+        <translation>视频文件大于 10 MB。 太大！</translation>
     </message>
 </context>
 <context>
@@ -5940,10 +5940,6 @@ Cover</source>
         <translation>主题偏好设置</translation>
     </message>
     <message>
-        <source>Background Color</source>
-        <translation>背景颜色</translation>
-    </message>
-    <message>
         <source>Restore Default Theme</source>
         <translation>恢复默认主题</translation>
     </message>
@@ -5982,6 +5978,10 @@ Cover</source>
     <message>
         <source>Black</source>
         <translation>黑色</translation>
+    </message>
+    <message>
+        <source>Theme Color</source>
+        <translation>主题颜色</translation>
     </message>
 </context>
 <context>

@@ -568,9 +568,9 @@ void TupPaintAreaBase::updateAngle(int degree)
 
 void TupPaintAreaBase::drawGrid(QPainter *painter, int width, int height)
 {
-    bool showNumbers = true;
+    bool showAllNumbers = true;
     if (gridSeparation < 40)
-        showNumbers = false;
+        showAllNumbers = false;
 
     QFont font("Arial", 18, QFont::Bold);
     painter->setFont(font);
@@ -590,14 +590,14 @@ void TupPaintAreaBase::drawGrid(QPainter *painter, int width, int height)
         painter->setPen(gridPen);
         painter->drawLine(i, minY, i, maxY);
 
-        if (showNumbers) {
+        if (showAllNumbers || (counter % 2 == 0)) {
             painter->setPen(numberPen);
             int xPos = i - 10;
             if (counter < 10)
                 xPos = i - 5;
             painter->drawText(QPointF(xPos, yPos), QString::number(counter));
-            counter++;
         }
+        counter++;
     }
 
     // Vertical lines - second section
@@ -607,14 +607,14 @@ void TupPaintAreaBase::drawGrid(QPainter *painter, int width, int height)
         painter->setPen(gridPen);
         painter->drawLine(i, minY, i, maxY);
 
-        if (showNumbers) {
+        if (showAllNumbers || (counter % 2 == 0)) {
             painter->setPen(numberPen);
             int xPos = i - 10;
             if (counter < 10)
                 xPos = i - 5;
             painter->drawText(QPointF(xPos, yPos), QString::number(counter));
-            counter++;
         }
+        counter++;
     }
 
     // Horizontal lines - first section
@@ -624,14 +624,14 @@ void TupPaintAreaBase::drawGrid(QPainter *painter, int width, int height)
         painter->setPen(gridPen);
         painter->drawLine(minX, i, maxX, i);
 
-        if (showNumbers) {
+        if (showAllNumbers || (counter % 2 == 0)) {
             int xPos = minX - 45;
             if (counter < 10)
                 xPos = minX - 40;
             painter->setPen(numberPen);
-            painter->drawText(QPointF(xPos, i + 5), QString::number(counter));
-            counter++;
+            painter->drawText(QPointF(xPos, i + 5), QString::number(counter));            
         }
+        counter++;
     }
 
     // Horizontal lines - second section
@@ -641,14 +641,14 @@ void TupPaintAreaBase::drawGrid(QPainter *painter, int width, int height)
         painter->setPen(gridPen);
         painter->drawLine(minX, i, maxX, i);
 
-        if (showNumbers) {
+        if (showAllNumbers || (counter % 2 == 0)) {
             int xPos = minX - 45;
             if (counter < 10)
                 xPos = minX - 40;
             painter->setPen(numberPen);
-            painter->drawText(QPointF(xPos, i + 5), QString::number(counter));
-            counter++;
+            painter->drawText(QPointF(xPos, i + 5), QString::number(counter));            
         }
+        counter++;
     }
 
     // Center (red) axis lines
@@ -656,10 +656,8 @@ void TupPaintAreaBase::drawGrid(QPainter *painter, int width, int height)
     painter->drawLine(midX, minY, midX, maxY);
     painter->drawLine(minX, midY, maxX, midY);
 
-    if (showNumbers) {
-        painter->drawText(QPointF(midX - 5, yPos), "0");
-        painter->drawText(QPointF(minX - 40, midY + 10), "0");
-    }
+    painter->drawText(QPointF(midX - 5, yPos), "0");
+    painter->drawText(QPointF(minX - 40, midY + 10), "0");
 }
 
 void TupPaintAreaBase::drawSafeArea(QPainter *painter, int width, int height)

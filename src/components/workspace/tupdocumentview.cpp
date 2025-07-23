@@ -1555,7 +1555,9 @@ void TupDocumentView::openRasterMode()
     */
 
     rasterWindowOn = true;
-    rasterWindow->showFullScreen();
+    // rasterWindow->showFullScreen();
+    rasterWindow->setFixedSize(screenWidth, screenHeight);
+    rasterWindow->show();
 
     QApplication::restoreOverrideCursor();
 }

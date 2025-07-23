@@ -90,7 +90,7 @@ void DefaultSettings::save(const QString &winKey, TMainWindow *window)
 void DefaultSettings::restore(const QString &winKey, TMainWindow *window)
 {
     #ifdef TUP_DEBUG
-        qWarning() << "[TMainWindow::DefaultSettings::restore()] - Restoring UI settings -> " << qApp->applicationName();
+        qWarning() << "[TMainWindow::DefaultSettings::restore()] - Restoring UI settings ->" << qApp->applicationName();
     #endif
 
     QSettings settings(qApp->applicationName(), winKey, this);

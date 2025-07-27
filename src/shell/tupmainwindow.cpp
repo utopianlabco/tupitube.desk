@@ -1166,6 +1166,12 @@ bool TupMainWindow::saveProject()
         if (m_fileName.isEmpty())
             return saveAs();
 
+        if (m_fileName.contains(SHARE_DIR)) {
+            TCONFIG->beginGroup("General");
+            TCONFIG->setValue("DefaultPath", QDir::homePath());
+            return saveAs();
+        }
+
         return storeProcedure();
     } /* else {
         TupSavePackage package(lastSave);

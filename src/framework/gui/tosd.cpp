@@ -42,7 +42,7 @@ TOsd *TOsd::s_osd = 0;
 TOsd::TOsd(QWidget * parent) : QWidget(parent), m_timer(0)
 {
     TCONFIG->beginGroup("Theme");
-    uiTheme = TCONFIG->value("UITheme", DARK_THEME).toInt();
+    uiTheme = TCONFIG->value("UITheme", LIGHT_THEME).toInt();
 
     setFocusPolicy(Qt::NoFocus);
     m_palette = palette();

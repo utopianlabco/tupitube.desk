@@ -158,7 +158,7 @@ int main(int argc, char ** argv)
 
     QString themePath = "";
     TCONFIG->beginGroup("Theme");
-    int theme = TCONFIG->value("UITheme", 1).toInt();
+    int theme = TCONFIG->value("UITheme", LIGHT_THEME).toInt();
     if (theme == LIGHT_THEME)
         themePath = kAppProp->shareDir() + "themes/default/";
     else

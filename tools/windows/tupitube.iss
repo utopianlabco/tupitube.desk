@@ -1,7 +1,7 @@
 [Setup]
 SetupIconFile=icon\tupitube.ico
 AppName=TupiTube Desk
-AppVersion=0.2.22
+AppVersion=0.2.23
 AppPublisher=Utopian Lab
 AppPublisherURL=https://www.tupitube.com/
 DefaultDirName={commonpf}\TupiTube
@@ -44,6 +44,11 @@ Name: "{app}\data\themes\default\config"
 Name: "{app}\data\themes\default\cursors"
 Name: "{app}\data\themes\default\icons"
 Name: "{app}\data\themes\default\images"
+Name: "{app}\data\themes\dark"
+Name: "{app}\data\themes\dark\config"
+Name: "{app}\data\themes\dark\cursors"
+Name: "{app}\data\themes\dark\icons"
+Name: "{app}\data\themes\dark\images"
 Name: "{app}\data\themes\raster"
 Name: "{app}\data\themes\raster\brushes"
 Name: "{app}\data\themes\raster\brushes\classic"
@@ -85,6 +90,10 @@ Source: "data\themes\default\config\*"; DestDir: "{app}\data\themes\default\conf
 Source: "data\themes\default\cursors\*"; DestDir: "{app}\data\themes\default\cursors"
 Source: "data\themes\default\icons\*"; DestDir: "{app}\data\themes\default\icons"
 Source: "data\themes\default\images\*"; DestDir: "{app}\data\themes\default\images"
+Source: "data\themes\dark\config\*"; DestDir: "{app}\data\themes\dark\config"
+Source: "data\themes\dark\cursors\*"; DestDir: "{app}\data\themes\dark\cursors"
+Source: "data\themes\dark\icons\*"; DestDir: "{app}\data\themes\dark\icons"
+Source: "data\themes\dark\images\*"; DestDir: "{app}\data\themes\dark\images"
 Source: "data\themes\raster\brushes\*"; DestDir: "{app}\data\themes\raster\brushes"
 Source: "data\themes\raster\brushes\classic\*"; DestDir: "{app}\data\themes\raster\brushes\classic"
 Source: "data\themes\raster\brushes\deevad\*"; DestDir: "{app}\data\themes\raster\brushes\deevad"

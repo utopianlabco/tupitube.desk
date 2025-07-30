@@ -83,12 +83,12 @@ class TupMainWindow : public TabbedMainWindow
 
     public:
 
+        /*
         enum Perspective {
              Animation = 0x01,
              Player = 0x02,
              All = Animation | Player
         };
-
         enum RequestType {
              None = 0,
              NewLocalProject,
@@ -97,6 +97,7 @@ class TupMainWindow : public TabbedMainWindow
              OpenNetProject,
              ImportProjectToNet
         };
+        */
 
         TupMainWindow(const QString &winKey, const QString &sourceFile);
         ~TupMainWindow();
@@ -133,6 +134,8 @@ class TupMainWindow : public TabbedMainWindow
         void saveDefaultPath(const QString &dir);
         bool cancelChanges();
         bool storeProcedure();
+        void setupCameraConnections();
+        void disconnectCameraConnections();
 
     protected:
         #if defined(Q_OS_MAC)
@@ -187,7 +190,7 @@ class TupMainWindow : public TabbedMainWindow
         void updatePlayer();
         void updatePlayer(bool removeAction);
 
-        void resizeProjectDimension(const QSize size);
+        void resizePlayerCameraDimension(const QSize size);
         void resizeCanvasDimension(const QSize size);
         void updateProjectAuthor(const QString &artist);
         void editProjectSize();
@@ -283,7 +286,7 @@ class TupMainWindow : public TabbedMainWindow
         // bool internetOn;
         int lastTab;
         TupProject::Mode contextMode;
-        TupMainWindow::RequestType requestType; 
+        RequestType requestType;
         QString projectName;
         QString author;
         QString netUser;

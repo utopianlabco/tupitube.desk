@@ -242,7 +242,7 @@ TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
 
     TCONFIG->beginGroup("General");
     TCONFIG->setValue("AssetsPath", CACHE_DIR + TAlgorithm::randomString(8) + "/");
-    TupMainWindow::requestType = None;
+    requestType = NoRequest;
     lastSave = false;
 
     if (!sourceFile.isEmpty())
@@ -319,6 +319,28 @@ void TupMainWindow::createNewNetProject(const QString &title, const QStringList 
 }
 */
 
+void TupMainWindow::setupCameraConnections()
+{
+    connect(cameraWidget, SIGNAL(projectAuthorUpdated(const QString&)), this, SLOT(updateProjectAuthor(const QString&)));
+    connect(cameraWidget, SIGNAL(exportRequested()), this, SLOT(exportProject()));
+    connect(cameraWidget, SIGNAL(postRequested()), this, SLOT(postProject()));
+    connect(cameraWidget, SIGNAL(projectHasChanged(bool)), m_projectManager, SLOT(setModificationStatus(bool)));
+    connect(cameraWidget, SIGNAL(fpsUpdated(int)), m_exposureSheet, SLOT(updateFPS(int)));
+    connect(cameraWidget, SIGNAL(fpsUpdated(int)), m_timeLine, SLOT(updateFPS(int)));
+    connectWidgetToManager(cameraWidget);
+}
+
+void TupMainWindow::disconnectCameraConnections()
+{
+    disconnect(cameraWidget, SIGNAL(projectAuthorUpdated(const QString&)), this, SLOT(updateProjectAuthor(const QString&)));
+    disconnect(cameraWidget, SIGNAL(exportRequested()), this, SLOT(exportProject()));
+    disconnect(cameraWidget, SIGNAL(postRequested()), this, SLOT(postProject()));
+    disconnect(cameraWidget, SIGNAL(projectHasChanged(bool)), m_projectManager, SLOT(setModificationStatus(bool)));
+    disconnect(cameraWidget, SIGNAL(fpsUpdated(int)), m_exposureSheet, SLOT(updateFPS(int)));
+    disconnect(cameraWidget, SIGNAL(fpsUpdated(int)), m_timeLine, SLOT(updateFPS(int)));
+    disconnectWidgetToManager(cameraWidget);
+}
+
 void TupMainWindow::setWorkSpace(const QStringList &users)
 {
     #ifdef TUP_DEBUG
@@ -334,7 +356,7 @@ void TupMainWindow::setWorkSpace(const QStringList &users)
     connect(newsCollector, SIGNAL(downloadsFinished()), newsCollector, SLOT(deleteLater()));
 
     if (m_projectManager->isOpen()) {
-        if (TupMainWindow::requestType == NewLocalProject || TupMainWindow::requestType == NewNetProject)
+        if (requestType == NewLocalProject || requestType == NewNetProject)
             TOsd::self()->display(TOsd::Info, tr("Opening a new document..."));
 
         contextMode = TupProject::FRAMES_MODE;
@@ -368,7 +390,7 @@ void TupMainWindow::setWorkSpace(const QStringList &users)
         connectWidgetToLocalManager(animationTab);
         connectWidgetToPaintArea(animationTab);
         connect(animationTab, SIGNAL(modeHasChanged(TupProject::Mode)), this, SLOT(restoreFramesMode(TupProject::Mode)));
-        connect(animationTab, SIGNAL(projectSizeHasChanged(const QSize)), this, SLOT(resizeProjectDimension(const QSize))); 
+        connect(animationTab, SIGNAL(projectSizeHasChanged(const QSize)), this, SLOT(resizePlayerCameraDimension(const QSize)));
         connect(animationTab, SIGNAL(newPerspective(int)), this, SLOT(changePerspective(int)));
 
         connect(animationTab, SIGNAL(colorChanged(TColorCell::FillType, const QColor &)),
@@ -389,10 +411,13 @@ void TupMainWindow::setWorkSpace(const QStringList &users)
 
         connect(this, SIGNAL(activeDockChanged(TupDocumentView::DockType)), animationTab,
                 SLOT(updateActiveDock(TupDocumentView::DockType)));
+
         connect(m_colorPalette, SIGNAL(eyeDropperActivated(TColorCell::FillType)),
-                animationTab, SLOT(enableEyeDropperTool(TColorCell::FillType)));
+                animationTab, SLOT(enableEyeDropperTool(TColorCell::FillType)));        
+
         connect(m_libraryWidget, SIGNAL(lipsyncModuleCalled(PapagayoAppMode, const QString&)),
                 animationTab, SLOT(launchLipsyncModule(PapagayoAppMode, const QString&)));
+
         connect(this, SIGNAL(imageExported()), animationTab, SLOT(exportImage()));
         connect(this, SIGNAL(imagePosted()), animationTab, SLOT(postImage()));
         connect(this, SIGNAL(storyboardCalled()), animationTab, SLOT(storyboardSettings()));
@@ -439,18 +464,10 @@ void TupMainWindow::setWorkSpace(const QStringList &users)
 
         // TupCamera Widget
         cameraWidget = new TupCameraWidget(m_projectManager->getProject());
-        connect(cameraWidget, SIGNAL(projectAuthorUpdated(const QString&)), this, SLOT(updateProjectAuthor(const QString&)));
-        connect(cameraWidget, SIGNAL(exportRequested()), this, SLOT(exportProject()));
-        connect(cameraWidget, SIGNAL(postRequested()), this, SLOT(postProject()));
-        connect(cameraWidget, SIGNAL(projectHasChanged(bool)), m_projectManager, SLOT(setModificationStatus(bool)));
-        connect(cameraWidget, SIGNAL(fpsUpdated(int)), m_exposureSheet, SLOT(updateFPS(int)));
-        connect(cameraWidget, SIGNAL(fpsUpdated(int)), m_timeLine, SLOT(updateFPS(int)));
-
-        connectWidgetToManager(cameraWidget);
-
+        setupCameraConnections();
         // Player widget must be hidden while the Player tab is not visible
         cameraWidget->setVisible(false);
-        // connect(m_libraryWidget, SIGNAL(soundUpdated()), cameraWidget, SLOT(updateSoundItems()));
+
         connect(m_libraryWidget, SIGNAL(soundUpdated()), this, SLOT(updateSoundItems()));
         m_libraryWidget->setNetworking(isNetworked);
         // Autosave event
@@ -487,7 +504,7 @@ void TupMainWindow::setWorkSpace(const QStringList &users)
         int thickness = TCONFIG->value("Thickness", 3).toInt();
         m_brushWidget->init(thickness);
 
-        if (TupMainWindow::requestType == OpenLocalProject || TupMainWindow::requestType == OpenNetProject)
+        if (requestType == OpenLocalProject || requestType == OpenNetProject)
             TOsd::self()->display(TOsd::Info, tr("Project <b>%1</b> opened!").arg(m_projectManager->getProject()->getName()));
 
         m_exposureSheet->setScene(0);
@@ -882,7 +899,7 @@ void TupMainWindow::openProject(const QString &path)
             else
                 m_fileName = path;
 
-            TupMainWindow::requestType = OpenLocalProject;
+            requestType = OpenLocalProject;
             projectName = m_projectManager->getProject()->getName();
             updateRecentProjectList();
             updateOpenRecentMenu(m_recentProjectsMenu, m_recentProjects);
@@ -1193,7 +1210,7 @@ bool TupMainWindow::saveProject()
 bool TupMainWindow::storeProcedure()
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupMainWindow::storeProcedure()] - m_fileName -> " << m_fileName;
+        qDebug() << "[TupMainWindow::storeProcedure()] - m_fileName ->" << m_fileName;
     #endif
 
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -1516,6 +1533,10 @@ void TupMainWindow::updateCurrentTab(int index)
 
 void TupMainWindow::exportProject()
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupMainWindow::exportProject()]";
+    #endif
+
     if (callSaveProcedure()) {
         exportWidget = new TupExportWidget(m_projectManager->getProject(), this);
         connect(exportWidget, SIGNAL(isDone()), animationTab, SLOT(updatePaintArea()));
@@ -1525,11 +1546,19 @@ void TupMainWindow::exportProject()
                            static_cast<int> ((screenHeight - exportWidget->height()) / 2));
 
         exportWidget->exec();
+    } else {
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupMainWindow::exportProject()] - Warning: callSaveProcedure() couldn't be called!";
+        #endif
     }
 }
 
 void TupMainWindow::postProject()
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupMainWindow::postProject()]";
+    #endif
+
     if (animationTab) {
         int sceneIndex = animationTab->currentSceneIndex();
         int framesCount = m_projectManager->framesCount(sceneIndex);
@@ -1661,9 +1690,18 @@ void TupMainWindow::postFrame(const QString &imagePath)
 
 bool TupMainWindow::callSaveProcedure()
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupMainWindow::callSaveProcedure()]";
+    #endif
+
     if (m_fileName.compare(examplePath) != 0) {
-        if (m_projectManager->projectWasModified())
+        if (m_projectManager->projectWasModified()) {
             return saveProject();
+        } else {
+            #ifdef TUP_DEBUG
+                qDebug() << "[TupMainWindow::callSaveProcedure()] - Warning: Project hasn't modified!";
+            #endif
+        }
     }
 
     return true;
@@ -1710,7 +1748,7 @@ void TupMainWindow::restoreFramesMode(TupProject::Mode mode)
 
 void TupMainWindow::requestProject()
 {
-    if (TupMainWindow::requestType == NewNetProject) {
+    if (requestType == NewNetProject) {
         m_projectManager->setupNewProject();
     } /* else if (TupMainWindow::requestType == OpenNetProject) {
         TupListProjectsPackage package;
@@ -1797,34 +1835,30 @@ void TupMainWindow::updateUsersOnLine(const QString &login, int state)
     animationTab->updateUsersOnLine(login, state);
 }
 
-void TupMainWindow::resizeProjectDimension(const QSize dimension)
+void TupMainWindow::resizePlayerCameraDimension(const QSize dimension)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupMainWindow::resizeProjectDimension()] - dimension -> " << dimension;
+        qDebug() << "[TupMainWindow::resizePlayerCameraDimension()] - dimension ->" << dimension;
     #endif
 
     m_projectManager->updateProjectDimension(dimension);
-    disconnect(cameraWidget, SIGNAL(projectAuthorUpdated(const QString&)),
-            this, SLOT(updateProjectAuthor(const QString&)));
-    disconnectWidgetToManager(cameraWidget);
+    disconnectCameraConnections();
+
     delete cameraWidget;
 
     playerTab->setCameraWidget(m_projectManager->getProject());
-
     cameraWidget = playerTab->getCameraWidget();
-    connect(cameraWidget, SIGNAL(projectAuthorUpdated(const QString&)),
-            this, SLOT(updateProjectAuthor(const QString&)));
-    connectWidgetToManager(cameraWidget);
+    setupCameraConnections();
 }
 
 void TupMainWindow::resizeCanvasDimension(const QSize size)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupMainWindow::resizeCanvasDimension()] - size -> " << size;
+        qDebug() << "[TupMainWindow::resizeCanvasDimension()] - size ->" << size;
     #endif
 
     animationTab->resizeProjectDimension(size);
-    resizeProjectDimension(size);
+    resizePlayerCameraDimension(size);
 }
 
 void TupMainWindow::saveDefaultPath(const QString &dir)

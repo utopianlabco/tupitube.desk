@@ -35,7 +35,7 @@
 #include "toolview.h"
 
 ToolView::ToolView(const QString &title, const QIcon &icon, const QString &code, QWidget *parent):
-                   QDockWidget(title, parent), currentPerspective(0)
+                   QDockWidget(title, parent), currentPerspective(ANIMATION_TAB)
 {
     setFeatures(QDockWidget::NoDockWidgetFeatures);
     setWindowIcon(icon);

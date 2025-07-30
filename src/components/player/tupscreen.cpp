@@ -388,6 +388,10 @@ PlayDirection TupScreen::getPlayDirection()
 
 void TupScreen::pause()
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupScreen::pause()]";
+    #endif
+
     if (playerIsActive) {
         #ifdef TUP_DEBUG
             qWarning() << "[TupScreen::pause()] - Pausing player!";

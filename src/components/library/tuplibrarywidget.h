@@ -175,6 +175,7 @@ class TUPITUBE_EXPORT TupLibraryWidget : public TupModuleWidgetBase
         void imagesImportationDone();
         void projectSizeHasChanged(const QSize dimension);
         void msgSent(const QString &msg);
+        void projectHasChanged(bool hasChanged);
 
     private:
         void callExternalEditor(QTreeWidgetItem *item, const QString &software);

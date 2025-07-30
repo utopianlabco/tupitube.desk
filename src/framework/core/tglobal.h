@@ -83,6 +83,18 @@
 #define DARK_THEME 0
 #define LIGHT_THEME 1
 
+#define ANIMATION_TAB 0
+#define PLAYER_TAB 1
+
+enum RequestType {
+    NoRequest = 0,
+    NewLocalProject,
+    OpenLocalProject,
+    NewNetProject,
+    OpenNetProject,
+    ImportProjectToNet
+};
+
 enum PlayMode { PlayAll = 0, OneScene };
 enum PlayDirection { Forward = 0, Backward };
 enum MediaType {Video = 0, Audio};

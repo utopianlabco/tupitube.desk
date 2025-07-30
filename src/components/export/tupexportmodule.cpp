@@ -223,8 +223,11 @@ void TupExportModule::setCurrentFormat(TupExportInterface::Format format, const 
     filename = path;
     filename = QDir::fromNativeSeparators(filename);
 
+    if (filename.contains(SHARE_DIR))
+        filename = QDir::homePath();
+
     // Animated Image or Animation
-    if (outputFormat == Animation) {
+    if (outputFormat == Animation) {        
         if (!filename.endsWith("/"))
             filename += "/";
 
@@ -232,16 +235,12 @@ void TupExportModule::setCurrentFormat(TupExportInterface::Format format, const 
         filename += extension;
     } else { // Images Array
         if (m_currentFormat == TupExportInterface::JPEG || m_currentFormat == TupExportInterface::SVG) {
-            qDebug() << "FLAG 1";
-            // if (bgTransparency->isVisible()) {
-                bgTransparency->setVisible(false);
-                qDebug() << "FLAG 2";
-            // }
-        } else {
+            bgTransparency->setVisible(false);
+        } else { // PNG
             if (!bgTransparency->isVisible())
                 bgTransparency->setVisible(true);
         }
-    }
+    }    
 
     m_filePath->setText(filename);
 }

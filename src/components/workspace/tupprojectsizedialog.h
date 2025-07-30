@@ -52,7 +52,7 @@ class TUPITUBE_EXPORT TupProjectSizeDialog : public QDialog
         TupProjectSizeDialog(const QSize &size, QWidget *parent = nullptr);
         ~TupProjectSizeDialog();
 
-        QSize getSize();
+        QSize getNewSize();
 
     private slots:
         void setPresets(const QSize &size);

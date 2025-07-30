@@ -44,18 +44,10 @@ class T_GUI_EXPORT TabbedMainWindow : public TMainWindow
     Q_OBJECT
 
     public:
-        enum Perspective {
-             Animation = 0x01,
-             Player = 0x02,
-             Help = 0x04,
-             News = 0x08,
-             All = Animation | Player | Help | News
-        };
-
         TabbedMainWindow(const QString &winKey, QWidget *parent = nullptr);
         ~TabbedMainWindow();
 
-        void addWidget(QWidget *widget, bool persistant = true, int perspective = All);
+        void addWidget(QWidget *widget, bool persistant = true, int perspective = ANIMATION_TAB);
         void removeWidget(QWidget *widget, bool force = false);
         void removeAllWidgets();
 

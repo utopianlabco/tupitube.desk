@@ -58,20 +58,15 @@ class T_GUI_EXPORT TMainWindow : public QMainWindow
     Q_OBJECT
 
     public:
-        enum
-         {
-           None = 0, DefaultPerspective
-         };
-
         TMainWindow(const QString &key, QWidget *parent = nullptr);
         ~TMainWindow();
 
-        ToolView *addToolView(QWidget *widget, Qt::DockWidgetArea area, int perspective = DefaultPerspective,
+        ToolView *addToolView(QWidget *widget, Qt::DockWidgetArea area, int perspective = ANIMATION_TAB,
                               const QString &code = QString(), QKeySequence shortcut = QKeySequence(""));
 
         void removeToolView(ToolView *view);
 
-        void addToPerspective(QWidget *widget, int perspective = DefaultPerspective);
+        void addToPerspective(QWidget *widget, int perspective = ANIMATION_TAB);
         void removeFromPerspective(QWidget *widget);
         void setCurrentPerspective(int wsp);
         int currentPerspective() const;

@@ -718,7 +718,7 @@ void TupTimeLineTable::keyPressEvent(QKeyEvent *event)
     }
 
     if (event->key() == Qt::Key_Return) {
-        emit newPerspective(4);
+        emit newPerspective(PLAYER_TAB);
 
         return;
     }

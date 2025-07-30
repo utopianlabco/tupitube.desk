@@ -1315,6 +1315,7 @@ void TupLibraryWidget::verifyFramesAvailability(int filesTotal)
 void TupLibraryWidget::importImageSequence()
 {
     #ifdef TUP_DEBUG
+        qDebug() << "---";
         qDebug() << "[TupLibraryWidget::importImageSequence()]";
     #endif
 
@@ -1482,6 +1483,7 @@ void TupLibraryWidget::loadSequenceFromDirectory(ImageImportAction action, const
             TupProjectRequest request = TupRequestBuilder::createFrameRequest(currentFrame.scene, currentFrame.layer, initFrame,
                                                                               TupProjectRequest::Select, selection);
             emit requestTriggered(&request);
+            emit projectHasChanged(true);
 
             QApplication::restoreOverrideCursor();
         }
@@ -1519,6 +1521,7 @@ void TupLibraryWidget::loadSequenceFromDirectory(ImageImportAction action, const
 
         emit requestTriggered(&request);
         emit imagesImportationDone();
+        emit projectHasChanged(true);
 
         // Removing temporary video file
         if (removeTempVideo && !tempVideoPath.isEmpty()) {
@@ -1799,7 +1802,7 @@ void TupLibraryWidget::importVideoFileFromFolder(const QString &videoPath)
             connect(this, SIGNAL(imagesImportationDone()), dialog, SLOT(endProcedure()));
             connect(this, SIGNAL(msgSent(const QString &)), dialog, SLOT(updateStatus(const QString &)));
 
-            dialog->show();
+            dialog->show();                        
         } else {
             TOsd::self()->display(TOsd::Error, tr("Can't load video file!"));
         }

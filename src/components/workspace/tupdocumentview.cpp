@@ -2909,7 +2909,7 @@ void TupDocumentView::editProjectSize()
 {
     TupProjectSizeDialog *dialog = new TupProjectSizeDialog(project->getDimension());
     if (dialog->exec() == QDialog::Accepted)
-        resizeProjectDimension(dialog->getSize());
+        resizeProjectDimension(dialog->getNewSize());
 }
 
 void TupDocumentView::launchSelectionTool()

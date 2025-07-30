@@ -49,30 +49,34 @@ TabbedMainWindow::~TabbedMainWindow()
 
 void TabbedMainWindow::addWidget(QWidget *widget, bool persistant, int perspective)
 {
-    if (perspective & currentPerspective())
-        currentTab->addTab(widget, widget->windowIcon(), widget->windowTitle());
+    if (widget) {
+        if (perspective == currentPerspective())
+            currentTab->addTab(widget, widget->windowIcon(), widget->windowTitle());
 
-    if (persistant)
-        persistentWidgets << widget;
+        if (persistant)
+            persistentWidgets << widget;
 
-    pages << widget;
-    tabs[widget] = perspective;
+        pages << widget;
+        tabs[widget] = perspective;
+    }
 }
 
 void TabbedMainWindow::removeWidget(QWidget *widget, bool force)
 {
-    if (force) 
-        persistentWidgets.removeAll(widget);
+    if (widget) {
+        if (force) 
+            persistentWidgets.removeAll(widget);
 
-    if (persistentWidgets.contains(widget))
-        return;
+        if (persistentWidgets.contains(widget))
+            return;
 
-    int index = currentTab->indexOf(widget);
-    if (index >= 0)
-        currentTab->removeTab(index);
+        int index = currentTab->indexOf(widget);
+        if (index == ANIMATION_TAB || index == PLAYER_TAB)
+            currentTab->removeTab(index);
 
-    tabs.remove(widget);
-    pages.removeAll(widget);
+        tabs.remove(widget);
+        pages.removeAll(widget);
+    }
 }
 
 void TabbedMainWindow::removeAllWidgets()
@@ -92,7 +96,7 @@ int TabbedMainWindow::tabCount()
 void TabbedMainWindow::closeCurrentTab()
 {
     int index = currentTab->currentIndex();
-    if (index >= 0)
+    if (index == ANIMATION_TAB || index == PLAYER_TAB)
         removeWidget(currentTab->widget(index));
 }
 
@@ -104,35 +108,26 @@ QTabWidget *TabbedMainWindow::tabWidget() const
 
 void TabbedMainWindow::emitWidgetChanged(int index)
 {
+    /*
     #ifdef TUP_DEBUG
-        qDebug() << "[TabbedMainWindow::emitWidgetChanged()]";
+        qDebug() << "[TabbedMainWindow::emitWidgetChanged()] - index ->" << index;
     #endif
+    */
 
-    if (index != -1) {
-        switch (index) {
-           case 0:
-                setCurrentPerspective(Animation);
-           break;
-           case 1:
-                setCurrentPerspective(Player);
-           break;
-           case 2:
-                setCurrentPerspective(Help);
-           break;
-           case 3:
-                setCurrentPerspective(News);
-           break;
-        }
+    if (index == ANIMATION_TAB || index == PLAYER_TAB) {
+        setCurrentPerspective(index);
         emit tabHasChanged(index);
     }
 }
 
 void TabbedMainWindow::setCurrentTab(int index)
 {
+    /*
     #ifdef TUP_DEBUG
         qDebug() << "[TabbedMainWindow::setCurrentTab()] - index: " << index;
     #endif
+    */
 
-    if (index != -1)
+    if (index == 0 || index == 1)
         currentTab->setCurrentIndex(index);
 }

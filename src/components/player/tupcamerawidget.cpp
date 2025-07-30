@@ -613,6 +613,10 @@ void TupCameraWidget::updateFramesTotal(int sceneIndex)
 
 void TupCameraWidget::exportDialog()
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupCameraWidget::exportDialog()]";
+    #endif
+
     if (previewScreen->isPlaying())
         previewScreen->pause();
 
@@ -621,6 +625,10 @@ void TupCameraWidget::exportDialog()
 
 void TupCameraWidget::postDialog()
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupCameraWidget::postDialog()]";
+    #endif
+
     if (previewScreen->isPlaying())
         previewScreen->pause();
 

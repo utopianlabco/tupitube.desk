@@ -144,7 +144,7 @@ void DefaultSettings::restore(const QString &winKey, TMainWindow *window)
 }
 
 TMainWindow::TMainWindow(const QString &key, QWidget *parent): QMainWindow(parent), m_forRelayout(nullptr),
-                                                               perspective(DefaultPerspective), m_autoRestore(false)
+                                                               perspective(ANIMATION_TAB), m_autoRestore(false)
 {
     setObjectName("TMainWindow");
     winKey = key;
@@ -278,7 +278,7 @@ void TMainWindow::addToPerspective(QWidget *widget, int workSpace)
     if (!m_managedWidgets.contains(widget)) {
         m_managedWidgets.insert(widget, workSpace);
 
-        if (!(workSpace & perspective))
+        if (workSpace != perspective)
             widget->hide();
     }
 }
@@ -319,7 +319,7 @@ void TMainWindow::addToPerspective(QAction *action, int workSpace)
     if (!m_managedActions.contains(action)) {
         m_managedActions.insert(action, workSpace);
 
-        if (!(workSpace & perspective))
+        if (workSpace != perspective)
             action->setVisible(false);
     }
 }
@@ -352,7 +352,7 @@ Qt::DockWidgetArea TMainWindow::toDockWidgetArea(Qt::ToolBarArea area)
         default: 
            {
               #ifdef TUP_DEBUG
-                  qWarning() << "[TMainWindow::toDockWidgetArea()] - Floating -> " << QString::number(area);
+                  qWarning() << "[TMainWindow::toDockWidgetArea()] - Floating ->" << area;
               #endif
            }
            break;
@@ -402,7 +402,7 @@ void TMainWindow::setCurrentPerspective(int workSpace)
     if (perspective == workSpace)
         return;
 
-    if (workSpace != 1)
+    if (workSpace != ANIMATION_TAB)
         specialToolBar->setVisible(false);
     else
         specialToolBar->setVisible(true);
@@ -415,7 +415,7 @@ void TMainWindow::setCurrentPerspective(int workSpace)
         foreach (ToolView *view, views) {
             TButtonBar *bar = m_buttonBars[view->button()->area()];
 
-            if (view->perspective() & workSpace) {
+            if (view->perspective() == workSpace) { 
                 bar->enable(view->button());
                 if (view->isExpanded()) {
                     view->blockSignals(true);

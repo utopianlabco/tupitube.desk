@@ -108,7 +108,7 @@ void TupProjectSizeDialog::setUI(const QSize &size)
     connect(sizeSpin, SIGNAL(valuesHaveChanged()), this, SLOT(updatePresetsCombo()));
 }
 
-QSize TupProjectSizeDialog::getSize()
+QSize TupProjectSizeDialog::getNewSize()
 {
     return QSize(sizeSpin->x(), sizeSpin->y());
 }

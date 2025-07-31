@@ -223,8 +223,15 @@ void TupExportModule::setCurrentFormat(TupExportInterface::Format format, const 
     filename = path;
     filename = QDir::fromNativeSeparators(filename);
 
-    if (filename.contains(SHARE_DIR))
-        filename = QDir::homePath();
+    #ifdef Q_OS_WIN
+        QString path = SHARE_DIR;
+        path.replace("\\", "/");
+        if (filename.contains(path))
+            filename = QDir::homePath();
+    #else
+        if (filename.contains(SHARE_DIR))
+            filename = QDir::homePath();
+    #endif
 
     // Animated Image or Animation
     if (outputFormat == Animation) {        

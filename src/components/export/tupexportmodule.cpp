@@ -224,9 +224,9 @@ void TupExportModule::setCurrentFormat(TupExportInterface::Format format, const 
     filename = QDir::fromNativeSeparators(filename);
 
     #ifdef Q_OS_WIN
-        QString path = SHARE_DIR;
-        path.replace("\\", "/");
-        if (filename.contains(path))
+        QString outputPath = SHARE_DIR;
+        outputPath.replace("\\", "/");
+        if (filename.contains(outputPath))
             filename = QDir::homePath();
     #else
         if (filename.contains(SHARE_DIR))
@@ -267,6 +267,16 @@ void TupExportModule::chooseFile()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupExportModule::chooseFile()]";
+    #endif
+
+    #ifdef Q_OS_WIN
+        QString outputPath = SHARE_DIR;
+        outputPath.replace("\\", "/");
+        if (path.contains(outputPath))
+            path = QDir::homePath();
+    #else
+        if (path.contains(SHARE_DIR))
+            path = QDir::homePath();
     #endif
 
     filename = QFileDialog::getSaveFileName(this, tr("Export video as..."), path,

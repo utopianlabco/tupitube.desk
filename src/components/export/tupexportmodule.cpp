@@ -272,6 +272,7 @@ void TupExportModule::chooseFile()
     #ifdef Q_OS_WIN
         QString outputPath = SHARE_DIR;
         outputPath.replace("\\", "/");
+        path.replace("\\", "/");
         if (path.contains(outputPath))
             path = QDir::homePath();
     #else

@@ -69,7 +69,9 @@ class TUPITUBE_EXPORT TupThemePreferences : public QWidget
         };
 
         void setupPage();
-        void addColorEntry(int theme, int id, const QString &label, const QColor &initColor,
+        // void addColorEntry(int theme, int id, const QString &label, const QColor &initColor,
+        //                    const QColor &endColor);
+        void addColorEntry(int id, const QString &label, const QColor &initColor,
                            const QColor &endColor);
         void updateUITheme(int row);
 

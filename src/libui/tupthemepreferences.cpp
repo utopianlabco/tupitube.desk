@@ -108,13 +108,15 @@ void TupThemePreferences::setupPage()
     QWidget *lightFormWidget = new QWidget;
     lightFormLayout = new QGridLayout(lightFormWidget);
     for(int i=0; i<labelList.size()-1; i++)
-        addColorEntry(LIGHT_THEME, i, labelList.at(i), initList.at(i), Qt::white);
+        addColorEntry(i, labelList.at(i), initList.at(i), Qt::white);
+        // addColorEntry(LIGHT_THEME, i, labelList.at(i), initList.at(i), Qt::white);
 
     blockLayout->addWidget(lightFormWidget);
 
     QWidget *darkFormWidget = new QWidget;
     darkFormLayout = new QGridLayout(darkFormWidget);
-    addColorEntry(DARK_THEME, static_cast<int>(Black), tr("Black"), initList.last(), QColor(89, 89, 89));
+    // addColorEntry(DARK_THEME, static_cast<int>(Black), tr("Black"), initList.last(), QColor(89, 89, 89));
+    addColorEntry(static_cast<int>(Black), tr("Black"), initList.last(), QColor(89, 89, 89));
 
     blockLayout->addWidget(darkFormWidget);
     blockLayout->addStretch(3);
@@ -141,7 +143,9 @@ void TupThemePreferences::setupPage()
     mainLayout->addStretch();
 }
 
-void TupThemePreferences::addColorEntry(int theme, int id, const QString &label,
+// void TupThemePreferences::addColorEntry(int theme, int id, const QString &label,
+//                                         const QColor &initColor, const QColor &endColor)
+void TupThemePreferences::addColorEntry(int id, const QString &label,
                                         const QColor &initColor, const QColor &endColor)
 {
     TRadioButton *colorRadio = new TRadioButton(id, label, this);

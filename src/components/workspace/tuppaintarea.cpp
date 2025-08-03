@@ -1404,9 +1404,9 @@ void TupPaintArea::setOnionFactor(double value)
 void TupPaintArea::keyPressEvent(QKeyEvent *event)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupPaintArea::keyPressEvent()] - Current tool -> " << currentToolID;
-        qDebug() << "[TupPaintArea::keyPressEvent()] - Key -> " << event->key();
-        qDebug() << "[TupPaintArea::keyPressEvent()] - Code -> " << event->text();
+        qDebug() << "[TupPaintArea::keyPressEvent()] - Current tool ->" << currentToolID;
+        qDebug() << "[TupPaintArea::keyPressEvent()] - Key ->" << event->key();
+        qDebug() << "[TupPaintArea::keyPressEvent()] - Code ->" << event->text();
     #endif
 
     if (event->key() == Qt::Key_Backspace || event->key() == Qt::Key_Delete) {

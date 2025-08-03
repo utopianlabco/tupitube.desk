@@ -6096,6 +6096,14 @@ Cover</source>
         <source>Importing audio track from video file...</source>
         <translation>从视频文件导入音轨...</translation>
     </message>
+    <message>
+        <source>Importing audio...</source>
+        <translation>正在导入音频...</translation>
+    </message>
+    <message>
+        <source>Extracting audio frame %1 of %2</source>
+        <translation>提取音频帧 %1（共 %2 帧）</translation>
+    </message>
 </context>
 <context>
     <name>TupVideoProperties</name>

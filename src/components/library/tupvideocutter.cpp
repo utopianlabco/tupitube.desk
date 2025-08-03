@@ -263,8 +263,6 @@ bool TupVideoCutter::startExtraction()
         return false;
     }
 
-    // emit msgSent(tr("Extracting images..."));
-
     int ret = 0;
     int counter = 0;
     // Fill the Packet with data from the Stream
@@ -401,7 +399,7 @@ int TupVideoCutter::decodeVideoPacket(AVPacket *packet, AVCodecContext *codecCon
                 return -1;
             }
 
-            emit imageExtracted(photogram);
+            emit imageExtracted(Video, photogram);
 
             av_frame_free(&rgbFrame);
         }

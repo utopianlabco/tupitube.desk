@@ -1500,7 +1500,7 @@ void TupLibraryWidget::loadSequenceFromDirectory(ImageImportAction action, const
             importImageRecord(photograms.at(i), extension, QSize(picWidth, picHeight),
                               QSize(projectWidth, projectHeight), resizeFlag, directory);
             QString msg = tr("Importing image %1 of %2").arg(i).arg(imagesTotal);
-            emit msgSent(msg);
+            emit msgSentToImageImporter(msg);
 
             if (i < imagesTotal-1) {
                 int layer = currentFrame.layer;
@@ -1800,7 +1800,8 @@ void TupLibraryWidget::importVideoFileFromFolder(const QString &videoPath)
                     SLOT(importLocalVideoSoundFile(const QString &)));
             connect(dialog, SIGNAL(projectSizeHasChanged(const QSize)), this, SIGNAL(projectSizeHasChanged(const QSize)));
             connect(this, SIGNAL(imagesImportationDone()), dialog, SLOT(endProcedure()));
-            connect(this, SIGNAL(msgSent(const QString &)), dialog, SLOT(updateStatus(const QString &)));
+            connect(this, SIGNAL(msgSentToImageImporter(const QString &)),
+                    dialog, SLOT(updateStatusFromLibraryWidget(const QString &)));
 
             dialog->show();                        
         } else {

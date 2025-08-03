@@ -55,7 +55,7 @@ TupVideoImporterDialog::TupVideoImporterDialog(const QString &filename, const QS
     videoPath = filename;
     projectSize = canvasSize;
 
-    imagesTotal = 1;
+    framesTotal = 1;
     sizeFlag = false;
 
     QFileInfo fileInfo(videoPath);
@@ -64,7 +64,7 @@ TupVideoImporterDialog::TupVideoImporterDialog(const QString &filename, const QS
     setStyleSheet(TAppTheme::themeStyles());
 
     videoCutter = cutter;
-    connect(videoCutter, SIGNAL(imageExtracted(int)), this, SLOT(updateUI(int)));
+    connect(videoCutter, SIGNAL(imageExtracted(MediaType, int)), this, SLOT(updateMediaProgress(MediaType, int)));
     connect(videoCutter, SIGNAL(imageExtractionIsDone()), this, SLOT(startImageImportation()));
 
     assetsPath = photogramsPath;
@@ -72,7 +72,7 @@ TupVideoImporterDialog::TupVideoImporterDialog(const QString &filename, const QS
 
     layout = new QVBoxLayout(this);
     fixSize = projectSize != videoSize;
-    setUI(fixSize);
+    setDialogUI(fixSize);
 }
 
 TupVideoImporterDialog::~TupVideoImporterDialog()
@@ -80,7 +80,7 @@ TupVideoImporterDialog::~TupVideoImporterDialog()
     delete videoCutter;
 }
 
-void TupVideoImporterDialog::setUI(bool fixSize)
+void TupVideoImporterDialog::setDialogUI(bool fixSize)
 {
     QLabel *importLabel = new QLabel(tr("Select the number of photograms to import:"));
     imagesBox = new QSpinBox;
@@ -157,7 +157,7 @@ void TupVideoImporterDialog::setUI(bool fixSize)
     layout->addWidget(progressWidget);
 
     QPushButton *okButton = new QPushButton(QIcon(QPixmap(THEME_DIR + "icons/apply.png")), "");
-    connect(okButton, SIGNAL(clicked()), this, SLOT(startExtraction()));
+    connect(okButton, SIGNAL(clicked()), this, SLOT(startMediaExtraction()));
 
     QPushButton *closeButton = new QPushButton(QIcon(QPixmap(THEME_DIR + "icons/close.png")), "");
     closeButton->setToolTip(tr("Close"));
@@ -172,15 +172,16 @@ void TupVideoImporterDialog::setUI(bool fixSize)
     layout->addStretch(1);
 }
 
-void TupVideoImporterDialog::startExtraction()
+void TupVideoImporterDialog::startMediaExtraction()
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupVideoImporterDialog::startExtraction()]";
+        qDebug() << "[TupVideoImporterDialog::startMediaExtraction()]";
     #endif
 
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-    imagesTotal = imagesBox->value();
-    advance = 100/imagesTotal;
+    framesTotal = imagesBox->value();
+    // framesCounter = 100/framesTotal;
+    framesCounter = 1;
 
     imagesBox->setEnabled(false);
     buttonsWidget->setVisible(false);
@@ -189,13 +190,13 @@ void TupVideoImporterDialog::startExtraction()
         if (checkButton2->isChecked()) {
             // Adjust photograms size
             #ifdef TUP_DEBUG
-                qDebug() << "[TupVideoImporterDialog::startExtraction()] - Resizing photograms...";
+                qDebug() << "[TupVideoImporterDialog::startMediaExtraction()] - Resizing photograms...";
             #endif
             sizeFlag = true;
         } if (checkButton3->isChecked()) {
             // Adjust project size
             #ifdef TUP_DEBUG
-                qDebug() << "[TupVideoImporterDialog::startExtraction()] - Resizing project canvas...";
+                qDebug() << "[TupVideoImporterDialog::startMediaExtraction()] - Resizing project canvas...";
             #endif
             emit projectSizeHasChanged(videoSize);
         }
@@ -208,7 +209,7 @@ void TupVideoImporterDialog::startExtraction()
         QDir dir;
         if (!dir.mkpath(assetsPath)) {
             #ifdef TUP_DEBUG
-                qDebug() << "[TupVideoImporterDialog::startExtraction()] - Fatal Error: Couldn't create images directory -> "
+                qDebug() << "[TupVideoImporterDialog::startMediaExtraction()] - Fatal Error: Couldn't create images directory -> "
                          << assetsPath;
             #endif
             TOsd::self()->display(TOsd::Error, tr("Couldn't create temporary directory!"));
@@ -217,7 +218,7 @@ void TupVideoImporterDialog::startExtraction()
         }
     }
 
-    videoCutter->setExtractionParams(imagesTotal);
+    videoCutter->setExtractionParams(framesTotal);
     if (!videoCutter->startExtraction()) {
         TOsd::self()->display(TOsd::Error, tr("Can't extract photograms!"));
         videoCutter->releaseResources();
@@ -228,25 +229,51 @@ void TupVideoImporterDialog::startExtraction()
 
     // Audio extraction
     if (audioCheck->isChecked()) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupVideoImporterDialog::startMediaExtraction()] - Importing audio...";
+        #endif
+
+        progressLabel->setText(tr("Importing audio..."));
+        progressBar->setValue(0);
+        framesCounter = 0;
+
+        QFileInfo file(videoPath);
+        QString audioName = file.baseName();
+
         progressLabel->setText(tr("Importing audio track from video file..."));
-        audioPath = QDir::tempPath() + "/video_audio_" + TAlgorithm::randomString(12) + ".aac";
-        TupAudioCutter *audioCutter = new TupAudioCutter(videoPath, audioPath);
+
+        audioPath = QDir::tempPath() + "/" + audioName + ".mp3";
+        if (QFile::exists(audioPath))
+            audioPath = QDir::tempPath() + "/mp3_audio_" + TAlgorithm::randomString(12) + ".mp3";
+
+        TupAudioCutter *audioCutter = new TupAudioCutter(videoPath, audioPath);        
+        connect(audioCutter, SIGNAL(audioExtracted(MediaType, int)),
+                this, SLOT(updateMediaProgress(MediaType, int)));
         connect(audioCutter, SIGNAL(extractionIsDone(const QString &)),
                 this, SIGNAL(audioExtractionIsDone(const QString &)));
-        audioCutter->startExtraction();
+
+        if (!audioCutter->generateMP3Audio()) {
+            #ifdef TUP_DEBUG
+                qDebug() << "[TupVideoImporterDialog::startMediaExtraction()] - "
+                            "Error: Couldn't extract audio from video file ->" << videoPath;
+            #endif
+        }
     }
 }
 
-void TupVideoImporterDialog::updateUI(int index)
+void TupVideoImporterDialog::updateMediaProgress(MediaType media, int index)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupVideoImporterDialog::updateUI()] - index -> " << index;
+        qDebug() << "[TupVideoImporterDialog::updateMediaProgress()] - index ->" << index;
     #endif
 
-    QString msg = tr("Extracting photogram %1 of %2").arg(index).arg(imagesTotal);
+    QString msg = tr("Extracting photogram %1 of %2").arg(index).arg(framesTotal);
+    if (media == Audio)
+        msg = tr("Extracting audio frame %1 of %2").arg(index).arg(framesTotal);
+
     progressLabel->setText(msg);
-    progressBar->setValue(advance);
-    advance += advance;
+    progressBar->setValue(framesCounter);
+    framesCounter += 1;
 }
 
 void TupVideoImporterDialog::startImageImportation()
@@ -258,14 +285,19 @@ void TupVideoImporterDialog::startImageImportation()
 
     progressLabel->setText(tr("Importing images..."));
     progressBar->setValue(0);
+    framesCounter = 0;
     emit imageExtractionIsDone(VideoAction, assetsPath, sizeFlag);
 }
 
-void TupVideoImporterDialog::updateStatus(const QString &msg)
+void TupVideoImporterDialog::updateStatusFromLibraryWidget(const QString &msg)
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupVideoImporterDialog::updateStatusFromLibraryWidget()] - Starting image importation...";
+    #endif
+
     progressLabel->setText(msg);
-    progressBar->setValue(advance);
-    advance += advance;
+    progressBar->setValue(framesCounter);
+    framesCounter += 1;
 }
 
 void TupVideoImporterDialog::endProcedure()

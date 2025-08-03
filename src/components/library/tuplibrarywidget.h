@@ -174,7 +174,7 @@ class TUPITUBE_EXPORT TupLibraryWidget : public TupModuleWidgetBase
         void folderWithAudiosRemoved();
         void imagesImportationDone();
         void projectSizeHasChanged(const QSize dimension);
-        void msgSent(const QString &msg);
+        void msgSentToImageImporter(const QString &msg);
         void projectHasChanged(bool hasChanged);
 
     private:

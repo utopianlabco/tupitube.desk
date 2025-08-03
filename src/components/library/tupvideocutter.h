@@ -67,7 +67,7 @@ class TUPITUBE_EXPORT TupVideoCutter : public QObject
         void releaseResources();
 
     signals:
-        void imageExtracted(int index);
+        void imageExtracted(MediaType media, int index);
         void imageExtractionIsDone();
 
     private:

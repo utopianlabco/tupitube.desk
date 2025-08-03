@@ -68,13 +68,13 @@ class TUPITUBE_EXPORT TupVideoImporterDialog : public QDialog
         void endProcedure();
 
     private slots:
-        void startExtraction();
-        void updateStatus(const QString &);
-        void updateUI(int index);
+        void startMediaExtraction();
+        void updateStatusFromLibraryWidget(const QString &);
+        void updateMediaProgress(MediaType media, int index);
         void startImageImportation();
 
     private:
-        void setUI(bool fixSize);
+        void setDialogUI(bool fixSize);
 
         QVBoxLayout *layout;
         QSpinBox *imagesBox;
@@ -88,8 +88,8 @@ class TUPITUBE_EXPORT TupVideoImporterDialog : public QDialog
         QString videoPath;
         QString assetsPath;
         QString audioPath;
-        int imagesTotal;
-        int advance;
+        int framesTotal;
+        int framesCounter;
         QSize projectSize;
         QSize videoSize;
 

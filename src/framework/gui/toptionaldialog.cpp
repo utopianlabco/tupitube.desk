@@ -36,8 +36,12 @@
 #include "tapptheme.h"
 #include "tapplicationproperties.h"
 
-TOptionalDialog::TOptionalDialog(const QString &text,const QString &title, bool showAgainBox,
-                                 bool showDiscardButton, QWidget *parent) : QDialog(parent)
+#include <QDesktopServices>
+#include <QUrl>
+
+TOptionalDialog::TOptionalDialog(const QString &text,const QString &title,
+                                 bool showAgainBox, bool showDiscardButton,
+                                 bool showPolicyButton, QWidget *parent) : QDialog(parent)
 {
     setStyleSheet(TAppTheme::themeStyles());
 
@@ -48,15 +52,33 @@ TOptionalDialog::TOptionalDialog(const QString &text,const QString &title, bool 
     mainLayout->addWidget(label);
     mainLayout->addStretch(10);
     mainLayout->addWidget(new TSeparator);
-    
-    QHBoxLayout *buttonLayout = new QHBoxLayout;
+
+    setButtonsPanel(showAgainBox, showDiscardButton, showPolicyButton);
+    setLayout(mainLayout);
+}
+
+TOptionalDialog::~TOptionalDialog()
+{
+}
+
+void TOptionalDialog::setButtonsPanel(bool showAgainBox, bool showDiscardButton,
+                                      bool showPolicyButton)
+{
+    buttonLayout = new QHBoxLayout;
     buttonLayout->addStretch(1);
-    
+
+    if (showPolicyButton) {
+        QPushButton *policyButton = new QPushButton(this);
+        policyButton->setText(" " + tr("View Privacy Policy") + " ");
+        connect(policyButton, SIGNAL(clicked()), this, SLOT(openPrivacyPolicyLink()));
+        buttonLayout->addWidget(policyButton);
+    }
+
     if (showAgainBox) {
         checkBox = new QCheckBox(tr("Don't show again"));
         buttonLayout->addWidget(checkBox);
     }
-    
+
     QPushButton *cancelButton = new QPushButton(this);
     cancelButton->setToolTip(tr("Cancel"));
     cancelButton->setMinimumWidth(60);
@@ -79,13 +101,8 @@ TOptionalDialog::TOptionalDialog(const QString &text,const QString &title, bool 
     okButton->setIcon(QIcon(THEME_DIR + "icons/apply.png"));
     connect(okButton, SIGNAL(clicked()), this, SLOT(callAcceptAction()));
     buttonLayout->addWidget(okButton);
-    
-    mainLayout->addLayout(buttonLayout);
-    setLayout(mainLayout);
-}
 
-TOptionalDialog::~TOptionalDialog()
-{
+    mainLayout->addLayout(buttonLayout);
 }
 
 bool TOptionalDialog::shownAgain()
@@ -114,4 +131,10 @@ void TOptionalDialog::callCancelAction()
 TOptionalDialog::Result TOptionalDialog::getResult()
 {
     return result;
+}
+
+void TOptionalDialog::openPrivacyPolicyLink()
+{
+    QUrl url(QString(PRIVACY_POLICY_URL));
+    QDesktopServices::openUrl(url);
 }

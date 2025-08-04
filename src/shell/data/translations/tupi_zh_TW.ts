@@ -1753,6 +1753,10 @@
         <source>Discard</source>
         <translation>放棄</translation>
     </message>
+    <message>
+        <source>View Privacy Policy</source>
+        <translation>查看隱私權政策</translation>
+    </message>
 </context>
 <context>
     <name>TOsd</name>
@@ -4178,20 +4182,28 @@ until reaches at least 3 seconds.</source>
         <translation>Ctrl+F</translation>
     </message>
     <message>
-        <source>Allow TupiTube to collect app usage statistics (Only performance anonymous data).</source>
-        <translation>允許 TupiTube 收集應用程式使用情況統計資料（僅限效能匿名資料）。</translation>
-    </message>
-    <message>
-        <source>Usage Statistics Request</source>
-        <translation>使用情況統計請求</translation>
-    </message>
-    <message>
-        <source>This information will help us to enhance our project. Go to the Preferences dialog to enable/disable it any time.</source>
-        <translation>這些資訊將幫助我們改進我們的專案。轉到“首選項”對話框隨時啟用/停用它。</translation>
-    </message>
-    <message>
         <source>Project is already opened!</source>
         <translation>項目已開啟！</translation>
+    </message>
+    <message>
+        <source>Would you like to allow TupiTube to collect anonymous performance data?</source>
+        <translation>您是否願意允許 TupiTube 收集匿名效能資料？</translation>
+    </message>
+    <message>
+        <source>This information helps us enhance the app and provide a better experience for you.</source>
+        <translation>這些資訊有助於我們改進應用程式並為您提供更好的體驗。</translation>
+    </message>
+    <message>
+        <source>It will be handled in accordance with Utopian Lab&apos;s data policy.</source>
+        <translation>它將按照 Utopian Lab 的資料政策進行處理。</translation>
+    </message>
+    <message>
+        <source>You can enable or disable this option anytime in the Preferences dialog.</source>
+        <translation>您可以隨時在「首選項」對話方塊中啟用或停用此選項。</translation>
+    </message>
+    <message>
+        <source>Help Us Improve TupiTube!</source>
+        <translation>幫助我們改進 TupiTube！</translation>
     </message>
 </context>
 <context>

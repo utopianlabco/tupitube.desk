@@ -2216,22 +2216,27 @@
 <context>
     <name>TOptionalDialog</name>
     <message>
-        <location filename="../../../framework/gui/toptionaldialog.cpp" line="56"/>
+        <location filename="../../../framework/gui/toptionaldialog.cpp" line="72"/>
+        <source>View Privacy Policy</source>
+        <translation>Ver Política de Privacidad</translation>
+    </message>
+    <message>
+        <location filename="../../../framework/gui/toptionaldialog.cpp" line="78"/>
         <source>Don&apos;t show again</source>
         <translation>No mostrar de nuevo</translation>
     </message>
     <message>
-        <location filename="../../../framework/gui/toptionaldialog.cpp" line="61"/>
+        <location filename="../../../framework/gui/toptionaldialog.cpp" line="83"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="../../../framework/gui/toptionaldialog.cpp" line="69"/>
+        <location filename="../../../framework/gui/toptionaldialog.cpp" line="91"/>
         <source>Discard</source>
         <translation>Descartar</translation>
     </message>
     <message>
-        <location filename="../../../framework/gui/toptionaldialog.cpp" line="77"/>
+        <location filename="../../../framework/gui/toptionaldialog.cpp" line="99"/>
         <source>Accept</source>
         <translation>Aceptar</translation>
     </message>
@@ -4733,198 +4738,208 @@ until reaches at least 3 seconds.</source>
 <context>
     <name>TupMainWindow</name>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="360"/>
+        <location filename="../../tupmainwindow.cpp" line="364"/>
         <source>Opening a new document...</source>
         <translation>Abriendo un nuevo proyecto...</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="383"/>
-        <location filename="../../tupmainwindow.cpp" line="1335"/>
+        <location filename="../../tupmainwindow.cpp" line="387"/>
+        <location filename="../../tupmainwindow.cpp" line="1339"/>
         <location filename="../../tupmainwindow_gui.cpp" line="260"/>
         <source>Animation</source>
         <translation>Animación</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="485"/>
+        <location filename="../../tupmainwindow.cpp" line="489"/>
         <location filename="../../tupmainwindow_gui.cpp" line="268"/>
         <source>Player</source>
         <translation>Reproductor</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="508"/>
+        <location filename="../../tupmainwindow.cpp" line="512"/>
         <source>Project &lt;b&gt;%1&lt;/b&gt; opened!</source>
         <translation>Projecto &lt;b&gt;%1&lt;/b&gt; abierto!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="600"/>
+        <location filename="../../tupmainwindow.cpp" line="604"/>
         <source>The document has been modified.</source>
         <translation>El proyecto ha sido modificado.</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="601"/>
+        <location filename="../../tupmainwindow.cpp" line="605"/>
         <source>Do you want to save the project?</source>
         <translation>Deseas guardar el proyecto?</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="603"/>
+        <location filename="../../tupmainwindow.cpp" line="607"/>
         <source>Save</source>
         <translation>Guardar cambios</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="604"/>
+        <location filename="../../tupmainwindow.cpp" line="608"/>
         <source>Discard</source>
         <translation>Descartar</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="605"/>
+        <location filename="../../tupmainwindow.cpp" line="609"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="810"/>
-        <location filename="../../tupmainwindow.cpp" line="910"/>
-        <location filename="../../tupmainwindow.cpp" line="1166"/>
-        <location filename="../../tupmainwindow.cpp" line="1239"/>
-        <location filename="../../tupmainwindow.cpp" line="1931"/>
+        <location filename="../../tupmainwindow.cpp" line="814"/>
+        <location filename="../../tupmainwindow.cpp" line="914"/>
+        <location filename="../../tupmainwindow.cpp" line="1170"/>
+        <location filename="../../tupmainwindow.cpp" line="1243"/>
+        <location filename="../../tupmainwindow.cpp" line="1935"/>
         <source>by</source>
         <translation>por</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="832"/>
+        <location filename="../../tupmainwindow.cpp" line="836"/>
         <source>Open TupiTube project</source>
         <translation>Abrir proyecto TupiTube</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="833"/>
-        <location filename="../../tupmainwindow.cpp" line="962"/>
-        <location filename="../../tupmainwindow.cpp" line="1126"/>
+        <location filename="../../tupmainwindow.cpp" line="837"/>
+        <location filename="../../tupmainwindow.cpp" line="966"/>
+        <location filename="../../tupmainwindow.cpp" line="1130"/>
         <source>TupiTube Project Package (*.tup)</source>
         <translation>Proyecto TupiTube (*.tup)</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="867"/>
-        <location filename="../../tupmainwindow.cpp" line="931"/>
+        <location filename="../../tupmainwindow.cpp" line="871"/>
+        <location filename="../../tupmainwindow.cpp" line="935"/>
         <source>Cannot open project!</source>
         <translation>No se puede abrir el proyecto!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1791"/>
+        <location filename="../../tupmainwindow.cpp" line="1795"/>
         <source>Close</source>
         <translation>Cerrar</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1037"/>
+        <location filename="../../tupmainwindow.cpp" line="1041"/>
         <source>Gimp Palette (*.gpl *.txt *.css)</source>
         <translation>Paleta Gimp (*.gpl *.txt *.css)</translation>
     </message>
     <message>
         <location filename="../../tupmainwindow.cpp" line="145"/>
-        <source>Allow TupiTube to collect app usage statistics (Only performance anonymous data).</source>
-        <translation>Permitir a TupiTube recolectar estadísticas de uso (Sólo datos de rendimiento anónimos).</translation>
+        <source>Would you like to allow TupiTube to collect anonymous performance data?</source>
+        <translation>¿Quieres permitir que TupiTube recopile datos de rendimiento anónimos?</translation>
     </message>
     <message>
         <location filename="../../tupmainwindow.cpp" line="147"/>
-        <source>This information will help us to enhance our project. Go to the Preferences dialog to enable/disable it any time.</source>
-        <translation>Esta información ayudará a mejorar nuestra aplicación. Visita el diálogo de Preferencias para habilitar/deshabilitar esta opción en cualquier momento.</translation>
+        <source>This information helps us enhance the app and provide a better experience for you.</source>
+        <translation>Esta información nos ayuda a mejorar la aplicación y a brindarte una mejor experiencia.</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="148"/>
-        <source>Usage Statistics Request</source>
-        <translation>Solicitud de Estadísticas de Uso</translation>
+        <location filename="../../tupmainwindow.cpp" line="149"/>
+        <source>It will be handled in accordance with Utopian Lab&apos;s data policy.</source>
+        <translation>Y se manejará de acuerdo con la política de datos de la empresa Utopian Lab.</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="598"/>
+        <location filename="../../tupmainwindow.cpp" line="151"/>
+        <source>You can enable or disable this option anytime in the Preferences dialog.</source>
+        <translation>Puedes habilitar/deshabilitar esta opción en cualquier momento desde el diálogo de Preferencias.</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow.cpp" line="152"/>
+        <source>Help Us Improve TupiTube!</source>
+        <translation>¡Ayúdanos a mejorar TupiTube!</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow.cpp" line="602"/>
         <source>Confirmation Required</source>
         <translation>Confirmación Requerida</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="740"/>
+        <location filename="../../tupmainwindow.cpp" line="744"/>
         <source>Error while clearing cache!</source>
         <translation>Error al limpiar el cache!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="961"/>
+        <location filename="../../tupmainwindow.cpp" line="965"/>
         <source>Select TupiTube project</source>
         <translation>Seleccionar proyecto TupiTube</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1036"/>
+        <location filename="../../tupmainwindow.cpp" line="1040"/>
         <source>Import Gimp Palettes</source>
         <translation>Importar Paletas De Gimp</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1072"/>
+        <location filename="../../tupmainwindow.cpp" line="1076"/>
         <source>Gimp palette import was successful</source>
         <translation>La paleta de Gimp fue importada exitosamente</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1074"/>
+        <location filename="../../tupmainwindow.cpp" line="1078"/>
         <source>Gimp palette import was unsuccessful</source>
         <translation>La paleta de Gimp no pudo ser importada</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1125"/>
+        <location filename="../../tupmainwindow.cpp" line="1129"/>
         <source>Save Project As</source>
         <translation>Guardar proyecto como</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1143"/>
+        <location filename="../../tupmainwindow.cpp" line="1147"/>
         <source>Directory does not exist! Please, choose another path.</source>
         <translation>El directorio no existe! Por favor, escoge otra ruta.</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1152"/>
+        <location filename="../../tupmainwindow.cpp" line="1156"/>
         <source>Insufficient permissions. Please, pick another path.</source>
         <translation>Permisos insuficientes. Por favor, escoge otra ruta.</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1232"/>
+        <location filename="../../tupmainwindow.cpp" line="1236"/>
         <source>Project &lt;b&gt;%1&lt;/b&gt; saved</source>
         <translation>Proyecto &lt;b&gt;%1&lt;/b&gt; guardado</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1328"/>
+        <location filename="../../tupmainwindow.cpp" line="1332"/>
         <source>Project is already opened!</source>
         <translation>El proyecto ya está abierto!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1336"/>
+        <location filename="../../tupmainwindow.cpp" line="1340"/>
         <source>New camera</source>
         <translation>Nueva cámara</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1566"/>
+        <location filename="../../tupmainwindow.cpp" line="1570"/>
         <source>To post video add more frames!</source>
         <translation>Para publicar el vídeo, agrega más marcos!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1599"/>
-        <location filename="../../tupmainwindow.cpp" line="1651"/>
+        <location filename="../../tupmainwindow.cpp" line="1603"/>
+        <location filename="../../tupmainwindow.cpp" line="1655"/>
         <source>Post canceled by user!</source>
         <translation>Publicación cancelada!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1618"/>
+        <location filename="../../tupmainwindow.cpp" line="1622"/>
         <source>Project is larger than 10 MB. Too big!</source>
         <translation>El proyecto pesa más de 10MB. Es demasiado grande!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1678"/>
+        <location filename="../../tupmainwindow.cpp" line="1682"/>
         <source>Error while posting image. File is too big!</source>
         <translation>Error mientras se publicaba la imagen. Archivo demasiado grande!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1787"/>
+        <location filename="../../tupmainwindow.cpp" line="1791"/>
         <source>Fatal Error</source>
         <translation>Error Fatal</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1789"/>
+        <location filename="../../tupmainwindow.cpp" line="1793"/>
         <source>The connection to the server has been lost.</source>
         <translation>La conexión con el servidor se ha perdido.</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1790"/>
+        <location filename="../../tupmainwindow.cpp" line="1794"/>
         <source>Please, try to connect again in a while</source>
         <translation>Por favor, intenta conectarte en un rato</translation>
     </message>
@@ -6724,9 +6739,9 @@ until reaches at least 3 seconds.</source>
         <translation>Remover escena</translation>
     </message>
     <message>
-        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="286"/>
-        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="307"/>
-        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="327"/>
+        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="287"/>
+        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="309"/>
+        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="330"/>
         <source>Confirmation</source>
         <translation>Confirmación</translation>
     </message>
@@ -6736,12 +6751,12 @@ until reaches at least 3 seconds.</source>
         <translation>Desea eliminar la selección actual?</translation>
     </message>
     <message>
-        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="307"/>
+        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="308"/>
         <source>Do you want to remove this layer?</source>
         <translation>Deseas eliminar esta capa?</translation>
     </message>
     <message>
-        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="327"/>
+        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="329"/>
         <source>Do you want to remove this scene?</source>
         <translation>Deseas remover esta escena?</translation>
     </message>

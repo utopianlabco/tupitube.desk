@@ -583,7 +583,7 @@ bool TupPapagayoApp::confirmCloseDocument()
 
     if (document && document->isModified()) {
         TOptionalDialog dialog(tr("Do you want to save this lip-sync record?"), tr("Confirmation Required"),
-                               false, true, this);
+                               false, true, false, this);
         dialog.setModal(true);        
         dialog.move(static_cast<int> ((screenWidth - dialog.sizeHint().width()) / 2),
                     static_cast<int> ((screenHeight - dialog.sizeHint().height()) / 2));

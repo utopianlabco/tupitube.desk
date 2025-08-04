@@ -50,10 +50,11 @@ class T_GUI_EXPORT TOptionalDialog : public QDialog
 
     public:
         enum Result {Accepted = 0, Cancelled, Discarded};
-        TOptionalDialog(const QString &text, const QString &title = QString(), bool showAgainBox = true,
-                        bool showDiscardButton = false, QWidget *parent = nullptr);
+        TOptionalDialog(const QString &text, const QString &title = QString(),
+                        bool showAgainBox = true, bool showDiscardButton = false,
+                        bool showPolicyButton = true, QWidget *parent = nullptr);
         ~TOptionalDialog();
-        
+
         bool shownAgain();
         TOptionalDialog::Result getResult();
 
@@ -61,9 +62,14 @@ class T_GUI_EXPORT TOptionalDialog : public QDialog
         void callAcceptAction();
         void callCancelAction();
         void callDiscardAction();
+        void openPrivacyPolicyLink();
 
     private:
+        void setButtonsPanel(bool showAgainBox, bool showDiscardButton,
+                             bool showPolicyButton);
+
         QBoxLayout *mainLayout;
+        QHBoxLayout *buttonLayout;
         QCheckBox *checkBox;
         Result result;
 };

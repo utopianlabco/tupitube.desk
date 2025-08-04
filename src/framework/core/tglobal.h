@@ -61,9 +61,9 @@
 #define COMPANY "Utopian Lab"
 #define CACHE_DB "TupiTube"
 
+#define PRIVACY_POLICY_URL "https://tupitube.com/privacy-policy"
 #define LIBRARY_DIR CONFIG_DIR+"/libraries"
 #define UPDATES_URL "https://www.tupitube.com/"
-
 #define TUPITUBE_URL "https://tupitube.com"
 #define TUPITUBE_POST "https://www.tupitube.com" // SQA: change for post.tupitube.com
 #define LIBRARY_URL "https://library.tupitube.com"

@@ -150,7 +150,7 @@ void LipSyncManager::removeLipSync()
 
     if (lipSyncList->count() > 0) {
         TOptionalDialog dialog(tr("Are you sure you want to delete this lip-sync record?"),
-                               tr("Confirmation Required"), false, false, this);
+                               tr("Confirmation Required"), false, false, false, this);
         dialog.setModal(true);
 
         QPair<int, int> dimension = TAlgorithm::screenDimension();

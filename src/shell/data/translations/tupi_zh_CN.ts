@@ -1753,6 +1753,10 @@
         <source>Discard</source>
         <translation>放弃</translation>
     </message>
+    <message>
+        <source>View Privacy Policy</source>
+        <translation>查看隐私政策</translation>
+    </message>
 </context>
 <context>
     <name>TOsd</name>
@@ -4178,20 +4182,28 @@ until reaches at least 3 seconds.</source>
         <translation>Ctrl+F</translation>
     </message>
     <message>
-        <source>Allow TupiTube to collect app usage statistics (Only performance anonymous data).</source>
-        <translation>允许 TupiTube 收集应用程序使用情况统计信息（仅限性能匿名数据）。</translation>
-    </message>
-    <message>
-        <source>Usage Statistics Request</source>
-        <translation>使用情况统计请求</translation>
-    </message>
-    <message>
-        <source>This information will help us to enhance our project. Go to the Preferences dialog to enable/disable it any time.</source>
-        <translation>这些信息将有助于我们改进项目。您可以随时前往“首选项”对话框启用/禁用此功能。</translation>
-    </message>
-    <message>
         <source>Project is already opened!</source>
         <translation>项目已开启！</translation>
+    </message>
+    <message>
+        <source>Would you like to allow TupiTube to collect anonymous performance data?</source>
+        <translation>您是否愿意允许 TupiTube 收集匿名性能数据？</translation>
+    </message>
+    <message>
+        <source>This information helps us enhance the app and provide a better experience for you.</source>
+        <translation>这些信息有助于我们改进应用程序并为您提供更好的体验。</translation>
+    </message>
+    <message>
+        <source>It will be handled in accordance with Utopian Lab&apos;s data policy.</source>
+        <translation>它将按照 Utopian Lab 的数据政策进行处理。</translation>
+    </message>
+    <message>
+        <source>You can enable or disable this option anytime in the Preferences dialog.</source>
+        <translation>您可以随时在“首选项”对话框中启用或禁用此选项。</translation>
+    </message>
+    <message>
+        <source>Help Us Improve TupiTube!</source>
+        <translation>帮助我们改进 TupiTube！</translation>
     </message>
 </context>
 <context>

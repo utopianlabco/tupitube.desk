@@ -67,7 +67,7 @@ TupPaintArea::TupPaintArea(TupProject *work, QWidget *parent): TupPaintAreaBase(
     copyIsValid = false;
     currentToolID = TAction::Pencil;
     webLock = false;
-    controlKeyPressed = false;
+    // controlKeyPressed = false;
 
     QPair<int, int> dimension = TAlgorithm::screenDimension();
     screenWidth = dimension.first;
@@ -92,7 +92,7 @@ TupPaintArea::~TupPaintArea()
 void TupPaintArea::setCurrentScene(int index)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupPaintArea::setCurrentScene()] - Scene index: " << index;
+        qDebug() << "[TupPaintArea::setCurrentScene()] - Scene index ->" << index;
     #endif
 
     if (project->scenesCount() > 0) {
@@ -108,9 +108,11 @@ void TupPaintArea::setCurrentScene(int index)
                 graphicsScene()->setCurrentScene(nullptr);
             } else {
                 #ifdef TUP_DEBUG
-                    qDebug() << "[TupPaintArea::setCurrentScene()] - [ Fatal Error ] -  No scenes available. Invalid index -> "
+                    qDebug() << "[TupPaintArea::setCurrentScene()] - [ Fatal Error ] - "
+                                "No scenes available. Invalid index ->"
                              << index;
-                    qDebug() << "[TupPaintArea::setCurrentScene()] - Scenes total -> " << project->scenesCount();
+                    qDebug() << "[TupPaintArea::setCurrentScene()] - Scenes total ->"
+                             << project->scenesCount();
                 #endif
             }
         }
@@ -145,10 +147,12 @@ void TupPaintArea::mousePressEvent(QMouseEvent *event)
         return;
     }
 
+    /*
     if (controlKeyPressed) {
         emit eyeDropperLaunched();
         return;
     }
+    */
 
     if (currentToolID == TAction::LipSyncTool) {
         // If a node is the mouth target... abort!
@@ -1435,7 +1439,7 @@ void TupPaintArea::keyPressEvent(QKeyEvent *event)
     }
 
     if (event->modifiers() == Qt::ControlModifier) {
-        controlKeyPressed = true;
+        // controlKeyPressed = true;
 
         if (event->key() == Qt::Key_A) {
             emit selectToolLaunched();
@@ -1555,8 +1559,8 @@ void TupPaintArea::keyPressEvent(QKeyEvent *event)
 
 void TupPaintArea::keyReleaseEvent(QKeyEvent *event)
 {
-    if (event->modifiers() == Qt::ControlModifier)
-        controlKeyPressed = false;
+    // if (event->modifiers() == Qt::ControlModifier)
+    //     controlKeyPressed = false;
 
     TupPaintAreaBase::keyReleaseEvent(event);
 }

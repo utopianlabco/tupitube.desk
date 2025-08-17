@@ -198,7 +198,7 @@ class TUPITUBE_EXPORT TupPaintArea : public TupPaintAreaBase, public TupAbstract
         QString copyFrameName;
         bool copyIsValid;
         bool canvasEnabled;
-        bool controlKeyPressed;
+        // bool controlKeyPressed;
 
         TupProjectScanner *projectScanner;
         QString webAssetName;

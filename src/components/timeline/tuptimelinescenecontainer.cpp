@@ -77,10 +77,8 @@ void TupTimelineSceneContainer::moveScene(int sceneIndex, int newIndex)
     #endif
 
     blockSignals(true);
-
-    QTabWidget::tabBar()->moveTab(sceneIndex, newIndex);
-    scenes.swapItemsAt(sceneIndex, newIndex);
-
+        QTabWidget::tabBar()->moveTab(sceneIndex, newIndex);
+        scenes.swapItemsAt(sceneIndex, newIndex);
     blockSignals(false);
 }
 
@@ -130,9 +128,12 @@ void TupTimelineSceneContainer::removeAllScenes()
 TupTimeLineTable * TupTimelineSceneContainer::currentScene()
 {
     int index = currentIndex();
-    TupTimeLineTable *framesTable = nullptr;
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupTimelineSceneContainer::currentScene()] - index ->" << index;
+    #endif
 
-    if (index < scenes.size())
+    TupTimeLineTable *framesTable = nullptr;        
+    if (index > -1 && index < scenes.size())
         framesTable = scenes.at(index);
 
     return framesTable;
@@ -140,7 +141,9 @@ TupTimeLineTable * TupTimelineSceneContainer::currentScene()
 
 TupTimeLineTable * TupTimelineSceneContainer::getTable(int index)
 {
-    TupTimeLineTable *framesTable = scenes.at(index);
+    TupTimeLineTable *framesTable = nullptr;
+    if (index > -1 && index < scenes.size())
+        framesTable = scenes.at(index);
 
     return framesTable;
 }

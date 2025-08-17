@@ -519,23 +519,15 @@ void TupPaintArea::sceneResponse(TupSceneResponse *event)
             case TupProjectRequest::Remove:
               {
                   if (project->scenesCount() > 0) {
-                      if (project->scenesCount() == 1) {
+                      if (project->scenesCount() == 1)
                           setCurrentScene(0);
-                      } else {
-                          if (sceneIndex == (project->scenesCount() - 1))
-                              setCurrentScene(sceneIndex - 1);
-                          else
-                              setCurrentScene(sceneIndex);
-                      }
+                      else
+                          setCurrentScene(sceneIndex);
                   }
               }
             break;
             case TupProjectRequest::Move:
               {
-                  qDebug() << "[TupPaintArea::sceneResponse()] - Tracing scene move action!";
-                  qDebug() << "[TupPaintArea::sceneResponse()] - pos ->" << sceneIndex;
-                  qDebug() << "[TupPaintArea::sceneResponse()] - newPos ->" << event->getArg().toInt();
-
                   setCurrentScene(event->getArg().toInt());
               }
             break;
@@ -1662,7 +1654,8 @@ void TupPaintArea::removeCurrentFrame()
     TCONFIG->beginGroup("General");
     bool ask = TCONFIG->value("ConfirmRemoveFrame", true).toBool();
     if (ask) {
-        TOptionalDialog dialog(tr("Do you want to remove this frame?"), tr("Confirmation"), true, false, this);
+        TOptionalDialog dialog(tr("Do you want to remove this frame?"),
+                               tr("Confirmation"), true, false, false, this);
         dialog.setModal(true);
         dialog.move(static_cast<int> ((screenWidth - dialog.sizeHint().width()) / 2),
                     static_cast<int> ((screenHeight - dialog.sizeHint().height()) / 2));

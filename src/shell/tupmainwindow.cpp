@@ -511,7 +511,7 @@ void TupMainWindow::setWorkSpace(const QStringList &users)
         if (requestType == OpenLocalProject || requestType == OpenNetProject)
             TOsd::self()->display(TOsd::Info, tr("Project <b>%1</b> opened!").arg(m_projectManager->getProject()->getName()));
 
-        m_exposureSheet->setScene(0);
+        m_exposureSheet->setCurrentScene(0);
         m_libraryWidget->initCurrentFrame();
         connect(this, SIGNAL(tabHasChanged(int)), this, SLOT(updateCurrentTab(int)));
 

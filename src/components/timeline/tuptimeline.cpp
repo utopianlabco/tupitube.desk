@@ -276,10 +276,13 @@ void TupTimeLine::sceneResponse(TupSceneResponse *response)
         break;        
         case TupProjectRequest::Move:
         {
-            if (!localSceneMove)
-                scenesContainer->moveScene(sceneIndex, response->getArg().toInt());
-            else
+            int newIndex = response->getArg().toInt();
+            if (!localSceneMove) {
+                scenesContainer->moveScene(sceneIndex, newIndex);
+            } else {
                 localSceneMove = false;
+                scenesContainer->swapTables(sceneIndex, newIndex);
+            }
 
             return;
         }
@@ -301,6 +304,7 @@ void TupTimeLine::sceneResponse(TupSceneResponse *response)
         case TupProjectRequest::Select:
         {
             scenesContainer->setCurrentIndex(sceneIndex);
+            updateLayerOpacity(sceneIndex, 0);
 
             return;
         }
@@ -370,7 +374,9 @@ void TupTimeLine::layerResponse(TupLayerResponse *response)
             break;
             case TupProjectRequest::Move:
             {
-                framesTable->moveLayer(layerIndex, response->getArg().toInt());
+                int newLayerIndex = response->getArg().toInt();
+                framesTable->moveLayer(layerIndex, newLayerIndex);
+                selectedLayer = newLayerIndex;
             }
             break;
             /*
@@ -1147,12 +1153,14 @@ double TupTimeLine::getLayerOpacity(int sceneIndex, int layerIndex)
             opacity = layer->getOpacity();
         } else {
             #ifdef TUP_DEBUG
-                qWarning() << "[TupTimeLine::getLayerOpacity()] - Fatal Error: No layer at index ->" << layerIndex;
+                qWarning() << "[TupTimeLine::getLayerOpacity()] - Fatal Error: No layer at index ->"
+                           << layerIndex;
             #endif
         }
     } else {
         #ifdef TUP_DEBUG
-            qWarning() << "[TupTimeLine::getLayerOpacity()] - Fatal Error: No scene at index ->" << sceneIndex;
+            qWarning() << "[TupTimeLine::getLayerOpacity()] - Fatal Error: No scene at index ->"
+                       << sceneIndex;
         #endif
     }
 

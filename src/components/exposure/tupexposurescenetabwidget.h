@@ -65,13 +65,14 @@ class T_GUI_EXPORT TupExposureSceneTabWidget : public QFrame
         void removeScene(int index, bool withBackup);
         void renameScene(int index, const QString &name);
         void moveScene(int pos, int newPos);
+        void swapExposureTables(int pos, int newPos);
 
-        TupExposureTable* getCurrentTable();
-        TupExposureTable* getTable(int index);
-        void setCurrentIndex(int index);
-        int currentIndex();
+        TupExposureTable* getCurrentExposureTable();
+        TupExposureTable* getExposureTable(int index);
+        void setCurrentSceneIndex(int index);
+        int currentSceneIndex();
         QString currentSceneName() const;
-        bool isTableIndexValid(int index);
+        bool isExposureTableIndexValid(int index);
         int count();
         void setLayerOpacity(int sceneIndex, double opacity);
         void setLayerVisibility(int sceneIndex, int layerIndex, bool visibility);
@@ -86,9 +87,13 @@ class T_GUI_EXPORT TupExposureSceneTabWidget : public QFrame
         void sceneMoved(int from, int to);
 
     private:
-        QList<TupExposureTable *> tables;
+        QTabWidget *scenesTabber;
+
+        QList<QFrame *> sceneContainers;
+        QList<QFrame *> undoContainers;
+
+        QList<TupExposureTable *> sceneTables;
         QList<TupExposureTable *> undoTables;
-        QTabWidget *tabber;
 
         QList<QDoubleSpinBox *> opacityControl;
         QList<QDoubleSpinBox *> undoOpacities;

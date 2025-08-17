@@ -67,6 +67,7 @@ TupPaintArea::TupPaintArea(TupProject *work, QWidget *parent): TupPaintAreaBase(
     copyIsValid = false;
     currentToolID = TAction::Pencil;
     webLock = false;
+    controlKeyPressed = false;
 
     QPair<int, int> dimension = TAlgorithm::screenDimension();
     screenWidth = dimension.first;
@@ -141,6 +142,11 @@ void TupPaintArea::mousePressEvent(QMouseEvent *event)
         #ifdef TUP_DEBUG
             qDebug() << "[TupPaintArea::mousePressEvent()] - Frame is NULL!";
         #endif
+        return;
+    }
+
+    if (controlKeyPressed) {
+        emit eyeDropperLaunched();
         return;
     }
 
@@ -274,6 +280,15 @@ void TupPaintArea::mousePressEvent(QMouseEvent *event)
     TupPaintAreaBase::mousePressEvent(event);
 }
 
+void TupPaintArea::mouseReleaseEvent(QMouseEvent *event)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupPaintArea::mouseReleaseEvent()]";
+    #endif
+
+    TupPaintAreaBase::mouseReleaseEvent(event);
+}
+
 void TupPaintArea::tabletEvent(QTabletEvent *event)
 {
     if (currentToolID == TAction::Ink) {
@@ -289,7 +304,7 @@ void TupPaintArea::frameResponse(TupFrameResponse *response)
     #ifdef TUP_DEBUG
         qDebug() << "[TupPaintArea::frameResponse()] - [" << response->getSceneIndex()
                  << ", " << response->getLayerIndex() << ", "
-                 << response->getFrameIndex() << "] | request -> "
+                 << response->getFrameIndex() << "] | request ->"
                  << response->getAction();
     #endif
 
@@ -340,7 +355,7 @@ void TupPaintArea::frameResponse(TupFrameResponse *response)
             break;
             default:
               #ifdef TUP_DEBUG
-                  qDebug() << "[TupPaintArea::frameResponse()] - Action not recognized -> " << response->getAction();
+                  qDebug() << "[TupPaintArea::frameResponse()] - Action not recognized ->" << response->getAction();
               #endif
             break;
         }
@@ -1420,6 +1435,8 @@ void TupPaintArea::keyPressEvent(QKeyEvent *event)
     }
 
     if (event->modifiers() == Qt::ControlModifier) {
+        controlKeyPressed = true;
+
         if (event->key() == Qt::Key_A) {
             emit selectToolLaunched();
             return;
@@ -1479,10 +1496,10 @@ void TupPaintArea::keyPressEvent(QKeyEvent *event)
         }
     }
 
-//    if (event->key() == Qt::Key_E) {
-//        emit eyeDropperLaunched();
-//        return;
-//    }
+    //    if (event->key() == Qt::Key_D) {
+    //        emit eyeDropperLaunched();
+    //        return;
+    //    }
 
     if (event->key() == Qt::Key_PageUp) {
         if (event->modifiers() == Qt::ControlModifier)
@@ -1536,12 +1553,13 @@ void TupPaintArea::keyPressEvent(QKeyEvent *event)
     TupPaintAreaBase::keyPressEvent(event);
 }
 
-/*
 void TupPaintArea::keyReleaseEvent(QKeyEvent *event)
 {
+    if (event->modifiers() == Qt::ControlModifier)
+        controlKeyPressed = false;
+
     TupPaintAreaBase::keyReleaseEvent(event);
 }
-*/
 
 void TupPaintArea::goOneFrameBack()
 {
@@ -1802,11 +1820,10 @@ void TupPaintArea::dragMoveEvent(QDragMoveEvent *e)
 
 void TupPaintArea::dropEvent(QDropEvent *e)
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "[TupPaintArea::dropEvent()]";
-    #endif
-
     QString objectPath = e->mimeData()->text().trimmed();
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupPaintArea::dropEvent()] - objectPath ->" << objectPath;
+    #endif
 
     if (!objectPath.isEmpty()) {
         QString lowercase = objectPath.toLower();
@@ -2010,7 +2027,7 @@ void TupPaintArea::importLocalProject(const QString &objectPath, bool onlyLibrar
 void TupPaintArea::getLocalAsset(const QString &path)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupPaintArea::getLocalAsset(QString)] - path -> " << path;
+        qDebug() << "[TupPaintArea::getLocalAsset(QString)] - path ->" << path;
     #endif
 
     QString objectPath = path;

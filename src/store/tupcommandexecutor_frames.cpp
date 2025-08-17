@@ -338,34 +338,37 @@ bool TupCommandExecutor::renameFrame(TupFrameResponse *response)
     return false;
 }
 
-
 bool TupCommandExecutor::selectFrame(TupFrameResponse *response)
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "[TupCommandExecutor::selectFrame()]";
-    #endif	
-	
     int sceneIndex = response->getSceneIndex();
     int layerIndex = response->getLayerIndex();
-    int pos = response->getFrameIndex();
+    int frameIndex = response->getFrameIndex();
 
-    if (sceneIndex < 0 || pos < 0)
+    /*
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupCommandExecutor::selectFrame()] - sceneIndex ->" << sceneIndex;
+        qDebug() << "[TupCommandExecutor::selectFrame()] - layerIndex ->" << layerIndex;
+        qDebug() << "[TupCommandExecutor::selectFrame()] - frameIndex ->" << frameIndex;
+    #endif
+    */
+
+    if (sceneIndex < 0 || frameIndex < 0)
         return false;
 
     TupScene *scene = project->sceneAt(sceneIndex);
     if (scene) {
         TupLayer *layer = scene->layerAt(layerIndex);
         if (layer) {
-            if (pos < layer->framesCount()) {
-                TupFrame *frame = layer->frameAt(pos);
+            if (frameIndex < layer->framesCount()) {
+                TupFrame *frame = layer->frameAt(frameIndex);
                 if (frame) {
                     emit responsed(response);
                     return true;
                 } else {
                     #ifdef TUP_DEBUG
                         qDebug() << "[TupCommandExecutor::selectFrame()]"
-                                    " - Invalid frame index -> "
-                                 << pos;
+                                    " - Invalid frame index ->"
+                                 << frameIndex;
                     #endif
                     return false;
                 }

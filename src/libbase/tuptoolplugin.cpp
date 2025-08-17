@@ -309,7 +309,7 @@ QPair<int, int> TupToolPlugin::setKeyAction(int key, Qt::KeyboardModifiers modif
             }
             break;
 
-            case Qt::Key_E:
+            case Qt::Key_D:
             {
                 menu = TAction::ColorMenu;
                 tool = TAction::EyeDropper;

@@ -55,6 +55,7 @@ class T_GUI_EXPORT TupTimelineSceneContainer : public QTabWidget
         void moveScene(int pos, int newPos);
         void removeScene(int sceneIndex, bool withBackup);
         void renameScene(int index, const QString &name);
+        void swapTables(int pos, int newPos);
 
         TupTimeLineTable * currentScene();
         TupTimeLineTable * getTable(int index);

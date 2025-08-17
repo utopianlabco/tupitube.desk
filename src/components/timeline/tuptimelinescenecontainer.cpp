@@ -38,6 +38,7 @@ TupTimelineSceneContainer::TupTimelineSceneContainer(QWidget *parent) : QTabWidg
 {
     setMovable(true);
     connect(tabBar(), SIGNAL(tabBarDoubleClicked(int)), this, SIGNAL(sceneRenameRequested(int)));
+    connect(tabBar(), SIGNAL(tabMoved(int,int)), this, SIGNAL(sceneMoved(int,int)));
 }
 
 TupTimelineSceneContainer::~TupTimelineSceneContainer()
@@ -53,7 +54,6 @@ void TupTimelineSceneContainer::addScene(int sceneIndex, TupTimeLineTable *frame
 
     scenes << framesTable;
     QTabWidget::insertTab(sceneIndex, framesTable, sceneName);
-    connect(tabBar(), SIGNAL(tabMoved(int,int)), this, SIGNAL(sceneMoved(int,int)));
 }
 
 void TupTimelineSceneContainer::restoreScene(int sceneIndex, const QString &sceneName)
@@ -77,8 +77,21 @@ void TupTimelineSceneContainer::moveScene(int sceneIndex, int newIndex)
     #endif
 
     blockSignals(true);
+
     QTabWidget::tabBar()->moveTab(sceneIndex, newIndex);
+    scenes.swapItemsAt(sceneIndex, newIndex);
+
     blockSignals(false);
+}
+
+void TupTimelineSceneContainer::swapTables(int pos, int newPos)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupTimelineSceneContainer::swapTables()] - pos ->" << pos;
+        qDebug() << "[TupTimelineSceneContainer::swapTables()] - newPos ->" << newPos;
+    #endif
+
+    scenes.swapItemsAt(pos, newPos);
 }
 
 void TupTimelineSceneContainer::removeScene(int sceneIndex, bool withBackup)

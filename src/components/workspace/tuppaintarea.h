@@ -111,6 +111,7 @@ class TUPITUBE_EXPORT TupPaintArea : public TupPaintAreaBase, public TupAbstract
 
     protected:
         virtual void keyPressEvent(QKeyEvent *event);
+        virtual void keyReleaseEvent(QKeyEvent *event);
 
     public slots:
         void updatePaintArea();
@@ -160,6 +161,8 @@ class TUPITUBE_EXPORT TupPaintArea : public TupPaintAreaBase, public TupAbstract
 
     protected:
         void mousePressEvent(QMouseEvent *event);
+        void mouseReleaseEvent(QMouseEvent *event);
+
         void tabletEvent(QTabletEvent *event);
         void dragEnterEvent(QDragEnterEvent *event);
         void dragMoveEvent(QDragMoveEvent *event);
@@ -195,6 +198,7 @@ class TUPITUBE_EXPORT TupPaintArea : public TupPaintAreaBase, public TupAbstract
         QString copyFrameName;
         bool copyIsValid;
         bool canvasEnabled;
+        bool controlKeyPressed;
 
         TupProjectScanner *projectScanner;
         QString webAssetName;

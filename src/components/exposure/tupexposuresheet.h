@@ -91,7 +91,7 @@ class TUPITUBE_EXPORT TupExposureSheet : public TupModuleWidgetBase
         void applyAction(int action);
         void addScene(int sceneIndex, const QString &name);
         void renameScene(int sceneIndex, const QString &name);
-        void setScene(int sceneIndex);
+        void setCurrentScene(int sceneIndex);
         void changeLayerVisibility(int, bool);
         void updateFPS(int fps);
 
@@ -119,7 +119,7 @@ class TUPITUBE_EXPORT TupExposureSheet : public TupModuleWidgetBase
     private:
         TupProject *project;
         TupExposureSceneTabWidget *scenesContainer;
-        TupExposureTable *currentTable;
+        TupExposureTable *currentExposureTable;
         TupProjectActionBar *topActionBar;
         TupProjectActionBar *bottomActionBar;
 

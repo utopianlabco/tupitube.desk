@@ -45,26 +45,30 @@ TupExposureSceneTabWidget::TupExposureSceneTabWidget(QWidget *parent) : QFrame(p
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setMargin(1);
 
-    tabber = new QTabWidget;
-    tabber->setMovable(true);
+    scenesTabber = new QTabWidget;
+    scenesTabber->setMovable(true);
 
-    connect(tabber->tabBar(), SIGNAL(tabBarDoubleClicked(int)), this, SIGNAL(sceneRenameRequested(int)));
-    connect(tabber->tabBar(), SIGNAL(tabMoved(int,int)), this, SIGNAL(sceneMoved(int,int)));
-    connect(tabber, SIGNAL(currentChanged(int)), this, SIGNAL(currentChanged(int)));
+    connect(scenesTabber->tabBar(), SIGNAL(tabBarDoubleClicked(int)), this, SIGNAL(sceneRenameRequested(int)));
+    connect(scenesTabber->tabBar(), SIGNAL(tabMoved(int,int)), this, SIGNAL(sceneMoved(int,int)));
+    connect(scenesTabber, SIGNAL(currentChanged(int)), this, SIGNAL(currentChanged(int)));
 
-    layout->addWidget(tabber);
+    layout->addWidget(scenesTabber);
 
     setLayout(layout);
 }
 
 TupExposureSceneTabWidget::~TupExposureSceneTabWidget()
 {
-    tables.clear();
+    sceneContainers.clear();
+    undoContainers.clear();
+
+    sceneTables.clear();
     undoTables.clear();
+
     opacityControl.clear();
     undoOpacities.clear();
 
-    delete tabber;
+    delete scenesTabber;
 }
 
 void TupExposureSceneTabWidget::removeAllTabs()
@@ -73,181 +77,209 @@ void TupExposureSceneTabWidget::removeAllTabs()
         qDebug() << "[TupExposureSceneTabWidget::removeAllTabs()]";
     #endif
 
-    int count = tabber->count();
+    int count = scenesTabber->count();
     for (int i = 0; i < count; i++)
-         delete tabber->currentWidget();
+         delete scenesTabber->currentWidget();
 
-    tables.clear();
+    sceneContainers.clear();
+    undoContainers.clear();
+
+    sceneTables.clear();
+    undoTables.clear();
+
     opacityControl.clear();
     undoOpacities.clear();
 }
 
-void TupExposureSceneTabWidget::addScene(int index, const QString &name, TupExposureTable *table) 
+void TupExposureSceneTabWidget::addScene(int index, const QString &sceneName,
+                                         TupExposureTable *exposureTable)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupExposureSceneTabWidget::addScene()] - index ->" << index;
-        qDebug() << "[TupExposureSceneTabWidget::addScene()] - name ->" << name;
+        qDebug() << "[TupExposureSceneTabWidget::addScene()] - name ->" << sceneName;
     #endif
 
-    QFrame *frame = new QFrame;
-    QVBoxLayout *layout = new QVBoxLayout(frame);
-    layout->setMargin(1);
+    QFrame *tableContainer = new QFrame;
+    QVBoxLayout *tableLayout = new QVBoxLayout(tableContainer);
+    tableLayout->setMargin(1);
 
     QHBoxLayout *toolsLayout = new QHBoxLayout;
     toolsLayout->setAlignment(Qt::AlignHCenter);
 
-    QLabel *header = new QLabel();
+    QLabel *containerHeader = new QLabel();
     QPixmap pix(ICONS_DIR + "layer_opacity.png");
-    header->setToolTip(tr("Current Layer Opacity"));
-    header->setPixmap(pix.scaledToWidth(TResponsiveUI::fitSmallIconSize()));
+    containerHeader->setToolTip(tr("Current Layer Opacity"));
+    containerHeader->setPixmap(pix.scaledToWidth(TResponsiveUI::fitSmallIconSize()));
 
     QDoubleSpinBox *opacitySpinBox = new QDoubleSpinBox(this);
     opacitySpinBox->setRange(0.1, 1.0);
     opacitySpinBox->setSingleStep(0.1);
     opacitySpinBox->setValue(1.0);
     opacitySpinBox->setToolTip(tr("Current Layer Opacity"));
-    connect(opacitySpinBox, SIGNAL(valueChanged(double)), this, SIGNAL(layerOpacityChanged(double)));
+    connect(opacitySpinBox, SIGNAL(valueChanged(double)),
+            this, SIGNAL(layerOpacityChanged(double)));
 
     opacityControl << opacitySpinBox;
 
-    toolsLayout->addWidget(header);
+    toolsLayout->addWidget(containerHeader);
     toolsLayout->addWidget(opacitySpinBox);
 
-    layout->addLayout(toolsLayout);
-    layout->addWidget(table);
-    frame->setLayout(layout);
+    tableLayout->addLayout(toolsLayout);
+    tableLayout->addWidget(exposureTable);
+    tableContainer->setLayout(tableLayout);
 
-    tables.insert(index, table);
-    tabber->insertTab(index, frame, name);
+    sceneTables.insert(index, exposureTable);
+    sceneContainers.insert(index, tableContainer);
+    scenesTabber->insertTab(index, tableContainer, sceneName);
 }
 
-void TupExposureSceneTabWidget::restoreScene(int index, const QString &name)
+void TupExposureSceneTabWidget::restoreScene(int sceneIndex, const QString &sceneName)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupExposureSceneTabWidget::restoreScene()] - index ->" << index;
-        qDebug() << "[TupExposureSceneTabWidget::restoreScene()] - name ->" << name;
+        qDebug() << "[TupExposureSceneTabWidget::restoreScene()] - sceneIndex ->" << sceneIndex;
+        qDebug() << "[TupExposureSceneTabWidget::restoreScene()] - sceneName ->" << sceneName;
     #endif
 
-    QFrame *frame = new QFrame;
-    QVBoxLayout *layout = new QVBoxLayout(frame);
-    layout->setMargin(1);
-
-    QHBoxLayout *toolsLayout = new QHBoxLayout;
-    toolsLayout->setAlignment(Qt::AlignHCenter);
-
-    QLabel *header = new QLabel();
-    QPixmap pix(THEME_DIR + "icons/layer_opacity.png");
-    header->setToolTip(tr("Current Layer Opacity"));
-    header->setPixmap(pix);
-
     if (!undoTables.isEmpty()) {
-        TupExposureTable *table = undoTables.takeLast();
-        if (table) {
+        TupExposureTable *exposureTable = undoTables.takeLast();
+        if (exposureTable) {
             QDoubleSpinBox *opacitySpinBox = undoOpacities.takeLast();
             opacityControl << opacitySpinBox;
+            sceneTables.insert(sceneIndex, exposureTable);
 
-            toolsLayout->addWidget(header);
-            toolsLayout->addWidget(opacitySpinBox);
-
-            layout->addLayout(toolsLayout);
-            layout->addWidget(table);
-            frame->setLayout(layout);
-
-            tables.insert(index, table);
-            tabber->insertTab(index, frame, name);
+            QFrame *tableContainer = undoContainers.takeLast();
+            sceneContainers.insert(sceneIndex, tableContainer);
+            scenesTabber->insertTab(sceneIndex, tableContainer, sceneName);
         } else {
             #ifdef TUP_DEBUG
-                qDebug() << "[TupExposureSceneTabWidget::restoreScene()] - Fatal Error: table from undoTables stack is NULL!";
+                qDebug() << "[TupExposureSceneTabWidget::restoreScene()] - "
+                            "Fatal Error: table from undoTables stack is NULL!";
             #endif
         }
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupExposureSceneTabWidget::restoreScene()] - Fatal Error: The undoTables stack is empty!";
+            qDebug() << "[TupExposureSceneTabWidget::restoreScene()] - "
+                        "Fatal Error: The undoTables stack is empty!";
         #endif
     }
 }
 
-void TupExposureSceneTabWidget::removeScene(int index, bool withBackup) 
+void TupExposureSceneTabWidget::removeScene(int sceneIndex, bool withBackup)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupExposureSceneTabWidget::removeScene()] - index ->" << index;
+        qDebug() << "[TupExposureSceneTabWidget::removeScene()] - sceneIndex ->" << sceneIndex;
     #endif
 
     if (withBackup) {
-        undoTables << tables.takeAt(index);
-        undoOpacities << opacityControl.takeAt(index);
+        undoContainers << sceneContainers.takeAt(sceneIndex);
+        undoTables << sceneTables.takeAt(sceneIndex);
+        undoOpacities << opacityControl.takeAt(sceneIndex);
     } else {
-        tables.takeAt(index);
+        sceneContainers.takeAt(sceneIndex);
+        sceneTables.takeAt(sceneIndex);
+        opacityControl.takeAt(sceneIndex);
     }
 
     blockSignals(true);
-    tabber->removeTab(index);
+        scenesTabber->removeTab(sceneIndex);
     blockSignals(false);
 }
 
-void TupExposureSceneTabWidget::renameScene(int index, const QString &name)
+void TupExposureSceneTabWidget::renameScene(int sceneIndex, const QString &sceneName)
 {
-    tabber->setTabText(index, name);
+    scenesTabber->setTabText(sceneIndex, sceneName);
 }
 
-void TupExposureSceneTabWidget::moveScene(int pos, int newPos)
+void TupExposureSceneTabWidget::moveScene(int index, int newIndex)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupExposureSceneTabWidget::moveScene()] - pos ->" << pos;
-        qDebug() << "[TupExposureSceneTabWidget::moveScene()] - newPos ->" << newPos;
+        qDebug() << "[TupExposureSceneTabWidget::moveScene()] - index ->" << index;
+        qDebug() << "[TupExposureSceneTabWidget::moveScene()] - newIndex ->" << newIndex;
     #endif
 
-    tabber->tabBar()->blockSignals(true);
-    tabber->tabBar()->moveTab(pos, newPos);
-    tabber->tabBar()->blockSignals(false);
+    QList<QString> tabLabels;
+    for(int i = 0; i < scenesTabber->count(); i++)
+        tabLabels.append(scenesTabber->tabText(i));
+    tabLabels.swapItemsAt(index, newIndex);
+    swapExposureTables(index, newIndex);
+
+    scenesTabber->blockSignals(true);
+        // Removing all tabs
+        while (scenesTabber->count() > 0)
+               scenesTabber->removeTab(0);
+        // Restoring all tabs (new order)
+        for (int i=0; i<tabLabels.count(); i++)
+            scenesTabber->addTab(sceneContainers.at(i), tabLabels.at(i));
+    scenesTabber->blockSignals(false);
 }
 
-TupExposureTable* TupExposureSceneTabWidget::getCurrentTable() 
+void TupExposureSceneTabWidget::swapExposureTables(int index, int newIndex)
 {
-    int index = currentIndex();
-    return getTable(index);
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupExposureSceneTabWidget::swapExposureTables()] - index ->" << index;
+        qDebug() << "[TupExposureSceneTabWidget::swapExposureTables()] - newIndex ->" << newIndex;
+    #endif
+
+    sceneContainers.swapItemsAt(index, newIndex);
+    sceneTables.swapItemsAt(index, newIndex);
+    opacityControl.swapItemsAt(index, newIndex);
 }
 
-TupExposureTable* TupExposureSceneTabWidget::getTable(int index)
+TupExposureTable* TupExposureSceneTabWidget::getCurrentExposureTable()
 {
-    if (isTableIndexValid(index)) {
-        TupExposureTable *table = tables.at(index);
-        if (table) {
-            return table;
+    int index = currentSceneIndex();
+    return getExposureTable(index);
+}
+
+TupExposureTable* TupExposureSceneTabWidget::getExposureTable(int sceneIndex)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupExposureSceneTabWidget::getExposureTable()] - sceneIndex ->"
+                 << sceneIndex;
+    #endif
+
+    if (isExposureTableIndexValid(sceneIndex)) {
+        TupExposureTable *exposureTable = sceneTables.at(sceneIndex);
+        if (exposureTable) {
+            return exposureTable;
         } else {
             #ifdef TUP_DEBUG
-                qDebug() << "[TupExposureSceneTabWidget::getTable()] - Fatal Error: Table pointer is NULL!";
+                qDebug() << "[TupExposureSceneTabWidget::getExposureTable()] - "
+                            "Fatal Error: Table pointer is NULL!";
             #endif
         }
     }
 
     #ifdef TUP_DEBUG
-        qDebug() << "[TupExposureSceneTabWidget::getTable()] - Fatal Error: Invalid table index ->" << index;
+        qDebug() << "[TupExposureSceneTabWidget::getExposureTable()] - "
+                    "Fatal Error: Invalid table index ->"
+                 << sceneIndex;
     #endif
 
     return 0;
 }
 
-void TupExposureSceneTabWidget::setCurrentIndex(int index)
+void TupExposureSceneTabWidget::setCurrentSceneIndex(int sceneIndex)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupExposureSceneTabWidget::setCurrentIndex()] - index ->" << index;
+        qDebug() << "[TupExposureSceneTabWidget::setCurrentSceneIndex()] - sceneIndex ->" << sceneIndex;
     #endif
 
-    tabber->setCurrentIndex(index);
+    scenesTabber->setCurrentIndex(sceneIndex);
 }
 
-int TupExposureSceneTabWidget::currentIndex()
+int TupExposureSceneTabWidget::currentSceneIndex()
 {
-    int index = tabber->currentIndex();
+    int index = scenesTabber->currentIndex();
+
     return index;
 }
 
 QString TupExposureSceneTabWidget::currentSceneName() const
 {
-    int sceneIndex = tabber->currentIndex();
+    int sceneIndex = scenesTabber->currentIndex();
     if (sceneIndex > -1)
-        return tabber->tabText(sceneIndex);
+        return scenesTabber->tabText(sceneIndex);
 
     #ifdef TUP_DEBUG
         qDebug() << "[TupExposureSceneTabWidget::currentSceneName()] - Fatal Error: No scene selected!";
@@ -256,9 +288,9 @@ QString TupExposureSceneTabWidget::currentSceneName() const
     return "";
 }
 
-bool TupExposureSceneTabWidget::isTableIndexValid(int index)
+bool TupExposureSceneTabWidget::isExposureTableIndexValid(int index)
 {
-    if (index > -1 && index < tables.count())
+    if (index > -1 && index < sceneTables.count())
         return true;
 
     return false;
@@ -266,7 +298,7 @@ bool TupExposureSceneTabWidget::isTableIndexValid(int index)
 
 int TupExposureSceneTabWidget::count()
 {
-    return tables.count();
+    return sceneTables.count();
 }
 
 void TupExposureSceneTabWidget::setLayerOpacity(int sceneIndex, double opacity)
@@ -279,19 +311,21 @@ void TupExposureSceneTabWidget::setLayerOpacity(int sceneIndex, double opacity)
     if (opacityControl.at(sceneIndex)) {
         QDoubleSpinBox *spinBox = opacityControl.at(sceneIndex);
         spinBox->blockSignals(true);
-        spinBox->setValue(opacity);
+            spinBox->setValue(opacity);
         spinBox->blockSignals(false);
     }
 }
 
 void TupExposureSceneTabWidget::setLayerVisibility(int sceneIndex, int layerIndex, bool visibility)
 {
-    if (isTableIndexValid(sceneIndex)) {
-        TupExposureTable *table = tables.at(sceneIndex);
+    if (isExposureTableIndexValid(sceneIndex)) {
+        TupExposureTable *table = sceneTables.at(sceneIndex);
         table->setLayerVisibility(layerIndex, visibility);
     } else {
         #ifdef TUP_DEBUG
-            qWarning() << "[TupExposureSceneTabWidget::setLayerVisibility()] - Fatal Error: Invalid scene index ->" << sceneIndex;
+            qWarning() << "[TupExposureSceneTabWidget::setLayerVisibility()] - "
+                          "Fatal Error: Invalid scene index ->"
+                       << sceneIndex;
         #endif
     }
 }

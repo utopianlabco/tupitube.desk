@@ -716,10 +716,10 @@ void TupExposureSheet::sceneResponse(TupSceneResponse *response)
         break;
         case TupProjectRequest::Remove:
             {
-                int scenesTotal = scenesContainer->count();
+                // int scenesTotal = scenesContainer->count();
                 // temp
-                qDebug() << "*** scenesTotal ->" << scenesTotal;
-                qDebug() << "*** sceneIndex ->" << sceneIndex;
+                // qDebug() << "*** scenesTotal ->" << scenesTotal;
+                // qDebug() << "*** sceneIndex ->" << sceneIndex;
 
                 scenesContainer->removeScene(sceneIndex, true);
                 setCurrentScene(sceneIndex);

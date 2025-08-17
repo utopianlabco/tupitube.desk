@@ -3761,9 +3761,8 @@ until reaches at least 3 seconds.</source>
 <context>
     <name>TupExposureSceneTabWidget</name>
     <message>
-        <location filename="../../../components/exposure/tupexposurescenetabwidget.cpp" line="101"/>
-        <location filename="../../../components/exposure/tupexposurescenetabwidget.cpp" line="108"/>
-        <location filename="../../../components/exposure/tupexposurescenetabwidget.cpp" line="140"/>
+        <location filename="../../../components/exposure/tupexposurescenetabwidget.cpp" line="111"/>
+        <location filename="../../../components/exposure/tupexposurescenetabwidget.cpp" line="118"/>
         <source>Current Layer Opacity</source>
         <translation>Непрозрачность текущего слоя</translation>
     </message>
@@ -3787,37 +3786,37 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="133"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1380"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1402"/>
         <source>1 frame</source>
         <translation>1 кадр</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="137"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1385"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1407"/>
         <source>5 frames</source>
         <translation>5 кадров</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="141"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1390"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1412"/>
         <source>10 frames</source>
         <translation>10 кадров</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="145"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1395"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1417"/>
         <source>20 frames</source>
         <translation>20 кадров</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="149"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1400"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1422"/>
         <source>50 frames</source>
         <translation>50 кадров</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="153"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1405"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1427"/>
         <source>100 frames</source>
         <translation>100 кадров</translation>
     </message>
@@ -3854,23 +3853,23 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="388"/>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="416"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="546"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="726"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1051"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1069"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1515"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="547"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="732"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1073"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1091"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1541"/>
         <source>Frame</source>
         <translation>Кадр</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="406"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="722"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="728"/>
         <source>Scene %1</source>
         <translation>Сцена %1</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="413"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="725"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="731"/>
         <source>Layer 1</source>
         <translation>Слой 1</translation>
     </message>
@@ -5900,161 +5899,161 @@ until reaches at least 3 seconds.</source>
 <context>
     <name>TupPaintArea</name>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="178"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="191"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="184"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="197"/>
         <source>Drawing area</source>
         <translation>Область для рисования</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="199"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="205"/>
         <source>Cut</source>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="199"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="205"/>
         <source>Ctrl+X</source>
         <translation>Ctrl+X</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="200"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="206"/>
         <source>Copy</source>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="206"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="212"/>
         <source>Paste</source>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="208"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="214"/>
         <source>Paste in...</source>
         <translation>Вставить в…</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="209"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="215"/>
         <source>next 5 frames</source>
         <translation>следующие 5 кадров</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="210"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="216"/>
         <source>next 10 frames</source>
         <translation>следующие 10 кадров</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="211"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="217"/>
         <source>next 20 frames</source>
         <translation>следующие 20 кадров</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="212"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="218"/>
         <source>next 50 frames</source>
         <translation>следующие 50 кадров</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="213"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="219"/>
         <source>next 100 frames</source>
         <translation>следующие 100 кадров</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="225"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="231"/>
         <source>Delete</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="227"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="233"/>
         <source>Send</source>
         <translation>Отправить</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="230"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="236"/>
         <source>To back</source>
         <translation>На самый нижний уровень</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="231"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="237"/>
         <source>To front</source>
         <translation>На самый верхний уровень</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="232"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="238"/>
         <source>One level to back</source>
         <translation>На один уровень ниже</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="233"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="239"/>
         <source>One level to front</source>
         <translation>На один уровень выше</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1887"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1904"/>
         <source>Sorry, no library was found!</source>
         <translation>Извините, библиотека не найдена!</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1914"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1931"/>
         <source>Project Dimension Conflict</source>
         <translation>Конфликт измерений проекта</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1916"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1933"/>
         <source>Imported scenes require a different dimension than the current to fit accurately.</source>
         <translation>Для точного соответствия импортированным сценам требуется размер, отличный от текущего.</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1917"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1934"/>
         <source>Do you want to resize your current project?</source>
         <translation>Хотите изменить размер текущего проекта?</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1985"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2002"/>
         <source>Project assets imported successfully!</source>
         <translation>Активы проекта успешно импортированы!</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2004"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2021"/>
         <source>Sorry, TUP source file is invalid!</source>
         <translation>К сожалению, исходный файл TUP недействителен!</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2043"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2135"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2060"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2152"/>
         <source>Sorry, file format not supported!</source>
         <translation>Извините, формат файла не поддерживается!</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2149"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2166"/>
         <source>Network Fatal Error. Please, contact us!</source>
         <translation>Неустранимая сетевая ошибка. Свяжитесь с нами!</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="181"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="239"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="187"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="245"/>
         <source>Add to library...</source>
         <translation>Добавить в библиотеку…</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1092"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1517"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1572"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1587"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1707"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1734"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1107"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1534"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1590"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1605"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1725"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1752"/>
         <source>Frame</source>
         <translation>Кадр</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1263"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1296"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1278"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1311"/>
         <source>No items selected</source>
         <translation>Элементы не выбраны</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1643"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1661"/>
         <source>Do you want to remove this frame?</source>
         <translation>Удалить этот кадр?</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1643"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1661"/>
         <source>Confirmation</source>
         <translation>Подтверждение</translation>
     </message>
@@ -7661,38 +7660,38 @@ Cover</source>
         <translation>Непрозрачность текущего слоя</translation>
     </message>
     <message>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="363"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="788"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="367"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="794"/>
         <source>Layer %1</source>
         <translation>Слой %1</translation>
     </message>
     <message>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="366"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="701"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="705"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="710"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="743"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="792"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="797"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="843"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="944"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="370"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="707"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="711"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="716"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="749"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="798"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="803"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="849"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="950"/>
         <source>Frame</source>
         <translation>Кадр</translation>
     </message>
     <message>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="870"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="876"/>
         <source>Scene 1</source>
         <translation>Сцена 1</translation>
     </message>
     <message>
         <location filename="../../../components/timeline/tuptimeline.cpp" line="255"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="833"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="839"/>
         <source>Scene %1</source>
         <translation>Сцена %1</translation>
     </message>
     <message>
         <location filename="../../../components/timeline/tuptimeline.cpp" line="258"/>
-        <location filename="../../../components/timeline/tuptimeline.cpp" line="840"/>
+        <location filename="../../../components/timeline/tuptimeline.cpp" line="846"/>
         <source>Layer 1</source>
         <translation>Слой 1</translation>
     </message>

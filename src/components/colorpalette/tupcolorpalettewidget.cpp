@@ -196,8 +196,8 @@ void TupColorPaletteWidget::setupColorDisplay()
     mainLayout->addWidget(htmlField);
 
     TImageButton *eyedropperButton = new TImageButton(QIcon(QPixmap(THEME_DIR + "icons/eyedropper.png")), 18, this);
-    eyedropperButton->setToolTip(tr("Eye Dropper"));
-    // eyedropperButton->setShortcut(QKeySequence(tr("E")));
+    eyedropperButton->setToolTip(tr("Eye Dropper - D"));
+    // eyedropperButton->setShortcut(QKeySequence(tr("D")));
     connect(eyedropperButton, SIGNAL(clicked()), this, SLOT(activateEyeDropper()));
     mainLayout->addWidget(eyedropperButton);
 

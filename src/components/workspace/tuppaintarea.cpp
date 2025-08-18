@@ -67,7 +67,6 @@ TupPaintArea::TupPaintArea(TupProject *work, QWidget *parent): TupPaintAreaBase(
     copyIsValid = false;
     currentToolID = TAction::Pencil;
     webLock = false;
-    // controlKeyPressed = false;
 
     QPair<int, int> dimension = TAlgorithm::screenDimension();
     screenWidth = dimension.first;
@@ -146,13 +145,6 @@ void TupPaintArea::mousePressEvent(QMouseEvent *event)
         #endif
         return;
     }
-
-    /*
-    if (controlKeyPressed) {
-        emit eyeDropperLaunched();
-        return;
-    }
-    */
 
     if (currentToolID == TAction::LipSyncTool) {
         // If a node is the mouth target... abort!
@@ -1431,8 +1423,6 @@ void TupPaintArea::keyPressEvent(QKeyEvent *event)
     }
 
     if (event->modifiers() == Qt::ControlModifier) {
-        // controlKeyPressed = true;
-
         if (event->key() == Qt::Key_A) {
             emit selectToolLaunched();
             return;
@@ -1492,10 +1482,10 @@ void TupPaintArea::keyPressEvent(QKeyEvent *event)
         }
     }
 
-    //    if (event->key() == Qt::Key_D) {
-    //        emit eyeDropperLaunched();
-    //        return;
-    //    }
+    if (event->key() == Qt::Key_D) {
+        emit eyeDropperLaunched();
+        return;
+    }
 
     if (event->key() == Qt::Key_PageUp) {
         if (event->modifiers() == Qt::ControlModifier)
@@ -1549,13 +1539,12 @@ void TupPaintArea::keyPressEvent(QKeyEvent *event)
     TupPaintAreaBase::keyPressEvent(event);
 }
 
+/*
 void TupPaintArea::keyReleaseEvent(QKeyEvent *event)
 {
-    // if (event->modifiers() == Qt::ControlModifier)
-    //     controlKeyPressed = false;
-
     TupPaintAreaBase::keyReleaseEvent(event);
 }
+*/
 
 void TupPaintArea::goOneFrameBack()
 {

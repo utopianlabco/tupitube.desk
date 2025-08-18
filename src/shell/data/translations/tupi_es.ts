@@ -3175,6 +3175,10 @@
     </message>
     <message>
         <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="199"/>
+        <source>Eye Dropper - D</source>
+        <translation>Gotero - D</translation>
+    </message>
+    <message>
         <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="257"/>
         <source>Eye Dropper</source>
         <translation>Gotero</translation>
@@ -3786,37 +3790,37 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="133"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1402"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1410"/>
         <source>1 frame</source>
         <translation>1 marco</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="137"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1407"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1415"/>
         <source>5 frames</source>
         <translation>5 marcos</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="141"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1412"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1420"/>
         <source>10 frames</source>
         <translation>10 marcos</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="145"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1417"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1425"/>
         <source>20 frames</source>
         <translation>20 marcos</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="149"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1422"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1430"/>
         <source>50 frames</source>
         <translation>50 marcos</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="153"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1427"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1435"/>
         <source>100 frames</source>
         <translation>100 marcos</translation>
     </message>
@@ -3849,22 +3853,22 @@ until reaches at least 3 seconds.</source>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="388"/>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="416"/>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="547"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="732"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1073"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1091"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1541"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="740"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1081"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1099"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1549"/>
         <source>Frame</source>
         <translation>Marco</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="406"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="728"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="736"/>
         <source>Scene %1</source>
         <translation>Escena %1</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="413"/>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="731"/>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="739"/>
         <source>Layer 1</source>
         <translation>Capa 1</translation>
     </message>
@@ -5899,161 +5903,161 @@ until reaches at least 3 seconds.</source>
 <context>
     <name>TupPaintArea</name>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="184"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="197"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="180"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="193"/>
         <source>Drawing area</source>
         <translation>Area de Ilustración</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="205"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="201"/>
         <source>Cut</source>
         <translation>Cortar</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="205"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="201"/>
         <source>Ctrl+X</source>
         <translation>Ctrl+X</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="206"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="202"/>
         <source>Copy</source>
         <translation>Copiar</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="212"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="208"/>
         <source>Paste</source>
         <translation>Pegar</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="214"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="210"/>
         <source>Paste in...</source>
         <translation>Pegar en...</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="215"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="211"/>
         <source>next 5 frames</source>
         <translation>siguientes 5 marcos</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="216"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="212"/>
         <source>next 10 frames</source>
         <translation>siguientes 10 marcos</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="217"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="213"/>
         <source>next 20 frames</source>
         <translation>siguientes 20 marcos</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="218"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="214"/>
         <source>next 50 frames</source>
         <translation>siguientes 50 marcos</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="219"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="215"/>
         <source>next 100 frames</source>
         <translation>siguientes 100 marcos</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="231"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="227"/>
         <source>Delete</source>
         <translation>Eliminar</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="233"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="229"/>
         <source>Send</source>
         <translation>Enviar</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="236"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="232"/>
         <source>To back</source>
         <translation>Hacia atrás</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="237"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="233"/>
         <source>To front</source>
         <translation>Hacia adelante</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="238"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="234"/>
         <source>One level to back</source>
         <translation>Un nivel hacia atrás</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="239"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="235"/>
         <source>One level to front</source>
         <translation>Un nivel hacia el frente</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1904"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1890"/>
         <source>Sorry, no library was found!</source>
         <translation>Ninguna biblioteca fue encontrada!</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1931"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1917"/>
         <source>Project Dimension Conflict</source>
         <translation>Conflicto de Dimensiones de Proyecto</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1933"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1919"/>
         <source>Imported scenes require a different dimension than the current to fit accurately.</source>
         <translation>Las escenas importadas requieren una dimensión diferente a la actual para encajar correctamente.</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1934"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1920"/>
         <source>Do you want to resize your current project?</source>
         <translation>Deseas redimensionar el proyecto actual?</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2002"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1988"/>
         <source>Project assets imported successfully!</source>
         <translation>Los objetos fueron importados satisfactoriamente!</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2021"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2007"/>
         <source>Sorry, TUP source file is invalid!</source>
         <translation>El archivo fuente TUP es inválido!</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2060"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2152"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2046"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2138"/>
         <source>Sorry, file format not supported!</source>
         <translation>El formato de archivo no es soportado!</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2166"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2152"/>
         <source>Network Fatal Error. Please, contact us!</source>
         <translation>Error Fatal de Red. Por favor, contáctanos!</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="187"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="245"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="183"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="241"/>
         <source>Add to library...</source>
         <translation>Adicionar a biblioteca...</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1107"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1534"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1095"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1520"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1575"/>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="1590"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1605"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1725"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1752"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1711"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1738"/>
         <source>Frame</source>
         <translation>Marco</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1278"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1311"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1266"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1299"/>
         <source>No items selected</source>
         <translation>No hay items seleccionados</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1661"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1646"/>
         <source>Do you want to remove this frame?</source>
         <translation>Deseas eliminar este marco?</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1661"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1647"/>
         <source>Confirmation</source>
         <translation>Confirmación</translation>
     </message>

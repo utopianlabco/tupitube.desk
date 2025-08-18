@@ -71,7 +71,7 @@ void EyeDropper::setupActions()
     cursor = QCursor(kAppProp->themeDir() + "cursors/eyedropper.png", 8, 8);
 
     TAction *action = new TAction(QIcon(kAppProp->themeDir() + "icons/eyedropper.png"), tr("Eye Dropper"), this);
-    // action->setShortcut(QKeySequence(tr("E")));
+    // action->setShortcut(QKeySequence(tr("D")));
     action->setToolTip(tr("Eye Dropper"));
     action->setCursor(cursor);
     action->setActionId(TAction::EyeDropper);

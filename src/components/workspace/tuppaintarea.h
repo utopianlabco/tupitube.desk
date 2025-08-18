@@ -109,10 +109,6 @@ class TUPITUBE_EXPORT TupPaintArea : public TupPaintAreaBase, public TupAbstract
         void importLocalProject(const QString &path, bool onlyLibrary = false);
         void drawCurrentPhotogram();
 
-    protected:
-        virtual void keyPressEvent(QKeyEvent *event);
-        virtual void keyReleaseEvent(QKeyEvent *event);
-
     public slots:
         void updatePaintArea();
         void setNextFramesOnionSkinCount(int n);
@@ -160,6 +156,9 @@ class TUPITUBE_EXPORT TupPaintArea : public TupPaintAreaBase, public TupAbstract
         void slotError(QNetworkReply::NetworkError error);
 
     protected:
+        void keyPressEvent(QKeyEvent *event);
+        // void keyReleaseEvent(QKeyEvent *event);
+
         void mousePressEvent(QMouseEvent *event);
         void mouseReleaseEvent(QMouseEvent *event);
 
@@ -198,7 +197,7 @@ class TUPITUBE_EXPORT TupPaintArea : public TupPaintAreaBase, public TupAbstract
         QString copyFrameName;
         bool copyIsValid;
         bool canvasEnabled;
-        // bool controlKeyPressed;
+        bool controlKeyPressed;
 
         TupProjectScanner *projectScanner;
         QString webAssetName;

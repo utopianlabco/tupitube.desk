@@ -2526,6 +2526,10 @@
         <source>Eye Dropper</source>
         <translation>滴管</translation>
     </message>
+    <message>
+        <source>Eye Dropper - D</source>
+        <translation>滴管 - D</translation>
+    </message>
 </context>
 <context>
     <name>TupConfigurationArea</name>

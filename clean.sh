@@ -3,6 +3,7 @@ find . -iname .obj -exec rm -rf {} \;
 find . -iname release -exec rm -rf {} \;
 find . -iname debug -exec rm -rf {} \;
 find . -iname .qmake.stash -exec rm -rf {} \; 
+find . -iname *.qm -exec rm -f {} \;
 rm log.txt
 rm tupitube.desk.pro.user.*
 rm tupitube.desk.pro.user

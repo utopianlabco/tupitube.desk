@@ -192,6 +192,7 @@ _EOH_
     conf.createTests
     conf.setTestDir("configure.tests")
     conf.runTests(config, conf, debug)
+    conf.updateLangFiles(debug)
 
     config.addModule("core")
     config.addModule("gui")

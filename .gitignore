@@ -14,6 +14,7 @@ moc_*
 release
 debug
 *.rc
+*.qm
 
 bin/
 src/framework/tgui/qrc_tgui_images.cpp
@@ -28,6 +29,9 @@ configure.tests/zlib/Makefile
 configure.tests/zlib/zlib
 configure.tests/theora/theora
 configure.tests/quazip/quazip
+configure.tests/libpng/libpng
+configure.tests/libsndfile/libsndfile
+configure.tests/multimedia/multimedia
 
 src/framework/tupconfig.pri
 tupiglobal.pri

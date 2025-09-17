@@ -125,6 +125,16 @@ module RQonf
       end
     end
 
+    def updateLangFiles(debug)
+      Info.info << "Updating lang files... " 
+      print "[ \033[92mOK\033[0m ]\n"
+      if debug == 1
+        exec('lrelease src/shell/data/translations/tupi_*.ts')
+      else
+        exec('lrelease -silent src/shell/data/translations/tupi_*.ts')
+      end
+    end
+
     def createTests
       @tests.clear
       findTest(@testsDir)

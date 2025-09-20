@@ -216,9 +216,11 @@ void RasterCanvas::mousePressEvent(QMouseEvent *event)
 {
     Q_UNUSED(event)
 
+    /*
     #ifdef TUP_DEBUG
         qDebug() << "[RasterCanvas::mousePressEvent()]";
     #endif
+    */
 
     tableInUse = false;
     pressed = true;
@@ -231,9 +233,11 @@ void RasterCanvas::mouseMoveEvent(QMouseEvent *event)
 {
     Q_UNUSED(event)
 
+    /*
     #ifdef TUP_DEBUG
         qDebug() << "[RasterCanvas::mouseMoveEvent()]";
     #endif
+    */
 
     if (pressed) {
         if (!tableInUse) {
@@ -249,9 +253,11 @@ void RasterCanvas::mouseReleaseEvent(QMouseEvent *event)
 {
     Q_UNUSED(event)
 
+    /*
     #ifdef TUP_DEBUG
         qDebug() << "[RasterCanvas::mouseReleaseEvent()]";
     #endif
+    */
 
     myPaintCanvas->saveTiles();
     pressed = false;

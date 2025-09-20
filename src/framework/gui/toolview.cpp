@@ -35,7 +35,7 @@
 #include "toolview.h"
 
 ToolView::ToolView(const QString &title, const QIcon &icon, const QString &code, QWidget *parent):
-                   QDockWidget(title, parent), currentPerspective(ANIMATION_TAB)
+                   QDockWidget(title, parent), currentPerspective(AnimationView)
 {
     setFeatures(QDockWidget::NoDockWidgetFeatures);
     setWindowIcon(icon);
@@ -60,7 +60,7 @@ void ToolView::expandDock()
 {
     /*
     #ifdef TUP_DEBUG
-        qDebug() << "[ToolView::expandDock()] - code -> " << objectName();
+        qDebug() << "[ToolView::expandDock()] - code ->" << objectName();
     #endif
     */
 
@@ -72,8 +72,8 @@ void ToolView::expandDock(bool state)
 {
     /*
     #ifdef TUP_DEBUG
-        qDebug() << "[ToolView::expandDock(bool)] - code -> " << objectName();
-        qDebug() << "[ToolView::expandDock(bool)] - state -> " << state;
+        qDebug() << "[ToolView::expandDock(bool)] - code ->" << objectName();
+        qDebug() << "[ToolView::expandDock(bool)] - state ->" << state;
     #endif
     */
 
@@ -88,7 +88,7 @@ bool ToolView::isExpanded()
 {
     /*
     #ifdef TUP_DEBUG
-        qDebug() << "[ToolView::isExpanded()] - expanded: " << expanded;
+        qDebug() << "[ToolView::isExpanded()] - expanded ->" << expanded;
     #endif
     */
 
@@ -114,12 +114,12 @@ void ToolView::setShortcut(QKeySequence shortcut)
     currentButton->setShortcut(shortcut);
 }
 
-void ToolView::setPerspective(int wSpace)
+void ToolView::setPerspective(UIView tabType)
 {
-    currentPerspective = wSpace;
+    currentPerspective = tabType;
 }
 
-int ToolView::perspective() const
+UIView ToolView::perspective() const
 {
     return currentPerspective;
 }

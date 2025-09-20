@@ -29,7 +29,8 @@
 #include <QAction>
 
 RasterMainWindow::RasterMainWindow(TupProject *project, const QString &winKey, TupProject::Mode context, int scene,
-                                   const QPen &pen, const QString &zoomFactor, QWidget *parent): TMainWindow(winKey, parent)
+                                   const QPen &pen, const QString &zoomFactor, QWidget *parent):
+                                   TMainWindow(winKey, RasterView, parent)
 {    
     spaceContext = context;
     sceneIndex = scene;
@@ -63,7 +64,7 @@ RasterMainWindow::RasterMainWindow(TupProject *project, const QString &winKey, T
     connect(colorWidget, SIGNAL(paintAreaEventTriggered(const TupPaintAreaEvent *)),
             this, SLOT(processColorEvent(const TupPaintAreaEvent *)));
 
-    colorView = addToolView(colorWidget, Qt::LeftDockWidgetArea, Raster, "Brush Color", QKeySequence(tr("Shift+C")));
+    colorView = addToolView(colorWidget, Qt::LeftDockWidgetArea, RasterView, "Brush Color", QKeySequence(tr("Shift+C")));
     colorView->expandDock(false);
 
     brushesWidget = new RasterBrushesWidget(RASTER_RESOURCES_DIR + "brushes");
@@ -74,10 +75,10 @@ RasterMainWindow::RasterMainWindow(TupProject *project, const QString &winKey, T
     connect(sizeWidget, SIGNAL(brushSizeChanged(double)), rasterCanvas, SLOT(setBrushSize(double)));
     connect(colorWidget, SIGNAL(colorChanged(QColor)), sizeWidget, SLOT(updateColor(QColor)));
 
-    sizeView = addToolView(sizeWidget, Qt::LeftDockWidgetArea, Raster, "Brush Size", QKeySequence(tr("Shift+S")));
+    sizeView = addToolView(sizeWidget, Qt::LeftDockWidgetArea, RasterView, "Brush Size", QKeySequence(tr("Shift+S")));
     sizeView->expandDock(false);
 
-    brushesView = addToolView(brushesWidget, Qt::LeftDockWidgetArea, Raster, "Brushes", QKeySequence(tr("Shift+B")));
+    brushesView = addToolView(brushesWidget, Qt::LeftDockWidgetArea, RasterView, "Brushes", QKeySequence(tr("Shift+B")));
     brushesView->expandDock(true);
 
     status = new TupPaintAreaStatus(TupPaintAreaStatus::Raster);
@@ -91,7 +92,6 @@ RasterMainWindow::RasterMainWindow(TupProject *project, const QString &winKey, T
 
     status->setZoomPercent(zoomFactor);
     tabletIsActive = false;
-
     brushesWidget->loadInitSettings();
 }
 

@@ -59,15 +59,15 @@ class T_GUI_EXPORT ToolView: public QDockWidget
         bool isExpanded();
         void setExpandingFlag();
 
-        void setPerspective(int wsp);
-        int perspective() const;
+        void setPerspective(UIView wsp);
+        UIView perspective() const;
 
     public slots:
         void expandDock();
 
     private:        
         TViewButton *currentButton;
-        int currentPerspective;
+        UIView currentPerspective;
         bool expanded;
 };
 

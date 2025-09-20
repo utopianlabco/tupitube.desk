@@ -148,7 +148,7 @@ class TUPITUBE_EXPORT TupExposureTable : public QTableWidget
         void layerMoved(int oldIndex, int newIndex);
         void layerVisibilityChanged(int visualIndexLayer, bool visibility);
 
-        void newPerspective(int);
+        void newPerspective(UIView tabType);
 
     private:
         bool layerIndexIsValid(int layerIndex);

@@ -78,10 +78,15 @@
 #include <QDesktopServices>
 #include <QFileOpenEvent>
 
-TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) : TabbedMainWindow(winKey), m_projectManager(nullptr), animationTab(nullptr),
-                                                      playerTab(nullptr), m_viewChat(nullptr), m_exposureSheet(nullptr),
-                                                      isSaveDialogOpen(false) //, internetOn(false) 
-                                                      // m_scenes(nullptr), isSaveDialogOpen(false) //, internetOn(false)
+TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
+                             TabbedMainWindow(winKey, AnimationView), m_projectManager(nullptr),
+                             animationTab(nullptr), playerTab(nullptr),
+                             m_viewChat(nullptr), m_exposureSheet(nullptr),
+                             isSaveDialogOpen(false)
+                             // internetOn(false),
+                             // m_scenes(nullptr),
+                             // isSaveDialogOpen(false),
+                             // internetOn(false)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupMainWindow()]";
@@ -211,9 +216,6 @@ TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
     // Time to load plugins... 
     TupPluginManager::instance()->loadPlugins();
 
-    // Defining the Animation view, as the first interface to show up   
-    setCurrentPerspective(Animation);
-
     if (TCONFIG->firstTime()) {
         TCONFIG->beginGroup("General");
         TCONFIG->setValue("NotifyUpdate", false);
@@ -228,7 +230,7 @@ TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
         TCONFIG->setValue("ColorRow", 0);
         TCONFIG->setValue("ColorPos", 0);
         TCONFIG->setValue("BgColor", "#a0a0a0");
-        TCONFIG->setValue("UITheme", 1);
+        TCONFIG->setValue("UITheme", LIGHT_THEME);
 
         TCONFIG->beginGroup("PaintArea");
         TCONFIG->setValue("GridColor", "#0000b4");
@@ -388,14 +390,14 @@ void TupMainWindow::setWorkSpace(const QStringList &users)
         animationWidget->setWindowIcon(QPixmap(THEME_DIR + "icons/animation_mode.png"));
         QBoxLayout *tabLayout = new QBoxLayout(QBoxLayout::TopToBottom, animationWidget);
         tabLayout->addWidget(animationTab);
-        addWidget(animationWidget);
+        addTabComponent(animationWidget);
 
         connectWidgetToManager(animationTab);
         connectWidgetToLocalManager(animationTab);
         connectWidgetToPaintArea(animationTab);
         connect(animationTab, SIGNAL(modeHasChanged(TupProject::Mode)), this, SLOT(restoreFramesMode(TupProject::Mode)));
         connect(animationTab, SIGNAL(projectSizeHasChanged(const QSize)), this, SLOT(resizePlayerCameraDimension(const QSize)));
-        connect(animationTab, SIGNAL(newPerspective(int)), this, SLOT(changePerspective(int)));
+        connect(animationTab, SIGNAL(newPerspective(UIView)), this, SLOT(changePerspective(UIView)));
 
         connect(animationTab, SIGNAL(colorChanged(TColorCell::FillType, const QColor &)),
                 this, SLOT(updateColor(TColorCell::FillType, const QColor &)));
@@ -487,8 +489,8 @@ void TupMainWindow::setWorkSpace(const QStringList &users)
         playerTab = new TupAnimationSpace(cameraWidget);
         playerTab->setWindowIcon(QIcon(THEME_DIR + "icons/play_small.png"));
         playerTab->setWindowTitle(tr("Player"));                    
-        connect(playerTab, SIGNAL(newPerspective(int)), this, SLOT(changePerspective(int)));
-        addWidget(playerTab);
+        connect(playerTab, SIGNAL(newPerspective(UIView)), this, SLOT(changePerspective(UIView)));
+        addTabComponent(playerTab);
 
         connect(animationTab, SIGNAL(fpsUpdated(int)), cameraWidget, SLOT(setFpsStatus(int)));
         connect(animationTab, SIGNAL(fpsUpdated(int)), m_exposureSheet, SLOT(updateFPS(int)));
@@ -513,7 +515,7 @@ void TupMainWindow::setWorkSpace(const QStringList &users)
 
         m_exposureSheet->setCurrentScene(0);
         m_libraryWidget->initCurrentFrame();
-        connect(this, SIGNAL(tabHasChanged(int)), this, SLOT(updateCurrentTab(int)));
+        connect(this, SIGNAL(tabHasChanged(UIView)), this, SLOT(updateCurrentTab(UIView)));
 
         m_projectManager->clearUndoStack();
     }
@@ -671,7 +673,7 @@ void TupMainWindow::resetUI()
         qDebug() << "[TupMainWindow::resetUI()]";
     #endif
 
-    disconnect(this, SIGNAL(tabHasChanged(int)), this, SLOT(updateCurrentTab(int)));
+    disconnect(this, SIGNAL(tabHasChanged(UIView)), this, SLOT(updateCurrentTab(UIView)));
     disconnect(exposureView, SIGNAL(visibilityChanged(bool)), this, SLOT(checkTimeLineVisibility(bool)));
     disconnect(timeView, SIGNAL(visibilityChanged(bool)), this, SLOT(checkExposureVisibility(bool)));
 
@@ -1475,23 +1477,18 @@ void TupMainWindow::updatePenThickness(int thickness)
     createPaintCommand(event);
 }
 
-void TupMainWindow::addPage(QWidget *widget)
-{
-    addWidget(widget);
-}
-
-void TupMainWindow::updateCurrentTab(int index)
+void TupMainWindow::updateCurrentTab(UIView tabType)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupMainWindow::updateCurrentTab()] - index -> " << index;
+        qDebug() << "[TupMainWindow::updateCurrentTab()] - tabType ->" << tabType;
     #endif
 
-    if (index == 1) {  // Player mode
+    if (tabType == PlayerView) { // Player mode
         #ifdef TUP_DEBUG
             qDebug() << "[TupMainWindow::updateCurrentTab()] - Setting player mode...";
         #endif
 
-        lastTab = 1;
+        lastTab = PlayerView;
         updatePlayer();
         cameraWidget->setVisible(true);
         cameraWidget->updateFirstFrame();
@@ -1502,18 +1499,13 @@ void TupMainWindow::updateCurrentTab(int index)
         if (autoPlay)
             QTimer::singleShot(0, this, SLOT(doPlay()));
     } else {
-        if (index == 0) { // Animation mode
+        if (tabType == AnimationView) { // Animation mode
             if (playerTab)
                 cameraWidget->setVisible(false);
 
             animationTab->updatePerspective(); // Just for Papagayo UI
-            if (lastTab == 1)
+            if (lastTab == PlayerView)
                 cameraWidget->doStop();
-
-            /*
-            if (scenesView->isExpanded())
-                scenesView->expandDock(true);
-            */
 
             if (contextMode != TupProject::FRAMES_MODE) {
                 if (exposureView->isExpanded()) {
@@ -1526,12 +1518,14 @@ void TupMainWindow::updateCurrentTab(int index)
             }
 
             animationTab->updatePaintArea();
-            lastTab = 0;
-        } else {
+            lastTab = AnimationView;
+        }
+        /* else {
             cameraWidget->setVisible(false);
             if (index == 3)
                 lastTab = 3;
         }
+        */
     }
 }
 

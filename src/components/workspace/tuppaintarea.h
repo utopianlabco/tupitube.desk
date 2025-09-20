@@ -124,7 +124,7 @@ class TUPITUBE_EXPORT TupPaintArea : public TupPaintAreaBase, public TupAbstract
         void closeLine();
         void zoomIn();
         void zoomOut();
-        void newPerspective(int index);
+        void newPerspective(UIView tabType);
         void eyeDropperLaunched();
         void selectToolLaunched();
         void localAssetDropped(const QString &path, TupLibraryObject::ObjectType type);

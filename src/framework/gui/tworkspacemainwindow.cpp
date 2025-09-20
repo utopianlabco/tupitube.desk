@@ -34,7 +34,7 @@
 
 #include "tworkspacemainwindow.h"
 
-TWorkspaceMainWindow::TWorkspaceMainWindow(QWidget *parent) : TMainWindow("workspace", parent)
+TWorkspaceMainWindow::TWorkspaceMainWindow(QWidget *parent): TMainWindow("workspace", PlayerView, parent)
 {
     mdiArea = new QMdiArea;
     setCentralWidget(mdiArea);
@@ -44,9 +44,9 @@ TWorkspaceMainWindow::~TWorkspaceMainWindow()
 {
 }
 
-void TWorkspaceMainWindow::addWidget(QWidget *widget, int perspective)
+void TWorkspaceMainWindow::addWidget(QWidget *widget, UIView tabType)
 {
-    addToPerspective(widget, perspective);
+    addToPerspective(widget, tabType);
     mdiArea->addSubWindow(widget);
     widget->show();
 }

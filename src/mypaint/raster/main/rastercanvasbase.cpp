@@ -132,18 +132,22 @@ bool RasterCanvasBase::getSafeAreaState() const
 
 void RasterCanvasBase::mousePressEvent(QMouseEvent *event)
 {
+    /*
     #ifdef TUP_DEBUG
         qDebug() << "[RasterCanvasBase::mousePressEvent()]";
     #endif
+    */
 
     QGraphicsView::mousePressEvent(event);
 }
 
 void RasterCanvasBase::mouseMoveEvent(QMouseEvent *event)
 {
+    /*
     #ifdef TUP_DEBUG
         qDebug() << "[RasterCanvasBase::mouseMoveEvent()]";
     #endif
+    */
 
     QPoint point = mapToScene(event->pos()).toPoint();
     if (spaceBar) {
@@ -158,9 +162,11 @@ void RasterCanvasBase::mouseMoveEvent(QMouseEvent *event)
 
 void RasterCanvasBase::mouseReleaseEvent(QMouseEvent *event)
 {
+    /*
     #ifdef TUP_DEBUG
         qDebug() << "[RasterCanvasBase::mouseReleaseEvent()]";
     #endif
+    */
 
     QGraphicsView::mouseReleaseEvent(event);
 }

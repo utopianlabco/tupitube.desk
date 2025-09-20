@@ -56,7 +56,8 @@ DefaultSettings::~DefaultSettings()
 void DefaultSettings::save(const QString &winKey, TMainWindow *window)
 {
     #ifdef TUP_DEBUG
-        qWarning() << "[TMainWindow::DefaultSettings::save()] - Saving UI settings -> " << qApp->applicationName();
+        qWarning() << "[TMainWindow::DefaultSettings::save()] - Saving UI settings ->"
+                   << qApp->applicationName();
     #endif
 
     QSettings settings(qApp->applicationName(), winKey, this);
@@ -77,20 +78,13 @@ void DefaultSettings::save(const QString &winKey, TMainWindow *window)
             settings.endGroup();
         }
     }
-
-    /*
-    settings.beginGroup("MainWindow");
-    settings.setValue("size", window->size());
-    settings.setValue("maximized", window->isMaximized());
-    settings.setValue("position", window->pos());
-    settings.endGroup();
-    */
 }
 
 void DefaultSettings::restore(const QString &winKey, TMainWindow *window)
 {
     #ifdef TUP_DEBUG
-        qWarning() << "[TMainWindow::DefaultSettings::restore()] - Restoring UI settings ->" << qApp->applicationName();
+        qWarning() << "[TMainWindow::DefaultSettings::restore()] - Restoring UI settings ->"
+                   << qApp->applicationName();
     #endif
 
     QSettings settings(qApp->applicationName(), winKey, this);
@@ -124,31 +118,18 @@ void DefaultSettings::restore(const QString &winKey, TMainWindow *window)
         view->close();
     }
 
-    /*
-    settings.beginGroup("MainWindow");
-    window->resize(settings.value("size").toSize());
-    bool maximized = settings.value("maximized", false).toBool();
-
-    #ifdef TUP_DEBUG
-        qWarning() << "TMainWindow::DefaultSettings::restore() - Size settings:";
-        qWarning() << "Window Size: " << settings.value("size").toSize();
-        qWarning() << "maximized flag: " << maximized;
-    #endif
-
-    if (maximized)
-        window->showMaximized();
-
-    window->move(settings.value("position").toPoint());
-    settings.endGroup();
-    */
+    window->showMaximized();
 }
 
-TMainWindow::TMainWindow(const QString &key, QWidget *parent): QMainWindow(parent), m_forRelayout(nullptr),
-                                                               perspective(ANIMATION_TAB), m_autoRestore(false)
+TMainWindow::TMainWindow(const QString &key, UIView defaultPerspective, QWidget *parent): QMainWindow(parent)
 {
-    setObjectName("TMainWindow");
-    winKey = key;
-    settings = new DefaultSettings(this);
+    windowKey = key;
+    perspective = defaultPerspective;
+    viewForRelayout = nullptr;
+    autoRestore = false;
+
+    setObjectName(key);
+    settings = new DefaultSettings(this);    
 
     specialToolBar = new QToolBar(tr("Show Top Panel"), this);
     int iconSize = TResponsiveUI::fitToolViewIconSize();
@@ -172,7 +153,7 @@ void TMainWindow::addButtonBar(Qt::ToolBarArea area)
 {
     TButtonBar *bar = new TButtonBar(area, this);
     addToolBar(area, bar);
-    m_buttonBars.insert(area, bar);
+    buttonBarsHash.insert(area, bar);
 }
 
 void TMainWindow::enableSpecialBar(bool flag)
@@ -185,11 +166,14 @@ void TMainWindow::addSpecialButton(TAction *action)
     specialToolBar->addAction(action);
 }
 
-ToolView *TMainWindow::addToolView(QWidget *widget, Qt::DockWidgetArea area, int perspective, const QString &code, QKeySequence shortcut)
+ToolView *TMainWindow::addToolView(QWidget *widget, Qt::DockWidgetArea area,
+                                   UIView perspective, const QString &code, QKeySequence shortcut)
 {
     /*
     #ifdef TUP_DEBUG
-        qDebug() << "[TMainWindow::addToolView()] - code: " << code;
+        qDebug() << "[TMainWindow::addToolView()] - area ->" << area;
+        qDebug() << "[TMainWindow::addToolView()] - perspective ->" << perspective;
+        qDebug() << "[TMainWindow::addToolView()] - code ->" << code;
     #endif
     */
 
@@ -199,8 +183,8 @@ ToolView *TMainWindow::addToolView(QWidget *widget, Qt::DockWidgetArea area, int
     toolView->setPerspective(perspective);
     toolView->button()->setArea(toToolBarArea(area));
 
-    m_buttonBars[toToolBarArea(area)]->addButton(toolView->button());
-    m_toolViews[m_buttonBars[toToolBarArea(area)]] << toolView;
+    buttonBarsHash[toToolBarArea(area)]->addButton(toolView->button());
+    toolViewsHash[buttonBarsHash[toToolBarArea(area)]] << toolView;
 
     addDockWidget(area, toolView);
     // SQA: This line is a hack to avoid self-resizing docks issue
@@ -219,8 +203,8 @@ void TMainWindow::removeToolView(ToolView *view)
 
     bool findIt = false;
 
-    foreach (TButtonBar *bar, m_buttonBars.values()) {
-        QList<ToolView *> views = m_toolViews[bar];
+    foreach (TButtonBar *bar, buttonBarsHash.values()) {
+        QList<ToolView *> views = toolViewsHash[bar];
         QList<ToolView *>::iterator it = views.begin();
 
         while (it != views.end()) {
@@ -246,12 +230,12 @@ void TMainWindow::enableToolViews(bool isEnabled)
 {
     /*
     #ifdef TUP_DEBUG
-        qDebug() << "[TMainWindow::enableToolViews()] - enable: " << isEnabled;
+        qDebug() << "[TMainWindow::enableToolViews()] - enable ->" << isEnabled;
     #endif
     */
 
-    foreach (TButtonBar *bar, m_buttonBars.values()) {
-        QList<ToolView *> views = m_toolViews[bar];
+    foreach (TButtonBar *bar, buttonBarsHash.values()) {
+        QList<ToolView *> views = toolViewsHash[bar];
         QList<ToolView *>::iterator it = views.begin();
 
         while (it != views.end()) {
@@ -262,11 +246,12 @@ void TMainWindow::enableToolViews(bool isEnabled)
     }
 }
 
-void TMainWindow::addToPerspective(QWidget *widget, int workSpace)
+void TMainWindow::addToPerspective(QWidget *widget, UIView workSpace)
 {
     /*
     #ifdef TUP_DEBUG
-        qDebug() << "[TMainWindow::addToPerspective()]";
+        qDebug() << "[TMainWindow::addToPerspective()] - workSpace ->" << workSpace;
+        qDebug() << "[TMainWindow::addToPerspective()] - perspective ->" << perspective;
     #endif
     */
 
@@ -275,11 +260,17 @@ void TMainWindow::addToPerspective(QWidget *widget, int workSpace)
             addToolBar(bar);
     }
 
-    if (!m_managedWidgets.contains(widget)) {
-        m_managedWidgets.insert(widget, workSpace);
+    if (!managedWidgetsHash.contains(widget)) {
+        managedWidgetsHash.insert(widget, workSpace);
 
-        if (workSpace != perspective)
+        if (workSpace != perspective) {
+            #ifdef TUP_DEBUG
+                qDebug() << "[TMainWindow::addToPerspective()] - "
+                            "Warning: Widget doesn't belong to current perspective ->"
+                         << workSpace;
+            #endif
             widget->hide();
+        }
     }
 }
 
@@ -291,11 +282,11 @@ void TMainWindow::removeFromPerspective(QWidget *widget)
     #endif
     */
 
-    m_managedWidgets.remove(widget);
+    managedWidgetsHash.remove(widget);
 }
 
 // Add action list to perspective
-void TMainWindow::addToPerspective(const QList<QAction *> &actions, int workSpace)
+void TMainWindow::addToPerspective(const QList<QAction *> &actions, UIView workSpace)
 {
     /*
     #ifdef TUP_DEBUG
@@ -308,7 +299,7 @@ void TMainWindow::addToPerspective(const QList<QAction *> &actions, int workSpac
 }
 
 // Add action to perspective
-void TMainWindow::addToPerspective(QAction *action, int workSpace)
+void TMainWindow::addToPerspective(QAction *action, UIView workSpace)
 {
     /*
     #ifdef TUP_DEBUG
@@ -316,8 +307,8 @@ void TMainWindow::addToPerspective(QAction *action, int workSpace)
     #endif
     */
 
-    if (!m_managedActions.contains(action)) {
-        m_managedActions.insert(action, workSpace);
+    if (!managedActionsHash.contains(action)) {
+        managedActionsHash.insert(action, workSpace);
 
         if (workSpace != perspective)
             action->setVisible(false);
@@ -327,7 +318,7 @@ void TMainWindow::addToPerspective(QAction *action, int workSpace)
 // Remove action from perspective
 void TMainWindow::removeFromPerspective(QAction *action)
 {
-    m_managedActions.remove(action);
+    managedActionsHash.remove(action);
 }
 
 Qt::DockWidgetArea TMainWindow::toDockWidgetArea(Qt::ToolBarArea area)
@@ -383,7 +374,7 @@ Qt::ToolBarArea TMainWindow::toToolBarArea(Qt::DockWidgetArea area)
         default: 
            {
              #ifdef TUP_DEBUG
-                 qWarning() << "TMainWindow::toToolBarArea() - Floating -> " << QString::number(area);
+                 qWarning() << "TMainWindow::toToolBarArea() - area ->" << area;
              #endif
            }
     }
@@ -391,7 +382,7 @@ Qt::ToolBarArea TMainWindow::toToolBarArea(Qt::DockWidgetArea area)
     return Qt::LeftToolBarArea;
 }
 
-void TMainWindow::setCurrentPerspective(int workSpace)
+void TMainWindow::setCurrentPerspective(UIView workSpace)
 {
     /*
     #ifdef TUP_DEBUG
@@ -399,21 +390,26 @@ void TMainWindow::setCurrentPerspective(int workSpace)
     #endif
     */
 
-    if (perspective == workSpace)
+    if (perspective == workSpace) {
+        #ifdef TUP_DEBUG
+                 qDebug() << "[TMainWindow::setCurrentPerspective()] - Warning: Perspective is already loaded ->"
+                          << perspective;
+        #endif
         return;
+    }
 
-    if (workSpace != ANIMATION_TAB)
+    if (workSpace != AnimationView)
         specialToolBar->setVisible(false);
     else
         specialToolBar->setVisible(true);
 
     typedef QList<ToolView *> Views;
-    QList<Views > viewsList = m_toolViews.values();
+    QList<Views > viewsList = toolViewsHash.values();
 
     QHash<TButtonBar *, int> hideButtonCount;
     foreach (Views views, viewsList) {
         foreach (ToolView *view, views) {
-            TButtonBar *bar = m_buttonBars[view->button()->area()];
+            TButtonBar *bar = buttonBarsHash[view->button()->area()];
 
             if (view->perspective() == workSpace) { 
                 bar->enable(view->button());
@@ -453,20 +449,20 @@ void TMainWindow::setCurrentPerspective(int workSpace)
     emit perspectiveChanged(perspective);
 }
 
-int TMainWindow::currentPerspective() const
+UIView TMainWindow::currentPerspective()
 {
     return perspective;
 }
 
 // if autoRestore is true, the widgets will be loaded when main window is showed (position and properties)
-void TMainWindow::setAutoRestore(bool autoRestore)
+void TMainWindow::setAutoRestoreProperty(bool autoRestoreUI)
 {
-    m_autoRestore = autoRestore;
+    autoRestore = autoRestoreUI;
 }
 
-bool TMainWindow::autoRestore() const
+bool TMainWindow::autoRestoreProperty() const
 {
-    return m_autoRestore;
+    return autoRestore;
 }
 
 void TMainWindow::setSettingsHandler(TMainWindowAbstractSettings *config)
@@ -485,27 +481,26 @@ void TMainWindow::closeEvent(QCloseEvent *e)
     #endif
     */
 
-    // saveGUI();
     QMainWindow::closeEvent(e);
 }
 
-void TMainWindow::showEvent(QShowEvent *e)
+void TMainWindow::showEvent(QShowEvent *event)
 {
-    /*
     #ifdef TUP_DEBUG
-        qDebug() << "[TMainWindow::showEvent()] - m_autoRestore: " << m_autoRestore;
+        qDebug() << "[TMainWindow::showEvent()] - autoRestore ->" << autoRestore;
     #endif
-    */
 
-    QMainWindow::showEvent(e);
-
-    if (!m_autoRestore) {
-        m_autoRestore = true;
+    if (!autoRestore) {
+        autoRestore = true;
         restoreGUI();
-        int cwsp = perspective;
-        perspective -= 1;
-        setCurrentPerspective(cwsp);
+        UIView workspace = perspective;
+        if (workspace != UndefinedView) {
+            perspective = UndefinedView;
+            setCurrentPerspective(workspace);
+        }
     }
+
+    QMainWindow::showEvent(event);
 }
 
 void TMainWindow::saveGUI()
@@ -514,7 +509,7 @@ void TMainWindow::saveGUI()
         qDebug() << "[TMainWindow::saveGUI()]";
     #endif
 
-    settings->save(winKey, this);
+    settings->save(windowKey, this);
 }
 
 void TMainWindow::restoreGUI()
@@ -524,16 +519,16 @@ void TMainWindow::restoreGUI()
     #endif
 
     setUpdatesEnabled(false);
-    settings->restore(winKey, this);
+    settings->restore(windowKey, this);
     setUpdatesEnabled(true);
 }
 
 QHash<Qt::ToolBarArea, TButtonBar *> TMainWindow::buttonBars() const
 {
-    return m_buttonBars;
+    return buttonBarsHash;
 }
 
 QHash<TButtonBar *, QList<ToolView*> > TMainWindow::toolViews() const
 {
-    return m_toolViews;
+    return toolViewsHash;
 }

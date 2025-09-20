@@ -176,13 +176,12 @@ class TupMainWindow : public TabbedMainWindow
         bool saveAs();
         bool saveProject();
 
-        void showAnimationMenu(const QPoint &p);
+        void showAnimationMenu(const QPoint &point);
 
-        void changePerspective(QAction *a);
-        void changePerspective(int index);
+        void changePerspective(QAction *action);
+        void changePerspective(UIView tabType);
 
-        void addPage(QWidget *widget);
-        void updateCurrentTab(int index);
+        void updateCurrentTab(UIView tabType);
 
         void requestProject();
         // void createNewNetProject(const QString &title, const QStringList &users);
@@ -284,7 +283,7 @@ class TupMainWindow : public TabbedMainWindow
         TupCameraWidget *cameraWidget;
         bool isSaveDialogOpen; 
         // bool internetOn;
-        int lastTab;
+        UIView lastTab;
         TupProject::Mode contextMode;
         RequestType requestType;
         QString projectName;

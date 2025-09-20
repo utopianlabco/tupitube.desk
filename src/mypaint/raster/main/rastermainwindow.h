@@ -39,11 +39,8 @@ class Q_DECL_EXPORT RasterMainWindow : public TMainWindow
     Q_OBJECT
 
     public:
-        enum Perspective { Raster = 0x01 };
-
         RasterMainWindow(TupProject *project, const QString &winKey, TupProject::Mode context,
-                         int scene, const QPen &pen, const QString &zoomFactor,
-                         QWidget *parent = nullptr);
+                         int scene, const QPen &pen, const QString &zoomFactor, QWidget *parent = nullptr);
         ~RasterMainWindow();
 
         void setTabletDevice(QTabletEvent *event);

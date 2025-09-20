@@ -137,7 +137,7 @@ TupDocumentView::TupDocumentView(TupProject *work, TActionManager *actionMng, bo
     connect(paintArea, SIGNAL(rotated(int)), this, SLOT(updateRotationVars(int)));
     connect(paintArea, SIGNAL(zoomIn()), this, SLOT(applyZoomIn()));
     connect(paintArea, SIGNAL(zoomOut()), this, SLOT(applyZoomOut()));
-    connect(paintArea, SIGNAL(newPerspective(int)), this, SIGNAL(newPerspective(int)));
+    connect(paintArea, SIGNAL(newPerspective(UIView)), this, SIGNAL(newPerspective(UIView)));
     connect(paintArea, SIGNAL(eyeDropperLaunched()), this, SLOT(launchEyeDropperTool()));
     connect(paintArea, SIGNAL(selectToolLaunched()), this, SLOT(launchSelectionTool()));
 

@@ -83,8 +83,12 @@
 #define DARK_THEME 0
 #define LIGHT_THEME 1
 
-#define ANIMATION_TAB 0
-#define PLAYER_TAB 1
+enum UIView {
+    UndefinedView = -1,
+    AnimationView = 0,
+    PlayerView = 1,
+    RasterView = 2
+};
 
 enum RequestType {
     NoRequest = 0,

@@ -36,28 +36,27 @@
 
 // TabbedMainWindow
 
-TabbedMainWindow::TabbedMainWindow(const QString &winKey, QWidget *parent): TMainWindow(winKey, parent)
+TabbedMainWindow::TabbedMainWindow(const QString &winKey, UIView defaultPerspective, QWidget *parent):
+                                   TMainWindow(winKey, defaultPerspective, parent)
 {
-    currentTab = new QTabWidget;
-    connect(currentTab, SIGNAL(currentChanged(int)), this, SLOT(emitWidgetChanged(int)));
-    setCentralWidget(currentTab);
+    tabsContainer = new QTabWidget;
+    connect(tabsContainer, SIGNAL(currentChanged(int)), this, SLOT(emitWidgetChanged(int)));
+    setCentralWidget(tabsContainer);
 }
 
 TabbedMainWindow::~TabbedMainWindow()
 {
 }
 
-void TabbedMainWindow::addWidget(QWidget *widget, bool persistant, int perspective)
+void TabbedMainWindow::addTabComponent(QWidget *widget, bool persistant)
 {
     if (widget) {
-        if (perspective == currentPerspective())
-            currentTab->addTab(widget, widget->windowIcon(), widget->windowTitle());
+        tabsContainer->addTab(widget, widget->windowIcon(), widget->windowTitle());
 
         if (persistant)
             persistentWidgets << widget;
 
         pages << widget;
-        tabs[widget] = perspective;
     }
 }
 
@@ -70,11 +69,10 @@ void TabbedMainWindow::removeWidget(QWidget *widget, bool force)
         if (persistentWidgets.contains(widget))
             return;
 
-        int index = currentTab->indexOf(widget);
-        if (index == ANIMATION_TAB || index == PLAYER_TAB)
-            currentTab->removeTab(index);
+        int index = tabsContainer->indexOf(widget);
+        if (index != -1)
+            tabsContainer->removeTab(index);
 
-        tabs.remove(widget);
         pages.removeAll(widget);
     }
 }
@@ -82,8 +80,7 @@ void TabbedMainWindow::removeWidget(QWidget *widget, bool force)
 void TabbedMainWindow::removeAllWidgets()
 {
     persistentWidgets.clear();
-    currentTab->clear();
-    tabs.clear();
+    tabsContainer->clear();
     pages.clear();
 }
 
@@ -92,18 +89,16 @@ int TabbedMainWindow::tabCount()
     return pages.count();
 }
 
-// Close the current tab.
 void TabbedMainWindow::closeCurrentTab()
 {
-    int index = currentTab->currentIndex();
-    if (index == ANIMATION_TAB || index == PLAYER_TAB)
-        removeWidget(currentTab->widget(index));
+    int index = tabsContainer->currentIndex();
+    if (index != 1)
+        removeWidget(tabsContainer->widget(index));
 }
 
-// Return the current tab widget.
 QTabWidget *TabbedMainWindow::tabWidget() const
 {
-    return currentTab;
+    return tabsContainer;
 }
 
 void TabbedMainWindow::emitWidgetChanged(int index)
@@ -114,20 +109,23 @@ void TabbedMainWindow::emitWidgetChanged(int index)
     #endif
     */
 
-    if (index == ANIMATION_TAB || index == PLAYER_TAB) {
-        setCurrentPerspective(index);
-        emit tabHasChanged(index);
-    }
+    UIView perspective = AnimationView;
+    if (index == 1)
+        perspective = PlayerView;
+
+    if (currentPerspective() != perspective)
+        setCurrentPerspective(perspective);
+    emit tabHasChanged(perspective);
 }
 
 void TabbedMainWindow::setCurrentTab(int index)
 {
     /*
     #ifdef TUP_DEBUG
-        qDebug() << "[TabbedMainWindow::setCurrentTab()] - index: " << index;
+        qDebug() << "[TabbedMainWindow::setCurrentTab()] - index ->" << index;
     #endif
     */
 
-    if (index == 0 || index == 1)
-        currentTab->setCurrentIndex(index);
+    if (index > -1 && index < tabsContainer->count())
+        tabsContainer->setCurrentIndex(index);
 }

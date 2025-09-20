@@ -144,7 +144,7 @@ class TUPITUBE_EXPORT TupTimeLineTable : public QTableWidget
         void visibilityChanged(int layerIndex, bool isVisible);
         void layerNameChanged(int layerIndex, const QString &name);
         void layerMoved(int oldLayerIndex, int newLayerIndex);
-        void newPerspective(int);
+        void newPerspective(UIView tabType);
         
     private:
         int rectWidth;

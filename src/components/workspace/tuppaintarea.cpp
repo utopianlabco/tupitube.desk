@@ -1418,7 +1418,7 @@ void TupPaintArea::keyPressEvent(QKeyEvent *event)
     }
 
     if (event->key() == Qt::Key_Return) {
-        emit newPerspective(PLAYER_TAB);
+        emit newPerspective(PlayerView);
         return;
     }
 
@@ -1445,7 +1445,7 @@ void TupPaintArea::keyPressEvent(QKeyEvent *event)
         }
 
         if (event->key() == Qt::Key_2) {
-            emit newPerspective(PLAYER_TAB);
+            emit newPerspective(PlayerView);
             return;
         }
     }

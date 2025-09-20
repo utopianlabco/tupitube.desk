@@ -68,7 +68,7 @@ class TUPITUBE_EXPORT TupTimeLine : public TupModuleWidgetBase
         void libraryResponse(TupLibraryResponse *response);
 
     signals:
-        void newPerspective(int);
+        void newPerspective(UIView tabType);
         void sceneChanged(int sceneIndex);
 
     public slots:

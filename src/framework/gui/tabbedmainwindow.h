@@ -44,10 +44,10 @@ class T_GUI_EXPORT TabbedMainWindow : public TMainWindow
     Q_OBJECT
 
     public:
-        TabbedMainWindow(const QString &winKey, QWidget *parent = nullptr);
+        TabbedMainWindow(const QString &winKey, UIView defaultPerspective, QWidget *parent = nullptr);
         ~TabbedMainWindow();
 
-        void addWidget(QWidget *widget, bool persistant = true, int perspective = ANIMATION_TAB);
+        void addTabComponent(QWidget *widget, bool persistant = true);
         void removeWidget(QWidget *widget, bool force = false);
         void removeAllWidgets();
 
@@ -60,15 +60,14 @@ class T_GUI_EXPORT TabbedMainWindow : public TMainWindow
 
     signals:
         void widgetChanged(QWidget *widget);
-        void tabHasChanged(int);
+        void tabHasChanged(UIView perspective);
 
     private slots:
         void emitWidgetChanged(int index);
 
     private:
-        QTabWidget *currentTab;
+        QTabWidget *tabsContainer;
         QWidgetList persistentWidgets;
-        QHash<QWidget *, int> tabs;
         QWidgetList pages;
 };
 

@@ -119,13 +119,13 @@ void TupAnimationSpace::keyPressEvent(QKeyEvent *event)
               playOn = false;
               playerInterface->doStop();
               playerInterface->clearMemory();
-              emit newPerspective(ANIMATION_TAB);
+              emit newPerspective(AnimationView);
           }
         break;
         case Qt::Key_1:
           {
               if (event->modifiers() == Qt::ControlModifier)
-                  emit newPerspective(ANIMATION_TAB);
+                  emit newPerspective(AnimationView);
           }
         break;
     }

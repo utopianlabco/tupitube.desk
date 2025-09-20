@@ -764,7 +764,7 @@ void TupExposureTable::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Return) {
         if (!isEditing && !header->layerNameEdited()) {
-            emit newPerspective(PLAYER_TAB);
+            emit newPerspective(PlayerView);
         } else {
             isEditing = false;
             if (header->layerNameEdited())

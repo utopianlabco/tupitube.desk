@@ -58,27 +58,27 @@ class T_GUI_EXPORT TMainWindow : public QMainWindow
     Q_OBJECT
 
     public:
-        TMainWindow(const QString &key, QWidget *parent = nullptr);
+        TMainWindow(const QString &key, UIView defaultPerspective, QWidget *parent = nullptr);
         ~TMainWindow();
 
-        ToolView *addToolView(QWidget *widget, Qt::DockWidgetArea area, int perspective = ANIMATION_TAB,
+        ToolView *addToolView(QWidget *widget, Qt::DockWidgetArea area, UIView perspective = AnimationView,
                               const QString &code = QString(), QKeySequence shortcut = QKeySequence(""));
 
         void removeToolView(ToolView *view);
 
-        void addToPerspective(QWidget *widget, int perspective = ANIMATION_TAB);
+        void addToPerspective(QWidget *widget, UIView perspective = AnimationView);
         void removeFromPerspective(QWidget *widget);
-        void setCurrentPerspective(int wsp);
-        int currentPerspective() const;
+        void setCurrentPerspective(UIView windowPerspective);
+        UIView currentPerspective();
 
-        void addToPerspective(QAction *action, int perspective);
-        void addToPerspective(const QList<QAction *> &actions, int perspective);
+        void addToPerspective(QAction *action, UIView perspective);
+        void addToPerspective(const QList<QAction *> &actions, UIView perspective);
         void removeFromPerspective(QAction *action);
 
         void enableToolViews(bool flag);
 
-        void setAutoRestore(bool autoRestore);
-        bool autoRestore() const;
+        void setAutoRestoreProperty(bool autoRestore);
+        bool autoRestoreProperty() const;
 
         void setSettingsHandler(TMainWindowAbstractSettings *config);
         void restoreGUI();
@@ -95,7 +95,7 @@ class T_GUI_EXPORT TMainWindow : public QMainWindow
         Qt::ToolBarArea toToolBarArea(Qt::DockWidgetArea area);
 
     signals:
-        void perspectiveChanged(int wps);
+        void perspectiveChanged(UIView wps);
 
     protected:
         void addButtonBar(Qt::ToolBarArea area);
@@ -105,20 +105,20 @@ class T_GUI_EXPORT TMainWindow : public QMainWindow
         virtual void showEvent(QShowEvent *event);
 
     private:
-        ToolView *m_forRelayout;
+        ToolView *viewForRelayout;
 
     private:
-        QString winKey;
-        QHash<Qt::ToolBarArea, TButtonBar *> m_buttonBars;
-        QHash<TButtonBar *, QList<ToolView*> > m_toolViews;
-        QHash<QWidget *, int> m_managedWidgets;
-        QHash<QAction *, int> m_managedActions;
+        QString windowKey;
+        QHash<Qt::ToolBarArea, TButtonBar *> buttonBarsHash;
+        QHash<TButtonBar *, QList<ToolView*> > toolViewsHash;
+        QHash<QWidget *, int> managedWidgetsHash;
+        QHash<QAction *, int> managedActionsHash;
         QToolBar *specialToolBar;
 
-        int perspective;
+        UIView perspective;
 
         TMainWindowAbstractSettings *settings;
-        bool m_autoRestore;
+        bool autoRestore;
 };
 
 #endif

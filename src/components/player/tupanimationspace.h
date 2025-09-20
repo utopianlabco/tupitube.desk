@@ -57,7 +57,7 @@ class TUPITUBE_EXPORT TupAnimationSpace : public QWidget
         void keyPressEvent(QKeyEvent *event);
 
     signals:
-        void newPerspective(int index);
+        void newPerspective(UIView tabType);
 
     private:
         TupCameraWidget *playerInterface;

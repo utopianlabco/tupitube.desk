@@ -55,21 +55,21 @@ void TupMainWindow::createGUI()
     m_colorPalette = new TupColorPaletteWidget;
     connect(m_colorPalette, SIGNAL(colorSpaceChanged(TColorCell::FillType)), this, SLOT(updateBucketTool(TColorCell::FillType)));
 
-    colorView = addToolView(m_colorPalette, Qt::LeftDockWidgetArea, ANIMATION_TAB, "Color Palette", QKeySequence(tr("Shift+P")));
+    colorView = addToolView(m_colorPalette, Qt::LeftDockWidgetArea, AnimationView, "Color Palette", QKeySequence(tr("Shift+P")));
     connect(colorView, SIGNAL(visibilityChanged(bool)), this, SLOT(updateColorPanelStatus(bool)));
 
     m_actionManager->insert(colorView->toggleViewAction(), "show_palette");
-    addToPerspective(colorView->toggleViewAction(), ANIMATION_TAB);
+    addToPerspective(colorView->toggleViewAction(), AnimationView);
 
     connectWidgetToPaintArea(m_colorPalette);
 
     // Adding the pen parameters widget to the left side of the interface
     m_brushWidget = new TupBrushWidget;
-    penView = addToolView(m_brushWidget, Qt::LeftDockWidgetArea, ANIMATION_TAB, "Pen", QKeySequence(tr("Shift+B")));
+    penView = addToolView(m_brushWidget, Qt::LeftDockWidgetArea, AnimationView, "Pen", QKeySequence(tr("Shift+B")));
     connect(penView, SIGNAL(visibilityChanged(bool)), this, SLOT(updatePenPanelStatus(bool)));
 
     m_actionManager->insert(penView->toggleViewAction(), "show_pen");
-    addToPerspective(penView->toggleViewAction(), ANIMATION_TAB);
+    addToPerspective(penView->toggleViewAction(), AnimationView);
     connectWidgetToPaintArea(m_brushWidget);
 
     // Adding the objects library widget to the left side of the interface
@@ -81,11 +81,11 @@ void TupMainWindow::createGUI()
     connect(m_libraryWidget, SIGNAL(projectSizeHasChanged(const QSize)), this, SLOT(resizeCanvasDimension(const QSize)));
     connect(m_libraryWidget, SIGNAL(projectHasChanged(bool)), m_projectManager, SLOT(setModificationStatus(bool)));
 
-    libraryView = addToolView(m_libraryWidget, Qt::LeftDockWidgetArea, ANIMATION_TAB, "Library", QKeySequence(tr("Shift+L")));
+    libraryView = addToolView(m_libraryWidget, Qt::LeftDockWidgetArea, AnimationView, "Library", QKeySequence(tr("Shift+L")));
     connect(libraryView, SIGNAL(visibilityChanged(bool)), this, SLOT(updateLibraryPanelStatus(bool)));
 
     m_actionManager->insert(libraryView->toggleViewAction(), "show_library");
-    addToPerspective(libraryView->toggleViewAction(), ANIMATION_TAB);
+    addToPerspective(libraryView->toggleViewAction(), AnimationView);
 
     new TAction(QPixmap(THEME_DIR + "icons/bitmap.png"), tr("Image"), QKeySequence(tr("Alt+B")), m_libraryWidget, SLOT(importImageGroup()),
         m_actionManager, "importImageGroup");
@@ -119,10 +119,10 @@ void TupMainWindow::createGUI()
     // Adding the scenes widget to the right side of the interface
 
     m_scenes = new TupScenesWidget;
-    scenesView = addToolView(m_scenes, Qt::RightDockWidgetArea, ANIMATION_TAB, "Scenes Manager", QKeySequence(tr("Shift+C")));
+    scenesView = addToolView(m_scenes, Qt::RightDockWidgetArea, AnimationView, "Scenes Manager", QKeySequence(tr("Shift+C")));
     connect(scenesView, SIGNAL(visibilityChanged(bool)), this, SLOT(updateScenesPanelStatus(bool)));
     m_actionManager->insert(scenesView->toggleViewAction(), "show_scenes");
-    addToPerspective(scenesView->toggleViewAction(), ANIMATION_TAB);
+    addToPerspective(scenesView->toggleViewAction(), AnimationView);
 
     connectWidgetToManager(m_scenes);
     connectWidgetToLocalManager(m_scenes);
@@ -130,26 +130,26 @@ void TupMainWindow::createGUI()
 
     // Adding the exposure sheet to the right side of the interface
     m_exposureSheet = new TupExposureSheet(this, m_projectManager->getProject());
-    connect(m_exposureSheet, SIGNAL(newPerspective(int)), this, SLOT(changePerspective(int)));
+    connect(m_exposureSheet, SIGNAL(newPerspective(UIView)), this, SLOT(changePerspective(UIView)));
     connect(m_exposureSheet, SIGNAL(sceneChanged(int)), this, SLOT(updateBgColorInPalette(int)));
 
-    exposureView = addToolView(m_exposureSheet, Qt::RightDockWidgetArea, ANIMATION_TAB, "Exposure Sheet", QKeySequence(tr("Shift+E")));
+    exposureView = addToolView(m_exposureSheet, Qt::RightDockWidgetArea, AnimationView, "Exposure Sheet", QKeySequence(tr("Shift+E")));
 
     m_actionManager->insert(exposureView->toggleViewAction(), "show_exposure");
-    addToPerspective(exposureView->toggleViewAction(), ANIMATION_TAB);
+    addToPerspective(exposureView->toggleViewAction(), AnimationView);
 
     connectWidgetToManager(m_exposureSheet);
     connectWidgetToLocalManager(m_exposureSheet);
 
     // Adding the time line widget to the bottom side of the interface
     m_timeLine = new TupTimeLine(m_projectManager->getProject());
-    connect(m_timeLine, SIGNAL(newPerspective(int)), this, SLOT(changePerspective(int)));
+    connect(m_timeLine, SIGNAL(newPerspective(UIView)), this, SLOT(changePerspective(UIView)));
     connect(m_timeLine, SIGNAL(sceneChanged(int)), this, SLOT(updateBgColorInPalette(int)));
 
-    timeView = addToolView(m_timeLine, Qt::BottomDockWidgetArea, ANIMATION_TAB, "Time Line", QKeySequence(tr("Shift+T")));
+    timeView = addToolView(m_timeLine, Qt::BottomDockWidgetArea, AnimationView, "Time Line", QKeySequence(tr("Shift+T")));
 
     m_actionManager->insert(timeView->toggleViewAction(), "show_timeline");
-    addToPerspective(timeView->toggleViewAction(), ANIMATION_TAB);
+    addToPerspective(timeView->toggleViewAction(), AnimationView);
 
     connectWidgetToManager(m_timeLine);
     connectWidgetToLocalManager(m_timeLine);
@@ -159,18 +159,18 @@ void TupMainWindow::createGUI()
     QListWidget *list = new QListWidget();
     list->addItems(QStringList() << "Hello! I am the bottom dock! ;)");
 
-    timeView = addToolView(list, Qt::BottomDockWidgetArea, ANIMATION_TAB, "Time Line", QKeySequence(tr("Shift+T")));
+    timeView = addToolView(list, Qt::BottomDockWidgetArea, AnimationView, "Time Line", QKeySequence(tr("Shift+T")));
     // connect(timeView, SIGNAL(visibilityChanged(bool)), this, SLOT(checkExposureVisibility(bool)));
 
     m_actionManager->insert(timeView->toggleViewAction(), "show_timeline");
-    addToPerspective(timeView->toggleViewAction(), ANIMATION_TAB);
+    addToPerspective(timeView->toggleViewAction(), AnimationView);
     */
 
     /* SQA: Define if scripting support should be enabled
     // Adding the script editor to the bottom side, if kinas was enabled
     #ifdef ENABLE_KINAS
         KinasWidget *m_scriptEditor = new KinasWidget;
-        addToolView(m_scriptEditor, Qt::BottomDockWidgetArea, ANIMATION_TAB, "TupiTube Script", QKeySequence(tr("Shift+K"));
+        addToolView(m_scriptEditor, Qt::BottomDockWidgetArea, AnimationView, "TupiTube Script", QKeySequence(tr("Shift+K"));
     #endif
     */
 
@@ -261,7 +261,7 @@ void TupMainWindow::setupMenu()
     drawingPerspective->setIcon(QPixmap(THEME_DIR + "icons/animation_mode.png")); 
     drawingPerspective->setIconVisibleInMenu(true);
     drawingPerspective->setShortcut(QKeySequence("Ctrl+1"));
-    drawingPerspective->setData(ANIMATION_TAB);
+    drawingPerspective->setData(AnimationView);
     group->addAction(drawingPerspective);
 
     // Adding Option Player 
@@ -269,7 +269,7 @@ void TupMainWindow::setupMenu()
     animationPerspective->setIcon(QPixmap(THEME_DIR + "icons/play_small.png"));
     animationPerspective->setIconVisibleInMenu(true);
     animationPerspective->setShortcut(QKeySequence("Ctrl+2"));
-    animationPerspective->setData(PLAYER_TAB);
+    animationPerspective->setData(PlayerView);
     group->addAction(animationPerspective);
 
     m_viewMenu->addActions(group->actions());
@@ -516,34 +516,29 @@ void TupMainWindow::changePerspective(QAction *action)
     #endif
 
     // Animation or Player perspective
-    if (perspective == ANIMATION_TAB || perspective == PLAYER_TAB)
+    if (perspective == AnimationView || perspective == PlayerView)
         setCurrentTab(perspective);
         // setCurrentTab(perspective - 1);
 
     action->setChecked(true);
 }
 
-void TupMainWindow::changePerspective(int index)
+void TupMainWindow::changePerspective(UIView tabType)
 {
     #ifdef TUP_DEBUG
         qDebug() << "---";
-        qDebug() << "[TupMainWindow::changePerspective(int)] ->" << index;
+        qDebug() << "[TupMainWindow::changePerspective(int)] - tabType ->" << tabType;
     #endif
 
-    if (index == PLAYER_TAB) { // Player
+    if (tabType == PlayerView) { // Player
         #ifdef TUP_DEBUG
             qDebug() << "[TupMainWindow::changePerspective(int)] - Opening the player interface...";
         #endif
         m_libraryWidget->stopSoundPlayer();
-        // setCurrentTab(PLAYER_TAB);
+        setCurrentTab(1);
+    } else if (tabType == AnimationView) {  // Animation
+        setCurrentTab(0);
     }
-    /*
-     else {
-        setCurrentTab(index);
-    }
-    */
-
-    setCurrentTab(index);
 }
 
 void TupMainWindow::doPlay()

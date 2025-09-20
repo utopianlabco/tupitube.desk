@@ -82,7 +82,7 @@ class TUPITUBE_EXPORT TupExposureSheet : public TupModuleWidgetBase
         virtual void libraryResponse(TupLibraryResponse *response);
 
     signals:
-        void newPerspective(int);
+        void newPerspective(UIView tabType);
         void sceneChanged(int sceneIndex);
 
     public slots:

@@ -48,11 +48,10 @@ class T_GUI_EXPORT TWorkspaceMainWindow : public TMainWindow
         TWorkspaceMainWindow(QWidget *parent = nullptr);
         ~TWorkspaceMainWindow();
 
-        void addWidget(QWidget *widget, int perspective = ANIMATION_TAB);
+        void addWidget(QWidget *widget, UIView tabType);
         void removeWidget(QWidget *widget);
 
     private:
-        // QWorkspace *m_workspace;
         QMdiArea *mdiArea;
 };
 

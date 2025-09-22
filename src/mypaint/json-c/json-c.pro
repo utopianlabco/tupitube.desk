@@ -49,8 +49,8 @@ macx {
     INSTALLS += target
     target.path = /lib
 
-    !include(../../../tupiglobal.pri) {
-        error("Run ./configure first!")
+    !include(../../../global_variables.pri) {
+        error("raster/json-c.pro: Run ./configure first!")
     }
 }
 
@@ -58,7 +58,7 @@ unix:!mac {
     INSTALLS += target
     target.path = /lib/raster
 
-    !include(../../../tupiglobal.pri) {
-        error("Run ./configure first!")
+    !include(../../../global_variables.pri) {
+        error("raster/json-c.pro: Run ./configure first!")
     }
 }

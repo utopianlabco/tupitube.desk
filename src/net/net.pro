@@ -9,8 +9,8 @@ macx {
 }
 
 unix {
-    !include(../../tupiglobal.pri) {
-        error("Please configure first")
+    !include(../../global_variables.pri) {
+        error("net.pro: Run ./configure first!")
     }
 }
 

@@ -4,8 +4,8 @@ TEMPLATE = lib
 TARGET = tupisheartool
 
 unix {
-    !include(../../../../tupiglobal.pri){
-        error("Please run configure first")
+    !include(../../../../global_variables.pri) {
+        error("shear.pro: Run ./configure first!")
     }
 }
 

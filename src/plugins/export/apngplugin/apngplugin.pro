@@ -3,8 +3,8 @@ TEMPLATE = lib
 TARGET = tupiapngplugin
 
 unix {
-    !include(../../../../tupiglobal.pri){
-        error("Please run configure first")
+    !include(../../../global_variables.pri) {
+        error("apngplugin.pro: Run ./configure first!")
     }
 }
 

@@ -4,8 +4,8 @@ TEMPLATE = lib
 TARGET = tupiinktool
 
 unix {
-    !include(../../../../tupiglobal.pri){
-        error("Please run configure first")
+    !include(../../../../global_variables.pri) {
+        error("ink.pro: Run ./configure first!")
     }
 }
 

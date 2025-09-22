@@ -4,8 +4,8 @@ TEMPLATE = lib
 TARGET = tupiffmpegplugin
 
 unix {
-    !include(../../../../tupiglobal.pri) {
-        error("Please run configure first")
+    !include(../../../../global_variables.pri) {
+        error("ffmpegplugin.pro: Run ./configure first!")
     }
 }
 

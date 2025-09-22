@@ -1,7 +1,14 @@
 CONFIG += ordered warn_on
 TEMPLATE = subdirs
 
-SUBDIRS = json-c \
-          libmypaint \
-          qtmypaint \
-          raster 
+win32|macx {
+  SUBDIRS = json-c \
+            libmypaint \
+            qtmypaint \
+            raster
+} else {
+  # Linux
+  SUBDIRS = libmypaint \
+            qtmypaint \
+            raster
+}

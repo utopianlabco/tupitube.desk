@@ -4,8 +4,8 @@ TEMPLATE = lib
 TARGET = tupitexttool
 
 unix {
-    !include(../../../../tupiglobal.pri){
-        error("Please run configure first")
+    !include(../../../../global_variables.pri) {
+        error("text.pro: Run ./configure first!")
     }
 }
 

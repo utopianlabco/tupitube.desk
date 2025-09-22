@@ -4,8 +4,8 @@ TEMPLATE = lib
 TARGET = tupipapagayotool
 
 unix {
-    !include(../../../../tupiglobal.pri){
-        error("Please run configure first")
+    !include(../../../../global_variables.pri) {
+        error("papagayo.pro: Run ./configure first!")
     }
 }
 

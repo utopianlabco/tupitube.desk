@@ -32,8 +32,8 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#include "quazip/quazip.h"
-#include "quazip/quazipfile.h"
+#include "quazip.h"
+#include "quazipfile.h"
 #include <QFile>
 
 int main()

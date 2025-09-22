@@ -12,8 +12,8 @@ macx {
     INCLUDEPATH += ../json-c
     LIBS += -L../json-c -ljson-c
 
-    !include(../../../tupiglobal.pri) {
-        error("Run ./configure first!")
+    !include(../../../global_variables.pri) {
+        error("libmypaint.pro: Run ./configure first!")
     }
 }
 
@@ -21,11 +21,11 @@ unix:!mac {
     INSTALLS += target
     target.path = /lib/raster
 	
-    INCLUDEPATH += ../json-c
-    LIBS += -L../json-c -ljson-c
+    INCLUDEPATH += /usr/include/json-c
+    LIBS += -L/usr/lib/x86_64-linux-gnu -ljson-c
 
-    !include(../../../tupiglobal.pri) {
-        error("Run ./configure first!")
+    !include(../../../global_variables.pri) {
+        error("libmypaint.pro: Run ./configure first!")
     }
 }   
 

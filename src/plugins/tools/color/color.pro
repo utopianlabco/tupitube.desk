@@ -4,8 +4,8 @@ TEMPLATE = lib
 TARGET = tupicoloringtool
 
 unix {
-    !include(../../../../tupiglobal.pri){
-        error("Please run configure first")
+    !include(../../../../global_variables.pri) {
+        error("color.pro: Run ./configure first!")
     }
 }
 

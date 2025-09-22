@@ -4,8 +4,8 @@ TEMPLATE = lib
 TARGET = tupimotiontool
 
 unix {
-    !include(../../../../tupiglobal.pri){
-        error("Please run configure first")
+    !include(../../../../global_variables.pri) {
+        error("motion.pro: Run ./configure first!")
     }
 }
 

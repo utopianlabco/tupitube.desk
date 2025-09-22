@@ -7,9 +7,5 @@ macx {
     CONFIG += warn_on static console
 }
 
-DEPENDPATH += .
-INCLUDEPATH += .
-LIBS += -lz
-
 # Input
 SOURCES += main.cpp

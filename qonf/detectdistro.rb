@@ -34,75 +34,23 @@
 
 module RQonf
 
-class DetectOS
-    OS = {
-        0 => "Unknown",
-        1 => "Windows",
-        2 => "Unix",
-        3 => "Linux",
-        31 => "Debian",
-        311 => "Ubuntu",
-        312 => "14.04",
-        313 => "14.10",
-        32 => "Gentoo",
-        4 => "Mac OS X"
-    }
-    
-    def self.whatOS
-        @os = 0
-        if File::SEPARATOR == "\\"
-            return 1
-        elsif File::SEPARATOR == "/"
-            @os = 2
-            
-            linux = DetectOS.tryToFindLinuxDistribution
-            @os = linux if linux > 0
-        end
-        
-        return @os
+class DetectDistro
+  def self.getLinuxDistroID
+    osReleasePath = "/etc/os-release"
+    osReleasePath = "/usr/lib/os-release" unless File.exist?(osReleasePath)
+
+    return nil unless File.exist?(osReleasePath)
+
+    File.foreach(osReleasePath) do |line|
+      if line =~ /^ID=(.*)$/
+        idValue = $1.strip
+        idValue = idValue.gsub(/"/, '')
+        return idValue
+      end
     end
-    
-    def self.tryToFindLinuxDistribution
-        lsb = "/etc/lsb-release"
-        if File.exist?(lsb) 
-           distro = ""
-           version = ""
-           File.open(lsb, "r") do |f|
-              f.each_line do |line|
-                 line = line.chop 
-                 tag, value = line.split("=")
 
-                 if tag.eql? "DISTRIB_ID"
-                    distro = value 
-                 end
-                 if tag.eql? "DISTRIB_RELEASE"
-                    version = value
-                 end
-              end
-           end
-
-           if distro.eql? "Ubuntu"
-              if version.eql? "14.04"
-                 return 312
-              end
-              if version.eql? "14.10"
-                 return 313
-              end
-              return 311
-           end
-        end
-        
-        if `uname`.downcase == "linux"
-            return 2
-        end
-
-        return 0
-    end
+    nil
+  end
 end
 
 end
-
-if __FILE__ == $0
-    puts RQonf::DetectOS::OS[RQonf::DetectOS.whatOS]
-end
-

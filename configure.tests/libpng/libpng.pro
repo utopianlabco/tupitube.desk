@@ -9,9 +9,5 @@ macx {
     LIBS += -L/usr/local/lib
 }
 
-DEPENDPATH += .
-INCLUDEPATH += .
-LIBS += -lpng
-
 # Input
 SOURCES += main.cpp

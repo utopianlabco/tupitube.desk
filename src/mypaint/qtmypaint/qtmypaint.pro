@@ -18,18 +18,30 @@ SOURCES += mpbrush.cpp \
 FRAMEWORK_DIR = "../../framework"
 include($$FRAMEWORK_DIR/framework.pri)
 
-LIBS += -L../json-c -ljson-c
-LIBS += -L../libmypaint -llibmypaint
-
 # --- json-c ---
-win32:CONFIG(release, debug|release): LIBS += -L../json-c/release/ -ljson-c
-else:win32:CONFIG(debug, debug|release): LIBS += -L../json-c/debug/ -ljson-c
-else:unix: LIBS += -L../json-c -ljson-c
+win32|macx {
+  LIBS += -L../json-c -ljson-c
+  win32:CONFIG(release, debug|release): LIBS += -L../json-c/release/ -ljson-c
+  else:win32:CONFIG(debug, debug|release): LIBS += -L../json-c/debug/ -ljson-c
+  else:unix: LIBS += -L../json-c -ljson-c
 
-INCLUDEPATH += ../json-c
-DEPENDPATH += ../json-c
+  INCLUDEPATH += ../json-c
+  DEPENDPATH += ../json-c
+} else {
+  # LIBS += -ljson-c
+  # INCLUDEPATH += /usr/include/json-c
+  # LIBS += -L../json-c -ljson-c
+
+  win32:CONFIG(release, debug|release): LIBS += -L../json-c/release/ -ljson-c
+  else:win32:CONFIG(debug, debug|release): LIBS += -L../json-c/debug/ -ljson-c
+  else:unix: LIBS += -L/usr/lib/x86_64-linux-gnu -ljson-c
+
+  INCLUDEPATH += /usr/include/json-c
+  # DEPENDPATH += ../json-c
+}
 
 # --- libmypaint ---
+LIBS += -L../libmypaint -llibmypaint
 win32:CONFIG(release, debug|release): LIBS += -L../libmypaint/release/ -llibmypaint
 else:win32:CONFIG(debug, debug|release): LIBS += -L../libmypaint/debug/ -llibmypaint
 else:unix: LIBS += -L../libmypaint -llibmypaint
@@ -45,8 +57,8 @@ macx {
     INSTALLS += target
     target.path = /lib
 
-    !include(../../../tupiglobal.pri) {
-        error("Run ./configure first!")
+    !include(../../../global_variables.pri) {
+        error("raster/qtmainpaint.pro: Run ./configure first!")
     }
 }
 
@@ -54,8 +66,8 @@ unix:!mac {
     INSTALLS += target
     target.path = /lib/raster
 
-    !include(../../../tupiglobal.pri) {
-        error("Run ./configure first!")
+    !include(../../../global_variables.pri) {
+        error("raster/qtmainpaint.pro: Run ./configure first!")
     }
 }   
 

@@ -4,8 +4,8 @@ TEMPLATE = lib
 TARGET = tupiimageplugin
 
 unix {
-    !include(../../../../tupiglobal.pri){
-        error("Please run configure first")
+    !include(../../../../global_variables.pri) {
+        error("imageplugin.pro: Run ./configure first!")
     }
 }
 

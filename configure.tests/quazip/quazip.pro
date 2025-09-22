@@ -9,11 +9,4 @@ macx {
     CONFIG += warn_on static console
 }
 
-unix:!macx {
-  INCLUDEPATH += /usr/local/quazip/include
-}
-
-LIBS += -L/usr/local/lib -lz
-
-# Input
 SOURCES += main.cpp

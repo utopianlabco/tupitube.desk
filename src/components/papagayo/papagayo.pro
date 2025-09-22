@@ -20,8 +20,8 @@ win32 {
     INCLUDEPATH += C:/devel/sources/libsndfile/include
     LIBS += -LC:/devel/sources/libsndfile/bin -lsndfile
 } else { # unix
-    !include(../../../tupiglobal.pri) {
-             error("Run ./configure first!")
+    !include(../../../global_variables.pri) {
+        error("papagayo.pro: Run ./configure first!")
     }
 
     STORE_DIR = ../../store/

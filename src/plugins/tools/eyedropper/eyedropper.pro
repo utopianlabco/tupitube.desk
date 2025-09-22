@@ -4,8 +4,8 @@ TEMPLATE = lib
 TARGET = tupieyedropper
 
 unix {
-    !include(../../../../tupiglobal.pri){
-        error("Please run configure first")
+    !include(../../../../global_variables.pri) {
+        error("eyedropper.pro: Run ./configure first!")
     }
 }
 

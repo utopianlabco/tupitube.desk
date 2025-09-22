@@ -4,8 +4,8 @@ TEMPLATE = lib
 TARGET = tupirotationtool
 
 unix {
-    !include(../../../../tupiglobal.pri){
-        error("Please run configure first")
+    !include(../../../../global_variables.pri) {
+        error("rotation.pro: Run ./configure first!")
     }
 }
 

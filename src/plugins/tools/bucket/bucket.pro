@@ -4,8 +4,8 @@ TEMPLATE = lib
 TARGET = tupibuckettool
 
 unix {
-    !include(../../../../tupiglobal.pri){
-        error("Please run configure first")
+    !include(../../../../global_variables.pri) {
+        error("bucket.pro: Run ./configure first!")
     }
 }
 

@@ -4,8 +4,8 @@ TEMPLATE = lib
 TARGET = tupishifttool
 
 unix {
-    !include(../../../../tupiglobal.pri){
-        error("Please run configure first")
+    !include(../../../../global_variables.pri) {
+        error("shift.pro: Run ./configure first!")
     }
 }
 

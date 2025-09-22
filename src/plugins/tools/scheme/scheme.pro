@@ -26,8 +26,8 @@ include($$FRAMEWORK_DIR/framework.pri)
 include(../tools_config.pri)
 
 unix {
-    !include(../../../../tupiglobal.pri) {
-        error("Please run configure first")
+    !include(../../../../global_variables.pri) {
+        error("scheme.pro: Run ./configure first!")
     }
 }
 

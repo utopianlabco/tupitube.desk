@@ -37,7 +37,7 @@ require 'rbconfig'
 module RQonf
     class Makefile
 
-        def self.setArgs(paths)
+        def self.setConfigureOptions(paths)
             @options = paths 
         end
 

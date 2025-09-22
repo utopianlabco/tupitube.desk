@@ -4,8 +4,8 @@ TEMPLATE = lib
 TARGET = tupipenciltool
 
 unix {
-    !include(../../../../tupiglobal.pri){
-        error("Please run configure first")
+    !include(../../../../global_variables.pri) {
+        error("pencil.pro: Run ./configure first!")
     }
 }
 

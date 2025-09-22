@@ -4,8 +4,8 @@ TEMPLATE = lib
 TARGET = tupierasertool
 
 unix {
-    !include(../../../../tupiglobal.pri){
-        error("Please run configure first")
+    !include(../../../../global_variables.pri) {
+        error("eraser.pro: Run ./configure first!")
     }
 }
 

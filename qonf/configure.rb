@@ -35,6 +35,7 @@
 ###########################################################################
 
 require 'os'
+require 'yaml'
 require_relative 'test'
 require_relative 'config'
 require_relative 'info'
@@ -47,80 +48,44 @@ module RQonf
     attr_reader :qmake, :statusFile
 
     def initialize(args)
-      @statusFile = Dir.getwd + "/configure.status"
-
-      @tests = []
-      @testsDir = Dir.getwd + "/configure.tests"
-
-      @options = {}
+      @parameters = {}
       parseArgs(args)
 
-      @qmake = QMake.new
-      @statusFile = Dir.getwd + "/configure.status"
-
-      @tests = []
       @testsDir = Dir.getwd
-
-      @options = {}
-      parseArgs(args)
-
+      @tests = []
+      @configureOptions = {}
       @qmake = QMake.new
-      @properties = {}
+      @dependencies = []
 
-      @ffmpeg = true
+      setConfigureOptions()
+      createLauncherFile()
 
-      setPath()
-      Makefile::setArgs(@options)
+      Makefile::setConfigureOptions(@configureOptions)
     end
 
-    def load_properties(properties_filename)
-      File.open(properties_filename, 'r') do |properties_file|
-        properties_file.read.each_line do |line|
-          line.strip!
-          if (line[0] != ?# and line[0] != ?=)
-            i = line.index('=')
-            if (i)
-              @properties[line[0..i - 1].strip] = line[i + 1..-1].strip
-            else
-              @properties[line] = ''
-            end
-          end
-        end
-      end
-      @properties
-    end
-
-    def hasProperty?(arg)
-      @properties.has_key?(arg)
-    end
-
-    def propertyValue(arg)
-      @properties[arg].to_s
+    def loadProperties(yamlFile)
+      @dependencies = YAML.load_file(yamlFile)
     end
 
     def hasArgument?(arg)
-      @options.has_key?(arg)
+      @configureOptions.has_key?(arg)
     end
 
     def argumentValue(arg)
-      @options[arg].to_s
+      @configureOptions[arg].to_s
     end
 
     def setTestDir(dir)
       @testsDir = dir
     end
 
-    def disableFFmpeg()
-      @ffmpeg = false
-    end
-
     def verifyQtVersion(minqtversion, verbose, qtdir)
       Info.info << "Checking for Qt >= " << minqtversion << $endl
 
       if @qmake.findQMake(minqtversion, verbose, qtdir)
-        print "[ \033[92mOK\033[0m ]\n"
+        print " [ \033[92mOK\033[0m ]\n"
       else
-        print "[ \033[91mFAILED\033[0m ]\n"
+        print " [ \033[91mFAILED\033[0m ]\n"
         raise QonfException.new("\033[91mInvalid Qt version\033[0m.\n   Please, upgrade to #{minqtversion} or higher (Visit: http://qt-project.org)")
       end
     end
@@ -140,12 +105,19 @@ module RQonf
       findTest(@testsDir)
     end
 
-    def runTests(config, conf, debug)
-      @tests.each { |test|
-        if not test.run(config, conf, debug) and not test.optional
+    def runTests(linuxDistro, globalConfigFile, parameters, debug)
+      baseDir = __dir__
+      configPath = File.join(baseDir, "distros", "#{linuxDistro}.yml")
+      loadProperties(configPath)
+
+      @dependencies.each do |dependencyName, dependencyData|
+        isMandatory = dependencyData['mandatory']
+        test = Test.new(@qmake)
+        succeed = test.run(globalConfigFile, parameters, dependencyName, @dependencies[dependencyName], debug)
+        if !succeed && isMandatory
            raise QonfException.new("\033[91mMissing required dependency\033[0m")
         end
-      }
+      end
     end
 
     def createMakefiles
@@ -167,9 +139,46 @@ module RQonf
       }
     end
 
+    def cleanupTests
+      filesToRemove = [
+        "main.o",
+        "Makefile",
+        ".qmake.stash"
+      ]
+
+      subdirs = Dir.glob('configure.tests/**/').sort.reverse
+      subdirs.each do |dirPath|
+        # Removing each filename in the list
+        filesToRemove.each do |filename|
+          filePath = File.join(dirPath, filename)
+
+          if File.exist?(filePath)
+            begin
+              File.delete(filePath)
+            rescue Errno::EACCES => e
+              puts "  Error deleting #{filePath}: #{e.message} (Permission denied)"
+            rescue => e
+              puts "  Error deleting #{filePath}: #{e.message}"
+            end
+          end
+        end
+
+        # Removing files with the same name as the subdirectory.
+        dirNamefile = File.join(dirPath, File.basename(dirPath))
+        if File.exist?(dirNamefile)
+          begin
+            File.delete(dirNamefile)
+          rescue Errno::EACCES => e
+            puts "  Error deleting #{dirNamefile}: #{e.message} (Permission denied)"
+          rescue => e
+            puts "  Error deleting #{dirNamefile}: #{e.message}"
+          end
+        end
+      end 
+    end
+
     private
     def parseArgs(args)
-
       optc = 0
       last_opt = ""
 
@@ -179,14 +188,14 @@ module RQonf
         if arg =~ /^--([\w-]*)={0,1}([\W\w]*)/
           opt = $1.strip
           val = $2.strip
-          @options[opt] = val
+          @parameters[opt] = val 
           last_opt = opt
-        else
+        else 
           # arg is an arg for option
           if not last_opt.to_s.empty? and @options[last_opt].to_s.empty?
-            @options[last_opt] = arg
+            @parameters[last_opt] = arg
           else
-            raise "Invalid option: #{arg}"
+            raise "parseArgs() - Invalid option: #{arg}"
           end
         end
 
@@ -194,68 +203,61 @@ module RQonf
       end
     end
 
+    private
     def findTest(path)
-      if $DEBUG
-        Info.warn << "Searching qonfs in: " << path << $endl
+      unless File.directory?(path)
+        # Assign an empty array if the path is invalid.
+        @dependencies = []
+        return
       end
-      Dir.foreach(path) { |f|
-        file = "#{path}/#{f}"
 
-        if File.stat(file).directory?
-          if not f =~ /^\./
-            findTest(file)
-          end
-        elsif file =~ /.qonf$/
-          if file.include? "ffmpeg"
-             if @ffmpeg
-                Info.info << "Adding ffmpeg support: " << @ffmpeg << $endl
-                @tests << Test.new(file, @qmake)
-             end
-          else
-             @tests << Test.new(file, @qmake)
-          end
-        end
-      }
+      # Assign the result of the map operation to the instance variable.
+      @dependencies = Dir.glob(File.join(path, "*/")).map do |dir_path|
+        File.basename(dir_path)
+      end
     end
 
     private
-    def setPath()
-      if @options['prefix'].nil? then
-        @options['prefix'] = "/usr"
+    def setConfigureOptions
+      if @configureOptions['prefix'].nil? then
+        @configureOptions['prefix'] = "/usr"
       end
 
-      if @options['bindir'].nil? then
-         @options['bindir'] = @options['prefix'] + "/bin"
+      if @configureOptions['bindir'].nil? then
+         @configureOptions['bindir'] = @configureOptions['prefix'] + "/bin"
       end
 
-      if @options['libdir'].nil? then
+      if @configureOptions['libdir'].nil? then
         if RUBY_PLATFORM == "x86_64-linux"
-           @options['libdir'] = @options['prefix'] + "/lib64/tupitube"
+           @configureOptions['libdir'] = @configureOptions['prefix'] + "/lib64/tupitube"
         else
-           @options['libdir'] = @options['prefix'] + "/lib/tupitube"
+           @configureOptions['libdir'] = @configureOptions['prefix'] + "/lib/tupitube"
         end
-      elsif !@options['libdir'].end_with? "tupitube" then
-            @options['libdir'] = @options['libdir'] + "/tupitube"
+      elsif !@configureOptions['libdir'].end_with? "tupitube" then
+            @configureOptions['libdir'] = @configureOptions['libdir'] + "/tupitube"
       end
 
-      if @options['includedir'].nil? then
-         @options['includedir'] = @options['prefix'] + "/include"
+      if @configureOptions['includedir'].nil? then
+         @configureOptions['includedir'] = @configureOptions['prefix'] + "/include"
       end
 
-      if @options['sharedir'].nil? then
-        @options['sharedir'] = @options['prefix'] + "/share/tupitube"
+      if @configureOptions['sharedir'].nil? then
+        @configureOptions['sharedir'] = @configureOptions['prefix'] + "/share/tupitube"
       end
+    end
 
-      launcher_prefix = @options['prefix']
-      launcher_sharedir = @options['sharedir']
-      launcher_libdir = @options['libdir']
-      launcher_rasterdir = @options['libdir'] + "/raster"
-      launcher_bindir = @options['bindir']
+    private
+    def createLauncherFile()
+      launcher_prefix = @configureOptions['prefix']
+      launcher_sharedir = @configureOptions['sharedir']
+      launcher_libdir = @configureOptions['libdir']
+      launcher_rasterdir = @configureOptions['libdir'] + "/raster"
+      launcher_bindir = @configureOptions['bindir']
 
-      if @options['package-build'].nil? then
-        @options['package-build'] = "/usr"
+      if @configureOptions['package-build'].nil? then
+        @configureOptions['package-build'] = "/usr"
       else
-        @options['package-build'] = @options['prefix']
+        @configureOptions['package-build'] = @configureOptions['prefix']
         launcher_prefix = "/usr"
         launcher_sharedir = "/usr/share/tupitube"
         if RUBY_PLATFORM == "x86_64-linux"
@@ -274,18 +276,18 @@ module RQonf
       newfile += "export TUPITUBE_BIN=\"" + launcher_bindir + "\"\n\n"
 
       path = ""
-      unless @options['with-ffmpeg'].nil? then
-        value = @options['with-ffmpeg']
+      unless @configureOptions['with-ffmpeg'].nil? then
+        value = @configureOptions['with-ffmpeg']
         path = value + "/lib:"
       end
 
-      unless @options['with-quazip'].nil? then
-        value = @options['with-quazip']
+      unless @configureOptions['with-quazip'].nil? then
+        value = @configureOptions['with-quazip']
         path += value + "/lib:"
       end
 
-      unless @options['with-libsndfile'].nil? then
-        value = @options['with-libsndfile']
+      unless @configureOptions['with-libsndfile'].nil? then
+        value = @configureOptions['with-libsndfile']
         path += value + "/lib:"
       end
 
@@ -305,20 +307,20 @@ module RQonf
       # newfile += "Encoding=UTF-8\n"
 
       newfile += "Name=TupiTube Desk\n"
-      newfile += "GenericName=2D Animation Editor\n"
-      newfile += "GenericName[es]=Editor de Animaciones 2D\n"
-      newfile += "GenericName[pt]=Editor de Animações 2D\n"
-      newfile += "GenericName[ru]=Редактор 2D анимации\n"
+      newfile += "GenericName=2D Animation Tool\n"
+      newfile += "GenericName[es]=Herramienta de Animación 2D\n"
+      newfile += "GenericName[pt]=Ferramenta de Animação 2D\n"
+      newfile += "GenericName[ru]=Инструмент 2D-анимации\n"
       newfile += "Exec=" + launcher_bindir + "/tupitube.desk %f\n"
       newfile += "Icon=tupitube.desk\n"
       newfile += "Type=Application\n"
       newfile += "MimeType=application/tup;\n"
-      newfile += "Categories=Graphics;2DGraphics;RasterGraphics;\n"
-      newfile += "Keywords=2d;animation;raster;graphics;editor;\n"
-      newfile += "Comment=2D Animation Toolkit\n"
-      newfile += "Comment[es]=Herramienta para Animación 2D\n"
-      newfile += "Comment[pt]=Ferramenta de animação 2D\n"
-      newfile += "Comment[ru]=Создание двухмерной векторной анимации\n"
+      newfile += "Categories=Graphics;2DGraphics;VectorGraphics;\n"
+      newfile += "Keywords=2d;animation;vector;graphics;tool;\n"
+      newfile += "Comment=2D Animation Tool For Schools\n"
+      newfile += "Comment[es]=Herramienta de animación 2D para escuelas\n"
+      newfile += "Comment[pt]=Ferramenta de animação 2D para escolas\n"
+      newfile += "Comment[ru]=Инструмент 2D-анимации для школ\n"
       newfile += "Terminal=false\n"
 
       File.open("launcher/tupitube.desktop", "w") { |f|

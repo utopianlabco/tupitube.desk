@@ -4,7 +4,7 @@ TEMPLATE = lib
 TARGET = tupigeometrictool
 
 unix {
-    !include(../../../../tupiglobal.pri){
+    !include(../../../../global_variables.pri){
         error("Please run configure first")
     }
 }

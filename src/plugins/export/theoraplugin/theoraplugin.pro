@@ -25,8 +25,8 @@ FRAMEWORK_DIR = "../../../framework"
 include($$FRAMEWORK_DIR/framework.pri)
 
 unix {
-    !include(../../../../tupiglobal.pri) {
-        error("Please run configure first")
+    !include(../../../../global_variables.pri) {
+        error("theoraplugin.pro: Run ./configure first!")
     }
 }
 

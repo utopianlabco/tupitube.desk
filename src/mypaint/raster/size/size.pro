@@ -29,8 +29,8 @@ macx {
     INCLUDEPATH += $$LIBTUPI_DIR
     LIBS += -L$$LIBTUPI_DIR -ltupi
 	
-    !include(../../../../tupiglobal.pri) {
-             error("Run ./configure first!")
+    !include(../../../../global_variables.pri) {
+        error("raster:size.pro: Run ./configure first!")
     }
 }
 
@@ -50,8 +50,8 @@ unix:!mac {
     INCLUDEPATH += $$LIBTUPI_DIR
     LIBS += -L$$LIBTUPI_DIR -ltupi
 	
-    !include(../../../../tupiglobal.pri) {
-             error("Run ./configure first!")
+    !include(../../../../global_variables.pri) {
+        error("raster:size.pro: Run ./configure first!")
     }
 }
 

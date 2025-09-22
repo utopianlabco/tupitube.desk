@@ -29,8 +29,8 @@ unix {
     INCLUDEPATH += $$LIBTUPI_DIR
     LIBS += -L$$LIBTUPI_DIR -ltupi
 
-    !include(../../../tupiglobal.pri) {
-             error("Run ./configure first!")
+    !include(../../../global_variables.pri) {
+        error("news.pro: Run ./configure first!")
     }
 }
 

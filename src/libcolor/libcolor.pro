@@ -48,8 +48,8 @@ unix {
     INCLUDEPATH += $$LIBTUPI_DIR
     LIBS += -L$$LIBTUPI_DIR -ltupi
 
-    !include(../../tupiglobal.pri) {
-             error("libcolor: Run ./configure first!")
+    !include(../../global_variables.pri) {
+        error("libcolor.pro: Run ./configure first!")
     }
 }
 

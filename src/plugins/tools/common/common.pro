@@ -5,8 +5,8 @@ TARGET = tupiplugincommon
 CONFIG += dll warn_on
 
 unix {
-    !include(../../../../tupiglobal.pri){
-        error("Please run configure first")
+    !include(../../../../global_variables.pri) {
+        error("common.pro: Run ./configure first!")
     }
 }
 

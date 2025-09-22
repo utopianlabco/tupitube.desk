@@ -50,8 +50,8 @@ macx {
     INCLUDEPATH += $$LIBTUPI_DIR
     LIBS += -L$$LIBTUPI_DIR -ltupi
 
-    !include(../../../../tupiglobal.pri) {
-        error("Run ./configure first!")
+    !include(../../../../global_variables.pri) {
+        error("raster/brushes.pro: Run ./configure first!")
     }
 }
 
@@ -71,8 +71,8 @@ unix:!mac {
     INCLUDEPATH += $$LIBTUPI_DIR
     LIBS += -L$$LIBTUPI_DIR -ltupi
 
-    !include(../../../../tupiglobal.pri) {
-        error("Run ./configure first!")
+    !include(../../../../global_variables.pri) {
+        error("raster/brushes.pro: Run ./configure first!")
     }
 }
 
@@ -94,7 +94,7 @@ win32 {
 
 win32:CONFIG(release, debug|release): LIBS += -L../../json-c/release -ljson-c
 else:win32:CONFIG(debug, debug|release): LIBS += -L../../json-c/debug -ljson-c
-else:unix: LIBS += -L../../json-c -ljson-c
+else:unix: LIBS += -L/usr/lib/x86_64-linux-gnu -ljson-c
 
 # win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../qtmypaint/release/libqtmypaint.a
 # else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../qtmypaint/debug/libqtmypaint.a

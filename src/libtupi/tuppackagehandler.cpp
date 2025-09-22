@@ -33,9 +33,9 @@
  ***************************************************************************/
 
 #include "tuppackagehandler.h"
-#include "quazip/quazip.h"
-#include "quazip/quazipfile.h"
-#include "quazip/JlCompress.h"
+#include "quazip.h"
+#include "quazipfile.h"
+#include "JlCompress.h"
 
 TupPackageHandler::TupPackageHandler()
 {

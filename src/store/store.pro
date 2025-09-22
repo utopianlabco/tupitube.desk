@@ -9,8 +9,8 @@ macx {
 }
 
 unix {
-    !include(../../tupiglobal.pri) {
-        error("Please configure first")
+    !include(../../global_variables.pri) {
+        error("store.pro: Run ./configure first!")
     }
 }
 
@@ -47,7 +47,6 @@ HEADERS += tuplayer.h \
            tupfactoryhandler.h \
            tupitemfactory.h \
            tupellipseitem.h \
-           # tupglobal_store.h \
            tuppaintareaevent.h \
            tupserializer.h \
            tuplineitem.h \

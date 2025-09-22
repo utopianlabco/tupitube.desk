@@ -43,11 +43,14 @@ require 'fileutils'
 require_relative 'qonf/configure'
 require_relative 'qonf/info'
 require_relative 'qonf/defaults'
+require_relative 'qonf/detectdistro'
 
 begin
-    conf = RQonf::Configure.new(ARGV)
+    configurator = RQonf::Configure.new(ARGV)
+    globalConfigFile = RQonf::Config.new
 
-    if conf.hasArgument?("help") or conf.hasArgument?("h")
+    # Script options
+    if configurator.hasArgument?("help") or configurator.hasArgument?("h")
        puts <<_EOH_
 Use: ./configure [options]
   options:
@@ -60,7 +63,6 @@ Use: ./configure [options]
   --with-libpng=[path]:     Set libpng installation path [/usr]
   --with-quazip=[path]:     Set quazip installation path [/usr]
   --with-libsndfile=[path]: Set libsndfile installation path [/usr]
-  --without-ffmpeg:         Disable ffmpeg support
   --without-debug:          Disable debug
   --with-qtdir=[path]:      Set Qt directory [i.e. /usr/local/qt]
   --package-build:          Option exclusive for package maintainers
@@ -69,80 +71,64 @@ _EOH_
         exit 0
     end
 
-    debug = 1
-    if conf.hasArgument?("without-debug")
-       debug = 0
-    end
-
-    config = RQonf::Config.new
-
+    # Version values
     version = "0.2"
     codeName = "Páy"
     revision = "23"
     configVersion = "5"
 
-    Info.info << "Compiling \033[91mTupiTube " +  version + "." + revision + "\033[0m (" +  codeName + ")" << $endl
-    Info.info << "Debug support... "
-
-    file_name = 'src/components/components.pro'
-    if debug == 1
-       var = open(file_name).grep(/debug/)
-       if var.count == 0
-          open(file_name, 'a') { |f|
-               f.puts "SUBDIRS += debug"
-          }
-       end
-
-       config.addOption("debug")
-       config.addDefine("TUP_DEBUG")
-       print "[ \033[92mON\033[0m ]\n"
-    else
-       var = open(file_name).grep(/debug/)
-       if var.count > 0
-          text = File.read(file_name)
-          new_contents = text.gsub(/\nSUBDIRS \+\= debug/, "")
-          File.open(file_name, "w") {|file| file.puts new_contents }
-       end
-
-       config.addOption("release")
-       config.addDefine("TUP_NODEBUG")
-       print "[ \033[91mOFF\033[0m ]\n"
-    end
-
-    # config.addDefine("TUP_SERVER")
-
-    if conf.hasArgument?("with-ffmpeg") and conf.hasArgument?("without-ffmpeg")  
+    if configurator.hasArgument?("with-ffmpeg") and configurator.hasArgument?("without-ffmpeg")
        Info.error << " ERROR: Options --with-ffmpeg and --without-ffmpeg are mutually exclusive\n"
        exit 0
     end
 
-    if conf.hasArgument?("with-qtdir")
-       qtdir = conf.argumentValue("with-qtdir")
-       conf.verifyQtVersion("5.15.0", debug, qtdir)
-    else
-       conf.verifyQtVersion("5.15.0", debug, "")
+    debug = 1
+    if configurator.hasArgument?("without-debug") # Disabling debug flag if requested
+       debug = 0
     end
 
-    if conf.hasArgument?("with-ffmpeg")
-       ffmpegDir = conf.argumentValue("with-ffmpeg")
+    Info.info << "Linux distro detected: "
+    linuxDistro = RQonf::DetectDistro.getLinuxDistroID
+    print "\033[92m#{linuxDistro}\033[0m\n"
+
+    Info.info << "Compiling \033[91mTupiTube " +  version + "." + revision + "\033[0m (" +  codeName + ")" << $endl
+
+    Info.info << "Debug support... "
+    if debug
+       globalConfigFile.addOption("debug")
+       globalConfigFile.addDefine("TUP_DEBUG")
+       print "[ \033[92mON\033[0m ]\n"
+    else
+       globalConfigFile.addOption("release")
+       globalConfigFile.addDefine("TUP_NODEBUG")
+       print "[ \033[91mOFF\033[0m ]\n"
+    end
+
+    # globalConfigFile.addDefine("TUP_SERVER")
+
+    if configurator.hasArgument?("with-qtdir")
+       qtdir = configurator.argumentValue("with-qtdir")
+       configurator.verifyQtVersion("5.15.0", debug, qtdir)
+    else
+       configurator.verifyQtVersion("5.15.0", debug, "")
+    end
+
+    # Capturing configure parameters provided by the user to store them in global_variables.pri 
+    if configurator.hasArgument?("with-ffmpeg")
+       ffmpegDir = configurator.argumentValue("with-ffmpeg")
        if File.directory? ffmpegDir 
           ffmpegLib = ffmpegDir + "/lib"
           ffmpegInclude = ffmpegDir + "/include"
-          config.addLib("-L" + ffmpegLib)
-          config.addIncludePath(ffmpegInclude)
+          globalConfigFile.addLib("-L" + ffmpegLib)
+          globalConfigFile.addIncludePath(ffmpegInclude)
        else
           Info.error << " ERROR: ffmpeg directory does not exist!\n"
           exit 0
        end
-    else
-       if conf.hasArgument?("without-ffmpeg")
-          Info.warn << "Disabling ffmpeg support: " << $endl
-          conf.disableFFmpeg()
-       end
     end
 
-    if conf.hasArgument?("with-libpng")
-       libpngDir = conf.argumentValue("with-libpng")
+    if configurator.hasArgument?("with-libpng")
+       libpngDir = configurator.argumentValue("with-libpng")
        if File.directory? libpngDir
           libpngLib = libpngDir + "/lib"
           if RUBY_PLATFORM =~ /linux/
@@ -150,17 +136,17 @@ _EOH_
           elsif RUBY_PLATFORM =~ /darwin/
               libpngInclude = libpngDir + "/include"
           end
-          config.addLib("-L" + libpngLib)
-	  config.addLib("-lpng")
-          config.addIncludePath(libpngInclude)
+          globalConfigFile.addLib("-L" + libpngLib)
+	       globalConfigFile.addLib("-lpng")
+          globalConfigFile.addIncludePath(libpngInclude)
        else
           Info.error << " ERROR: libpng directory does not exist!\n"
           exit 0
        end
     end
 
-    if conf.hasArgument?("with-quazip")
-       quazipDir = conf.argumentValue("with-quazip")
+    if configurator.hasArgument?("with-quazip")
+       quazipDir = configurator.argumentValue("with-quazip")
        if File.directory? quazipDir
           quazipLib = quazipDir + "/lib"
           if RUBY_PLATFORM =~ /linux/
@@ -168,75 +154,60 @@ _EOH_
           elsif RUBY_PLATFORM =~ /darwin/
               quazipInclude = quazipDir + "/include"
           end
-          config.addLib("-L" + quazipLib)
-          config.addIncludePath(quazipInclude)
+          globalConfigFile.addLib("-L" + quazipLib)
+          globalConfigFile.addIncludePath(quazipInclude)
        else
           Info.error << " ERROR: quazip directory does not exist!\n"
           exit 0
        end
     end
 
-    if conf.hasArgument?("with-libsndfile")
-       libsndfileDir = conf.argumentValue("with-libsndfile")
+    if configurator.hasArgument?("with-libsndfile")
+       libsndfileDir = configurator.argumentValue("with-libsndfile")
        if File.directory? libsndfileDir
           libsndfileLib = libsndfileDir + "/lib"
           libsndfileInclude = libsndfileDir + "/include"
-          config.addLib("-L" + libsndfileLib)
-          config.addIncludePath(libsndfileInclude)
+          globalConfigFile.addLib("-L" + libsndfileLib)
+          globalConfigFile.addIncludePath(libsndfileInclude)
        else
           Info.error << " ERROR: libsndfile directory does not exist!\n"
           exit 0
        end
     end
 
-    conf.createTests
-    conf.setTestDir("configure.tests")
-    conf.runTests(config, conf, debug)
-    conf.updateLangFiles(debug)
+    configurator.setTestDir("configure.tests")
+    configurator.createTests
+    configurator.runTests(linuxDistro, globalConfigFile, configurator, debug)
+    configurator.updateLangFiles(debug)
 
-    config.addModule("core")
-    config.addModule("gui")
-    config.addModule("svg")
-    config.addModule("xml")
-    config.addModule("network")
+    globalConfigFile.addModule("core")
+    globalConfigFile.addModule("gui")
+    globalConfigFile.addModule("svg")
+    globalConfigFile.addModule("xml")
+    globalConfigFile.addModule("network")
 
-    config.addLib("-ltupifwgui")
-    config.addLib("-ltupifwcore")
-    # config.addLib("-ltupifwsound")
+    globalConfigFile.addLib("-ltupifwgui")
+    globalConfigFile.addLib("-ltupifwcore")
     
-    if conf.hasArgument?("install-headers")
-       config.addDefine("ADD_HEADERS");
+    if configurator.hasArgument?("install-headers")
+       globalConfigFile.addDefine("ADD_HEADERS");
     end
 
-    config.addDefine('TUPITUBE_VERSION=\\\\\"' + version + '\\\\\"')
-    config.addDefine('CODE_NAME=\\\\\"' + codeName + '\\\\\"')
-    config.addDefine('REVISION=\\\\\"' + revision + '\\\\\"')
-    config.addDefine('CONFIG_VERSION=\\\\\"' + configVersion + '\\\\\"')
+    globalConfigFile.addDefine('TUPITUBE_VERSION=\\\\\"' + version + '\\\\\"')
+    globalConfigFile.addDefine('CODE_NAME=\\\\\"' + codeName + '\\\\\"')
+    globalConfigFile.addDefine('REVISION=\\\\\"' + revision + '\\\\\"')
+    globalConfigFile.addDefine('CONFIG_VERSION=\\\\\"' + configVersion + '\\\\\"')
 
-    if File.exists?('/etc/canaima_version')
-       config.addDefine("CANAIMA")
-    end
-
-    unix = config.addScope("unix")
+    unix = globalConfigFile.addScope("unix")
     unix.addVariable("MOC_DIR", ".moc")
     unix.addVariable("UI_DIR", ".ui")
     unix.addVariable("OBJECTS_DIR", ".obj")
 
-    config.save("tupiglobal.pri")
-    conf.createMakefiles
+    globalConfigFile.save("global_variables.pri")
+    configurator.createMakefiles
+    configurator.cleanupTests()
 
-    binaries = `find configure.tests -mindepth 1 -type d`
-    array = binaries.split
-    for item in array
-        name = item.split("\/")
-        file = item + "\/" + name[1]
-        if FileTest.exists?(file)
-           File.delete(file)
-        end
-    end
-    exec('find configure.tests -iname main.o -exec rm -f {} \;')
-    
-rescue => err
+   rescue => err
     Info.error << "Configure failed. error was: #{err.message}\n"
     if $DEBUG
         puts err.backtrace

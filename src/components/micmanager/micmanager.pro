@@ -10,8 +10,8 @@ FRAMEWORK_DIR = "../../framework"
 include($$FRAMEWORK_DIR/framework.pri)
 
 unix {
-  !include(../../../tupiglobal.pri) {
-    error("Run ./configure first!")
+  !include(../../../global_variables.pri) {
+    error("micmanager.pro: Run ./configure first!")
   }
 }
 

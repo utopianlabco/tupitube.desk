@@ -33,7 +33,6 @@
 ###########################################################################
 
 require_relative 'info'
-require_relative 'extensions'
 
 module RQonf
 

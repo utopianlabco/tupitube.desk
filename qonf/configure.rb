@@ -39,23 +39,19 @@ require 'yaml'
 require_relative 'test'
 require_relative 'config'
 require_relative 'info'
-require_relative 'qonfexception'
 require_relative 'makefile'
 
 module RQonf
 
   class Configure
-    attr_reader :qmake, :statusFile
-
     def initialize(args)
-      @parameters = {}
+      @configureOptions = {} # configure script options
       parseArgs(args)
 
       @testsDir = Dir.getwd
       @tests = []
-      @configureOptions = {}
       @qmake = QMake.new
-      @dependencies = []
+      @dependencies = [] # List of dependency dirs
 
       setConfigureOptions()
       createLauncherFile()
@@ -188,12 +184,12 @@ module RQonf
         if arg =~ /^--([\w-]*)={0,1}([\W\w]*)/
           opt = $1.strip
           val = $2.strip
-          @parameters[opt] = val 
+          @configureOptions[opt] = val 
           last_opt = opt
         else 
           # arg is an arg for option
-          if not last_opt.to_s.empty? and @options[last_opt].to_s.empty?
-            @parameters[last_opt] = arg
+          if not last_opt.to_s.empty? and @configureOptions[last_opt].to_s.empty?
+            @configureOptions[last_opt] = arg
           else
             raise "parseArgs() - Invalid option: #{arg}"
           end

@@ -42,7 +42,6 @@
 require 'fileutils'
 require_relative 'qonf/configure'
 require_relative 'qonf/info'
-require_relative 'qonf/defaults'
 require_relative 'qonf/detectdistro'
 
 begin

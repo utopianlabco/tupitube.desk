@@ -76,15 +76,27 @@ module RQonf
     end
 
     def appendDebianFlag
-      filePath = "src/mypaint/mypaint.pro"
+      filePaths = [
+        "src/mypaint/mypaint.pro",
+        "src/mypaint/libmypaint/libmypaint.pro",
+        "src/mypaint/qtmypaint/qtmypaint.pro",
+        "src/mypaint/raster/brushes/brushes.pro",
+        "src/mypaint/raster/main/main.pro"
+      ]
+
       newLine = "DEBIAN_OS = true\n"
 
-      originalContent = File.read(filePath)
+      filePaths.each do |filePath|
+        tempFilePath = "#{filePath}.tmp"
+    
+        File.open(tempFilePath, "w") do |tempFile|
+          tempFile.write(newLine)
+          File.foreach(filePath) do |line|
+            tempFile.write(line)
+          end
+        end
 
-      File.open(filePath, "w") do |file|
-        # Write the new line first, followed by the original content
-        file.write(newLine)
-        file.write(originalContent)
+        File.rename(tempFilePath, filePath)
       end
     end
 

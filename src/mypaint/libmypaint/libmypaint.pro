@@ -20,9 +20,14 @@ macx {
 unix:!mac {
     INSTALLS += target
     target.path = /lib/raster
-	
-    INCLUDEPATH += /usr/include/json-c
-    LIBS += -L/usr/lib/x86_64-linux-gnu -ljson-c
+
+    defined(DEBIAN_OS, var) {
+        INCLUDEPATH += /usr/include/json-c
+        LIBS += -L/usr/lib/x86_64-linux-gnu -ljson-c
+    } else {
+        INCLUDEPATH += ../json-c
+        LIBS += -L../json-c -ljson-c
+    }
 
     !include(../../../global_variables.pri) {
         error("libmypaint.pro: Run ./configure first!")

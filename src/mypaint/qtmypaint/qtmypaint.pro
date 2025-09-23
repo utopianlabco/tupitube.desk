@@ -28,16 +28,13 @@ win32|macx {
   INCLUDEPATH += ../json-c
   DEPENDPATH += ../json-c
 } else {
-  # LIBS += -ljson-c
-  # INCLUDEPATH += /usr/include/json-c
-  # LIBS += -L../json-c -ljson-c
-
-  win32:CONFIG(release, debug|release): LIBS += -L../json-c/release/ -ljson-c
-  else:win32:CONFIG(debug, debug|release): LIBS += -L../json-c/debug/ -ljson-c
-  else:unix: LIBS += -L/usr/lib/x86_64-linux-gnu -ljson-c
-
-  INCLUDEPATH += /usr/include/json-c
-  # DEPENDPATH += ../json-c
+  defined(DEBIAN_OS, var) {
+    INCLUDEPATH += /usr/include/json-c
+    LIBS += -L/usr/lib/x86_64-linux-gnu -ljson-c
+  } else {
+    INCLUDEPATH += ../json-c
+    LIBS += -L../json-c -ljson-c
+  }
 }
 
 # --- libmypaint ---

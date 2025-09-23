@@ -71,6 +71,12 @@ unix:!mac {
     INCLUDEPATH += $$LIBTUPI_DIR
     LIBS += -L$$LIBTUPI_DIR -ltupi
 
+    defined(DEBIAN_OS, var) {
+        LIBS += -L/usr/lib/x86_64-linux-gnu -ljson-c
+    } else {
+        LIBS += -L../../json-c -ljson-c
+    }
+
     !include(../../../../global_variables.pri) {
         error("raster/brushes.pro: Run ./configure first!")
     }
@@ -90,6 +96,9 @@ win32 {
     LIBTUPI_DIR = ../../../libtupi/release
     INCLUDEPATH += $$LIBTUPI_DIR
     LIBS += -L$$LIBTUPI_DIR -ltupi
+
+    win32:CONFIG(release, debug|release): LIBS += -L../../json-c/release -ljson-c
+    else:win32:CONFIG(debug, debug|release): LIBS += -L../../json-c/debug -ljson-c
 }
 
 win32:CONFIG(release, debug|release): LIBS += -L../../json-c/release -ljson-c

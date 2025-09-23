@@ -30,9 +30,9 @@ multimedia:
 
 quazip:
   mandatory: true
-  headers: "/usr/include/quazip5"
+  headers: "/usr/include/quazip"
   lib-path: "-L/usr/lib"
-  lib-flags: "-lquazip5"
+  lib-flags: "-lquazip1-qt5"
 
 zlib:
   mandatory: true

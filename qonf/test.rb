@@ -88,7 +88,7 @@ class Test
                 quazipDir = parameters.argumentValue("with-quazip")
                 if !quazipDir.nil? && !quazipDir.empty?
                    quazipLib = quazipDir + "/lib"
-                   quazipInclude = quazipDir + "/include"                
+                   quazipInclude = quazipDir + "/include/quazip"
                    libFlags = dependencyData["lib-flags"]
 
                    libs = "-L#{quazipLib} #{libFlags}"
@@ -141,9 +141,9 @@ class Test
                    sndInclude = sndDir + "/include"      
                    libFlags = dependencyData["lib-flags"]          
 
-                   libs = "-L#{sndLib} #{sndFlags}"
+                   libs = "-L#{sndLib} #{libFlags}"
                    headers = sndInclude
-                   qmakeLine = "'LIBS += -L#{sndLib} #{sndFlags}'"
+                   qmakeLine = "'LIBS += -L#{sndLib} #{libFlags}'"
                    qmakeLine += " 'INCLUDEPATH += #{sndInclude}'"
                 end
             else

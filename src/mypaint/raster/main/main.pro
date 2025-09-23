@@ -90,7 +90,12 @@ unix:!mac {
     INCLUDEPATH += $$LIBTUPI_DIR
     LIBS += -L$$LIBTUPI_DIR/ -ltupi
 
-    LIBS += -L/usr/lib/x86_64-linux-gnu -ljson-c
+    defined(DEBIAN_OS, var) {
+        LIBS += -L/usr/lib/x86_64-linux-gnu -ljson-c
+    } else {
+        LIBS += -L../../json-c -ljson-c
+    }
+
     LIBS += -L$$OUT_PWD/../../qtmypaint/ -lqtmypaint
 	
     !include(../../../../global_variables.pri) {

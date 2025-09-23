@@ -7,8 +7,14 @@ win32|macx {
             qtmypaint \
             raster
 } else {
-  # Linux
-  SUBDIRS = libmypaint \
-            qtmypaint \
-            raster
+  defined(DEBIAN_OS, var) {
+    SUBDIRS = libmypaint \
+              qtmypaint \
+              raster
+  } else {
+    SUBDIRS = json-c \
+              libmypaint \
+              qtmypaint \
+              raster
+  }
 }

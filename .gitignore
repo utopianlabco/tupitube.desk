@@ -15,6 +15,7 @@ release
 debug
 *.rc
 *.qm
+log.txt
 
 bin/
 src/framework/tgui/qrc_tgui_images.cpp
@@ -34,7 +35,7 @@ configure.tests/libsndfile/libsndfile
 configure.tests/multimedia/multimedia
 
 src/framework/tupconfig.pri
-tupiglobal.pri
+global_variables.pri
 
 launcher/tupitube.desk
 launcher/tupitube.desktop

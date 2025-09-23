@@ -46,7 +46,7 @@ require_relative 'qonf/detectdistro'
 
 begin
     configurator = RQonf::Configure.new(ARGV)
-    globalConfigFile = RQonf::Config.new
+    globalConfigFile = RQonf::GlobalParams.new
 
     # Script options
     if configurator.hasArgument?("help") or configurator.hasArgument?("h")
@@ -89,6 +89,10 @@ _EOH_
     Info.info << "Linux distro detected: "
     linuxDistro = RQonf::DetectDistro.getLinuxDistroID
     print "\033[92m#{linuxDistro}\033[0m\n"
+
+    if linuxDistro == "debian"
+       configurator.appendDebianFlag
+    end
 
     Info.info << "Compiling \033[91mTupiTube " +  version + "." + revision + "\033[0m (" +  codeName + ")" << $endl
 

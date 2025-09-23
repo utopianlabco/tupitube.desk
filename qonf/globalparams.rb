@@ -34,7 +34,7 @@
 
 module RQonf
 
-class Config
+class GlobalParams
     def initialize
         @includePath = []
         @libs = []

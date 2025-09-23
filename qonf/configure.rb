@@ -37,7 +37,7 @@
 require 'os'
 require 'yaml'
 require_relative 'test'
-require_relative 'config'
+require_relative 'globalparams'
 require_relative 'info'
 require_relative 'makefile'
 
@@ -73,6 +73,19 @@ module RQonf
 
     def setTestDir(dir)
       @testsDir = dir
+    end
+
+    def appendDebianFlag
+      filePath = "src/mypaint/mypaint.pro"
+      newLine = "DEBIAN_OS = true\n"
+
+      originalContent = File.read(filePath)
+
+      File.open(filePath, "w") do |file|
+        # Write the new line first, followed by the original content
+        file.write(newLine)
+        file.write(originalContent)
+      end
     end
 
     def verifyQtVersion(minqtversion, verbose, qtdir)

@@ -45,7 +45,7 @@ override_dh_install:
 
 PDIR     := $(CURDIR)/debian/tupitube
 override_dh_shlibdeps:
-	dh_shlibdeps -l$(PDIR)/usr/lib/tupitube/raster -l$(PDIR)/usr/lib/tupitube/plugins -l$(PDIR)/usr/lib/tupitube
+	dh_shlibdeps -l$(PDIR)/usr/lib/tupitube/raster -l$(PDIR)/usr/lib/tupitube/plugins -l$(PDIR)/usr/lib/tupitube --dpkg-shlibdeps-params='-l${CURDIR}/debian/tupitube/usr/lib/tupitube/raster' 
 
 override_dh_makeshlibs:
 	dh_makeshlibs --noscripts

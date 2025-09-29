@@ -65,21 +65,33 @@ class Test
                    ffmpegLib = ffmpegDir + "/lib"
                    ffmpegInclude = ffmpegDir + "/include"                
                    libFlags = dependencyData["lib-flags"]
-
-                   libs = "-L#{ffmpegLib} #{libFlags}"
-                   headers = ffmpegInclude
-                   qmakeLine = "'LIBS += #{libs}'"
-                   qmakeLine += " 'INCLUDEPATH += #{ffmpegInclude}'"
+                   
+                   if !libFlags.empty?
+                      libs = "-L#{ffmpegLib} #{libFlags}"
+                      headers = ffmpegInclude
+                      qmakeLine = "'LIBS += #{libs}'"
+                      qmakeLine += " 'INCLUDEPATH += #{ffmpegInclude}'"
+                      globalConfigFile.addDefine("HAVE_FFMPEG")
+                   else
+                      Info.error << "test.rb - ERROR: ffmpeg libFlags variable is undefined!\n"
+                      exit 0
+                   end
                 end
             else
                 libPath = dependencyData["lib-path"]
                 libFlags = dependencyData["lib-flags"]
                 ffmpegInclude = dependencyData["headers"]
 
-                libs = "#{libPath} #{libFlags}"
-                headers = ffmpegInclude
-                qmakeLine = "'LIBS += #{libs}'"
-                qmakeLine += " 'INCLUDEPATH += #{ffmpegInclude}'"
+                if !libPath.nil? && !libFlags.nil? && !ffmpegInclude.empty?
+                   libs = "#{libPath} #{libFlags}"
+                   headers = ffmpegInclude
+                   qmakeLine = "'LIBS += #{libs}'"
+                   qmakeLine += " 'INCLUDEPATH += #{ffmpegInclude}'"
+                   globalConfigFile.addDefine("HAVE_FFMPEG")
+                else
+                   Info.error << "test.rb - ERROR: ffmpeg libPath/libFlags/ffmpegInclude variables are undefined!\n"
+                   exit 0
+                end
             end
         end
 
@@ -91,20 +103,30 @@ class Test
                    quazipInclude = quazipDir + "/include/quazip"
                    libFlags = dependencyData["lib-flags"]
 
-                   libs = "-L#{quazipLib} #{libFlags}"
-                   headers = quazipInclude
-                   qmakeLine = "'LIBS += -L#{quazipLib} #{libFlags}'"
-                   qmakeLine += " 'INCLUDEPATH += #{quazipInclude}'"
+                   if !libFlags.empty?
+                      libs = "-L#{quazipLib} #{libFlags}"
+                      headers = quazipInclude
+                      qmakeLine = "'LIBS += -L#{quazipLib} #{libFlags}'"
+                      qmakeLine += " 'INCLUDEPATH += #{quazipInclude}'"
+                   else
+                      Info.error << "test.rb - ERROR: quazip libFlags variable is undefined!\n"
+                      exit 0
+                   end
                 end
             else
                 libPath = dependencyData["lib-path"]
                 libFlags = dependencyData["lib-flags"]
                 quazipInclude = dependencyData["headers"]
 
-                libs = "#{libPath} #{libFlags}"
-                headers = quazipInclude
-                qmakeLine = "'LIBS += #{libPath} #{libFlags}'"
-                qmakeLine += " 'INCLUDEPATH += #{quazipInclude}'"
+                if !libPath.nil? && !libFlags.nil? && !quazipInclude.empty?
+                   libs = "#{libPath} #{libFlags}"
+                   headers = quazipInclude
+                   qmakeLine = "'LIBS += #{libPath} #{libFlags}'"
+                   qmakeLine += " 'INCLUDEPATH += #{quazipInclude}'"
+                else
+                   Info.error << "test.rb - ERROR: quazip libPath/libFlags/quazipInclude variables are undefined!\n"
+                   exit 0
+                end
            end
         end
 
@@ -116,20 +138,30 @@ class Test
                    pngInclude = pngDir + "/include"      
                    libFlags = dependencyData["lib-flags"]          
 
-                   libs = "-L#{pngLib} #{libFlags}"
-                   headers = pngInclude
-                   qmakeLine = "'LIBS += -L#{pngLib} #{libFlags}'"
-                   qmakeLine += " 'INCLUDEPATH += #{pngInclude}'"
+                   if !libFlags.empty?
+                      libs = "-L#{pngLib} #{libFlags}"
+                      headers = pngInclude
+                      qmakeLine = "'LIBS += -L#{pngLib} #{libFlags}'"
+                      qmakeLine += " 'INCLUDEPATH += #{pngInclude}'"
+                   else
+                      Info.error << "test.rb - ERROR: libpng libFlags variable is undefined!\n"
+                      exit 0
+                   end
                 end
             else
                 libPath = dependencyData["lib-path"]
                 libFlags = dependencyData["lib-flags"]
                 pngInclude = dependencyData["headers"]
 
-                libs = "#{libPath} #{libFlags}"
-                headers = pngInclude
-                qmakeLine = "'LIBS += #{libPath} #{libFlags}'"
-                qmakeLine += " 'INCLUDEPATH += #{pngInclude}'"
+                if !libPath.nil? && !libFlags.nil? && !pngInclude.empty?
+                   libs = "#{libPath} #{libFlags}"
+                   headers = pngInclude
+                   qmakeLine = "'LIBS += #{libPath} #{libFlags}'"
+                   qmakeLine += " 'INCLUDEPATH += #{pngInclude}'"
+                else
+                   Info.error << "test.rb - ERROR: libpng libPath/libFlags/pngInclude variables are undefined!\n"
+                   exit 0
+                end
            end
         end
 
@@ -141,20 +173,30 @@ class Test
                    sndInclude = sndDir + "/include"      
                    libFlags = dependencyData["lib-flags"]          
 
-                   libs = "-L#{sndLib} #{libFlags}"
-                   headers = sndInclude
-                   qmakeLine = "'LIBS += -L#{sndLib} #{libFlags}'"
-                   qmakeLine += " 'INCLUDEPATH += #{sndInclude}'"
+                   if !libFlags.nil?
+                      libs = "-L#{sndLib} #{libFlags}"
+                      headers = sndInclude
+                      qmakeLine = "'LIBS += -L#{sndLib} #{libFlags}'"
+                      qmakeLine += " 'INCLUDEPATH += #{sndInclude}'"
+                   else
+                      Info.error << "test.rb - ERROR: libsndFile libFlags variable is undefined!\n"
+                      exit 0
+                   end
                 end
-            else
+           else
                 libPath = dependencyData["lib-path"]
                 libFlags = dependencyData["lib-flags"]
                 sndInclude = dependencyData["headers"]
 
-                libs = "#{libPath} #{libFlags}"
-                headers = sndInclude
-                qmakeLine = "'LIBS += #{libPath} #{libFlags}'"
-                qmakeLine += " 'INCLUDEPATH += #{sndInclude}'"
+                if !libPath.nil? && !libFlags.nil? && !sndInclude.empty? 
+                   libs = "#{libPath} #{libFlags}"
+                   headers = sndInclude
+                   qmakeLine = "'LIBS += #{libPath} #{libFlags}'"
+                   qmakeLine += " 'INCLUDEPATH += #{sndInclude}'"
+                else
+                   Info.error << "test.rb - ERROR: libpng libPath/libFlags/sndInclude variables are undefined!\n"
+                   exit 0
+                end
            end
         end
 
@@ -163,10 +205,15 @@ class Test
             libFlags = dependencyData["lib-flags"]
             zlibInclude = dependencyData["headers"]
 
-            libs = "#{libPath} #{libFlags}"
-            headers = zlibInclude
-            qmakeLine = "'LIBS += #{libPath} #{libFlags}'"
-            qmakeLine += " 'INCLUDEPATH += #{zlibInclude}'"
+            if !libPath.nil? && !libFlags.nil? && !zlibInclude.empty?
+               libs = "#{libPath} #{libFlags}"
+               headers = zlibInclude
+               qmakeLine = "'LIBS += #{libPath} #{libFlags}'"
+               qmakeLine += " 'INCLUDEPATH += #{zlibInclude}'"
+            else
+               Info.error << "test.rb - ERROR: libpng libPath/libFlags/zlibInclude variables are undefined!\n"
+               exit 0
+            end
         end
 
         path = Dir.pwd

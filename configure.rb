@@ -125,7 +125,7 @@ _EOH_
           globalConfigFile.addLib("-L" + ffmpegLib)
           globalConfigFile.addIncludePath(ffmpegInclude)
        else
-          Info.error << " ERROR: ffmpeg directory does not exist!\n"
+          Info.error << " ERROR: ffmpeg directory does NOT exist!\n"
           exit 0
        end
     end
@@ -143,7 +143,7 @@ _EOH_
 	       globalConfigFile.addLib("-lpng")
           globalConfigFile.addIncludePath(libpngInclude)
        else
-          Info.error << " ERROR: libpng directory does not exist!\n"
+          Info.error << " ERROR: libpng directory does NOT exist!\n"
           exit 0
        end
     end
@@ -160,7 +160,7 @@ _EOH_
           globalConfigFile.addLib("-L" + quazipLib)
           globalConfigFile.addIncludePath(quazipInclude)
        else
-          Info.error << " ERROR: quazip directory does not exist!\n"
+          Info.error << " ERROR: quazip directory does NOT exist!\n"
           exit 0
        end
     end
@@ -173,7 +173,7 @@ _EOH_
           globalConfigFile.addLib("-L" + libsndfileLib)
           globalConfigFile.addIncludePath(libsndfileInclude)
        else
-          Info.error << " ERROR: libsndfile directory does not exist!\n"
+          Info.error << " ERROR: libsndfile directory does NOT exist!\n"
           exit 0
        end
     end

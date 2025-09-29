@@ -1,0 +1,46 @@
+Source: tupitube
+Section: graphics
+Priority: optional
+Maintainer: Gustav Gonzalez <info@tupitube.com>
+Build-Depends: debhelper-compat (= 13),
+               libjson-c-dev,
+               libpng-dev,
+               libavformat-dev,
+               libavutil-dev,
+               libswscale-dev,
+               libavdevice-dev,
+               libsndfile1-dev,
+               libqt5multimedia5-plugins,
+               libqt5opengl5-dev,
+               libqt5svg5-dev,
+               libquazip5-dev,
+               perl,
+               qt5-qmake,
+               qtmultimedia5-dev,
+               qttools5-dev-tools,
+               rdfind,
+               ruby (>= 4.9),
+               symlinks,
+               zlib1g-dev
+Standards-Version: 0.2.23
+Homepage: https://www.tupitube.com
+Vcs-Browser: https://salsa.debian.org/debian/tupitube
+Vcs-Git: https://salsa.debian.org/debian/tupitube.git
+
+Package: tupitube
+Architecture: any
+Depends: tupitube-data (= ${source:Version}),
+         ${misc:Depends},
+         ${shlibs:Depends},
+Replaces: tupi,
+Description: 2D Animation Tool for Schools
+ TupiTube: 2D Animation Tool for Schools 
+
+Package: tupitube-data
+Architecture: all
+Depends: ${misc:Depends},
+Replaces: tupi,
+Breaks: tupi,
+Description: Data files for TupiTube (2D Animation Tool for Schools)
+ .
+ This package contains TupiTube's arch-independent files.

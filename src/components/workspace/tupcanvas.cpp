@@ -73,6 +73,8 @@ TupCanvas::TupCanvas(QWidget *parent, Qt::WindowFlags flags, TupGraphicsScene *g
     connect(graphicsView, SIGNAL(zoomOut()), this, SLOT(wakeUpZoomOut()));
     connect(graphicsView, SIGNAL(frameBackward()), this, SLOT(oneFrameBack()));
     connect(graphicsView, SIGNAL(frameForward()), this, SLOT(oneFrameForward()));
+    connect(graphicsView, SIGNAL(autoSave()), this, SIGNAL(autoSave()));
+
     // connect(graphicsView, SIGNAL(callAction(int, int)), this, SIGNAL(callAction(int, int)));
 
     graphicsView->centerOn(centerPoint);
@@ -89,22 +91,27 @@ TupCanvas::TupCanvas(QWidget *parent, Qt::WindowFlags flags, TupGraphicsScene *g
 
     TImageButton *pencil = new TImageButton(QPixmap(THEME_DIR + "icons/pencil_big.png"), 50, this);
     pencil->setToolTip(tr("Pencil"));
+    pencil->setShortcut(QKeySequence(Qt::Key_P));
     connect(pencil, SIGNAL(clicked()), this, SLOT(wakeUpPencil()));
 
     TImageButton *polyline = new TImageButton(QPixmap(THEME_DIR + "icons/polyline_big.png"), 50, this);
     polyline->setToolTip(tr("Polyline"));
+    polyline->setShortcut(QKeySequence(Qt::Key_S));
     connect(polyline, SIGNAL(clicked()), this, SLOT(wakeUpPolyline()));
 
     TImageButton *rectangle = new TImageButton(QPixmap(THEME_DIR + "icons/square_big.png"), 50, this);
     rectangle->setToolTip(tr("Rectangle"));
+    rectangle->setShortcut(QKeySequence(Qt::Key_R));
     connect(rectangle, SIGNAL(clicked()), this, SLOT(wakeUpRectangle()));
 
     TImageButton *ellipse = new TImageButton(QPixmap(THEME_DIR + "icons/ellipse_big.png"), 50, this);
     ellipse->setToolTip(tr("Ellipse"));
+    ellipse->setShortcut(QKeySequence(Qt::Key_C));
     connect(ellipse, SIGNAL(clicked()), this, SLOT(wakeUpEllipse()));
 
     TImageButton *selection = new TImageButton(QPixmap(THEME_DIR + "icons/selection_big.png"), 50, this);
     selection->setToolTip(tr("Selection"));
+    selection->setShortcut(QKeySequence(Qt::Key_O));
     connect(selection, SIGNAL(clicked()), this, SLOT(wakeUpSelection()));
 
     TImageButton *trash = new TImageButton(QPixmap(THEME_DIR + "icons/delete_big.png"), 50, this);
@@ -114,6 +121,7 @@ TupCanvas::TupCanvas(QWidget *parent, Qt::WindowFlags flags, TupGraphicsScene *g
 
     TImageButton *nodes = new TImageButton(QPixmap(THEME_DIR + "icons/nodes_big.png"), 50, this);
     nodes->setToolTip(tr("Nodes"));
+    nodes->setShortcut(QKeySequence(Qt::Key_N));
     connect(nodes, SIGNAL(clicked()), this, SLOT(wakeUpNodes()));
 
     TImageButton *undo = new TImageButton(QPixmap(THEME_DIR + "icons/undo_big.png"), 50, this);
@@ -279,25 +287,26 @@ void TupCanvas::wakeUpPolyline()
 
 void TupCanvas::wakeUpRectangle()
 {
-    emit callAction(TAction::BrushesMenu, TAction::Rectangle);
+    emit callAction(TAction::ShapesMenu, TAction::Rectangle);
 }
 
 void TupCanvas::wakeUpEllipse()
 {
-    emit callAction(TAction::BrushesMenu, TAction::Ellipse);
+    emit callAction(TAction::ShapesMenu, TAction::Ellipse);
 }
 
 void TupCanvas::wakeUpLibrary()
 {
-    QString graphicPath = QFileDialog::getOpenFileName (this, tr("Import a SVG file..."), QDir::homePath(),
-                                                    tr("Vector") + " (*.svg *.png *.jpg *.jpeg *.gif)");
+    QString graphicPath = QFileDialog::getOpenFileName (this, tr("Import an image file..."), QDir::homePath(),
+                                                       tr("Raster/Vector") + " (*.png *.jpg *.jpeg *.gif *.svg)");
     if (graphicPath.isEmpty())
         return;
 
     QFile f(graphicPath);
     QFileInfo fileInfo(f);
 
-    if (graphicPath.toLower().endsWith(".svg")) {
+    QString lowercasePath = graphicPath.toLower();
+    if (lowercasePath.endsWith(".svg")) {
         QString tag = fileInfo.fileName();
 
         if (f.open(QIODevice::ReadOnly)) {

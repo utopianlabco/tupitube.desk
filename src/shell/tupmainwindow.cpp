@@ -1697,8 +1697,9 @@ bool TupMainWindow::callSaveProcedure()
             return saveProject();
         } else {
             #ifdef TUP_DEBUG
-                qDebug() << "[TupMainWindow::callSaveProcedure()] - Warning: Project hasn't modified!";
+                qDebug() << "[TupMainWindow::callSaveProcedure()] - Warning: No changes to save!";
             #endif
+            TOsd::self()->display(TOsd::Warning, tr("Warning: No changes to save!"));
         }
     }
 

@@ -821,13 +821,15 @@ void TupDocumentView::loadPlugin(int menu, int actionID)
         break;
         case TAction::ColorMenu:
             {
-                if (actionID == TAction::ColorPalette) {
+                /* if (actionID == TAction::ColorPalette) {
                     if (fullScreenOn) {
                         // QColor currentColor = brushManager()->penColor();
                         emit colorDialogRequested(brushManager()->penColor());
                     }
                     return;
-                } else if (actionID == TAction::EyeDropper) {
+                } else */
+
+                if (actionID == TAction::EyeDropper) {
                     launchEyeDropperTool();
                     return;
                 }
@@ -1957,7 +1959,7 @@ void TupDocumentView::showFullScreen()
     nodesScaleFactor = 1;
     updateNodesScale(scaleFactor);
 
-    connect(this, SIGNAL(colorDialogRequested(const QColor &)), fullScreen, SLOT(colorDialog(const QColor &)));
+    // connect(this, SIGNAL(colorDialogRequested(const QColor &)), fullScreen, SLOT(colorDialog(const QColor &)));
     connect(fullScreen, SIGNAL(colorChanged(TColorCell::FillType, const QColor &)),
             this, SIGNAL(colorChanged(TColorCell::FillType, const QColor &)));
     connect(fullScreen, SIGNAL(penWidthChangedFromFullScreen(int)), this, SIGNAL(penWidthChanged(int)));
@@ -1970,6 +1972,7 @@ void TupDocumentView::showFullScreen()
     connect(fullScreen, SIGNAL(rightClick()), this, SLOT(fullScreenRightClick()));
     connect(fullScreen, SIGNAL(goToFrame(int, int, int)), this, SLOT(selectFrame(int, int, int)));
     connect(fullScreen, SIGNAL(closeHugeCanvas()), this, SLOT(closeFullScreen()));
+    connect(fullScreen, SIGNAL(autoSave()), this, SIGNAL(autoSave()));
 
     /* SQA: These connections don't work on Windows
     connect(this, &TupDocumentView::colorDialogRequested, fullScreen, &TupCanvas::openColorDialog);

@@ -2386,10 +2386,6 @@
         <translation>鉛筆</translation>
     </message>
     <message>
-        <source>Vector</source>
-        <translation>向量</translation>
-    </message>
-    <message>
         <source>Polyline</source>
         <translation>多段線</translation>
     </message>
@@ -2414,10 +2410,6 @@
         <translation>矩形</translation>
     </message>
     <message>
-        <source>Import a SVG file...</source>
-        <translation>導入SVG檔案...</translation>
-    </message>
-    <message>
         <source>Color Palette</source>
         <translation>調色盤</translation>
     </message>
@@ -2436,6 +2428,14 @@
     <message>
         <source>Pen Size</source>
         <translation>鋼筆大小</translation>
+    </message>
+    <message>
+        <source>Import an image file...</source>
+        <translation>導入圖像檔...</translation>
+    </message>
+    <message>
+        <source>Raster/Vector</source>
+        <translation>光柵/向量</translation>
     </message>
 </context>
 <context>
@@ -4208,6 +4208,10 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Help Us Improve TupiTube!</source>
         <translation>幫助我們改進 TupiTube！</translation>
+    </message>
+    <message>
+        <source>Warning: No changes to save!</source>
+        <translation>警告：沒有要儲存的變更！</translation>
     </message>
 </context>
 <context>

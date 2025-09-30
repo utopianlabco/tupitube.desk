@@ -2386,10 +2386,6 @@
         <translation>铅笔</translation>
     </message>
     <message>
-        <source>Vector</source>
-        <translation>矢量</translation>
-    </message>
-    <message>
         <source>Polyline</source>
         <translation>多段线</translation>
     </message>
@@ -2414,10 +2410,6 @@
         <translation>矩形</translation>
     </message>
     <message>
-        <source>Import a SVG file...</source>
-        <translation>导入一个SVG文件...</translation>
-    </message>
-    <message>
         <source>Pen Size</source>
         <translation>指定钢笔大小</translation>
     </message>
@@ -2436,6 +2428,14 @@
     <message>
         <source>Frame Backward</source>
         <translation>帧后退</translation>
+    </message>
+    <message>
+        <source>Import an image file...</source>
+        <translation>导入图像文件...</translation>
+    </message>
+    <message>
+        <source>Raster/Vector</source>
+        <translation>光栅/矢量</translation>
     </message>
 </context>
 <context>
@@ -4208,6 +4208,10 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Help Us Improve TupiTube!</source>
         <translation>帮助我们改进 TupiTube！</translation>
+    </message>
+    <message>
+        <source>Warning: No changes to save!</source>
+        <translation>警告：没有要保存的更改！</translation>
     </message>
 </context>
 <context>

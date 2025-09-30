@@ -142,6 +142,13 @@ void TupCanvasView::keyPressEvent(QKeyEvent *event)
         return;
     }
 
+    if (event->modifiers() == Qt::ControlModifier) {
+        if (event->key() == Qt::Key_S) {
+            emit autoSave();
+            return;
+        }
+    }
+
     QGraphicsView::keyPressEvent(event);
 }
 

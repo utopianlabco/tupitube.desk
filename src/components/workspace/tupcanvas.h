@@ -109,6 +109,7 @@ class TUPITUBE_EXPORT TupCanvas : public QFrame
         void goToFrame(int frame, int layer, int scene);
         void rightClick();
         void closeHugeCanvas();
+        void autoSave();
 
     private:
         enum UserHand { Right = 0, Left };

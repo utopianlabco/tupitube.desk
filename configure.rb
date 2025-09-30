@@ -97,7 +97,7 @@ _EOH_
     Info.info << "Compiling \033[91mTupiTube " +  version + "." + revision + "\033[0m (" +  codeName + ")" << $endl
 
     Info.info << "Debug support... "
-    if debug
+    if debug == 1
        globalConfigFile.addOption("debug")
        globalConfigFile.addDefine("TUP_DEBUG")
        print "[ \033[92mON\033[0m ]\n"

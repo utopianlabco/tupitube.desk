@@ -183,7 +183,6 @@ void NodesTool::release(const TupInputDeviceInformation *input, TupBrushManager 
                     if (TupPathItem *pathItem = qgraphicsitem_cast<TupPathItem *>(nodeGroup->parentItem()))
                         configPanel->setNodesTotal(pathItem->nodesCount());
 
-
                     if (itemIndex >= 0) {
                         TupProjectRequest event = TupRequestBuilder::createItemRequest(gScene->currentSceneIndex(),
                                                                                        currentLayer, currentFrame, itemIndex,
@@ -762,6 +761,7 @@ void NodesTool::resizeNode(qreal scaleFactor)
 void NodesTool::updateZoomFactor(qreal scaleFactor)
 {
     realFactor = scaleFactor;
+    // resizeNode(realFactor);
 }
 
 void NodesTool::clearSelection()

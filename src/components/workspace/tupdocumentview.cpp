@@ -1952,7 +1952,7 @@ void TupDocumentView::showFullScreen()
 
     fullScreen = new TupCanvas(this, Qt::Window|Qt::FramelessWindowHint, paintArea->graphicsScene(),
                                   paintArea->getCenterPoint(), QSize(screenWidth, screenHeight), project, scaleFactor,
-                                  viewAngle, brushManager());
+                               viewAngle, brushManager(), currentTool->toolId());
 
     fullScreen->updateCursor(currentTool->toolCursor());
 
@@ -1972,7 +1972,7 @@ void TupDocumentView::showFullScreen()
     connect(fullScreen, SIGNAL(rightClick()), this, SLOT(fullScreenRightClick()));
     connect(fullScreen, SIGNAL(goToFrame(int, int, int)), this, SLOT(selectFrame(int, int, int)));
     connect(fullScreen, SIGNAL(closeHugeCanvas()), this, SLOT(closeFullScreen()));
-    connect(fullScreen, SIGNAL(autoSave()), this, SIGNAL(autoSave()));
+    connect(fullScreen, SIGNAL(saveRequestSent()), this, SIGNAL(autoSave()));
 
     /* SQA: These connections don't work on Windows
     connect(this, &TupDocumentView::colorDialogRequested, fullScreen, &TupCanvas::openColorDialog);

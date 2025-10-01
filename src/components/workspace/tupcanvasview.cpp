@@ -109,6 +109,11 @@ void TupCanvasView::mouseMoveEvent(QMouseEvent *event)
 
 void TupCanvasView::keyPressEvent(QKeyEvent *event)
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupCanvasView::keyPressEvent()] - event->key() ->" << event->key();
+        qDebug() << "[TupCanvasView::keyPressEvent()] - event->text() ->" << event->text();
+    #endif
+
     if (event->key() == Qt::Key_T)
         return;
 
@@ -144,9 +149,9 @@ void TupCanvasView::keyPressEvent(QKeyEvent *event)
 
     if (event->modifiers() == Qt::ControlModifier) {
         if (event->key() == Qt::Key_S) {
-            emit autoSave();
-            return;
+            emit saveRequestSent();
         }
+        return;
     }
 
     QGraphicsView::keyPressEvent(event);

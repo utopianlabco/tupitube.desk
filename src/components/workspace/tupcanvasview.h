@@ -66,7 +66,7 @@ class TUPITUBE_EXPORT TupCanvasView : public QGraphicsView
         void zoomOut();
         void frameBackward();
         void frameForward();
-        void autoSave();
+        void saveRequestSent();
         // void callForPlugin(int menu, int index);
 
     private:

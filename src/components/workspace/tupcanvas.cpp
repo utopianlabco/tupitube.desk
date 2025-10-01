@@ -47,7 +47,7 @@
 
 TupCanvas::TupCanvas(QWidget *parent, Qt::WindowFlags flags, TupGraphicsScene *gScene,
                    const QPointF centerPoint, const QSize &screenSize, TupProject *work, qreal scaleFactor,
-                   int angle, TupBrushManager *manager) : QFrame(parent, flags)
+                   int angle, TupBrushManager *manager, int activeTool) : QFrame(parent, flags)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupCanvas()]";
@@ -60,12 +60,17 @@ TupCanvas::TupCanvas(QWidget *parent, Qt::WindowFlags flags, TupGraphicsScene *g
     scene = gScene;
     frameIndex = scene->currentFrameIndex();
 
+    project = work;
     size = work->getDimension();
     currentColor = manager->penColor();
     brushManager = manager;
-    project = work;
+    actionId = activeTool;
 
     screen = QGuiApplication::screens().at(0);
+
+    int iconSize = 50;
+    if (screen->geometry().height() < 1080)
+        iconSize = 30;
 
     graphicsView = new TupCanvasView(this, gScene, screenSize, size, work->getCurrentBgColor());
     connect(graphicsView, SIGNAL(rightClick()), this, SIGNAL(rightClick()));
@@ -73,7 +78,7 @@ TupCanvas::TupCanvas(QWidget *parent, Qt::WindowFlags flags, TupGraphicsScene *g
     connect(graphicsView, SIGNAL(zoomOut()), this, SLOT(wakeUpZoomOut()));
     connect(graphicsView, SIGNAL(frameBackward()), this, SLOT(oneFrameBack()));
     connect(graphicsView, SIGNAL(frameForward()), this, SLOT(oneFrameForward()));
-    connect(graphicsView, SIGNAL(autoSave()), this, SIGNAL(autoSave()));
+    connect(graphicsView, SIGNAL(saveRequestSent()), this, SIGNAL(saveRequestSent()));
 
     // connect(graphicsView, SIGNAL(callAction(int, int)), this, SIGNAL(callAction(int, int)));
 
@@ -81,82 +86,82 @@ TupCanvas::TupCanvas(QWidget *parent, Qt::WindowFlags flags, TupGraphicsScene *g
     graphicsView->scale(scaleFactor, scaleFactor);
     graphicsView->rotate(angle);
 
-    TImageButton *frameBackward = new TImageButton(QPixmap(THEME_DIR + "icons/frame_backward_big.png"), 50, this);
+    TImageButton *frameBackward = new TImageButton(QPixmap(THEME_DIR + "icons/frame_backward_big.png"), iconSize, this);
     frameBackward->setToolTip(tr("Frame Backward"));
     connect(frameBackward, SIGNAL(clicked()), this, SLOT(oneFrameBack()));
 
-    TImageButton *frameForward = new TImageButton(QPixmap(THEME_DIR + "icons/frame_forward_big.png"), 50, this);
+    TImageButton *frameForward = new TImageButton(QPixmap(THEME_DIR + "icons/frame_forward_big.png"), iconSize, this);
     frameForward->setToolTip(tr("Frame Forward"));
     connect(frameForward, SIGNAL(clicked()), this, SLOT(oneFrameForward()));
 
-    TImageButton *pencil = new TImageButton(QPixmap(THEME_DIR + "icons/pencil_big.png"), 50, this);
+    TImageButton *pencil = new TImageButton(QPixmap(THEME_DIR + "icons/pencil_big.png"), iconSize, this);
     pencil->setToolTip(tr("Pencil"));
     pencil->setShortcut(QKeySequence(Qt::Key_P));
     connect(pencil, SIGNAL(clicked()), this, SLOT(wakeUpPencil()));
 
-    TImageButton *polyline = new TImageButton(QPixmap(THEME_DIR + "icons/polyline_big.png"), 50, this);
+    TImageButton *polyline = new TImageButton(QPixmap(THEME_DIR + "icons/polyline_big.png"), iconSize, this);
     polyline->setToolTip(tr("Polyline"));
     polyline->setShortcut(QKeySequence(Qt::Key_S));
     connect(polyline, SIGNAL(clicked()), this, SLOT(wakeUpPolyline()));
 
-    TImageButton *rectangle = new TImageButton(QPixmap(THEME_DIR + "icons/square_big.png"), 50, this);
+    TImageButton *rectangle = new TImageButton(QPixmap(THEME_DIR + "icons/square_big.png"), iconSize, this);
     rectangle->setToolTip(tr("Rectangle"));
     rectangle->setShortcut(QKeySequence(Qt::Key_R));
     connect(rectangle, SIGNAL(clicked()), this, SLOT(wakeUpRectangle()));
 
-    TImageButton *ellipse = new TImageButton(QPixmap(THEME_DIR + "icons/ellipse_big.png"), 50, this);
+    TImageButton *ellipse = new TImageButton(QPixmap(THEME_DIR + "icons/ellipse_big.png"), iconSize, this);
     ellipse->setToolTip(tr("Ellipse"));
     ellipse->setShortcut(QKeySequence(Qt::Key_C));
     connect(ellipse, SIGNAL(clicked()), this, SLOT(wakeUpEllipse()));
 
-    TImageButton *selection = new TImageButton(QPixmap(THEME_DIR + "icons/selection_big.png"), 50, this);
+    TImageButton *selection = new TImageButton(QPixmap(THEME_DIR + "icons/selection_big.png"), iconSize, this);
     selection->setToolTip(tr("Selection"));
     selection->setShortcut(QKeySequence(Qt::Key_O));
     connect(selection, SIGNAL(clicked()), this, SLOT(wakeUpSelection()));
 
-    TImageButton *trash = new TImageButton(QPixmap(THEME_DIR + "icons/delete_big.png"), 50, this);
+    TImageButton *trash = new TImageButton(QPixmap(THEME_DIR + "icons/delete_big.png"), iconSize, this);
     trash->setToolTip(tr("Delete Selection"));
     trash->setShortcut(QKeySequence(Qt::Key_Backspace));
     connect(trash, SIGNAL(clicked()), this, SLOT(wakeUpDeleteSelection()));
 
-    TImageButton *nodes = new TImageButton(QPixmap(THEME_DIR + "icons/nodes_big.png"), 50, this);
+    TImageButton *nodes = new TImageButton(QPixmap(THEME_DIR + "icons/nodes_big.png"), iconSize, this);
     nodes->setToolTip(tr("Nodes"));
     nodes->setShortcut(QKeySequence(Qt::Key_N));
     connect(nodes, SIGNAL(clicked()), this, SLOT(wakeUpNodes()));
 
-    TImageButton *undo = new TImageButton(QPixmap(THEME_DIR + "icons/undo_big.png"), 50, this);
+    TImageButton *undo = new TImageButton(QPixmap(THEME_DIR + "icons/undo_big.png"), iconSize, this);
     undo->setToolTip(tr("Undo"));
     connect(undo, SIGNAL(clicked()), this, SLOT(undo()));
 
-    TImageButton *redo = new TImageButton(QPixmap(THEME_DIR + "icons/redo_big.png"), 50, this);
+    TImageButton *redo = new TImageButton(QPixmap(THEME_DIR + "icons/redo_big.png"), iconSize, this);
     redo->setToolTip(tr("Redo"));
     connect(redo, SIGNAL(clicked()), this, SLOT(redo()));
 
-    TImageButton *zoomIn = new TImageButton(QPixmap(THEME_DIR + "icons/zoom_in_big.png"), 50, this);
+    TImageButton *zoomIn = new TImageButton(QPixmap(THEME_DIR + "icons/zoom_in_big.png"), iconSize, this);
     zoomIn->setToolTip(tr("Zoom In"));
     connect(zoomIn, SIGNAL(clicked()), this, SLOT(wakeUpZoomIn()));
 
-    TImageButton *zoomOut = new TImageButton(QPixmap(THEME_DIR + "icons/zoom_out_big.png"), 50, this);
+    TImageButton *zoomOut = new TImageButton(QPixmap(THEME_DIR + "icons/zoom_out_big.png"), iconSize, this);
     zoomOut->setToolTip(tr("Zoom Out"));
     connect(zoomOut, SIGNAL(clicked()), this, SLOT(wakeUpZoomOut()));
 
-    TImageButton *images = new TImageButton(QPixmap(THEME_DIR + "icons/bitmap_big.png"), 50, this);
+    TImageButton *images = new TImageButton(QPixmap(THEME_DIR + "icons/bitmap_big.png"), iconSize, this);
     images->setToolTip(tr("Images"));
     connect(images, SIGNAL(clicked()), this, SLOT(wakeUpLibrary()));
 
-    TImageButton *color = new TImageButton(QPixmap(THEME_DIR + "icons/color_palette_big.png"), 50, this);
+    TImageButton *color = new TImageButton(QPixmap(THEME_DIR + "icons/color_palette_big.png"), iconSize, this);
     color->setToolTip(tr("Color Palette"));
     connect(color, SIGNAL(clicked()), this, SLOT(showColorDialog()));
 
-    TImageButton *size = new TImageButton(QPixmap(THEME_DIR + "icons/pen_properties.png"), 50, this);
+    TImageButton *size = new TImageButton(QPixmap(THEME_DIR + "icons/pen_properties.png"), iconSize, this);
     size->setToolTip(tr("Pen Size"));
     connect(size, SIGNAL(clicked()), this, SLOT(penDialog()));
 
-    TImageButton *onion = new TImageButton(QPixmap(THEME_DIR + "icons/onion_big.png"), 50, this);
+    TImageButton *onion = new TImageButton(QPixmap(THEME_DIR + "icons/onion_big.png"), iconSize, this);
     onion->setToolTip(tr("Onion Skin Factor"));
     connect(onion, SIGNAL(clicked()), this, SLOT(onionDialog()));
 
-    TImageButton *close = new TImageButton(QPixmap(THEME_DIR + "icons/close_big.png"), 50, this);
+    TImageButton *close = new TImageButton(QPixmap(THEME_DIR + "icons/close_big.png"), iconSize, this);
     close->setToolTip(tr("Close Full Screen"));
     connect(close, SIGNAL(clicked()), this, SIGNAL(closeHugeCanvas()));
 
@@ -232,7 +237,6 @@ void TupCanvas::showColorDialog()
 
 void TupCanvas::penDialog()
 {
-    // QDesktopWidget desktop;
     TupPenDialog *dialog = new TupPenDialog(brushManager, this);
     connect(dialog, SIGNAL(updatePen(int)), this, SIGNAL(penWidthChangedFromFullScreen(int)));
 
@@ -277,22 +281,34 @@ void TupCanvas::oneFrameForward()
 
 void TupCanvas::wakeUpPencil()
 {
-    emit callAction(TAction::BrushesMenu, TAction::Pencil);
+    if (actionId != TAction::Pencil) {
+        actionId = TAction::Pencil;
+        emit callAction(TAction::BrushesMenu, TAction::Pencil);
+    }
 }
 
 void TupCanvas::wakeUpPolyline()
 {
-    emit callAction(TAction::BrushesMenu, TAction::Polyline);
+    if (actionId != TAction::Polyline) {
+        actionId = TAction::Polyline;
+        emit callAction(TAction::BrushesMenu, TAction::Polyline);
+    }
 }
 
 void TupCanvas::wakeUpRectangle()
 {
-    emit callAction(TAction::ShapesMenu, TAction::Rectangle);
+    if (actionId != TAction::Rectangle) {
+        actionId = TAction::Rectangle;
+        emit callAction(TAction::ShapesMenu, TAction::Rectangle);
+    }
 }
 
 void TupCanvas::wakeUpEllipse()
 {
-    emit callAction(TAction::ShapesMenu, TAction::Ellipse);
+    if (actionId != TAction::Ellipse) {
+        actionId = TAction::Ellipse;
+        emit callAction(TAction::ShapesMenu, TAction::Ellipse);
+    }
 }
 
 void TupCanvas::wakeUpLibrary()
@@ -376,12 +392,18 @@ void TupCanvas::wakeUpLibrary()
 
 void TupCanvas::wakeUpSelection()
 {
-    emit callAction(TAction::SelectionMenu, TAction::ObjectSelection);
+    if (actionId != TAction::ObjectSelection) {
+        actionId = TAction::ObjectSelection;
+        emit callAction(TAction::SelectionMenu, TAction::ObjectSelection);
+    }
 }
 
 void TupCanvas::wakeUpNodes()
 {
-    emit callAction(TAction::SelectionMenu, TAction::NodesEditor);
+    if (actionId != TAction::NodesEditor) {
+        actionId = TAction::NodesEditor;
+        emit callAction(TAction::SelectionMenu, TAction::NodesEditor);
+    }
 }
 
 void TupCanvas::wakeUpDeleteSelection()

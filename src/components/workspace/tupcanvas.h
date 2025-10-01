@@ -62,7 +62,7 @@ class TUPITUBE_EXPORT TupCanvas : public QFrame
         TupCanvas(QWidget *parent = nullptr, Qt::WindowFlags = Qt::Widget, TupGraphicsScene *scene = nullptr,
                   const QPointF centerPoint = QPoint(0, 0) , const QSize &size = QSize(0, 0), 
                   TupProject *project = nullptr, qreal scaleFactor = 1, int angle = 0,
-                  TupBrushManager *brushManager = nullptr);
+                  TupBrushManager *brushManager = nullptr, int activeTool = TAction::Pencil);
         ~TupCanvas();
 
         void updateCursor(const QCursor &cursor);
@@ -109,7 +109,7 @@ class TUPITUBE_EXPORT TupCanvas : public QFrame
         void goToFrame(int frame, int layer, int scene);
         void rightClick();
         void closeHugeCanvas();
-        void autoSave();
+        void saveRequestSent();
 
     private:
         enum UserHand { Right = 0, Left };
@@ -125,6 +125,7 @@ class TUPITUBE_EXPORT TupCanvas : public QFrame
         TupGraphicsScene *scene;
         TupProject *project;
         UserHand hand;
+        int actionId;
 };
 
 #endif

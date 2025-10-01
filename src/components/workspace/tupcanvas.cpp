@@ -69,8 +69,9 @@ TupCanvas::TupCanvas(QWidget *parent, Qt::WindowFlags flags, TupGraphicsScene *g
     screen = QGuiApplication::screens().at(0);
 
     int iconSize = 50;
-    if (screen->geometry().height() < 1080)
-        iconSize = 30;
+    int windowHeight = screen->geometry().height();
+    if (windowHeight < 1080)
+        iconSize = windowHeight*0.04;
 
     graphicsView = new TupCanvasView(this, gScene, screenSize, size, work->getCurrentBgColor());
     connect(graphicsView, SIGNAL(rightClick()), this, SIGNAL(rightClick()));
@@ -167,8 +168,16 @@ TupCanvas::TupCanvas(QWidget *parent, Qt::WindowFlags flags, TupGraphicsScene *g
 
     QBoxLayout *controls = new QBoxLayout(QBoxLayout::TopToBottom);
     controls->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
-    controls->setContentsMargins(3, 10, 3, 3);
-    controls->setSpacing(5);
+
+    int spacing = 5;
+    if (windowHeight < 1080) {
+        spacing = windowHeight*0.015;
+        controls->setContentsMargins(5, 5, 5, 5);
+    } else { 
+        controls->setContentsMargins(3, 10, 3, 3);
+    }
+
+    controls->setSpacing(spacing);
 
     controls->addWidget(frameBackward);
     controls->addWidget(frameForward);

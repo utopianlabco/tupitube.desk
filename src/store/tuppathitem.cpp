@@ -1585,9 +1585,11 @@ QPair<QPointF, QPointF> TupPathItem::getCurveElements(QPointF initPos, QPointF e
 bool TupPathItem::pointIsContainedBetweenRange(const QPointF &point1, const QPointF &point2,
                                                const QPointF &newPoint, double tolerance)
 {
+    /*
     #ifdef TUP_DEBUG
         qDebug() << "[TupPathItem::pointIsContainedBetweenRange()]";
     #endif
+    */
 
     if (point1.x() <= newPoint.x() && newPoint.x() < point2.x()) {
         if (point1.y() <= newPoint.y() && newPoint.y() < point2.y())
@@ -1642,9 +1644,11 @@ bool TupPathItem::pointIsContainedBetweenRange(const QPointF &point1, const QPoi
             return true;
     }
 
+    /*
     #ifdef TUP_DEBUG
         qDebug() << "[TupPathItem::pointIsContainedBetweenRange()] - Warning: Point is out of scope!";
     #endif
+    */
 
     return false;
 }

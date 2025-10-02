@@ -226,7 +226,8 @@ void TupPaintAreaBase::mouseReleaseEvent(QMouseEvent *event)
 void TupPaintAreaBase::keyPressEvent(QKeyEvent *event)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupPaintAreaBase::keyPressEvent()]";
+        qDebug() << "[TupPaintAreaBase::keyPressEvent()] - event->key() ->" << event->key();
+        qDebug() << "[TupPaintAreaBase::keyPressEvent()] - event->text() ->" << event->text();
     #endif
 
     if (event->key() == Qt::Key_Space) {

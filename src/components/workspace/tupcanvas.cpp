@@ -47,12 +47,13 @@
 
 TupCanvas::TupCanvas(QWidget *parent, Qt::WindowFlags flags, TupGraphicsScene *gScene,
                    const QPointF centerPoint, const QSize &screenSize, TupProject *work, qreal scaleFactor,
-                   int angle, TupBrushManager *manager, int activeTool) : QFrame(parent, flags)
+                   int angle, TupBrushManager *manager, int activeTool) : QDialog(parent, flags)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupCanvas()]";
     #endif
 
+    setModal(true);
     setWindowTitle("TupiTube Desk");
     setWindowIcon(QIcon(QPixmap(THEME_DIR + "icons/animation_mode.png")));
 
@@ -79,9 +80,9 @@ TupCanvas::TupCanvas(QWidget *parent, Qt::WindowFlags flags, TupGraphicsScene *g
     connect(graphicsView, SIGNAL(zoomOut()), this, SLOT(wakeUpZoomOut()));
     connect(graphicsView, SIGNAL(frameBackward()), this, SLOT(oneFrameBack()));
     connect(graphicsView, SIGNAL(frameForward()), this, SLOT(oneFrameForward()));
-    connect(graphicsView, SIGNAL(saveRequestSent()), this, SIGNAL(saveRequestSent()));
-
-    // connect(graphicsView, SIGNAL(callAction(int, int)), this, SIGNAL(callAction(int, int)));
+    connect(graphicsView, SIGNAL(saveRequested()), this, SIGNAL(saveRequested()));
+    connect(graphicsView, SIGNAL(undoRequested()), this, SIGNAL(undoRequested()));
+    connect(graphicsView, SIGNAL(redoRequested()), this, SIGNAL(redoRequested()));
 
     graphicsView->centerOn(centerPoint);
     graphicsView->scale(scaleFactor, scaleFactor);
@@ -97,37 +98,37 @@ TupCanvas::TupCanvas(QWidget *parent, Qt::WindowFlags flags, TupGraphicsScene *g
 
     TImageButton *pencil = new TImageButton(QPixmap(THEME_DIR + "icons/pencil_big.png"), iconSize, this);
     pencil->setToolTip(tr("Pencil"));
-    pencil->setShortcut(QKeySequence(Qt::Key_P));
+    // pencil->setShortcut(QKeySequence(Qt::Key_P));
     connect(pencil, SIGNAL(clicked()), this, SLOT(wakeUpPencil()));
 
     TImageButton *polyline = new TImageButton(QPixmap(THEME_DIR + "icons/polyline_big.png"), iconSize, this);
     polyline->setToolTip(tr("Polyline"));
-    polyline->setShortcut(QKeySequence(Qt::Key_S));
+    // polyline->setShortcut(QKeySequence(Qt::Key_S));
     connect(polyline, SIGNAL(clicked()), this, SLOT(wakeUpPolyline()));
 
     TImageButton *rectangle = new TImageButton(QPixmap(THEME_DIR + "icons/square_big.png"), iconSize, this);
     rectangle->setToolTip(tr("Rectangle"));
-    rectangle->setShortcut(QKeySequence(Qt::Key_R));
+    // rectangle->setShortcut(QKeySequence(Qt::Key_R));
     connect(rectangle, SIGNAL(clicked()), this, SLOT(wakeUpRectangle()));
 
     TImageButton *ellipse = new TImageButton(QPixmap(THEME_DIR + "icons/ellipse_big.png"), iconSize, this);
     ellipse->setToolTip(tr("Ellipse"));
-    ellipse->setShortcut(QKeySequence(Qt::Key_C));
+    // ellipse->setShortcut(QKeySequence(Qt::Key_C));
     connect(ellipse, SIGNAL(clicked()), this, SLOT(wakeUpEllipse()));
 
     TImageButton *selection = new TImageButton(QPixmap(THEME_DIR + "icons/selection_big.png"), iconSize, this);
     selection->setToolTip(tr("Selection"));
-    selection->setShortcut(QKeySequence(Qt::Key_O));
+    // selection->setShortcut(QKeySequence(Qt::Key_O));
     connect(selection, SIGNAL(clicked()), this, SLOT(wakeUpSelection()));
 
     TImageButton *trash = new TImageButton(QPixmap(THEME_DIR + "icons/delete_big.png"), iconSize, this);
     trash->setToolTip(tr("Delete Selection"));
-    trash->setShortcut(QKeySequence(Qt::Key_Backspace));
+    // trash->setShortcut(QKeySequence(Qt::Key_Backspace));
     connect(trash, SIGNAL(clicked()), this, SLOT(wakeUpDeleteSelection()));
 
     TImageButton *nodes = new TImageButton(QPixmap(THEME_DIR + "icons/nodes_big.png"), iconSize, this);
     nodes->setToolTip(tr("Nodes"));
-    nodes->setShortcut(QKeySequence(Qt::Key_N));
+    // nodes->setShortcut(QKeySequence(Qt::Key_N));
     connect(nodes, SIGNAL(clicked()), this, SLOT(wakeUpNodes()));
 
     TImageButton *undo = new TImageButton(QPixmap(THEME_DIR + "icons/undo_big.png"), iconSize, this);
@@ -289,7 +290,7 @@ void TupCanvas::oneFrameForward()
 }
 
 void TupCanvas::wakeUpPencil()
-{
+{    
     if (actionId != TAction::Pencil) {
         actionId = TAction::Pencil;
         emit callAction(TAction::BrushesMenu, TAction::Pencil);

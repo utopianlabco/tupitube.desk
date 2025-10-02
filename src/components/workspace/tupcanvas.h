@@ -47,14 +47,14 @@
 #include "tuprequestbuilder.h"
 #include "tupproject.h"
 
-#include <QFrame>
+#include <QDialog>
 #include <QPointF>
 #include <QSize>
 #include <QCloseEvent>
 #include <QColor>
 #include <QScreen>
 
-class TUPITUBE_EXPORT TupCanvas : public QFrame
+class TUPITUBE_EXPORT TupCanvas : public QDialog
 {
     Q_OBJECT
 
@@ -109,7 +109,9 @@ class TUPITUBE_EXPORT TupCanvas : public QFrame
         void goToFrame(int frame, int layer, int scene);
         void rightClick();
         void closeHugeCanvas();
-        void saveRequestSent();
+        void saveRequested();
+        void undoRequested();
+        void redoRequested();
 
     private:
         enum UserHand { Right = 0, Left };

@@ -136,7 +136,7 @@ TAction::ActionId TAction::actionId()
 QPair<int, int> TAction::setKeyAction(int key, Qt::KeyboardModifiers modifiers)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TAction::setKeyAction()] - key -> " << key;
+        qDebug() << "[TAction::setKeyAction()] - key ->" << key;
     #endif
 
     TAction::MenuId menu = TAction::BrushesMenu;
@@ -144,6 +144,12 @@ QPair<int, int> TAction::setKeyAction(int key, Qt::KeyboardModifiers modifiers)
 
     if (modifiers & Qt::ControlModifier) {
         switch (key) {
+            case Qt::Key_T:
+            {
+                menu = TAction::ShapesMenu;
+                tool = TAction::Triangle;
+            }
+            break;
             case Qt::Key_Right:
             {
                 menu = TAction::Arrows;
@@ -168,6 +174,11 @@ QPair<int, int> TAction::setKeyAction(int key, Qt::KeyboardModifiers modifiers)
                 tool = TAction::Down_QuickCopy;
             }
             break;
+            default:
+            {
+                menu = TAction::InvalidMenu;
+                tool = TAction::NoAction;
+            }
         }
     } else {
         switch (key) {
@@ -177,6 +188,7 @@ QPair<int, int> TAction::setKeyAction(int key, Qt::KeyboardModifiers modifiers)
                      menu = TAction::ColorMenu;
                      tool = TAction::ColorPalette;
                  } else {
+                     menu = TAction::BrushesMenu;
                      tool = TAction::Pencil;
                  }
             }
@@ -184,36 +196,49 @@ QPair<int, int> TAction::setKeyAction(int key, Qt::KeyboardModifiers modifiers)
 
             case Qt::Key_K:
             {
+                 menu = TAction::BrushesMenu;
                  tool = TAction::Ink;
             }
             break;
 
             case Qt::Key_S:
             {
+                 menu = TAction::BrushesMenu;
                  tool = TAction::Polyline;
-            }
-            break;
-
-            case Qt::Key_L:
-            {
-                 tool = TAction::Line;
             }
             break;
 
             case Qt::Key_R:
             {
+                menu = TAction::ShapesMenu;
                 tool = TAction::Rectangle;
             }
             break;
 
             case Qt::Key_C:
             {
+                menu = TAction::ShapesMenu;
                 tool = TAction::Ellipse;
+            }
+            break;
+
+            case Qt::Key_L:
+            {
+                menu = TAction::ShapesMenu;
+                tool = TAction::Line;
+            }
+            break;
+
+            case Qt::Key_H:
+            {
+                menu = TAction::ShapesMenu;
+                tool = TAction::Hexagon;
             }
             break;
 
             case Qt::Key_T:
             {
+                menu = TAction::BrushesMenu;
                 tool = TAction::Text;
             }
             break;

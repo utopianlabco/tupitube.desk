@@ -199,7 +199,7 @@ class Q_DECL_EXPORT TupDocumentView: public QMainWindow
         void localRequestTriggered(const TupProjectRequest *event);
         void paintAreaEventTriggered(const TupPaintAreaEvent *event);
         // void brushSizeChanged(int width);
-        void autoSave();
+        void saveRequested();
         void modeHasChanged(TupProject::Mode mode);
         void requestExportImageToServer(int frameIndex, int sceneIndex, const QString &title,
                                         const QString &topics, const QString &description);

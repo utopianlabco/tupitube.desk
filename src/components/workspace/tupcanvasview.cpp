@@ -85,6 +85,10 @@ void TupCanvasView::drawBackground(QPainter *painter, const QRectF &rect)
 
 void TupCanvasView::mousePressEvent(QMouseEvent *event)
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupCanvasView::mousePressEvent()]";
+    #endif
+
     if (event->button() == Qt::RightButton) {
         emit rightClick();
         return;
@@ -148,9 +152,15 @@ void TupCanvasView::keyPressEvent(QKeyEvent *event)
     }
 
     if (event->modifiers() == Qt::ControlModifier) {
-        if (event->key() == Qt::Key_S) {
-            emit saveRequestSent();
-        }
+        if (event->key() == Qt::Key_S)
+            emit saveRequested();
+
+        if (event->key() == Qt::Key_Z)
+            emit undoRequested();
+
+        if (event->key() == Qt::Key_Y)
+            emit redoRequested();
+
         return;
     }
 

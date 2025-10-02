@@ -761,9 +761,16 @@ void TupDocumentView::loadPlugins()
 void TupDocumentView::loadPlugin(int menu, int actionID)
 {
     #ifdef TUP_DEBUG
-        qWarning() << "[TupDocumentView::loadPlugin()] - Menu -> "
+        qDebug() << "[TupDocumentView::loadPlugin()] - Menu -> "
                    << menu << " - Action -> " << actionID << " - currentDock -> " << currentDock;
     #endif
+
+    if (menu == TAction::InvalidMenu && actionID == TAction::NoAction) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupDocumentView::loadPlugin()] - Warning: Invalid menu/action";
+        #endif
+        return;
+    }
 
     TAction *action = nullptr;
     switch (menu) {
@@ -895,6 +902,11 @@ void TupDocumentView::loadPlugin(int menu, int actionID)
                     case TAction::Triangle:
                     {
                         action = static_cast<TAction *> (shapeActions[3]);
+                    }
+                    break;
+                    case TAction::Hexagon:
+                    {
+                        action = static_cast<TAction *> (shapeActions[4]);
                     }
                     break;
                 }
@@ -1644,12 +1656,24 @@ void TupDocumentView::closeInterface()
 
 void TupDocumentView::undo()
 {
-    puts("Adding undo support");
+    QAction *action = kApp->findGlobalAction("undo");
+    if (action) {
+        action->trigger();
+        qDebug() << "*** UNDO FOUND!";
+    } else {
+        qDebug() << "NO UNDO FOUND!";
+    }
 }
 
 void TupDocumentView::redo()
 {
-    puts("Adding redo support");
+    QAction *action = kApp->findGlobalAction("redo");
+    if (action) {
+        action->trigger();
+        qDebug() << "*** REDO FOUND!";
+    } else {
+        qDebug() << "NO REDO FOUND!";
+    }
 }
 
 void TupDocumentView::setCursor(const QCursor &cursor)
@@ -1741,7 +1765,7 @@ void TupDocumentView::updatePaintArea()
 
 void TupDocumentView::callAutoSave()
 {
-    emit autoSave();
+    emit saveRequested();
 }
 
 void TupDocumentView::saveTimer()
@@ -1972,7 +1996,9 @@ void TupDocumentView::showFullScreen()
     connect(fullScreen, SIGNAL(rightClick()), this, SLOT(fullScreenRightClick()));
     connect(fullScreen, SIGNAL(goToFrame(int, int, int)), this, SLOT(selectFrame(int, int, int)));
     connect(fullScreen, SIGNAL(closeHugeCanvas()), this, SLOT(closeFullScreen()));
-    connect(fullScreen, SIGNAL(saveRequestSent()), this, SIGNAL(autoSave()));
+    connect(fullScreen, SIGNAL(saveRequested()), this, SIGNAL(saveRequested()));
+    connect(fullScreen, SIGNAL(undoRequested()), this, SLOT(undo()));
+    connect(fullScreen, SIGNAL(redoRequested()), this, SLOT(redo()));
 
     /* SQA: These connections don't work on Windows
     connect(this, &TupDocumentView::colorDialogRequested, fullScreen, &TupCanvas::openColorDialog);

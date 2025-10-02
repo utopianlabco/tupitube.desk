@@ -476,8 +476,8 @@ void TupMainWindow::setWorkSpace(const QStringList &users)
 
         connect(m_libraryWidget, SIGNAL(soundUpdated()), this, SLOT(updateSoundItems()));
         m_libraryWidget->setNetworking(isNetworked);
-        // Autosave event
-        connect(animationTab, SIGNAL(autoSave()), this, SLOT(callSaveProcedure()));
+        // Save event
+        connect(animationTab, SIGNAL(saveRequested()), this, SLOT(callSaveProcedure()));
 
         /*
         if (isNetworked) {

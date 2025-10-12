@@ -792,44 +792,49 @@
 <context>
     <name>NodesTool</name>
     <message>
-        <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="697"/>
-        <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="699"/>
+        <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="732"/>
+        <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="734"/>
         <source>Nodes Selection</source>
         <translation>Sélection des noeuds</translation>
     </message>
     <message>
-        <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="115"/>
+        <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="140"/>
         <source>SVG objects cannot be edited!</source>
         <translation>Les objets SVG ne peuvent être édités!</translation>
     </message>
     <message>
-        <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="123"/>
+        <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="148"/>
         <source>Images have no nodes!</source>
         <translation>Les images n&apos;ont pas de noeuds!</translation>
     </message>
     <message>
-        <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="151"/>
+        <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="166"/>
+        <source>Splitting item group!</source>
+        <translation>Fractionnement du groupe d&apos;éléments&#xa0;!</translation>
+    </message>
+    <message>
+        <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="174"/>
         <source>Only pencil/ink lines can be edited!</source>
         <translation>Seules les lignes au crayon ou à l&apos;encre peuvent être éditées!</translation>
     </message>
     <message>
-        <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="319"/>
+        <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="347"/>
         <source>Too many nodes!</source>
         <translation>Trop de nœuds&#xa0;!</translation>
     </message>
     <message>
-        <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="321"/>
+        <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="349"/>
         <source>The selected path contains too many nodes.</source>
         <translation>Le chemin sélectionné contient trop de nœuds.</translation>
     </message>
     <message>
-        <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="322"/>
+        <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="350"/>
         <source>It will be simplified, so you can edit it.</source>
         <translation>Il sera simplifié, vous pourrez donc le modifier.</translation>
     </message>
     <message>
-        <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="698"/>
-        <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="699"/>
+        <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="733"/>
+        <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="734"/>
         <source>N</source>
         <translation>N</translation>
     </message>
@@ -1098,14 +1103,14 @@
 <context>
     <name>PolyLineTool</name>
     <message>
-        <location filename="../../../plugins/tools/polyline/polylinetool.cpp" line="72"/>
-        <location filename="../../../plugins/tools/polyline/polylinetool.cpp" line="74"/>
+        <location filename="../../../plugins/tools/polyline/polylinetool.cpp" line="76"/>
+        <location filename="../../../plugins/tools/polyline/polylinetool.cpp" line="78"/>
         <source>PolyLine</source>
         <translation>Polyligne</translation>
     </message>
     <message>
-        <location filename="../../../plugins/tools/polyline/polylinetool.cpp" line="73"/>
-        <location filename="../../../plugins/tools/polyline/polylinetool.cpp" line="74"/>
+        <location filename="../../../plugins/tools/polyline/polylinetool.cpp" line="77"/>
+        <location filename="../../../plugins/tools/polyline/polylinetool.cpp" line="78"/>
         <source>S</source>
         <translation>S</translation>
     </message>
@@ -1879,7 +1884,7 @@
         <translation>O</translation>
     </message>
     <message>
-        <location filename="../../../plugins/tools/selection/selectiontool.cpp" line="774"/>
+        <location filename="../../../plugins/tools/selection/selectiontool.cpp" line="780"/>
         <source>SVG objects can&apos;t be grouped/ungrouped yet</source>
         <translation>Les objets SVG ne peuvent êtres groupés/dégroupés pour le moment</translation>
     </message>
@@ -2974,47 +2979,47 @@
 <context>
     <name>TupCanvas</name>
     <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="85"/>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="92"/>
         <source>Frame Backward</source>
         <translation>Image Arrière</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="89"/>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="96"/>
         <source>Frame Forward</source>
         <translation>Image avant</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="93"/>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="100"/>
         <source>Pencil</source>
         <translation>Crayon</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="98"/>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="104"/>
         <source>Polyline</source>
         <translation>Polyligne</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="103"/>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="108"/>
         <source>Rectangle</source>
         <translation>Rectangle</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="108"/>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="112"/>
         <source>Ellipse</source>
         <translation>Ellipse</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="113"/>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="116"/>
         <source>Selection</source>
         <translation>Sélection</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="118"/>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="120"/>
         <source>Delete Selection</source>
         <translation>Supprimer la sélection</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="123"/>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="124"/>
         <source>Nodes</source>
         <translation>Noeuds</translation>
     </message>
@@ -3064,27 +3069,27 @@
         <translation>Fermer le mode plein écran</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="300"/>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="307"/>
         <source>Import an image file...</source>
         <translation>Importer un fichier image...</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="301"/>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="308"/>
         <source>Raster/Vector</source>
         <translation>Raster/Vecteur</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="335"/>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="342"/>
         <source>Information</source>
         <translation>Information</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="337"/>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="344"/>
         <source>Image is bigger than workspace.</source>
         <translation>L&apos;image est plus grande que l&apos;espace de travail.</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="338"/>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="345"/>
         <source>Do you want to resize it?</source>
         <translation>Voulez-vous redimensionner?</translation>
     </message>
@@ -3293,7 +3298,7 @@
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="422"/>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1353"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1361"/>
         <source>Onion Skin Factor</source>
         <translation>Paramètres de pelure d&apos;oignon</translation>
     </message>
@@ -3323,43 +3328,43 @@
         <translation>Séquence d&apos;image</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1286"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1294"/>
         <source>Vector Static BG Properties</source>
         <translation>Propriétés de Fond Statique Vectoriel</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1287"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1295"/>
         <source>Vector Dynamic BG Properties</source>
         <translation>Propriétés du Fond Dynamique Vectoriel</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1294"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1302"/>
         <source>Vector Static BG Mode</source>
         <translation>Fond Statique Vectoriel</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1295"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1303"/>
         <source>Vector Dynamic BG Mode</source>
         <translation>Fond Dynamique Vectoriel</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1296"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1304"/>
         <source>Raster Static BG Mode</source>
         <translation>Fond Statique Raster</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1297"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1305"/>
         <source>Raster Dynamic BG Mode</source>
         <translation>Fond Dynamique Raster</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1469"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1477"/>
         <source>Foreground Opacity</source>
         <translation>Opacité du Premier Plan</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="990"/>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2790"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1004"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2813"/>
         <source>%1</source>
         <translation>%1</translation>
     </message>
@@ -3384,129 +3389,129 @@
         <translation>Formats Vidéo</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1280"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1288"/>
         <source>Paint area actions</source>
         <translation>Actions de la zone de peinture</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1288"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1296"/>
         <source>Foreground Properties</source>
         <translation>Propriétés de Premier Plan</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1293"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1301"/>
         <source>Frames Mode</source>
         <translation>Mode images</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1298"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1306"/>
         <source>Vector Foreground Mode</source>
         <translation>Mode de Premier Plan Vectoriel</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1326"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1334"/>
         <source>Previous Frames</source>
         <translation>Images précédentes</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1338"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1346"/>
         <source>Next Frames</source>
         <translation>Images suivantes</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1370"/>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1377"/>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1484"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1378"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1385"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1492"/>
         <source>Static BG Opacity</source>
         <translation>Opacité BG statique</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1389"/>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1393"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1397"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1401"/>
         <source>Movement Orientation</source>
         <translation>Orientation du mouvement</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1394"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1402"/>
         <source>Right</source>
         <translation>Droite</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1395"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1403"/>
         <source>Left</source>
         <translation>Gauche</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1396"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1404"/>
         <source>Up</source>
         <translation>Haut</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1397"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1405"/>
         <source>Down</source>
         <translation>Bas</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1419"/>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1425"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1427"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1433"/>
         <source>Shift Length</source>
         <translation>Longueur du décalage</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1430"/>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1437"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1438"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1445"/>
         <source>Dynamic BG Opacity</source>
         <translation>Opacité BG dynamique</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1473"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1481"/>
         <source>Show Background Context</source>
         <translation>Afficher le Contexte d&apos;arrière-Plan</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1592"/>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1593"/>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="1600"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1601"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1608"/>
         <source>Raster Objects</source>
         <translation>Objets Raster</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1604"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1612"/>
         <source>Image imported successfully</source>
         <translation>Image importée avec succès</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2066"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2089"/>
         <source>Export Frame As</source>
         <translation>Exporter l&apos;image comme</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2067"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2090"/>
         <source>Images</source>
         <translation>Images</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2073"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2096"/>
         <source>Frame has been exported successfully</source>
         <translation>L&apos;image a été exportée avec succès</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2075"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2098"/>
         <source>Can&apos;t export frame as image</source>
         <translation>Impossible d&apos;exporter comme image</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2300"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2323"/>
         <source>Please, close current camera dialog first!</source>
         <translation>Veuillez fermer la boîte de dialogue actuelle de la caméra en premier!</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2415"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2438"/>
         <source>No cameras detected</source>
         <translation>Pas de caméras detectées</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2483"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2506"/>
         <source>Frame</source>
         <translation>Image</translation>
     </message>
@@ -4932,11 +4937,6 @@ until reaches at least 3 seconds.</source>
         <translation>Erreur lors de la publication de l&apos;image. Le fichier est trop gros!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1702"/>
-        <source>Warning: No changes to save!</source>
-        <translation>Attention : aucune modification à enregistrer !</translation>
-    </message>
-    <message>
         <location filename="../../tupmainwindow.cpp" line="1786"/>
         <source>Fatal Error</source>
         <translation>Erreur fatale</translation>
@@ -6070,22 +6070,22 @@ until reaches at least 3 seconds.</source>
 <context>
     <name>TupPaintAreaBase</name>
     <message>
-        <location filename="../../../libbase/tuppaintareabase.cpp" line="354"/>
+        <location filename="../../../libbase/tuppaintareabase.cpp" line="355"/>
         <source>No Scene!</source>
         <translation>Pas de scène!</translation>
     </message>
     <message>
-        <location filename="../../../libbase/tuppaintareabase.cpp" line="361"/>
+        <location filename="../../../libbase/tuppaintareabase.cpp" line="362"/>
         <source>Locked!</source>
         <translation>Verrouillé!</translation>
     </message>
     <message>
-        <location filename="../../../libbase/tuppaintareabase.cpp" line="378"/>
+        <location filename="../../../libbase/tuppaintareabase.cpp" line="379"/>
         <source>No Frames!</source>
         <translation>Pas d&apos;images!</translation>
     </message>
     <message>
-        <location filename="../../../libbase/tuppaintareabase.cpp" line="381"/>
+        <location filename="../../../libbase/tuppaintareabase.cpp" line="382"/>
         <source>No Layers!</source>
         <translation>Pas de calques!</translation>
     </message>

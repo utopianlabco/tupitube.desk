@@ -647,6 +647,10 @@
         <source>It will be simplified, so you can edit it.</source>
         <translation>它將被簡化，因此您可以對其進行編輯。</translation>
     </message>
+    <message>
+        <source>Splitting item group!</source>
+        <translation>拆分項目組！</translation>
+    </message>
 </context>
 <context>
     <name>OpacitySettings</name>
@@ -4208,10 +4212,6 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Help Us Improve TupiTube!</source>
         <translation>幫助我們改進 TupiTube！</translation>
-    </message>
-    <message>
-        <source>Warning: No changes to save!</source>
-        <translation>警告：沒有要儲存的變更！</translation>
     </message>
 </context>
 <context>

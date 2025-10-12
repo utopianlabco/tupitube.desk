@@ -14,7 +14,6 @@ moc_*
 release
 debug
 *.rc
-*.qm
 log.txt
 
 bin/

@@ -118,8 +118,10 @@ void TupCanvasView::keyPressEvent(QKeyEvent *event)
         qDebug() << "[TupCanvasView::keyPressEvent()] - event->text() ->" << event->text();
     #endif
 
-    if (event->key() == Qt::Key_T)
-        return;
+    if (event->modifiers() == Qt::NoModifier) {
+        if (event->key() == Qt::Key_T)
+            return;
+    }
 
     if (event->key() == Qt::Key_Space)
         spaceBar = true;
@@ -152,16 +154,25 @@ void TupCanvasView::keyPressEvent(QKeyEvent *event)
     }
 
     if (event->modifiers() == Qt::ControlModifier) {
-        if (event->key() == Qt::Key_S)
+        if (event->key() == Qt::Key_S) {
             emit saveRequested();
+            return;
+        }
 
-        if (event->key() == Qt::Key_Z)
+        if (event->key() == Qt::Key_Z) {
             emit undoRequested();
+            return;
+        }
 
-        if (event->key() == Qt::Key_Y)
+        if (event->key() == Qt::Key_Y) {
             emit redoRequested();
+            return;
+        }
 
-        return;
+        if (event->key() == Qt::Key_A) {
+            emit selectToolLaunched();
+            return;
+        }
     }
 
     QGraphicsView::keyPressEvent(event);

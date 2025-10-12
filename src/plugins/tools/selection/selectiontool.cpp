@@ -427,7 +427,7 @@ void SelectionTool::itemResponse(const TupItemResponse *response)
     } else {
         #ifdef TUP_DEBUG
             qDebug() << "[SelectionTool::itemResponse()] - Fatal Error: frame is NULL! (index: "
-                        + QString::number(response->getFrameIndex()) + ")";
+                     << response->getFrameIndex() + ")";
         #endif
         return;
     }
@@ -627,16 +627,22 @@ void SelectionTool::keyPressEvent(QKeyEvent *event)
             updateItemPosition();
         }
     } else if (event->modifiers() == Qt::ControlModifier) {
-        if (event->key() == Qt::Key_G) {
-            applyGroupAction(SelectionSettings::GroupItems);
-        } else if (event->key() == Qt::Key_U) {
-            applyGroupAction(SelectionSettings::UngroupItems);
+        if (event->key() == Qt::Key_T) {
+            QPair<int, int> flags = TAction::setKeyAction(event->key(), event->modifiers());
+            if (flags.first != -1 && flags.second != -1)
+                emit callForPlugin(flags.first, flags.second);
         } else {
-            settingsPanel->setProportionState(true);
-            key = "CONTROL";
-            if (selectionIsActive()) {
-                foreach (NodeManager *nodeManager, nodeManagers)
-                    nodeManager->setProportion(true);
+            if (event->key() == Qt::Key_G) {
+                applyGroupAction(SelectionSettings::GroupItems);
+            } else if (event->key() == Qt::Key_U) {
+                applyGroupAction(SelectionSettings::UngroupItems);
+            } else {
+                settingsPanel->setProportionState(true);
+                key = "CONTROL";
+                if (selectionIsActive()) {
+                    foreach (NodeManager *nodeManager, nodeManagers)
+                        nodeManager->setProportion(true);
+                }
             }
         }
     } else {

@@ -116,6 +116,9 @@ class TUPITUBE_PLUGIN NodesTool : public TupToolPlugin
         void setupActions();
         TupFrame* getCurrentFrame();
         void requestTransformation(QGraphicsItem *item, TupFrame *frame);
+        bool setPathNodes(QPointF coord, QList<QGraphicsItem *> currentSelection, int penWidth,
+                          TupGraphicsScene *gScene);
+        void addNode(QPointF coord, int penWidth, TupGraphicsScene *gScene);
 
         NodeSettings *configPanel;
         QMap<TAction::ActionId, TAction *> nodesActions;
@@ -133,7 +136,7 @@ class TUPITUBE_PLUGIN NodesTool : public TupToolPlugin
         QCursor targetCursor;
 
         int nodeIndex;
-        bool expandNode;
+        bool expandNode;       
 };
 
 #endif

@@ -494,6 +494,12 @@ void TupPaintAreaBase::updateDimension(const QSize dimension)
 
 void TupPaintAreaBase::updateCenter(const QPoint point)
 {
+    /*
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupPaintAreaBase::updateCenter()]";
+    #endif
+    */
+
     int x = point.x();
     int y = point.y();
 

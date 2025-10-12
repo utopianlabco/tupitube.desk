@@ -40,7 +40,7 @@
 PolylineSettings::PolylineSettings(QWidget *parent) : QWidget(parent)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "PolylineSettings()";
+        qDebug() << "[PolylineSettings()]";
     #endif
 
     QBoxLayout *mainLayout = new QBoxLayout(QBoxLayout::TopToBottom, this);
@@ -76,7 +76,7 @@ PolylineSettings::PolylineSettings(QWidget *parent) : QWidget(parent)
 PolylineSettings::~PolylineSettings()
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[~Settings()]";
+        qDebug() << "[~PolylineSettings()]";
     #endif
 }
 

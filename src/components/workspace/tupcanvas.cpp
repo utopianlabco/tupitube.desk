@@ -47,7 +47,7 @@
 
 TupCanvas::TupCanvas(QWidget *parent, Qt::WindowFlags flags, TupGraphicsScene *gScene,
                    const QPointF centerPoint, const QSize &screenSize, TupProject *work, qreal scaleFactor,
-                   int angle, TupBrushManager *manager, int activeTool) : QDialog(parent, flags)
+                   int angle, TupBrushManager *manager) : QDialog(parent, flags)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupCanvas()]";
@@ -65,7 +65,6 @@ TupCanvas::TupCanvas(QWidget *parent, Qt::WindowFlags flags, TupGraphicsScene *g
     size = work->getDimension();
     currentColor = manager->penColor();
     brushManager = manager;
-    actionId = activeTool;
 
     screen = QGuiApplication::screens().at(0);
 
@@ -83,6 +82,7 @@ TupCanvas::TupCanvas(QWidget *parent, Qt::WindowFlags flags, TupGraphicsScene *g
     connect(graphicsView, SIGNAL(saveRequested()), this, SIGNAL(saveRequested()));
     connect(graphicsView, SIGNAL(undoRequested()), this, SIGNAL(undoRequested()));
     connect(graphicsView, SIGNAL(redoRequested()), this, SIGNAL(redoRequested()));
+    connect(graphicsView, SIGNAL(selectToolLaunched()), this, SIGNAL(selectToolLaunched()));
 
     graphicsView->centerOn(centerPoint);
     graphicsView->scale(scaleFactor, scaleFactor);
@@ -98,37 +98,30 @@ TupCanvas::TupCanvas(QWidget *parent, Qt::WindowFlags flags, TupGraphicsScene *g
 
     TImageButton *pencil = new TImageButton(QPixmap(THEME_DIR + "icons/pencil_big.png"), iconSize, this);
     pencil->setToolTip(tr("Pencil"));
-    // pencil->setShortcut(QKeySequence(Qt::Key_P));
     connect(pencil, SIGNAL(clicked()), this, SLOT(wakeUpPencil()));
 
     TImageButton *polyline = new TImageButton(QPixmap(THEME_DIR + "icons/polyline_big.png"), iconSize, this);
     polyline->setToolTip(tr("Polyline"));
-    // polyline->setShortcut(QKeySequence(Qt::Key_S));
     connect(polyline, SIGNAL(clicked()), this, SLOT(wakeUpPolyline()));
 
     TImageButton *rectangle = new TImageButton(QPixmap(THEME_DIR + "icons/square_big.png"), iconSize, this);
     rectangle->setToolTip(tr("Rectangle"));
-    // rectangle->setShortcut(QKeySequence(Qt::Key_R));
     connect(rectangle, SIGNAL(clicked()), this, SLOT(wakeUpRectangle()));
 
     TImageButton *ellipse = new TImageButton(QPixmap(THEME_DIR + "icons/ellipse_big.png"), iconSize, this);
     ellipse->setToolTip(tr("Ellipse"));
-    // ellipse->setShortcut(QKeySequence(Qt::Key_C));
     connect(ellipse, SIGNAL(clicked()), this, SLOT(wakeUpEllipse()));
 
     TImageButton *selection = new TImageButton(QPixmap(THEME_DIR + "icons/selection_big.png"), iconSize, this);
     selection->setToolTip(tr("Selection"));
-    // selection->setShortcut(QKeySequence(Qt::Key_O));
     connect(selection, SIGNAL(clicked()), this, SLOT(wakeUpSelection()));
 
     TImageButton *trash = new TImageButton(QPixmap(THEME_DIR + "icons/delete_big.png"), iconSize, this);
     trash->setToolTip(tr("Delete Selection"));
-    // trash->setShortcut(QKeySequence(Qt::Key_Backspace));
     connect(trash, SIGNAL(clicked()), this, SLOT(wakeUpDeleteSelection()));
 
     TImageButton *nodes = new TImageButton(QPixmap(THEME_DIR + "icons/nodes_big.png"), iconSize, this);
     nodes->setToolTip(tr("Nodes"));
-    // nodes->setShortcut(QKeySequence(Qt::Key_N));
     connect(nodes, SIGNAL(clicked()), this, SLOT(wakeUpNodes()));
 
     TImageButton *undo = new TImageButton(QPixmap(THEME_DIR + "icons/undo_big.png"), iconSize, this);
@@ -291,34 +284,22 @@ void TupCanvas::oneFrameForward()
 
 void TupCanvas::wakeUpPencil()
 {    
-    if (actionId != TAction::Pencil) {
-        actionId = TAction::Pencil;
-        emit callAction(TAction::BrushesMenu, TAction::Pencil);
-    }
+    emit callAction(TAction::BrushesMenu, TAction::Pencil);
 }
 
 void TupCanvas::wakeUpPolyline()
 {
-    if (actionId != TAction::Polyline) {
-        actionId = TAction::Polyline;
-        emit callAction(TAction::BrushesMenu, TAction::Polyline);
-    }
+    emit callAction(TAction::BrushesMenu, TAction::Polyline);
 }
 
 void TupCanvas::wakeUpRectangle()
 {
-    if (actionId != TAction::Rectangle) {
-        actionId = TAction::Rectangle;
-        emit callAction(TAction::ShapesMenu, TAction::Rectangle);
-    }
+    emit callAction(TAction::ShapesMenu, TAction::Rectangle);
 }
 
 void TupCanvas::wakeUpEllipse()
 {
-    if (actionId != TAction::Ellipse) {
-        actionId = TAction::Ellipse;
-        emit callAction(TAction::ShapesMenu, TAction::Ellipse);
-    }
+    emit callAction(TAction::ShapesMenu, TAction::Ellipse);
 }
 
 void TupCanvas::wakeUpLibrary()
@@ -402,18 +383,12 @@ void TupCanvas::wakeUpLibrary()
 
 void TupCanvas::wakeUpSelection()
 {
-    if (actionId != TAction::ObjectSelection) {
-        actionId = TAction::ObjectSelection;
-        emit callAction(TAction::SelectionMenu, TAction::ObjectSelection);
-    }
+    emit callAction(TAction::SelectionMenu, TAction::ObjectSelection);
 }
 
 void TupCanvas::wakeUpNodes()
 {
-    if (actionId != TAction::NodesEditor) {
-        actionId = TAction::NodesEditor;
-        emit callAction(TAction::SelectionMenu, TAction::NodesEditor);
-    }
+    emit callAction(TAction::SelectionMenu, TAction::NodesEditor);
 }
 
 void TupCanvas::wakeUpDeleteSelection()

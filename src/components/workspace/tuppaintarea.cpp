@@ -1530,10 +1530,10 @@ void TupPaintArea::keyPressEvent(QKeyEvent *event)
     }
 
     if (currentToolID == TAction::Polyline) {
-        if (event->key() == Qt::Key_X)
+        if (event->key() == Qt::Key_X) {
             emit closePolyLine();
-
-        return;
+            return;
+        }
     }
 
     TupPaintAreaBase::keyPressEvent(event);

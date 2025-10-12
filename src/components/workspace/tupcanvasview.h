@@ -69,6 +69,7 @@ class TUPITUBE_EXPORT TupCanvasView : public QGraphicsView
         void saveRequested();
         void undoRequested();
         void redoRequested();
+        void selectToolLaunched();
 
     private:
         void updateCenter(const QPoint point);

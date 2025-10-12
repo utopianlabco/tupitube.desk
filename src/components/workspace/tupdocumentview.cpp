@@ -978,7 +978,8 @@ void TupDocumentView::loadPlugin(int menu, int actionID)
             TAction::ActionId tool = action->actionId();
             if (tool != currentTool->toolId()) {
                 action->trigger();
-                fullScreen->updateCursor(action->cursor());
+                if (fullScreen)
+                    fullScreen->updateCursor(action->cursor());
             }
         }
     } else {
@@ -993,6 +994,7 @@ void TupDocumentView::loadPlugin(int menu, int actionID)
 void TupDocumentView::selectTool()
 {
     #ifdef TUP_DEBUG
+        qDebug() << "---";
         qDebug() << "[TupDocumentView::selectTool()]";
     #endif
 
@@ -1004,17 +1006,11 @@ void TupDocumentView::selectTool()
 
         if (currentTool) {
             if (toolId == currentTool->toolId()) {
+                #ifdef TUP_DEBUG
+                    qDebug() << "[TupDocumentView::selectTool()] - Warning: Tool is already loaded ->"
+                             << toolId;
+                #endif
                 return;
-
-//                if (toolName.compare(tr("Pencil")) == 0) {
-//                    qDebug() << "[TupDocumentView::selectTool()] - Enabling PencilMode...";
-//                    emit pencilActivated();
-//                } else {
-//                    #ifdef TUP_DEBUG
-//                        qDebug() << "[TupDocumentView::selectTool()] - Tool is already active ->" << toolName;
-//                    #endif
-//                    return;
-//                }
             }
 
             if (currentTool->toolId() == TAction::Pencil)
@@ -1975,8 +1971,8 @@ void TupDocumentView::showFullScreen()
         scaleFactor = static_cast<double>(screenHeight - 50) / static_cast<double>(projectSize.height());
 
     fullScreen = new TupCanvas(this, Qt::Window|Qt::FramelessWindowHint, paintArea->graphicsScene(),
-                                  paintArea->getCenterPoint(), QSize(screenWidth, screenHeight), project, scaleFactor,
-                               viewAngle, brushManager(), currentTool->toolId());
+                               paintArea->getCenterPoint(), QSize(screenWidth, screenHeight), project,
+                               scaleFactor, viewAngle, brushManager());
 
     fullScreen->updateCursor(currentTool->toolCursor());
 
@@ -1999,6 +1995,7 @@ void TupDocumentView::showFullScreen()
     connect(fullScreen, SIGNAL(saveRequested()), this, SIGNAL(saveRequested()));
     connect(fullScreen, SIGNAL(undoRequested()), this, SLOT(undo()));
     connect(fullScreen, SIGNAL(redoRequested()), this, SLOT(redo()));
+    connect(fullScreen, SIGNAL(selectToolLaunched()), this, SLOT(launchSelectionTool()));
 
     /* SQA: These connections don't work on Windows
     connect(this, &TupDocumentView::colorDialogRequested, fullScreen, &TupCanvas::openColorDialog);
@@ -2944,5 +2941,7 @@ void TupDocumentView::editProjectSize()
 void TupDocumentView::launchSelectionTool()
 {
     selectionAction->trigger();
+    if (fullScreenOn)
+        fullScreen->updateCursor(QCursor(Qt::ArrowCursor));
     currentTool->selectAll();
 }

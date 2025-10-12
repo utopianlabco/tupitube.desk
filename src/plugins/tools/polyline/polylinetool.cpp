@@ -46,6 +46,10 @@
 
 PolyLineTool::PolyLineTool()
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[PolyLineTool()]";
+    #endif
+
     configPanel = nullptr;
     nodeGroup = nullptr;
     pathItem = nullptr;
@@ -90,11 +94,9 @@ TAction * PolyLineTool::getAction(TAction::ActionId toolId)
 
 void PolyLineTool::init(TupGraphicsScene *gScene)
 {
-    /*
     #ifdef TUP_DEBUG
         qDebug() << "[PolyLineTool::init()]";
     #endif
-    */
 
     if (gScene) {
         scene = gScene;
@@ -161,6 +163,12 @@ void PolyLineTool::press(const TupInputDeviceInformation *input, TupBrushManager
 
 void PolyLineTool::move(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
 {
+    /*
+    #ifdef TUP_DEBUG
+        qDebug() << "[PolyLineTool::move()]";
+    #endif
+    */
+
     Q_UNUSED(brushManager)
     Q_UNUSED(gScene)
 
@@ -190,7 +198,8 @@ void PolyLineTool::move(const TupInputDeviceInformation *input, TupBrushManager 
         line2->setLine(QLineF(right, center));
 }
 
-void PolyLineTool::release(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
+void PolyLineTool::release(const TupInputDeviceInformation *input, TupBrushManager *brushManager,
+                           TupGraphicsScene *gScene)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[PolyLineTool::release()]";
@@ -333,13 +342,16 @@ void PolyLineTool::itemResponse(const TupItemResponse *response)
         case TupProjectRequest::EditNodes:
         {
             if (item && nodeGroup) {
-                if (qgraphicsitem_cast<QGraphicsPathItem *>(nodeGroup->parentItem()) == item) {                    
+                if (qgraphicsitem_cast<QGraphicsPathItem *>(nodeGroup->parentItem()) == item) {
                     nodeGroup->createNodes(pathItem);
                     nodeGroup->resizeNodes(realFactor);
 
                     nodeGroup->show();
                     nodeGroup->syncNodesFromParent();
                     nodeGroup->saveParentProperties();
+
+                    nodeGroup->expandAllNodes();
+
                     path = pathItem->path();
                 }
             } else {
@@ -357,7 +369,8 @@ void PolyLineTool::itemResponse(const TupItemResponse *response)
 void PolyLineTool::keyPressEvent(QKeyEvent *event)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[PolyLineTool::keyPressEvent()]";
+        qDebug() << "[PolyLineTool::keyPressEvent()] - event->key() ->" << event->key();
+        qDebug() << "[PolyLineTool::keyPressEvent()] - event->text() ->" << event->text();
     #endif
 
     if (event->key() == Qt::Key_F11 || event->key() == Qt::Key_Escape) {

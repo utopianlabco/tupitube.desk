@@ -1,0 +1,41 @@
+ffmpeg:
+  mandatory: true
+  headers: "/usr/include" 
+  lib-path: "-L/usr/lib"
+  lib-flags: "-lavdevice -lavformat -lavfilter -lavcodec -lavutil -lswresample -lswscale"
+
+libpng:
+  mandatory: true
+  headers: "/usr/include"
+  lib-path: "-L/usr/lib"
+  lib-flags: "-lpng"
+
+libsndfile:
+  mandatory: true
+  headers: "/usr/include"
+  lib-path: "-L/usr/lib"
+  lib-flags: "-lsndfile"
+
+opengl:
+  mandatory: false 
+  headers: ""
+  lib-path: ""
+  lib-flags: ""
+
+multimedia:
+  mandatory: true
+  headers: ""
+  lib-path: ""
+  lib-flags: ""
+
+quazip:
+  mandatory: true
+  headers: "/usr/include/quazip"
+  lib-path: "-L/usr/lib"
+  lib-flags: "-lquazip"
+
+zlib:
+  mandatory: true
+  headers: "/usr/include"
+  lib-path: "-L/usr/lib"
+  lib-flags: "-lz"

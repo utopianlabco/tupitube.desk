@@ -77,7 +77,8 @@ unix:!mac {
     copyright.commands = cp -v man/copyright $(INSTALL_ROOT)/share/doc/tupitube
     copyright.path = /tupitube/
 
-    target.path = /bin/
+    target.path = /lib/
+    target.commands = cp -v ../../bin/tupitube.bin $(INSTALL_ROOT)/lib; chmod 755 $(INSTALL_ROOT)/lib/tupitube.bin
     TARGET = ../../bin/tupitube.bin
 }
 

@@ -82,21 +82,31 @@ module RQonf
         "src/mypaint/qtmypaint/qtmypaint.pro",
         "src/mypaint/raster/brushes/brushes.pro",
         "src/mypaint/raster/main/main.pro"
-      ]
+      ] 
 
       newLine = "DEBIAN_OS = true\n"
 
       filePaths.each do |filePath|
-        tempFilePath = "#{filePath}.tmp"
-    
-        File.open(tempFilePath, "w") do |tempFile|
-          tempFile.write(newLine)
-          File.foreach(filePath) do |line|
-            tempFile.write(line)
-          end
+        # Skip if the file doesn't exist to prevent errors
+        unless File.exist?(filePath)
+          puts "File not found, skipping: #{filePath}"
+          next
         end
-
-        File.rename(tempFilePath, filePath)
+    
+        # Read the first line of the file to check for the flag
+        firstLine = File.open(filePath) { |f| f.readline rescue nil }
+    
+        if firstLine.nil? || firstLine.strip != newLine.strip
+          # Proceed with modification only if the file is empty or the flag is not present
+          tempFilePath = "#{filePath}.tmp"
+          File.open(tempFilePath, "w") do |tempFile|
+            tempFile.write(newLine)
+            File.foreach(filePath) do |line|
+              tempFile.write(line)
+            end
+          end
+          File.rename(tempFilePath, filePath)
+        end
       end
     end
 
@@ -294,7 +304,7 @@ module RQonf
       newfile += "export TUPITUBE_SHARE=\"" + launcher_sharedir + "\"\n"
       newfile += "export TUPITUBE_LIB=\"" + launcher_libdir + ":" + launcher_rasterdir + "\"\n"
       newfile += "export TUPITUBE_PLUGIN=\"" + launcher_libdir + "/plugins\"\n"
-      newfile += "export TUPITUBE_BIN=\"" + launcher_bindir + "\"\n\n"
+      newfile += "export TUPITUBE_BIN=\"" + launcher_libdir + "\"\n\n"
 
       path = ""
       unless @configureOptions['with-ffmpeg'].nil? then

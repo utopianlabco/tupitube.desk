@@ -1,3 +1,4 @@
-usr/share/mime
-usr/share/pixmaps
-usr/share/tupitube
+usr/share/applications/tupitube.desktop
+usr/share/metainfo/tupitube.appdata.xml
+usr/share/mime/packages/tupitube.xml
+usr/share/pixmaps/tupitube.desk.png

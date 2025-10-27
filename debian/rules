@@ -20,7 +20,7 @@ override_dh_auto_configure:
 	ruby configure.rb \
             --without-debug \
             --prefix=/usr \
-            --bindir=/usr/lib/tupitube/bin \
+            --bindir=/usr/bin \
             --libdir=/usr/lib/tupitube \
             --sharedir=/usr/share/tupitube \
             --includedir=/usr/include/tupitube

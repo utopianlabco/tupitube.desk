@@ -42,5 +42,4 @@ Depends: ${misc:Depends},
 Replaces: tupi,
 Breaks: tupi,
 Description: Data files for TupiTube (2D Animation Tool for Schools)
- .
  This package contains TupiTube's arch-independent files.

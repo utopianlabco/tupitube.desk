@@ -335,14 +335,23 @@ module RQonf
       }
 
       newfile = "[Desktop Entry]\n"
-      # newfile += "Encoding=UTF-8\n"
-
+      newfile += "Version=1.0\n"
       newfile += "Name=TupiTube Desk\n"
       newfile += "GenericName=2D Animation Tool\n"
       newfile += "GenericName[es]=Herramienta de Animación 2D\n"
       newfile += "GenericName[pt]=Ferramenta de Animação 2D\n"
       newfile += "GenericName[ru]=Инструмент 2D-анимации\n"
-      newfile += "Exec=" + launcher_bindir + "/tupitube.desk %f\n"
+
+      # Detect Linux distribution
+      distro = RQonf::DetectDistro.getLinuxDistroID
+
+      # Debian-specific rule: Exec must NOT contain an absolute path
+      if distro == "debian"
+        newfile += "Exec=tupitube.desk %f\n"
+      else
+        newfile += "Exec=#{launcher_bindir}/tupitube.desk %f\n"
+      end
+
       newfile += "Icon=tupitube.desk\n"
       newfile += "Type=Application\n"
       newfile += "MimeType=application/tup;\n"

@@ -39,9 +39,19 @@ override_dh_fixperms:
 
 override_dh_install:
 	dh_install
+	ln -sf tupitube.desk debian/tupitube/usr/bin/tupitube
+
+	# Remove incorrect executable permissions from data files
+	find debian/tupitube-data/usr/share/tupitube/data -type f -exec chmod 644 {} \;
+
+	# Fix incorrect executable permissions in theme QSS files
+	find debian/tupitube-data/usr/share/tupitube/themes -type f -name "*.qss" -exec chmod 644 {} \;
+
 	# De-duplication (http://wiki.debian.org/dedup.debian.net):
 	rdfind -outputname /dev/null -makesymlinks true debian/tupitube-data
 	symlinks -rsc debian/tupitube-data
+
+	find debian/tupitube-data -name '*.gz' -exec gzip -n -f {} \;
 
 PDIR     := $(CURDIR)/debian/tupitube
 override_dh_shlibdeps:
@@ -49,3 +59,24 @@ override_dh_shlibdeps:
 
 override_dh_makeshlibs:
 	dh_makeshlibs --noscripts
+
+override_dh_installman:
+	dh_installman
+	ln -sf tupitube.1 debian/tupitube/usr/share/man/man1/tupitube.desk.1
+
+# Add a specific target to generate control files manually and run the rest of the process
+binary-arch: binary-indep binary-common
+binary-indep:
+	# Clean any existing control files created by previous steps (if any)
+	rm -rf debian/tupitube/DEBIAN/control debian/tupitube-data/DEBIAN/control debian/.debhelper/tupitube/dbgsym-root/DEBIAN/control
+
+	# Manually run dpkg-gencontrol for the main package
+	dpkg-gencontrol -ptupitube -ldebian/changelog -cdebian/control -Pdebian/tupitube
+
+	# Manually run dpkg-gencontrol for the data package
+	dpkg-gencontrol -ptupitube-data -ldebian/tupitube-data.changelog -cdebian/control -Pdebian/tupitube-data
+
+	# Let dh_installdeb and others run for both packages
+	dh_installdeb
+	dh_shlibdeps
+	dh_strip

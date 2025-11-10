@@ -26,6 +26,8 @@ unix {
     INCLUDEPATH += $$LIBTUPI_DIR
     LIBS += -L$$LIBTUPI_DIR -ltupi
 
+    LIBS += -lc # Debian requirement
+
     !include(../../../global_variables.pri) {
         error("import.pro: Run ./configure first!")
     }

@@ -39,7 +39,7 @@ override_dh_fixperms:
 
 override_dh_install:
 	dh_install
-	ln -sf tupitube.desk debian/tupitube/usr/bin/tupitube
+	# ln -sf tupitube.desk debian/tupitube/usr/bin/tupitube
 
 	# Remove incorrect executable permissions from data files
 	find debian/tupitube-data/usr/share/tupitube/data -type f -exec chmod 644 {} \;

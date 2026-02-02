@@ -640,8 +640,9 @@ QString TupPathItem::changeNodeTypeFromPath(int index)
     return pathStr;
 }
 
-void TupPathItem::generatePathPoints(QPainterPath route, int tolerance)
+void TupPathItem::generatePathPoints(QPainterPath route, int toleranceValue)
 {
+    double tolerance = static_cast<double>(toleranceValue);
     #ifdef TUP_DEBUG
         qDebug() << "[TupPathItem::generatePathPoints()] - path string ->" << pathToString();
         qDebug() << "[TupPathItem::generatePathPoints()] - tolerance ->" << tolerance;
@@ -665,10 +666,16 @@ void TupPathItem::generatePathPoints(QPainterPath route, int tolerance)
             double segment = sqrt(pow(x, 2) + pow(y, 2));
             double step = (segment/(tolerance/2)) - 1;
 
-            double stepX = x/step;
-            double stepY = y/step;
-            for(int j=1; j<step; j++)
-                pathPoints << (dots.at(i) + QPointF(stepX*j, stepY*j));
+            if (!std::isnan(step)) {
+                double stepX = x/step;
+                double stepY = y/step;
+                for(int j=1; j<step; j++)
+                    pathPoints << (dots.at(i) + QPointF(stepX*j, stepY*j));
+            } else {
+                #ifdef TUP_DEBUG
+                    qDebug() << "[TupPathItem::generatePathPoints()] - Warning: Division by zero (step variable)";
+                #endif
+            }
         }
 
         pathPoints << dots.at(i+1);

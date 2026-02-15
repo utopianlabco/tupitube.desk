@@ -261,7 +261,7 @@ QString TConfig::currentGroup()
 
 QStringList TConfig::languages()
 {
-    return {"zh_CN", "zh_TW", "en", "fr", "pt", "es", "ru", "uk"};
+    return {"en", "es", "fr", "pl", "pt", "ru", "uk", "zh_CN", "zh_TW"};
 }
 
 QStringList TConfig::timeRanges()

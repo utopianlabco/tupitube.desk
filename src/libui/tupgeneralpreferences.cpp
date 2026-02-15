@@ -147,17 +147,17 @@ QWidget * TupGeneralPreferences::generalTab()
     saveLayout->addStretch();
 
     langSupport = TCONFIG->languages();
-    // langSupport << "zh_CN" << "zh_TW" << "en" << "fr" << "pt" << "es";
     QLabel *langLabel = new QLabel(tr("Language:"));
     langCombo = new QComboBox();
-    langCombo->addItem("简体中文"); // Simplified Chinese
-    langCombo->addItem("繁體中文"); // Traditional Chinese
     langCombo->addItem("English");
-    langCombo->addItem("Français");
-    langCombo->addItem("Português");
     langCombo->addItem("Español");
+    langCombo->addItem("Français");
+    langCombo->addItem("Polski");
+    langCombo->addItem("Português");
     langCombo->addItem("русский");
     langCombo->addItem("українська");
+    langCombo->addItem("简体中文"); // Simplified Chinese
+    langCombo->addItem("繁體中文"); // Traditional Chinese
 
     langCombo->setCurrentIndex(getLangIndex());
     connect(langCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(updateAppLang(int)));

@@ -2,11 +2,25 @@
 <Wix
 	xmlns="http://schemas.microsoft.com/wix/2006/wi"
 	xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-	<Product Id="C9C7F944-A661-4915-88C8-E542D2EDEF42" Name="TupiTube Desk" Language="1033" Version="0.2.23" Manufacturer="Utopian Lab" UpgradeCode="DFE39486-F97D-4BA2-A83F-7DCBF085C4E4">
-		<Package Description="TupiTube Desk" Comments="2D Animation Tool" InstallerVersion="200" Compressed="yes" Platform="x64" />
+	<Product Id="*" Name="TupiTube Desk" Language="1033" Version="0.2.23" Manufacturer="Utopian Lab LLC" UpgradeCode="DFE39486-F97D-4BA2-A83F-7DCBF085C4E4">
+		<Package Description="TupiTube Desk" Comments="2D Animation Tool" InstallerVersion="200" Compressed="yes" Platform="x64"  InstallScope="perMachine"/>
 		<Media Id="1" Cabinet="simple.cab" EmbedCab="yes" />
-		<Directory Id="TARGETDIR" Name="SourceDir">
-			<Directory Id="ProgramFiles64Folder" Name="PFiles">
+
+<!-- Upgrade handling (WiX 3.0 compatible) -->
+<Upgrade Id="DFE39486-F97D-4BA2-A83F-7DCBF085C4E4">
+	<!-- Detect if a newer version is already installed -->
+	<UpgradeVersion Property="NEWERVERSIONFOUND" Minimum="0.2.23" IncludeMinimum="no" OnlyDetect="yes" />
+	<!-- Find older versions to upgrade -->
+	<UpgradeVersion Property="PREVIOUSVERSIONFOUND" Maximum="0.2.23" IncludeMaximum="no" />
+</Upgrade>
+
+<Condition Message="A newer version of [ProductName] is already installed.">NOT NEWERVERSIONFOUND</Condition>
+
+<InstallExecuteSequence>
+	<RemoveExistingProducts After="InstallInitialize">PREVIOUSVERSIONFOUND</RemoveExistingProducts>
+</InstallExecuteSequence>
+<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFiles64Folder">
 				<Directory Id="TUPITUBE" Name="TupiTube">
 					<Component Id="AVCODEC_61.DLL" DiskId="1" Guid="791746CB-2F25-498A-8DED-94BDFD8143AF" Win64="yes">
 						<File Id="AVCODEC_61.DLL" Name="avcodec-61.dll" Source="avcodec-61.dll" />
@@ -168,15 +182,15 @@
 						<File Id="TUPITIMELINE.DLL" Name="tupitimeline.dll" Source="tupitimeline.dll" />
 					</Component>
 					<Component Id="TUPITUBE.DESK.EXE" DiskId="1" Guid="999A2156-39B9-47FD-9731-8E4039A420EE" Win64="yes">
-						<File Id="TUPITUBE.DESK.EXE" Name="tupitube.desk.exe" Source="tupitube.desk.exe">
+						<File Id="TUPITUBE.DESK.EXE" Name="tupitube.desk.exe" Source="tupitube.desk.exe" KeyPath="yes">
 							<Shortcut Id="desktopShortcut" Directory="DesktopFolder" Name="TupiTube Desk" Advertise="yes" Icon="DesktopIcon.exe" IconIndex="0" />
 							<Shortcut Id="ExeShortcut" Directory="ProgramMenuDir" Name="TupiTube Desk" Advertise="yes" Icon="StartMenuIcon.exe" IconIndex="0" />
 						</File>
 
-						<Environment Id="TUPITUBE_HOME" Name="TUPITUBE_HOME" Action="set" Permanent="yes" System="yes" Part="all" Value="C:\Program Files\TupiTube" />
-						<Environment Id="TUPITUBE_BIN" Name="TUPITUBE_BIN" Action="set" Permanent="yes" System="yes" Part="all" Value="C:\Program Files\TupiTube" />
-						<Environment Id="TUPITUBE_SHARE" Name="TUPITUBE_SHARE" Action="set" Permanent="yes" System="yes" Part="all" Value="C:\Program Files\TupiTube\data" />
-						<Environment Id="TUPITUBE_PLUGIN" Name="TUPITUBE_PLUGIN" Action="set" Permanent="yes" System="yes" Part="all" Value="C:\Program Files\TupiTube\plugins" />
+						<Environment Id="TUPITUBE_HOME" Name="TUPITUBE_HOME" Action="set" Permanent="yes" System="yes" Part="all" Value="[TUPITUBE]" />
+						<Environment Id="TUPITUBE_BIN" Name="TUPITUBE_BIN" Action="set" Permanent="yes" System="yes" Part="all" Value="[TUPITUBE]" />
+						<Environment Id="TUPITUBE_SHARE" Name="TUPITUBE_SHARE" Action="set" Permanent="yes" System="yes" Part="all" Value="[TUPITUBE]data" />
+						<Environment Id="TUPITUBE_PLUGIN" Name="TUPITUBE_PLUGIN" Action="set" Permanent="yes" System="yes" Part="all" Value="[TUPITUBE]plugins" />
 
 						<!-- Capabilities keys for Vista/7 "Set Program Access and Defaults" -->
 						<RegistryValue Root="HKLM" Key="SOFTWARE\MyApp\Capabilities" Name="ApplicationDescription" Value="2D Animation Tool" Type="string" />
@@ -3050,9 +3064,6 @@
 									<Component Id="FX_BLENDER_PREV.PNG" DiskId="1" Guid="31CC7F8C-5DEB-491F-8B9C-CC93FA8256A6" Win64="yes">
 										<File Id="FX_BLENDER_PREV.PNG" Name="FX_blender_prev.png" Source="data\themes\raster\brushes\FX_blender_prev.png" />
 									</Component>
-									<Component Id="LABEL_BRUSH_MYPAINT.SH" DiskId="1" Guid="16CF1B82-BA1A-4CF9-8602-A4C2B21DDB11" Win64="yes">
-										<File Id="LABEL_BRUSH_MYPAINT.SH" Name="label-brush-mypaint.sh" Source="data\themes\raster\brushes\label-brush-mypaint.sh" />
-									</Component>
 									<Component Id="PREV_TEMPLATE.XCF.GZ" DiskId="1" Guid="86DD3B47-161F-4980-B6AD-552857D24F2C" Win64="yes">
 										<File Id="PREV_TEMPLATE.XCF.GZ" Name="prev-template.xcf.gz" Source="data\themes\raster\brushes\prev-template.xcf.gz" />
 									</Component>
@@ -4035,6 +4046,9 @@
 							<Component Id="TUPI_FR.QM" DiskId="1" Guid="7AC31668-6FF3-40D4-8C2C-1D52C2768980" Win64="yes">
 								<File Id="TUPI_FR.QM" Name="tupi_fr.qm" Source="data\translations\tupi_fr.qm" />
 							</Component>
+							<Component Id="TUPI_PL.QM" DiskId="1" Guid="431F3964-6123-416D-A909-9ADED9AC2B5C" Win64="yes">
+								<File Id="TUPI_PL.QM" Name="tupi_pl.qm" Source="data\translations\tupi_pl.qm" />
+							</Component>
 							<Component Id="TUPI_PT.QM" DiskId="1" Guid="431F3964-6123-416D-A909-9ADED9AC2B5B" Win64="yes">
 								<File Id="TUPI_PT.QM" Name="tupi_pt.qm" Source="data\translations\tupi_pt.qm" />
 							</Component>
@@ -4213,7 +4227,7 @@
 				<Directory Id="ProgramMenuDir" Name="TupiTube">
 					<Component Id="StartMenuShortcuts" Guid="DE1518EF-EDC5-434F-8434-8114CC42B93A" Win64="yes">
 						<RemoveFolder Id="ProgramMenuDir" On="uninstall" />
-						<RegistryValue Root="HKCU" Key="Software\[Manufacturer]\[ProductName]" Type="string" Value="" />
+						<RegistryValue Root="HKCU" Key="Software\[Manufacturer]\[ProductName]" Type="string" Value="" KeyPath="yes" />
 						<Shortcut Id="UninstallProduct" Name="Uninstall TupiTube" Description="Uninstalls the application" Target="[System64Folder]msiexec.exe" Arguments="/x [ProductCode]" />
 						<util:InternetShortcut Id="WebsiteShortcut" Name="TupiTube's Social Network" Target="https://tupitube.com" />
 					</Component>
@@ -5205,7 +5219,6 @@
 			<ComponentRef Id="WOMAN_MOUTH.SVG_1" />
 			<ComponentRef Id="BRUSHES.CONF" />
 			<ComponentRef Id="FX_BLENDER_PREV.PNG" />
-			<ComponentRef Id="LABEL_BRUSH_MYPAINT.SH" />
 			<ComponentRef Id="PREV_TEMPLATE.XCF.GZ" />
 			<ComponentRef Id="BLEND_PAINT.MYB" />
 			<ComponentRef Id="BLEND_PAINT_PREV.PNG" />
@@ -5528,6 +5541,7 @@
 			<ComponentRef Id="CURSOR_PENCIL.PNG" />
 			<ComponentRef Id="TUPI_ES.QM" />
 			<ComponentRef Id="TUPI_FR.QM" />
+			<ComponentRef Id="TUPI_PL.QM" />
 			<ComponentRef Id="TUPI_PT.QM" />
 			<ComponentRef Id="TUPI_RU.QM" />
 			<ComponentRef Id="TUPI_UK.QM" />

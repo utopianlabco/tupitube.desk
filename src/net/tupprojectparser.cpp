@@ -34,45 +34,39 @@
 
 #include "tupprojectparser.h"
 
-TupProjectParser::TupProjectParser(): TupXmlParserBase()
+TupProjectParser::TupProjectParser() : QXmlStreamReader()
 {
-    // empty
+}
+
+TupProjectParser::TupProjectParser(const QString &xml) : QXmlStreamReader(xml)
+{
 }
 
 TupProjectParser::~TupProjectParser()
 {
-    // empty
 }
 
-bool TupProjectParser::startTag(const QString &tag, const QXmlAttributes &atts)
+bool TupProjectParser::parse()
 {
-    Q_UNUSED(atts);
-
-    if (root() == "server_project") {
-        if (tag == "users")
-            setReadText(true);
-        if (tag == "data")
-            setReadText(true);
-
-        return true;
+    while (!atEnd()) {
+        readNext();
+        if (isStartElement()) {
+            QString tag = name().toString();
+            if (tag == "users")
+                users = readElementText().simplified().split(",");
+            else if (tag == "data")
+                dataBox = QByteArray::fromBase64(readElementText().toLocal8Bit());
+        }
     }
 
-    return false;
-}
+    if (hasError()) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupProjectParser::parse()] - Fatal Error!";
+        #endif
+        return false;
+    }
 
-bool TupProjectParser::endTag(const QString &tag)
-{
-    Q_UNUSED(tag);
     return true;
-}
-
-void TupProjectParser::text(const QString &text)
-{
-    if (currentTag() == "users")
-        users = text.split(",");
-
-    if (currentTag() == "data")
-        dataBox = QByteArray::fromBase64(text.toLocal8Bit());
 }
 
 QByteArray TupProjectParser::data()

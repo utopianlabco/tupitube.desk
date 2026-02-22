@@ -34,7 +34,11 @@
 
 #include "tupackparser.h"
 
-TupAckParser::TupAckParser() : TupXmlParserBase()
+TupAckParser::TupAckParser() : QXmlStreamReader()
+{
+}
+
+TupAckParser::TupAckParser(const QString &xml) : QXmlStreamReader(xml)
 {
 }
 
@@ -42,27 +46,25 @@ TupAckParser::~TupAckParser()
 {
 }
 
-bool TupAckParser::startTag(const QString &tag, const QXmlAttributes &atts)
+bool TupAckParser::parse()
 {
-    Q_UNUSED(atts);
-
-    if (root() == "server_ack") {
-        if (tag == "sign")
-            setReadText(true);
+    while (!atEnd()) {
+        readNext();
+        if (isStartElement()) {
+            QString tag = name().toString();
+            if (tag == "sign")
+                signCode = readElementText().simplified();
+        }
     }
-    
-    return true;
-}
 
-bool TupAckParser::endTag(const QString &)
-{
-    return true;
-}
+    if (hasError()) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupAckParser::parse()] - Fatal Error!";
+        #endif
+        return false;
+    }
 
-void TupAckParser::text(const QString &msg)
-{
-    if (currentTag() == "sign")
-        signCode = msg;
+    return true;
 }
 
 QString TupAckParser::sign() const

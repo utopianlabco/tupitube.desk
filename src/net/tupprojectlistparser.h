@@ -36,9 +36,10 @@
 #define TUPPROJECTLISTPARSER_H
 
 #include "tglobal.h"
-#include "tupxmlparserbase.h"
 
-class TUPITUBE_EXPORT TupProjectListParser : public TupXmlParserBase
+#include <QXmlStreamReader>
+
+class TUPITUBE_EXPORT TupProjectListParser : public QXmlStreamReader
 {
     public:
         struct ProjectInfo
@@ -49,19 +50,17 @@ class TUPITUBE_EXPORT TupProjectListParser : public TupXmlParserBase
             QString date;
             QString file;
         };
-        
+
         TupProjectListParser();
-        virtual ~TupProjectListParser();
-        
-        virtual bool startTag(const QString &tag, const QXmlAttributes &atts);
-        virtual bool endTag(const QString &tag);
-        virtual void text(const QString &text);
-        
+        TupProjectListParser(const QString &xml);
+        ~TupProjectListParser();
+
+        bool parse();
         QList<ProjectInfo> works();
         QList<ProjectInfo> contributions();
         int workSize();
         int contributionSize();
-        
+
     private:
         QList<TupProjectListParser::ProjectInfo> worksList;
         QList<TupProjectListParser::ProjectInfo> contribList;

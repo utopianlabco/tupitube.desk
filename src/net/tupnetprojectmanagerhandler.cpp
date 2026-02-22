@@ -301,16 +301,16 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                }
     } else if (root == "server_ack") {
                // Checking the package
-               TupAckParser parser;
-               if (parser.parse(package)) {
+               TupAckParser parser(package);
+               if (parser.parse()) {
                    sign = parser.sign();
                    // TOsd::self()->display(tr("Information"), tr("Login successful!")); 
                    // TOsd::self()->display(tr("Information"), parser.motd());
                    emit authenticationSuccessful(); 
                }
     } else if (root == "server_project") {
-               TupProjectParser parser;
-               if (parser.parse(package)) {
+               TupProjectParser parser(package);
+               if (parser.parse()) {
                    QTemporaryFile file;
                    if (file.open()) {
                        file.write(parser.data());
@@ -336,8 +336,8 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                    }
                }
     } else if (root == "server_projectlist") {
-               TupProjectListParser parser;
-               if (parser.parse(package)) {
+               TupProjectListParser parser(package);
+               if (parser.parse()) {
                    int works = parser.workSize();
                    int contributions = parser.contributionSize();
                    if ((works + contributions) > 0) {
@@ -381,8 +381,8 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                    }
                }
     } else if (root == "communication_notification") {
-               TupNotificationParser parser;
-               if (parser.parse(package)) {
+               TupNotificationParser parser(package);
+               if (parser.parse()) {
                    int code = parser.notification().code;
 
                    switch(code) {
@@ -411,13 +411,13 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                    TOsd::self()->display(level, parser.notification().message);
                }
     } else if (root == "communication_chat") {
-               TupCommunicationParser parser;
-               if (parser.parse(package)) {
+               TupCommunicationParser parser(package);
+               if (parser.parse()) {
                    chat->addMessage(parser.login(), parser.message());
                }
     } else if (root == "communication_notice") {
-               TupCommunicationParser parser;
-               if (parser.parse(package)) {
+               TupCommunicationParser parser(package);
+               if (parser.parse()) {
                    QString login = parser.login();
                    int state = parser.state();
 
@@ -431,8 +431,8 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                    notices->addMessage(message);
                } 
     } else if (root == "communication_wall") {
-               TupCommunicationParser parser;
-               if (parser.parse(package)) {
+               TupCommunicationParser parser(package);
+               if (parser.parse()) {
                    QString message = QObject::tr("Wall from") + ": "+ parser.login() + "\n" + parser.message();
                    TOsd::self()->display(TOsd::Info, message);
                }

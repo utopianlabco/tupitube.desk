@@ -34,38 +34,52 @@
 
 #include "tupcommunicationparser.h"
 
-TupCommunicationParser::TupCommunicationParser(): TupXmlParserBase()
+TupCommunicationParser::TupCommunicationParser() : QXmlStreamReader()
 {
+    stateValue = 0;
+}
+
+TupCommunicationParser::TupCommunicationParser(const QString &xml) : QXmlStreamReader(xml)
+{
+    stateValue = 0;
 }
 
 TupCommunicationParser::~TupCommunicationParser()
 {
 }
 
-bool TupCommunicationParser::startTag(const QString &tag, const QXmlAttributes &atts)
+bool TupCommunicationParser::parse()
 {
-    if (root() == "communication_chat" || root() == "communication_wall") {
-        if (tag == "message") {
-            messageStr = atts.value("text");
-            loginStr = atts.value("from");
-        }
-    } else if (root() == "communication_notice") {
-        if (tag == "notice") {
-            loginStr = atts.value("login");
-            stateValue = atts.value("state").toInt();
+    QString rootTag;
+    while (!atEnd()) {
+        readNext();
+        if (isStartElement()) {
+            QString tag = name().toString();
+            if (rootTag.isEmpty())
+                rootTag = tag;
+
+            if (rootTag == "communication_chat" || rootTag == "communication_wall") {
+                if (tag == "message") {
+                    messageStr = attributes().value("text").toString();
+                    loginStr = attributes().value("from").toString();
+                }
+            } else if (rootTag == "communication_notice") {
+                if (tag == "notice") {
+                    loginStr = attributes().value("login").toString();
+                    stateValue = attributes().value("state").toInt();
+                }
+            }
         }
     }
-    
-    return true;
-}
 
-bool TupCommunicationParser::endTag(const QString &)
-{
-    return true;
-}
+    if (hasError()) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupCommunicationParser::parse()] - Fatal Error!";
+        #endif
+        return false;
+    }
 
-void TupCommunicationParser::text(const QString &)
-{
+    return true;
 }
 
 QString TupCommunicationParser::message() const

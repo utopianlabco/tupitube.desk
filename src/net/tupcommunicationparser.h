@@ -36,23 +36,23 @@
 #define TUPCOMMUNICATIONPARSER_H
 
 #include "tglobal.h"
-#include "tupxmlparserbase.h"
 
-class TUPITUBE_EXPORT TupCommunicationParser : public TupXmlParserBase
+#include <QXmlStreamReader>
+
+class TUPITUBE_EXPORT TupCommunicationParser : public QXmlStreamReader
 {
     public:
         TupCommunicationParser();
+        TupCommunicationParser(const QString &xml);
         ~TupCommunicationParser();
 
-        virtual bool startTag(const QString &tag, const QXmlAttributes &atts);
-        virtual bool endTag(const QString &tag);
-        virtual void text(const QString &text);
-        
+        bool parse();
+
     public:
         QString message() const;
         QString login() const;
         int state(); 
-        
+
     private:
         QString messageStr;
         QString loginStr;

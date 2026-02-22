@@ -36,20 +36,20 @@
 #define TUPPROJECTPARSER_H
 
 #include "tglobal.h"
-#include "tupxmlparserbase.h"
 
-class TUPITUBE_EXPORT TupProjectParser : public TupXmlParserBase
+#include <QXmlStreamReader>
+
+class TUPITUBE_EXPORT TupProjectParser : public QXmlStreamReader
 {
     public:
         TupProjectParser();
-        virtual ~TupProjectParser();
-        virtual bool startTag(const QString &tag, const QXmlAttributes &atts);
-        virtual bool endTag(const QString &tag);
-        virtual void text(const QString &text);
-       
+        TupProjectParser(const QString &xml);
+        ~TupProjectParser();
+
+        bool parse();
         QByteArray data();
         QStringList partners() const;
-     
+
     private:
         QByteArray dataBox;
         QStringList users;

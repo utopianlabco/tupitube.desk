@@ -34,7 +34,11 @@
 
 #include "tupnotificationparser.h"
 
-TupNotificationParser::TupNotificationParser(): TupXmlParserBase()
+TupNotificationParser::TupNotificationParser() : QXmlStreamReader()
+{
+}
+
+TupNotificationParser::TupNotificationParser(const QString &xml) : QXmlStreamReader(xml)
 {
 }
 
@@ -42,29 +46,28 @@ TupNotificationParser::~TupNotificationParser()
 {
 }
 
-bool TupNotificationParser::startTag(const QString &tag, const QXmlAttributes &atts)
+bool TupNotificationParser::parse()
 {
-    if (root() == "communication_notification") {
-        if (tag == "message") {
-            package.level = atts.value("level").toInt();
-            package.code = atts.value("code").toInt();
-            setReadText(true);
+    while (!atEnd()) {
+        readNext();
+        if (isStartElement()) {
+            QString tag = name().toString();
+            if (tag == "message") {
+                package.level = attributes().value("level").toInt();
+                package.code = attributes().value("code").toInt();
+                package.message = readElementText().simplified();
+            }
         }
     }
 
-    return true;
-}
+    if (hasError()) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupNotificationParser::parse()] - Fatal Error!";
+        #endif
+        return false;
+    }
 
-bool TupNotificationParser::endTag(const QString &tag)
-{
-    Q_UNUSED(tag);
     return true;
-}
-
-void TupNotificationParser::text(const QString &text)
-{
-    if (currentTag() == "message")
-        package.message = text;
 }
 
 TupNotificationParser::Notification TupNotificationParser::notification()

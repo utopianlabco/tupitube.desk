@@ -32,16 +32,16 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#ifndef TUPERRORPARSER_H
-#define TUPERRORPARSER_H
+#ifndef TUPNOTIFICATIONPARSER_H
+#define TUPNOTIFICATIONPARSER_H
 
 #include "tglobal.h"
-#include "tupxmlparserbase.h"
 
-class TUPITUBE_EXPORT TupNotificationParser : public TupXmlParserBase
+#include <QXmlStreamReader>
+
+class TUPITUBE_EXPORT TupNotificationParser : public QXmlStreamReader
 {
     public:
-        
         struct Notification 
         {
             int level;
@@ -50,14 +50,11 @@ class TUPITUBE_EXPORT TupNotificationParser : public TupXmlParserBase
         };
 
         TupNotificationParser();
+        TupNotificationParser(const QString &xml);
         ~TupNotificationParser();
-        
-        virtual bool startTag(const QString &tag, const QXmlAttributes &atts);
-        virtual bool endTag(const QString &tag);
-        virtual void text(const QString &text);
-        
+
+        bool parse();
         TupNotificationParser::Notification notification();
-        int code();
     
     private:
         TupNotificationParser::Notification package;

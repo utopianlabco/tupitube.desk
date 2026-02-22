@@ -34,50 +34,55 @@
 
 #include "tupprojectlistparser.h"
 
-TupProjectListParser::TupProjectListParser() : TupXmlParserBase()
+TupProjectListParser::TupProjectListParser() : QXmlStreamReader()
 {
+    pivot = false;
+}
+
+TupProjectListParser::TupProjectListParser(const QString &xml) : QXmlStreamReader(xml)
+{
+    pivot = false;
 }
 
 TupProjectListParser::~TupProjectListParser()
 {
 }
 
-bool TupProjectListParser::startTag(const QString &tag, const QXmlAttributes &atts)
+bool TupProjectListParser::parse()
 {
-    if (root() == "server_projectlist") {
-        if (tag == "works") {
-            pivot = false;
-        } else if (tag == "contributions") {
-            pivot = true;
-        } else if (tag == "project") {
-            ProjectInfo info;
-            info.file = atts.value("filename");
-            info.name = atts.value("name");
-            info.description = atts.value("description");
-            info.date = atts.value("date");
+    while (!atEnd()) {
+        readNext();
+        if (isStartElement()) {
+            QString tag = name().toString();
+            if (tag == "works") {
+                pivot = false;
+            } else if (tag == "contributions") {
+                pivot = true;
+            } else if (tag == "project") {
+                ProjectInfo info;
+                info.file = attributes().value("filename").toString();
+                info.name = attributes().value("name").toString();
+                info.description = attributes().value("description").toString();
+                info.date = attributes().value("date").toString();
 
-            if (pivot) {
-                info.author = atts.value("author");
-                contribList << info;
-            } else {
-                worksList << info;
+                if (pivot) {
+                    info.author = attributes().value("author").toString();
+                    contribList << info;
+                } else {
+                    worksList << info;
+                }
             }
         }
     }
 
+    if (hasError()) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupProjectListParser::parse()] - Fatal Error!";
+        #endif
+        return false;
+    }
+
     return true;
-}
-
-bool TupProjectListParser::endTag(const QString &tag)
-{
-    Q_UNUSED(tag);
-
-    return true;
-}
-
-void TupProjectListParser::text(const QString &textStr)
-{
-    Q_UNUSED(textStr);
 }
 
 QList<TupProjectListParser::ProjectInfo> TupProjectListParser::works()

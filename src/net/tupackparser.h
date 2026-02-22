@@ -36,21 +36,19 @@
 #define TUPACKPARSER_H
 
 #include "tglobal.h"
-#include "tupxmlparserbase.h"
 
-class TUPITUBE_EXPORT TupAckParser : public TupXmlParserBase
+#include <QXmlStreamReader>
+
+class TUPITUBE_EXPORT TupAckParser : public QXmlStreamReader
 {
     public:
         TupAckParser();
+        TupAckParser(const QString &xml);
         ~TupAckParser();
-        
-        virtual bool startTag(const QString &tag, const QXmlAttributes &atts);
-        virtual bool endTag(const QString &tag);
-        
-        virtual void text(const QString &msg);
-        
+
+        bool parse();
         QString sign() const;
-        
+
     private:
         QString signCode;
 };

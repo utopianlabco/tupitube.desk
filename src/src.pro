@@ -5,7 +5,7 @@ SUBDIRS += themes \
            libbase \
            libcolor \
            mypaint \
-           # net \
+           net \
            libui \
            components \
            plugins \

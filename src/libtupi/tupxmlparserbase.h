@@ -1,7 +1,7 @@
 /***************************************************************************
  *   Project TupiTube Desk                                                 *
  *   Project Contact: info@tupitube.com                                    *
- *   Project Website: http://www.tupitube.com                              * 
+ *   Project Website: http://www.tupitube.com                              *
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
@@ -32,74 +32,52 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#include "tcirclebuttonbar.h"
+#ifndef TUPXMLPARSERBASE_H
+#define TUPXMLPARSERBASE_H
 
-TCircleButtonBar::TCircleButtonBar(int radio, QWidget *parent) : QFrame(parent), m_radio(radio), m_buttonCount(0), m_offset(30)
-{    
-    m_layout = new QBoxLayout(QBoxLayout::LeftToRight, this);
-    m_layout->setSpacing(0);
-    m_layout->setMargin(0);
+#include "tglobal.h"
 
-    m_mask = QPixmap((m_buttonCount+1)*m_radio+m_offset*2+m_offset/2, m_radio+10);
-    m_mask.fill(Qt::transparent);
+#include <QXmlDefaultHandler>
 
-    setLayout(m_layout);
-}
-
-TCircleButtonBar::~TCircleButtonBar()
+class TUPITUBE_EXPORT TupXmlParserBase : public QXmlDefaultHandler
 {
-}
+    public:
+        ~TupXmlParserBase();
 
-void TCircleButtonBar::paintEvent(QPaintEvent *)
-{
-    QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
+    protected:
+        TupXmlParserBase();
 
-    setMinimumSize(m_mask.size());
+        bool startDocument();
+        bool endDocument();
+        bool startElement(const QString& , const QString& , const QString& qname, const QXmlAttributes& atts);
+        bool characters(const QString & ch);
+        bool endElement( const QString& ns, const QString& localname, const QString& qname);
+        bool error(const QXmlParseException & exception);
+        bool fatalError(const QXmlParseException & exception);
 
-    // painter.setPen(QPen(palette().color(QPalette::Foreground), 5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-    painter.setPen(QPen(palette().color(QPalette::WindowText), 5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin)); 
-    painter.drawPath(m_border);
+    protected:
+        void setReadText(bool read);
+        void setIgnore(bool ignore);
 
-    QPalette pal = palette();
-    // pal.setColor(QPalette::Background, pal.color(QPalette::Button));
-    pal.setColor(QPalette::Window, pal.color(QPalette::Button));
-    setPalette(pal);
-}
+    public:
+        virtual void initialize();
+        virtual bool startTag(const QString &tag, const QXmlAttributes &atts) = 0;
+        virtual bool endTag(const QString &tag) = 0;
+        virtual void text(const QString &text) = 0;
 
-TCircleButton *TCircleButtonBar::addButton(const QPixmap &pix)
-{
-    m_buttonCount++;
+    public:
+        QString currentTag() const;
+        QString root() const;
+        bool parse(const QString &doc);
+        bool parse(QFile *file);
 
-    m_mask = QPixmap((m_buttonCount+1)*m_radio+m_offset*3, m_radio+10);
-    m_mask.fill(Qt::transparent);
+    private:
+        QString gTag;
+        QString rootStr;
+        bool isParsing;
+        bool readText;
+        bool ignore;
+        QString document;
+};
 
-    TCircleButton *but = new TCircleButton(m_radio, true, this);
-    
-    m_layout->addWidget(but);
-    but->setIcon(pix);
-
-    return but;
-}
-
-void TCircleButtonBar::resizeEvent(QResizeEvent *)
-{
-    m_border = QPainterPath();
-    m_border.moveTo(m_offset, 0);
-    m_border.cubicTo(m_offset, 0, 0, m_mask.height()/2, m_offset, m_mask.height());
-
-    m_border.lineTo(m_mask.width()-m_offset, m_mask.height());
-
-    m_border.cubicTo(m_mask.width()-m_offset, m_mask.height(), m_mask.width(), 
-                     m_mask.height()/2, m_mask.width()-m_offset, 0);
-
-    m_border.lineTo(m_offset, 0);
-
-    QPainter p(&m_mask);
-    p.setPen(QPen(Qt::black,1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-    p.setBrush(Qt::red);
-    p.drawPath(m_border);
-
-    setMask(m_mask.mask());
-}
-
+#endif

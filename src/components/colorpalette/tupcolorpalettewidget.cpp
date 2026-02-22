@@ -37,7 +37,6 @@
 #include "timagebutton.h"
 #include "tseparator.h"
 #include "tupmodulewidgetbase.h"
-#include "ticon.h"
 #include "tcolorcell.h"
 #include "tconfig.h"
 #include "tuppaintareaevent.h"
@@ -65,7 +64,6 @@ TupColorPaletteWidget::TupColorPaletteWidget(QWidget *parent): TupModuleWidgetBa
 
     currentContourBrush = Qt::black;
     currentFillBrush = Qt::transparent;
-    flagGradient = true;
 
     setWindowTitle(tr("Color Palette"));
     setWindowIcon(QPixmap(ICONS_DIR + "color_palette.png"));
@@ -81,7 +79,6 @@ TupColorPaletteWidget::TupColorPaletteWidget(QWidget *parent): TupModuleWidgetBa
 
     setupMainPalette();
     setupColorChooser();
-    setupGradientManager();
 
     tab->setPalette(palette());
     tab->setMinimumHeight(320);
@@ -110,9 +107,6 @@ TupColorPaletteWidget::~TupColorPaletteWidget()
     delete luminancePicker;
     luminancePicker = nullptr;
 
-    delete gradientManager;
-    gradientManager = nullptr;
-
     delete contourColorCell;
     contourColorCell = nullptr;
 
@@ -138,7 +132,6 @@ void TupColorPaletteWidget::setupColorDisplay()
     mainLayout->setMargin(0);
     mainLayout->setSpacing(1);
 
-    // mainLayout->addWidget(new QWidget());
     mainLayout->addStretch(1);
 
     TImageButton *changeButton = new TImageButton(QIcon(QPixmap(THEME_DIR + "icons/exchange_colors.png")), 20, this);
@@ -197,12 +190,10 @@ void TupColorPaletteWidget::setupColorDisplay()
 
     TImageButton *eyedropperButton = new TImageButton(QIcon(QPixmap(THEME_DIR + "icons/eyedropper.png")), 18, this);
     eyedropperButton->setToolTip(tr("Eye Dropper - D"));
-    // eyedropperButton->setShortcut(QKeySequence(tr("D")));
     connect(eyedropperButton, SIGNAL(clicked()), this, SLOT(activateEyeDropper()));
     mainLayout->addWidget(eyedropperButton);
 
     mainLayout->addStretch(1);
-    // mainLayout->addWidget(new QWidget());
 
     generalLayout->addLayout(mainLayout);
     generalLayout->addWidget(new QWidget());
@@ -213,8 +204,6 @@ void TupColorPaletteWidget::setupColorDisplay()
     QBoxLayout *bgLayout = new QBoxLayout(QBoxLayout::LeftToRight);
     bgLayout->setMargin(0);
     bgLayout->setSpacing(1);
-
-    // bgLayout->addWidget(new QWidget());
 
     QBrush bgBrush = QBrush(Qt::white);
     bgColor = new TColorCell(TColorCell::Background, bgBrush, cellSize);
@@ -255,11 +244,8 @@ void TupColorPaletteWidget::setupColorDisplay()
 
     TImageButton *bgEyedropperButton = new TImageButton(QIcon(QPixmap(THEME_DIR + "icons/eyedropper.png")), 18, this);
     bgEyedropperButton->setToolTip(tr("Eye Dropper"));
-    // bgEyedropperButton->setShortcut(QKeySequence(tr("E")));
     connect(bgEyedropperButton, SIGNAL(clicked()), this, SLOT(activateBgEyeDropper()));
     bgLayout->addWidget(bgEyedropperButton);
-
-    // bgLayout->addWidget(new QWidget());
 
     generalLayout->addLayout(bgLayout);
     generalLayout->setAlignment(bgLayout, Qt::AlignHCenter);
@@ -272,7 +258,7 @@ void TupColorPaletteWidget::setupColorDisplay()
 void TupColorPaletteWidget::updateColorMode(TColorCell::FillType type)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupColorPaletteWidget::updateColorMode()] - type -> " << type;
+        qDebug() << "[TupColorPaletteWidget::updateColorMode()] - type ->" << type;
     #endif
 
     QBrush brush;
@@ -324,13 +310,12 @@ void TupColorPaletteWidget::updateColorMode(TColorCell::FillType type)
 
     updateLuminancePicker(color);
     colorForm->setColor(color);
-    gradientManager->setCurrentColor(color);
 }
 
 void TupColorPaletteWidget::checkColorButton(TColorCell::FillType type)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupColorPaletteWidget::checkColorButton()] - type: " << type;
+        qDebug() << "[TupColorPaletteWidget::checkColorButton()] - type ->" << type;
     #endif
 
     if (type == TColorCell::Contour) {
@@ -392,44 +377,14 @@ void TupColorPaletteWidget::setupColorChooser()
     tab->addTab(colorMixer, tr("Color Mixer"));
 }
 
-void TupColorPaletteWidget::setupGradientManager()
-{
-    gradientManager = new TupGradientCreator(this);
-    // connect(gradientManager, SIGNAL(gradientChanged(const QBrush&)), this, SLOT(updateGradientColor(const QBrush &)));
-
-    tab->addTab(gradientManager, tr("Gradients"));
-    // SQA: Temporary code
-    tab->setTabEnabled(1, false);
-}
-
 void TupColorPaletteWidget::setColorOnAppFromHTML(const QBrush& brush)
 {
     QColor color = brush.color();
 
     if (color.isValid()) {
-        if (type == Gradient)
-            gradientManager->setCurrentColor(color);
-
         colorPickerArea->setColor(color.hue(), color.saturation());
         paletteContainer->setColor(brush);
         colorForm->setColor(color);
-
-        // if (type == Solid)
-        //     outlineAndFillColors->setCurrentColor(color);
-    } else if (brush.gradient()) {
-          QGradient gradient(*brush.gradient());
-          // changeBrushType(tr("Gradient"));
-
-          paletteContainer->setColor(gradient);
-          // outlineAndFillColors->setCurrentColor(gradient);
-          if (sender() != gradientManager)
-              gradientManager->setGradient(gradient);
-
-          // SQA: Gradient issue pending for revision
-          // qWarning() << "TupColorPaletteWidget::setColor() - Sending gradient value!";
-          // TupPaintAreaEvent event(TupPaintAreaEvent::ChangeBrush, brush);
-          // emit paintAreaEventTriggered(&event);
-          // return;
     }
 
     if (currentSpace == TColorCell::Background) {
@@ -459,7 +414,7 @@ void TupColorPaletteWidget::setColorOnAppFromHTML(const QBrush& brush)
 void TupColorPaletteWidget::setGlobalColors(const QBrush &brush)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupColorPaletteWidget::setGlobalColors()] - brush -> " << brush;
+        qDebug() << "[TupColorPaletteWidget::setGlobalColors()] - brush ->" << brush;
     #endif
 
     if (currentSpace == TColorCell::Background) {
@@ -516,13 +471,12 @@ void TupColorPaletteWidget::updateColorFromPalette(const QBrush &brush)
     QColor color = brush.color();
     updateLuminancePicker(color);
     colorForm->setColor(color);
-    gradientManager->setCurrentColor(color);
 }
 
 void TupColorPaletteWidget::updateColorFromDisplay(const QBrush &brush)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupColorPaletteWidget::updateColorFromDisplay()] - brush -> " << brush;
+        qDebug() << "[TupColorPaletteWidget::updateColorFromDisplay()] - brush ->" << brush;
     #endif
 
     setGlobalColors(brush);
@@ -531,15 +485,10 @@ void TupColorPaletteWidget::updateColorFromDisplay(const QBrush &brush)
     updateLuminancePicker(color);
 }
 
-void TupColorPaletteWidget::updateGradientColor(const QBrush &brush)
-{
-    setGlobalColors(brush);
-}
-
 void TupColorPaletteWidget::syncColor(const QColor &color)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupColorPaletteWidget::syncColor()] - color -> " << color;
+        qDebug() << "[TupColorPaletteWidget::syncColor()] - color ->" << color;
     #endif
 
     setGlobalColors(QBrush(color));
@@ -665,7 +614,6 @@ void TupColorPaletteWidget::init()
     luminancePicker->setColors(Qt::black, Qt::white);
     luminancePicker->setValue(0);
     colorForm->setColor(contourColor);
-    gradientManager->setCurrentColor(Qt::white);
     blockSignals(false);
 
     emit colorSpaceChanged(TColorCell::Contour);
@@ -680,7 +628,7 @@ void TupColorPaletteWidget::init()
 void TupColorPaletteWidget::setBgColor(const QColor &color)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupColorPaletteWidget::setBgColor()] - color -> " << color;
+        qDebug() << "[TupColorPaletteWidget::setBgColor()] - color ->" << color;
     #endif
 
     QBrush brush(color);
@@ -746,7 +694,7 @@ void TupColorPaletteWidget::switchColors()
 void TupColorPaletteWidget::updateColorType(int index)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupColorPaletteWidget::updateColorType()] - index -> " << index;
+        qDebug() << "[TupColorPaletteWidget::updateColorType()] - index ->" << index;
     #endif
 
     if (index == TupColorPaletteWidget::Solid) {
@@ -784,7 +732,7 @@ void TupColorPaletteWidget::updateLuminancePicker(const QColor &color)
 void TupColorPaletteWidget::updateContourColor(const QColor &color)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupColorPaletteWidget::updateCountourColor()] - color -> " << color;
+        qDebug() << "[TupColorPaletteWidget::updateCountourColor()] - color ->" << color;
     #endif
 
     if (bgColor->isChecked())
@@ -808,7 +756,7 @@ void TupColorPaletteWidget::updateContourColor(const QColor &color)
 void TupColorPaletteWidget::updateFillColor(const QColor &color)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupColorPaletteWidget::updateFillColor()] - color -> " << color;
+        qDebug() << "[TupColorPaletteWidget::updateFillColor()] - color ->" << color;
     #endif
 
     if (bgColor->isChecked())

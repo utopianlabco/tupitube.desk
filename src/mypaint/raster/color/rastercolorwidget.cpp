@@ -37,7 +37,6 @@
 #include "timagebutton.h"
 #include "tseparator.h"
 #include "tupmodulewidgetbase.h"
-#include "ticon.h"
 #include "tcolorcell.h"
 #include "tconfig.h"
 #include "tuppaintareaevent.h"

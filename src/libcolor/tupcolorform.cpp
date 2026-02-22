@@ -34,7 +34,7 @@
 
 #include "tupcolorform.h"
 #include "tseparator.h"
-#include "tdoublecombobox.h"
+// #include "tdoublecombobox.h"
 
 #include <QHBoxLayout>
 #include <QCheckBox>

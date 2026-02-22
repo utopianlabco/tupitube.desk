@@ -35,7 +35,7 @@
 #include "tupmainwindow.h"
 #include "tupapplication.h"
 
-#include "tcommandhistory.h"
+// #include "tcommandhistory.h"
 #include "toolview.h"
 #include "tviewbutton.h"
 #include "tresponsiveui.h"

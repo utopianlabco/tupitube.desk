@@ -39,6 +39,7 @@
 #include "tapplication.h"
 #include "tosd.h"
 #include "tupsecurity.h"
+#include "tseparator.h"
 
 #include <QDesktopServices>
 

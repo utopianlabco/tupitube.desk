@@ -36,8 +36,8 @@
 #define TCONFIGURATIONDIALOG_H
 
 #include "tglobal.h"
-#include "twidgetlistview.h"
-#include "tflatbutton.h"
+// #include "twidgetlistview.h"
+// #include "tflatbutton.h"
 #include "tseparator.h"
 
 #include <QDialog>

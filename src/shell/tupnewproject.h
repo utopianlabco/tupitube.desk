@@ -37,7 +37,6 @@
 
 #include "tglobal.h"
 #include "tabdialog.h"
-#include "twizard.h"
 #include "txyspinbox.h"
 #include "tupprojectmanagerparams.h"
 

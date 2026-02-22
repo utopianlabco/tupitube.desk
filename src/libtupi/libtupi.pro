@@ -31,9 +31,9 @@ contains("DEFINES", "ADD_HEADERS") {
 
 HEADERS += tupgraphicalgorithm.h \
            tuppaintareaproperties.h \
-           tupgradientcreator.h \
-           tupgradientselector.h \
-           tupgradientviewer.h \
+           # tupgradientcreator.h \
+           # tupgradientselector.h \
+           # tupgradientviewer.h \
            tuppackagehandler.h \
            tupprojectactionbar.h \
            tupbrushmanager.h \
@@ -48,13 +48,14 @@ HEADERS += tupgraphicalgorithm.h \
            tuptoolstatus.h \ 
            tupcolorwidget.h \
            tuppaintareastatus.h \
-           tupscenenamedialog.h
+           tupscenenamedialog.h \
+           tupxmlparserbase.h
 
 SOURCES += tupgraphicalgorithm.cpp \
            tuppaintareaproperties.cpp \
-           tupgradientcreator.cpp \
-           tupgradientselector.cpp \
-           tupgradientviewer.cpp \
+           # tupgradientcreator.cpp \
+           # tupgradientselector.cpp \
+           # tupgradientviewer.cpp \
            tuppackagehandler.cpp \
            tupprojectactionbar.cpp \
            tupbrushmanager.cpp \
@@ -69,7 +70,8 @@ SOURCES += tupgraphicalgorithm.cpp \
            tuptoolstatus.cpp \
            tupcolorwidget.cpp \
            tuppaintareastatus.cpp \
-           tupscenenamedialog.cpp
+           tupscenenamedialog.cpp \
+           tupxmlparserbase.cpp
 
 FRAMEWORK_DIR = "../framework"
 include($$FRAMEWORK_DIR/framework.pri)

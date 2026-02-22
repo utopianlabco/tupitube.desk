@@ -38,6 +38,7 @@
 #include "talgorithm.h"
 #include "tosd.h"
 #include "tapptheme.h"
+#include "tseparator.h"
 
 #include <QBoxLayout>
 #include <QIcon>

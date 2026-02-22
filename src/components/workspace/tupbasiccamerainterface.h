@@ -41,6 +41,7 @@
 
 #include <QFrame>
 #include <QComboBox>
+#include <QStackedWidget>
 #include <QCloseEvent>
 #include <QCamera>
 #include <QCameraInfo>

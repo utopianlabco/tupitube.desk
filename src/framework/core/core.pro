@@ -32,13 +32,13 @@ HEADERS += talgorithm.h \
            tconfig.h \
            tglobal.h \
            tuivalues.h \
-           tipdatabase.h \
+           # tipdatabase.h \
            tcachehandler.h \
            tapptheme.h
 
 SOURCES += talgorithm.cpp \
            tapplicationproperties.cpp \
            tconfig.cpp \
-           tipdatabase.cpp \
+           # tipdatabase.cpp \
            tcachehandler.cpp \
            tapptheme.cpp

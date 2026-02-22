@@ -37,9 +37,7 @@
 
 #include "tglobal.h"
 #include "themedocument.h"
-// #include "thememanager.h"
 #include "tvhbox.h"
-#include "twizard.h"
 #include "tconfig.h"
 #include "tactionmanager.h"
 

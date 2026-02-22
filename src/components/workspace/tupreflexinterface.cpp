@@ -37,6 +37,7 @@
 #include "tapplicationproperties.h"
 #include "talgorithm.h"
 #include "tosd.h"
+#include "tseparator.h"
 
 #include <QBoxLayout>
 #include <QIcon>

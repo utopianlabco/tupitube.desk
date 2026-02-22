@@ -42,7 +42,6 @@
 #include "tupcolorpicker.h"
 #include "tupviewcolorcells.h"
 #include "tslider.h"
-#include "tupgradientcreator.h"
 
 #include <QSplitter>
 #include <QTabWidget>
@@ -81,7 +80,6 @@ class TUPITUBE_EXPORT TupColorPaletteWidget : public TupModuleWidgetBase
 
         void updateColorFromPalette(const QBrush& brush);
         void updateColorFromDisplay(const QBrush& brush);
-        void updateGradientColor(const QBrush &brush);
         void switchColors();
         void updateColorType(int index);
 
@@ -98,7 +96,6 @@ class TUPITUBE_EXPORT TupColorPaletteWidget : public TupModuleWidgetBase
         void setupColorDisplay();
         void setupMainPalette();
         void setupColorChooser();
-        void setupGradientManager();
         void setGlobalColors(const QBrush &brush);
         void updateLuminancePicker(const QColor &color);
         void saveTextColor(const QColor &color);
@@ -110,7 +107,6 @@ class TUPITUBE_EXPORT TupColorPaletteWidget : public TupModuleWidgetBase
         TupColorForm *colorForm;
         TupColorPicker *colorPickerArea;
         TSlider *luminancePicker;
-        TupGradientCreator *gradientManager;
 
         QLineEdit *htmlField;
         QLineEdit *bgHtmlField;
@@ -122,7 +118,6 @@ class TUPITUBE_EXPORT TupColorPaletteWidget : public TupModuleWidgetBase
         TColorCell *fillColorCell;
         TColorCell *bgColor;
 
-        bool flagGradient;
         BrushType type;
 
         TColorCell::FillType currentSpace;

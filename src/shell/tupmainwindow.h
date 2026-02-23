@@ -58,7 +58,7 @@
 
 // Projects management 
 #include "tupprojectmanager.h"
-// #include "tupnetprojectmanagerhandler.h"
+#include "tupnetprojectmanagerhandler.h"
 
 #include <QMainWindow>
 #include <QMenu>
@@ -125,8 +125,8 @@ class TupMainWindow : public TabbedMainWindow
         void connectWidgetToPaintArea(QWidget *widget);
         void connectWidgetToLocalManager(QWidget *widget);
 
-        // void setupNetworkProject();
-        // void setupNetworkProject(TupProjectManagerParams *params);
+        void setupNetworkProject();
+        void setupNetworkProject(TupProjectManagerParams *params);
         void setupLocalProject(TupProjectManagerParams *params);
         void setUndoRedoActions();
         void resetUI();
@@ -167,8 +167,8 @@ class TupMainWindow : public TabbedMainWindow
         bool closeProject();
         void unexpectedClose();
         void openProject();
-        // void openProjectFromServer();
-        // void importProjectToServer();
+        void openProjectFromServer();
+        void importProjectToServer();
 
         void importLibrary();
         void importProject();
@@ -184,7 +184,7 @@ class TupMainWindow : public TabbedMainWindow
         void updateCurrentTab(UIView tabType);
 
         void requestProject();
-        // void createNewNetProject(const QString &title, const QStringList &users);
+        void createNewNetProject(const QString &title, const QStringList &users);
         void netProjectSaved();
         void updatePlayer();
         void updatePlayer(bool removeAction);
@@ -254,7 +254,7 @@ class TupMainWindow : public TabbedMainWindow
 
     // Network variables
     private:
-        // TupNetProjectManagerHandler *netProjectManager;
+        TupNetProjectManagerHandler *netProjectManager;
         bool isNetworked;
         ToolView *m_viewChat;
 

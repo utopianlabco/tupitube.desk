@@ -188,9 +188,8 @@ void TupMainWindow::setupMenu()
     m_fileMenu->addAction(m_actionManager->find("open_project"));
     m_fileMenu->addAction(m_actionManager->find("open_demo"));
 
-    // SQA: This code has been disabled temporary
-    // m_fileMenu->addAction(m_actionManager->find("opennetproject"));
-    // m_fileMenu->addAction(m_actionManager->find("exportprojectserver"));
+    m_fileMenu->addAction(m_actionManager->find("opennetproject"));
+    m_fileMenu->addAction(m_actionManager->find("exportprojectserver"));
 
     // Adding Option Open Recent	
     m_recentProjectsMenu = new QMenu(tr("Open Recent"), this);
@@ -334,8 +333,6 @@ void TupMainWindow::setupFileActions()
     m_actionManager->insert(openFile, "open_project", "file");
     openFile->setStatusTip(tr("Load existent project"));
 
-    // SQA: This code has been disabled temporary
-    /*
     TAction *openNetFile = new TAction(QPixmap(ICONS_DIR + "net_document.png"), tr("Open Project From Server..."),
 				       tr(""), this, SLOT(openProjectFromServer()), m_actionManager);
     m_actionManager->insert(openNetFile, "opennetproject", "file");
@@ -343,7 +340,6 @@ void TupMainWindow::setupFileActions()
     TAction *importNetFile = new TAction(QPixmap(ICONS_DIR + "import_project.png"), tr("Export Project To Server..."), tr(""), this,
 					 SLOT(importProjectToServer()), m_actionManager);
     m_actionManager->insert(importNetFile, "exportprojectserver", "file");
-    */
 
     TAction *openDemo = new TAction(QPixmap(ICONS_DIR + "open.png"), tr("Open Example"), tr(""),
                     this, SLOT(openExample()), m_actionManager);
@@ -464,9 +460,7 @@ void TupMainWindow::setupToolBar()
 
     mainToolBar->addAction(m_actionManager->find("new_project"));
     mainToolBar->addAction(m_actionManager->find("open_project"));
-
-    // SQA: This code has been disabled temporary
-    // mainToolBar->addAction(m_actionManager->find("opennetproject"));
+    mainToolBar->addAction(m_actionManager->find("opennetproject"));
 
     mainToolBar->addAction(m_actionManager->find("save_project"));
     mainToolBar->addAction(m_actionManager->find("save_project_as"));

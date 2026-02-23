@@ -22,7 +22,7 @@ LIBUI_DIR = ../libui
 STORE_DIR = ../store 
 LIBTUPI_DIR = ../libtupi
 LIBBASE_DIR = ../libbase
-# NET_DIR = ../net
+NET_DIR = ../net
 
 include($$MICMANAGER_DIR/micmanager.pri)
 include($$MYPAINT_DIR/mypaint.pri)
@@ -44,4 +44,4 @@ include($$LIBUI_DIR/libui.pri)
 include($$STORE_DIR/store.pri)
 include($$LIBTUPI_DIR/libtupi.pri)
 include($$LIBBASE_DIR/libbase.pri)
-# include($$NET_DIR/net.pri)
+include($$NET_DIR/net.pri)

@@ -33,13 +33,15 @@
  ***************************************************************************/
 
 #include "tupnewproject.h"
-// #include "tupnetprojectmanagerparams.h"
+#include "tupnetprojectmanagerparams.h"
 
 #include "tformfactory.h"
 #include "tconfig.h"
 #include "tapplication.h"
 #include "tosd.h"
 #include "tapptheme.h"
+
+#include <QFormLayout>
 
 //SQA: Add a field to define the project description 
 
@@ -143,11 +145,10 @@ TupNewProject::TupNewProject(QWidget *parent) : TabDialog(parent)
     layout->addWidget(panel, 5, 0);
     layout->addWidget(renderAndFps, 5, 1);
 
-    QCheckBox *activeNetOptions = new QCheckBox(tr("TupiTube project"));
+    QCheckBox *activeNetOptions = new QCheckBox(tr("Collaborative Project"));
     connect(activeNetOptions, SIGNAL(toggled(bool)), this, SLOT(enableNetOptions(bool)));
 
-    // SQA: Code temporarily disabled
-    // layout->addWidget(activeNetOptions, 5, 0, 1, 2, Qt::AlignLeft);
+    layout->addWidget(activeNetOptions, 6, 0, 1, 2, Qt::AlignLeft);
 
     addTab(infoContainer, tr("Project Info"));
 
@@ -157,8 +158,7 @@ TupNewProject::TupNewProject(QWidget *parent) : TabDialog(parent)
 
     setupNetOptions();
 
-    // SQA: Code temporarily disabled
-    // addTab(netContainer, tr("Network"));
+    addTab(netContainer, tr("Network"));
     enableNetOptions(false);
 
     if (presetIndex >= 0)
@@ -181,12 +181,8 @@ TupNewProject::~TupNewProject()
         }
     }
 
-    /*
-    SQA: delete this variables causes the app to crash when it creates a project
-
     delete projectName;
     delete authorName;
-    delete tags;
     delete description;
     delete colorButton;
     delete fps;
@@ -194,19 +190,13 @@ TupNewProject::~TupNewProject()
     delete size;
     delete netOptions;
     delete netLayout;
-    delete server;
-    delete port;
-    delete username;
-    delete password;
-    delete storePassword;
-    */
 }
 
 void TupNewProject::setupNetOptions()
 {
     server = new QLineEdit;
     port = new QSpinBox;
-    port->setMinimum(1024);
+    port->setMinimum(80);
     port->setMaximum(65000);
 
     username = new QLineEdit;
@@ -214,31 +204,46 @@ void TupNewProject::setupNetOptions()
 
     TConfig *config = kApp->config("Network");
 
-    server->setText(config->value("Server", "tupitu.be").toString());
-    port->setValue(config->value("Port", 8080).toInt());
+    server->setText(config->value("Server", "").toString());
+    int portValue = config->value("Port", 80).toInt();
+    qDebug() << "TupNewProject::setupNetOptions() - portValue: " << portValue;
+    if (portValue == 0)
+        portValue = 80;
+    port->setValue(portValue);
 
     username->setText(config->value("Login", "").toString());
     password->setText(config->value("Password", "").toString());
 
     password->setEchoMode(QLineEdit::Password);
 
-    QPlainTextEdit *text = new QPlainTextEdit;
-    text->setMaximumHeight(70);
-    text->appendPlainText(QString("This feature allows you to work with another artists") 
-                           + QString(" around the Internet on the same project in real time."));
-    text->setEnabled(false);
-    netLayout->addWidget(text);
+    QLabel *infoLabel = new QLabel(tr("This feature allows you to work with other artists around the world on the same project in real time."));
+    infoLabel->setWordWrap(true);
+    infoLabel->setAlignment(Qt::AlignCenter);
+    infoLabel->setStyleSheet("QLabel { padding: 10px; }");
+    netLayout->addWidget(infoLabel);
 
     netOptions = new QGroupBox(tr("Settings"));
-    QVBoxLayout *layout = new QVBoxLayout(netOptions);
-    layout->addLayout(TFormFactory::makeGrid(QStringList() << tr("Username") << tr("Password") << tr("Server") << tr("Port"), 
-                         QWidgetList() << username << password << server << port));
+    QVBoxLayout *groupLayout = new QVBoxLayout(netOptions);
+    groupLayout->setSpacing(15);
+    groupLayout->setContentsMargins(20, 20, 20, 20);
 
-    netLayout->addWidget(netOptions);
+    QFormLayout *formLayout = new QFormLayout;
+    formLayout->setSpacing(10);
+    formLayout->setLabelAlignment(Qt::AlignLeft);
+    formLayout->addRow(tr("Server:"), server);
+    formLayout->addRow(tr("Port:"), port);
+    formLayout->addRow(tr("Username:"), username);
+    formLayout->addRow(tr("Password:"), password);
+
+    groupLayout->addLayout(formLayout);
 
     storePassword = new QCheckBox(tr("Store password"));
     storePassword->setChecked(TCONFIG->value("StorePassword").toInt());
-    netLayout->addWidget(storePassword);
+    groupLayout->addWidget(storePassword);
+
+    groupLayout->addStretch();
+
+    netLayout->addWidget(netOptions, 1);
 }
 
 TupProjectManagerParams *TupNewProject::parameters()
@@ -250,7 +255,6 @@ TupProjectManagerParams *TupNewProject::parameters()
     if (h % 2)
         h++;
 
-    /*
     if (enableUseNetwork) {
         TupNetProjectManagerParams *params = new TupNetProjectManagerParams;
         params->setProjectName(projectName->text());
@@ -269,7 +273,6 @@ TupProjectManagerParams *TupNewProject::parameters()
 
         return params;
     }
-    */
 
     TupProjectManagerParams *params = new TupProjectManagerParams;
     params->setProjectName(projectName->text());
@@ -323,7 +326,7 @@ void TupNewProject::ok()
 void TupNewProject::enableNetOptions(bool isEnabled)
 {
     enableUseNetwork = isEnabled;
-    enableTab(1, isEnabled);
+    tabWidget()->setTabVisible(1, isEnabled);
 }
 
 void TupNewProject::focusProjectLabel() 

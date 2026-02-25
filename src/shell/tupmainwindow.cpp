@@ -81,8 +81,8 @@
 TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
                              TabbedMainWindow(winKey, AnimationView), m_projectManager(nullptr),
                              animationTab(nullptr), playerTab(nullptr),
-                             m_viewChat(nullptr), m_exposureSheet(nullptr),
-                             netProjectManager(nullptr), isSaveDialogOpen(false)
+                             netProjectManager(nullptr), m_viewChat(nullptr),
+                             m_exposureSheet(nullptr), isSaveDialogOpen(false)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupMainWindow()]";

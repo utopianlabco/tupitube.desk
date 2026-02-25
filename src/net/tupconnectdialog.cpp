@@ -36,36 +36,69 @@
 
 TupConnectDialog::TupConnectDialog(QWidget *parent): QDialog(parent)
 {
-    setWindowTitle(tr("Connection Dialog"));
+    setWindowTitle(tr("Connection Parameters"));
+    setMinimumWidth(320);
+
+    // Credentials section
     loginLine = new QLineEdit;
+    loginLine->setMinimumWidth(200);
+
     passwdLine = new QLineEdit;
     passwdLine->setEchoMode(QLineEdit::Password);
-    
+    passwdLine->setMinimumWidth(200);
+
+    storePasswdBox = new QCheckBox(tr("Store password"));
+
+    QFormLayout *credentialsLayout = new QFormLayout;
+    credentialsLayout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
+    credentialsLayout->setLabelAlignment(Qt::AlignRight);
+    credentialsLayout->setSpacing(10);
+    credentialsLayout->addRow(tr("Username:"), loginLine);
+    credentialsLayout->addRow(tr("Password:"), passwdLine);
+    credentialsLayout->addRow("", storePasswdBox);
+
+    QGroupBox *credentialsGroup = new QGroupBox(tr("Credentials"));
+    credentialsGroup->setLayout(credentialsLayout);
+
+    // Server section
     serverLine = new QLineEdit;
+    serverLine->setMinimumWidth(200);
+
     portBox = new QSpinBox;
     portBox->setMinimum(1);
     portBox->setMaximum(65000);
-    
-    QGridLayout *layout = TFormFactory::makeGrid(QStringList() << tr("Login") << tr("Password") << tr("Server") << tr("Port"), QWidgetList() << loginLine << passwdLine << serverLine << portBox);
-    
-    storePasswdBox = new QCheckBox(tr("Store password"));
-    layout->addWidget(storePasswdBox, 5, 1);
-    
-    QDialogButtonBox *box = new QDialogButtonBox;
-    
-    QPushButton *ok = box->addButton(QDialogButtonBox::Ok);
-    connect(ok, SIGNAL(clicked()), this, SLOT(accept()));
-    QPushButton *cancel = box->addButton(QDialogButtonBox::Cancel);
-    connect(cancel, SIGNAL(clicked()), this, SLOT(reject()));
-    
+    portBox->setFixedWidth(80);
+
+    QFormLayout *serverLayout = new QFormLayout;
+    serverLayout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
+    serverLayout->setLabelAlignment(Qt::AlignRight);
+    serverLayout->setSpacing(10);
+    serverLayout->addRow(tr("Server:"), serverLine);
+    serverLayout->addRow(tr("Port:"), portBox);
+
+    QGroupBox *serverGroup = new QGroupBox(tr("Collaboration Server"));
+    serverGroup->setLayout(serverLayout);
+
+    // Buttons
+    QDialogButtonBox *buttonBox = new QDialogButtonBox;
+    QPushButton *okButton = buttonBox->addButton(QDialogButtonBox::Ok);
+    connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
+    QPushButton *cancelButton = buttonBox->addButton(QDialogButtonBox::Cancel);
+    connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
+
+    // Main layout
     QVBoxLayout *mainLayout = new QVBoxLayout;
-    
-    mainLayout->addLayout(layout);
-    mainLayout->addWidget(box);
-    
+    mainLayout->setSpacing(15);
+    mainLayout->setContentsMargins(15, 15, 15, 15);
+    mainLayout->addWidget(credentialsGroup);
+    mainLayout->addWidget(serverGroup);
+    mainLayout->addStretch();
+    mainLayout->addWidget(buttonBox);
+
     setLayout(mainLayout);
-    
+
     loadSettings();
+    loginLine->setFocus();
 }
 
 TupConnectDialog::~TupConnectDialog()

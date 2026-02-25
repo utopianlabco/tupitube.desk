@@ -333,7 +333,7 @@ void TupMainWindow::setupFileActions()
     m_actionManager->insert(openFile, "open_project", "file");
     openFile->setStatusTip(tr("Load existent project"));
 
-    TAction *openNetFile = new TAction(QPixmap(ICONS_DIR + "net_document.png"), tr("Open Project From Server..."),
+    TAction *openNetFile = new TAction(QPixmap(ICONS_DIR + "net_document.png"), tr("Open Collaborative Project..."),
 				       tr(""), this, SLOT(openProjectFromServer()), m_actionManager);
     m_actionManager->insert(openNetFile, "opennetproject", "file");
 

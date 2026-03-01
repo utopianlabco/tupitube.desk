@@ -980,9 +980,9 @@ void TupMainWindow::openProjectFromServer()
     setupNetworkProject();
 }
 
-void TupMainWindow::importProjectToServer()
+void TupMainWindow::uploadProjectToServer()
 {
-    TupMainWindow::requestType = ImportProjectToNet;
+    TupMainWindow::requestType = UploadLocalProjectToNet;
     setupNetworkProject();
 }
 
@@ -1733,9 +1733,9 @@ void TupMainWindow::requestProject()
     } else if (TupMainWindow::requestType == OpenNetProject) {
         TupListProjectsPackage package;
         netProjectManager->sendPackage(package);
-    } else if (TupMainWindow::requestType == ImportProjectToNet) {
+    } else if (TupMainWindow::requestType == UploadLocalProjectToNet) {
         const char *home = getenv("HOME");
-        QString file = QFileDialog::getOpenFileName(this, tr("Import project package"),
+        QString file = QFileDialog::getOpenFileName(this, tr("Upload project package"),
                                                    home, tr("TupiTube Project Package (*.tup)"));
         if (file.length() > 0) {
             QFile project(file);

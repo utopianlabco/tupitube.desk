@@ -166,14 +166,14 @@ void TupNetProjectManagerHandler::loadProjectFromServer(const QString &projectID
     socket->send(package);
 }
 
-void TupNetProjectManagerHandler::initialize(TupProjectManagerParams *params)
+void TupNetProjectManagerHandler::initialize(TupProjectManagerParams *parameters)
 {
-    TupNetProjectManagerParams *netParams = dynamic_cast<TupNetProjectManagerParams*>(params);
+    TupNetProjectManagerParams *netParams = dynamic_cast<TupNetProjectManagerParams*>(parameters);
 
     if (!netParams)
         return;
     
-    // params = netParams;
+    params = netParams;
 
     #ifdef TUP_DEBUG
         qWarning() << "TupNetProjectManagerHandler::initialize() - Connecting to " + netParams->server() + ":" + QString::number(netParams->port());

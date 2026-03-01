@@ -205,10 +205,10 @@ void TupNewProject::setupNetOptions()
     TConfig *config = kApp->config("Network");
 
     server->setText(config->value("Server", "").toString());
-    int portValue = config->value("Port", 80).toInt();
+    int portValue = config->value("Port", 8080).toInt();
     qDebug() << "TupNewProject::setupNetOptions() - portValue: " << portValue;
     if (portValue == 0)
-        portValue = 80;
+        portValue = 8080;
     port->setValue(portValue);
 
     username->setText(config->value("Login", "").toString());

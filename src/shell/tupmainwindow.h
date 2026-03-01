@@ -95,7 +95,7 @@ class TupMainWindow : public TabbedMainWindow
              OpenLocalProject,
              NewNetProject,
              OpenNetProject,
-             ImportProjectToNet
+             UploadLocalProjectToNet
         };
         */
 
@@ -168,7 +168,7 @@ class TupMainWindow : public TabbedMainWindow
         void unexpectedClose();
         void openProject();
         void openProjectFromServer();
-        void importProjectToServer();
+        void uploadProjectToServer();
 
         void importLibrary();
         void importProject();

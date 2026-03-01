@@ -108,6 +108,8 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void closeConnection();
 
     signals:
+        void projectPathChanged();
+        void soundPathsChanged();
         void savingSuccessful();
         void postOperationDone();
         void connectionHasBeenLost();

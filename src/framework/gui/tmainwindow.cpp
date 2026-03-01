@@ -204,13 +204,13 @@ void TMainWindow::removeToolView(ToolView *view)
     bool findIt = false;
 
     foreach (TButtonBar *bar, buttonBarsHash.values()) {
-        QList<ToolView *> views = toolViewsHash[bar];
+        QList<ToolView *> &views = toolViewsHash[bar];
         QList<ToolView *>::iterator it = views.begin();
 
         while (it != views.end()) {
             ToolView *toolView = *it;
             if (toolView == view) {
-                views.erase(it);
+                it = views.erase(it);
                 bar->removeButton(view->button());
                 findIt = true;
                 break;

@@ -96,7 +96,7 @@ enum RequestType {
     OpenLocalProject,
     NewNetProject,
     OpenNetProject,
-    ImportProjectToNet
+    UploadLocalProjectToNet
 };
 
 enum PlayMode { PlayAll = 0, OneScene };

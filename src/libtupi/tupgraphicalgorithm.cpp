@@ -748,25 +748,54 @@ double TupGraphicalAlgorithm::angleForPos(const QPointF &pos, const QPointF &anc
     return angle;
 }
 
+// Gaussian smoothing helper - reduces noise while preserving shape
+static QPolygonF gaussianSmooth(const QPolygonF &points, double sigma)
+{
+    if (points.size() < 3 || sigma <= 0)
+        return points;
+
+    QPolygonF result;
+    int radius = qMax(1, static_cast<int>(std::ceil(2.5 * sigma)));
+
+    for (int i = 0; i < points.size(); i++) {
+        double sumX = 0, sumY = 0, sumW = 0;
+        for (int j = -radius; j <= radius; j++) {
+            int idx = qBound(0, i + j, points.size() - 1);
+            double w = exp(-(j * j) / (2.0 * sigma * sigma));
+            sumX += points[idx].x() * w;
+            sumY += points[idx].y() * w;
+            sumW += w;
+        }
+        if (sumW > 0)
+            result << QPointF(sumX / sumW, sumY / sumW);
+    }
+
+    return result;
+}
+
 void TupGraphicalAlgorithm::smoothPath(QPainterPath &path, double smoothness, int from, int to)
 {
     QPolygonF polygon;
     QList<QPolygonF> polygons = path.toSubpathPolygons();
-    QList<QPolygonF>::iterator it = polygons.begin();
-    QPolygonF::iterator pointIt;
 
-    while (it != polygons.end()) {
-        pointIt = (*it).begin();
+    // Collect ALL points (preserving original stroke detail)
+    for (const QPolygonF &subpath : polygons)
+        polygon << subpath;
 
-        while (pointIt <= (*it).end()-2) {
-            polygon << (*pointIt);
-            pointIt += 2;
-        }
-        ++it;
+    if (polygon.size() < 3) {
+        path = QPainterPath();
+        path.addPolygon(polygon);
+        return;
     }
 
     if (smoothness > 0) {
-        path = TupGraphicalAlgorithm::bezierFit(polygon, static_cast<float>(smoothness), from, to);
+        // Apply light Gaussian pre-smoothing (reduces jitter while preserving shape)
+        double sigma = smoothness * 0.3;
+        QPolygonF smoothed = gaussianSmooth(polygon, sigma);
+
+        // Bezier fit with reduced error tolerance for better fidelity
+        double error = qMax(0.5, smoothness * 0.5);
+        path = TupGraphicalAlgorithm::bezierFit(smoothed, static_cast<float>(error), from, to);
     } else {
         path = QPainterPath();
         path.addPolygon(polygon);

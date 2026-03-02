@@ -213,6 +213,11 @@ void TupSvgItem::saveInitTransformation()
 
 void TupSvgItem::storeItemTransformation(const QString &properties)
 {
+    // Apply the transformation to the SVG item (needed for network sync)
+    QDomDocument doc;
+    doc.setContent(properties);
+    TupSerializer::loadProperties(this, doc.documentElement());
+
     doList << properties;
 }
 

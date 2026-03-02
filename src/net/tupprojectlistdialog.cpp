@@ -32,12 +32,14 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#include "tuplistprojectdialog.h"
+#include "tupprojectlistdialog.h"
+#include "tapptheme.h"
 
-TupListProjectDialog::TupListProjectDialog(int projects, int collabs, const QString &serverName) : QDialog()
+TupProjectListDialog::TupProjectListDialog(int projects, int collabs, const QString &serverName) : QDialog()
 {
     setWindowIcon(QIcon(QPixmap(THEME_DIR + "icons/open.png")));
-    setWindowTitle(tr("Projects List from Server") + " - [ " + serverName  + " ]");
+    setWindowTitle(tr("Project List from Server") + " - [ " + serverName  + " ]");
+    setStyleSheet(TAppTheme::themeStyles());
     setModal(true);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
@@ -99,25 +101,34 @@ TupListProjectDialog::TupListProjectDialog(int projects, int collabs, const QStr
 
     //----
     QHBoxLayout *buttons = new QHBoxLayout;
-    QPushButton *accept = new QPushButton(tr("OK"));
-    accept->setDefault(true);
-    QPushButton *cancel = new QPushButton("Cancel");
-    connect(accept, SIGNAL(clicked ()), this, SLOT(accept()));
-    connect(cancel, SIGNAL(clicked()), this, SLOT(reject()));
+    buttons->addStretch(1);
 
-    buttons->addWidget(cancel);
-    buttons->addWidget(accept);
+    QPushButton *cancelButton = new QPushButton;
+    cancelButton->setIcon(QIcon(THEME_DIR + "icons/close.png"));
+    cancelButton->setToolTip(tr("Cancel"));
+    cancelButton->setMinimumWidth(60);
+    connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
+
+    QPushButton *okButton = new QPushButton;
+    okButton->setIcon(QIcon(THEME_DIR + "icons/apply.png"));
+    okButton->setToolTip(tr("OK"));
+    okButton->setMinimumWidth(60);
+    okButton->setDefault(true);
+    connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
+
+    buttons->addWidget(cancelButton);
+    buttons->addWidget(okButton);
     layout->addLayout(buttons);
 
     setMinimumWidth(615); 
     index = 0;
 }
 
-TupListProjectDialog::~TupListProjectDialog()
+TupProjectListDialog::~TupProjectListDialog()
 {
 }
 
-QTreeWidget *TupListProjectDialog::tree(bool myWorks)
+QTreeWidget *TupProjectListDialog::tree(bool myWorks)
 {
     QTreeWidget *tree = new QTreeWidget;
     tree->setFixedHeight(120);
@@ -142,7 +153,7 @@ QTreeWidget *TupListProjectDialog::tree(bool myWorks)
     return tree;
 }
 
-void TupListProjectDialog::addWork(const QString &project, const QString &name, const QString &description, const QString &date)
+void TupProjectListDialog::addWork(const QString &project, const QString &name, const QString &description, const QString &date)
 {
     workList.append(project);
 
@@ -160,7 +171,7 @@ void TupListProjectDialog::addWork(const QString &project, const QString &name, 
     index++;
 }
 
-void TupListProjectDialog::addContribution(const QString &filename, const QString &name, const QString &author, const QString &description, const QString &date)
+void TupProjectListDialog::addContribution(const QString &filename, const QString &name, const QString &author, const QString &description, const QString &date)
 {
     contribList.append(filename);
     authors.append(author);
@@ -172,17 +183,17 @@ void TupListProjectDialog::addContribution(const QString &filename, const QStrin
     item->setText(3, date);
 }
 
-QString TupListProjectDialog::projectID() const
+QString TupProjectListDialog::projectID() const
 {
     return filename;
 }
 
-QString TupListProjectDialog::owner() const
+QString TupProjectListDialog::owner() const
 {
     return user;
 }
 
-void TupListProjectDialog::execAccept(QTreeWidgetItem *item, int index)
+void TupProjectListDialog::execAccept(QTreeWidgetItem *item, int index)
 {
     Q_UNUSED(item);
 
@@ -190,7 +201,7 @@ void TupListProjectDialog::execAccept(QTreeWidgetItem *item, int index)
         accept();
 }
 
-void TupListProjectDialog::updateWorkTree()
+void TupProjectListDialog::updateWorkTree()
 {
     if (works->hasFocus()) {
         if (contribList.size() > 0)
@@ -201,7 +212,7 @@ void TupListProjectDialog::updateWorkTree()
     }
 }
 
-void TupListProjectDialog::updateContribTree()
+void TupProjectListDialog::updateContribTree()
 {
     if (contributions->hasFocus()) {
         if (workList.size() > 0)
@@ -213,7 +224,7 @@ void TupListProjectDialog::updateContribTree()
     }
 }
 
-bool TupListProjectDialog::workIsMine()
+bool TupProjectListDialog::workIsMine()
 {
     return isMine;
 }

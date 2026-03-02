@@ -184,9 +184,9 @@ int main(int argc, char ** argv)
     QString langFile = "";
     if (locale.compare("en") != 0) {
         #ifdef Q_OS_WIN
-            langFile = kAppProp->shareDir() + "translations/tupi_" + locale + ".qm";
+            langFile = kAppProp->shareDir() + "translations/tupitube_" + locale + ".qm";
         #else
-            langFile = kAppProp->shareDir() + "data/translations/tupi_" + locale + ".qm";
+            langFile = kAppProp->shareDir() + "data/translations/tupitube_" + locale + ".qm";
         #endif
 
         if (QFile::exists(langFile)) {

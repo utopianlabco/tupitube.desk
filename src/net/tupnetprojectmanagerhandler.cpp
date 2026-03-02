@@ -188,6 +188,7 @@ void TupNetProjectManagerHandler::initialize(TupProjectManagerParams *parameters
         username = netParams->login();
     } else {
         TOsd::self()->display(TOsd::Error, tr("Unable to connect to server"));
+        emit authenticationFailed();
     }
 }
 
@@ -341,7 +342,7 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                    int works = parser.workSize();
                    int contributions = parser.contributionSize();
                    if ((works + contributions) > 0) {
-                       dialog = new TupListProjectDialog(works, contributions, params->server());
+                       dialog = new TupProjectListDialog(works, contributions, params->server());
                        QDesktopWidget desktop;
                        dialog->show();
 
@@ -400,14 +401,12 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                    }
 
                    TOsd::Level level = TOsd::Level(parser.notification().level);
-                   /*
-                   QString title = "Information";
-                   if (level == TOsd::Warning) {
-                       title = tr("Warning");
-                   } else if (level == TOsd::Error) {
-                              title = tr("Error");
+
+                   // If error occurs before project is open, it's likely an authentication failure
+                   if (level == TOsd::Error && !projectIsOpen) {
+                       emit authenticationFailed();
                    }
-                   */
+
                    TOsd::self()->display(level, parser.notification().message);
                }
     } else if (root == "communication_chat") {

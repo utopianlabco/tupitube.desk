@@ -125,9 +125,9 @@ module RQonf
       Info.info << "Updating lang files... " 
       print "[ \033[92mOK\033[0m ]\n"
       if debug == 1
-        system('lrelease src/shell/data/translations/tupi_*.ts')
+        system('lrelease src/shell/data/translations/tupitube_*.ts')
       else
-        system('lrelease -silent src/shell/data/translations/tupi_*.ts')
+        system('lrelease -silent src/shell/data/translations/tupitube_*.ts')
       end
     end
 

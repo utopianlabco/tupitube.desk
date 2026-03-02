@@ -54,6 +54,8 @@ class TUPITUBE_EXPORT TupThemePreferences : public QWidget
 
         void saveValues();
         bool showWarning();
+        int getAppTheme() const;
+        QColor getCurrentColor() const;
 
     signals:
         void colorPicked(int appTheme, const QColor&);

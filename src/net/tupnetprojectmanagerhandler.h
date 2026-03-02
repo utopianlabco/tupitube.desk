@@ -64,7 +64,7 @@
 #include "tupcommunicationparser.h"
 #include "tuprequestbuilder.h"
 #include "tupproject.h"
-#include "tuplistprojectdialog.h"
+#include "tupprojectlistdialog.h"
 #include "tupchat.h"
 #include "tupnotice.h"
 
@@ -113,6 +113,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void savingSuccessful();
         void postOperationDone();
         void connectionHasBeenLost();
+        void authenticationFailed();
 
     public slots:
         void sendExportImageRequest(int frameIndex, int sceneIndex, const QString &title, const QString &topics, const QString &description);
@@ -145,7 +146,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
 
         bool projectIsOpen;
         bool dialogIsOpen;
-        TupListProjectDialog *dialog;
+        TupProjectListDialog *dialog;
 };
 
 #endif

@@ -53,6 +53,16 @@ TupThemePreferences::~TupThemePreferences()
 {
 }
 
+int TupThemePreferences::getAppTheme() const
+{
+    return appTheme;
+}
+
+QColor TupThemePreferences::getCurrentColor() const
+{
+    return currentColor;
+}
+
 void TupThemePreferences::setupPage()
 {
     TCONFIG->beginGroup("Theme");

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="pt_PT">
+<TS version="2.1" language="uk_UA">
 <context>
     <name>BucketTool</name>
     <message>
         <location filename="../../../plugins/tools/bucket/buckettool.cpp" line="97"/>
         <location filename="../../../plugins/tools/bucket/buckettool.cpp" line="99"/>
         <source>Paint Bucket</source>
-        <translation>Balde de Tinta</translation>
+        <translation>Відро фарби</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/bucket/buckettool.cpp" line="98"/>
@@ -18,12 +18,12 @@
         <location filename="../../../plugins/tools/bucket/buckettool.cpp" line="148"/>
         <location filename="../../../plugins/tools/bucket/buckettool.cpp" line="159"/>
         <source>Sorry, only native objects can be filled</source>
-        <translation>Desculpe, somente objetos nativos podem ser preenchidos</translation>
+        <translation>Вибачте, але заповнення можна застосувати лише до власного об&apos;єкта</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/bucket/buckettool.cpp" line="167"/>
         <source>Sorry, Groups can&apos;t be filled yet</source>
-        <translation>Desculpe mas Grupos ainda não podem ser preenchidos</translation>
+        <translation>Вибачте, але групове заповнення наразі неможливе</translation>
     </message>
 </context>
 <context>
@@ -31,12 +31,12 @@
     <message>
         <location filename="../../../plugins/tools/common/buttonspanel.cpp" line="40"/>
         <source>Edit Tween</source>
-        <translation>Editar Tween</translation>
+        <translation>Змінити анімацію</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/common/buttonspanel.cpp" line="44"/>
         <source>Remove Tween</source>
-        <translation>Remover Tween</translation>
+        <translation>Вилучити анімацію</translation>
     </message>
 </context>
 <context>
@@ -44,32 +44,32 @@
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="56"/>
         <source>Name</source>
-        <translation>Nome</translation>
+        <translation>Назва</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="66"/>
         <source>Options</source>
-        <translation>Opções</translation>
+        <translation>Параметри</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="67"/>
         <source>Select object</source>
-        <translation>Selecionar objeto</translation>
+        <translation>Вибрати об&apos;єкт</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="68"/>
         <source>Set Properties</source>
-        <translation>Definir Propriedades</translation>
+        <translation>Задати властивості</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="123"/>
         <source>Starting at frame</source>
-        <translation>Iniciar no quadro</translation>
+        <translation>Початковий кадр</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="131"/>
         <source>Ending at frame</source>
-        <translation>Terminar no quadro</translation>
+        <translation>Кінцевий кадр</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="154"/>
@@ -77,103 +77,103 @@
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="629"/>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="636"/>
         <source>Frames Total</source>
-        <translation>Total de Quadros</translation>
+        <translation>Всього кадрів</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="166"/>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="195"/>
         <source>White</source>
-        <translation>Branco</translation>
+        <translation>Білий</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="171"/>
         <source>Fill Type</source>
-        <translation>Tipo de Preenchimento</translation>
+        <translation>Змінювати</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="175"/>
         <source>Line Fill</source>
-        <translation>Preenchimento de Linha</translation>
+        <translation>штрих</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="174"/>
         <source>Internal Fill</source>
-        <translation>Preenchimento Interno</translation>
+        <translation>заповнення</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="176"/>
         <source>Line &amp; Internal Fill</source>
-        <translation>Preenchimento de Linha &amp; Interno</translation>
+        <translation>штрих і заповнення</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="184"/>
         <source>Initial Color</source>
-        <translation>Cor Inicial</translation>
+        <translation>Початк. колір</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="200"/>
         <source>Ending Color</source>
-        <translation>Cor Final</translation>
+        <translation>Кінц. колір</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="214"/>
         <source>Iterations</source>
-        <translation>Iterações</translation>
+        <translation>Ітерацій</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="223"/>
         <source>Loop</source>
-        <translation>Ciclo</translation>
+        <translation>Зациклити</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="232"/>
         <source>Loop with Reverse</source>
-        <translation>Ciclo com Inversão</translation>
+        <translation>Зациклити з реверсом</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="257"/>
         <source>Basic</source>
-        <translation>Básico</translation>
+        <translation>Базовий</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="258"/>
         <source>Colors</source>
-        <translation>Cores</translation>
+        <translation>Кольори</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="283"/>
         <source>Save Tween</source>
-        <translation>Guardar Tween</translation>
+        <translation>Зберегти анімацію</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="285"/>
         <source>Cancel Tween</source>
-        <translation>Cancelar Tween</translation>
+        <translation>Скасувати анімацію</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="358"/>
         <source>Update Tween</source>
-        <translation>Atualizar Tween</translation>
+        <translation>Оновити анімацію</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="360"/>
         <source>Close Tween Properties</source>
-        <translation>Fechar Propriedades De Tween</translation>
+        <translation>Закрити властивості анімації</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="366"/>
         <source>You must select at least one object!</source>
-        <translation>Tem de selecionar pelo menos um objeto!</translation>
+        <translation>Слід вибрати хоча б один об&apos;єкт!</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="371"/>
         <source>You must set Tween properties first!</source>
-        <translation>Tem de definir as propriedades de Tween primeiro!</translation>
+        <translation>Спочатку слід задати властивості анімації!</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/colorsettings.cpp" line="428"/>
         <source>Select objects for Tweening first!</source>
-        <translation>Selecione objetos para Tween primeiro!</translation>
+        <translation>Спочатку виберіть об&apos;єкт для анімації!</translation>
     </message>
 </context>
 <context>
@@ -181,32 +181,32 @@
     <message>
         <location filename="../../../plugins/tools/color/configurator.cpp" line="57"/>
         <source>Coloring Tween Properties</source>
-        <translation>Propriedades de Tween de Cor</translation>
+        <translation>Властивості анімації кольору</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/opacity/configurator.cpp" line="54"/>
         <source>Opacity Tween Properties</source>
-        <translation>Propriedades de Tween de Opacidade</translation>
+        <translation>Властивості анімації щільності</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/configurator.cpp" line="55"/>
         <source>Rotation Tween Properties</source>
-        <translation>Propriedades de Tween de Rotação</translation>
+        <translation>Властивості анімації обертання</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/configurator.cpp" line="60"/>
         <source>Scale Tween Properties</source>
-        <translation>Propriedades de Tween de Escala</translation>
+        <translation>Властивості анімації масштабування</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/configurator.cpp" line="55"/>
         <source>Shear Tween Properties</source>
-        <translation>Propriedades de Tween de Distorção</translation>
+        <translation>Властивості анімації зсуву</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/motion/configurator.cpp" line="60"/>
         <source>Motion Tween Properties</source>
-        <translation>Propriedades de Interpolação de Movimento</translation>
+        <translation>Властивості анімації переміщення</translation>
     </message>
 </context>
 <context>
@@ -215,7 +215,7 @@
         <location filename="../../../plugins/tools/eyedropper/eyedropper.cpp" line="73"/>
         <location filename="../../../plugins/tools/eyedropper/eyedropper.cpp" line="75"/>
         <source>Eye Dropper</source>
-        <translation>Conta-gotas</translation>
+        <translation>Піпетка</translation>
     </message>
 </context>
 <context>
@@ -223,7 +223,7 @@
     <message>
         <location filename="../../../plugins/tools/eyedropper/eyedroppersettings.cpp" line="57"/>
         <source>Eye Dropper Properties</source>
-        <translation>Propriedades Do Conta-Gotas</translation>
+        <translation>Властивості піпетки</translation>
     </message>
 </context>
 <context>
@@ -231,17 +231,17 @@
     <message>
         <location filename="../../../plugins/export/ffmpegplugin/ffmpegplugin.cpp" line="57"/>
         <source>Video Formats</source>
-        <translation>Formatos de Vídeo</translation>
+        <translation>Формати відео</translation>
     </message>
     <message>
         <location filename="../../../plugins/export/ffmpegplugin/ffmpegplugin.cpp" line="156"/>
         <source>Processing final audio track...</source>
-        <translation>Processando faixa de áudio final...</translation>
+        <translation>Обробка фінальної звукової доріжки...</translation>
     </message>
     <message>
         <location filename="../../../plugins/export/ffmpegplugin/ffmpegplugin.cpp" line="219"/>
         <source>Rendering project...</source>
-        <translation>Projeto de renderização...</translation>
+        <translation>Рендер проєкту...</translation>
     </message>
 </context>
 <context>
@@ -249,88 +249,88 @@
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="70"/>
         <source>Rectangle Properties</source>
-        <translation>Propriedades de Retângulo</translation>
+        <translation>Властивості прямокутника</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="73"/>
         <source>Ellipse Properties</source>
-        <translation>Propriedades de Elipse</translation>
+        <translation>Властивості еліпса</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="76"/>
         <source>Line Properties</source>
-        <translation>Propriedades de Linha</translation>
+        <translation>Властивості лінії</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="81"/>
         <source>Triangle Properties</source>
-        <translation>Propriedades do Triângulo</translation>
+        <translation>Властивості трикутника</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="86"/>
         <source>Hexagon Properties</source>
-        <translation>Propriedades do Hexágono</translation>
+        <translation>Властивості шестикутника</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="96"/>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="133"/>
         <source>Direction</source>
-        <translation>Direção</translation>
+        <translation>Напрям</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="108"/>
         <source>Top</source>
-        <translation>Acima</translation>
+        <translation>вершина</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="108"/>
         <source>Bottom</source>
-        <translation>Abaixo</translation>
+        <translation>донний</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="108"/>
         <source>Left</source>
-        <translation>Esquerda</translation>
+        <translation>Ліворуч</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="108"/>
         <source>Right</source>
-        <translation>Direito</translation>
+        <translation>Праворуч</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="109"/>
         <source>Top Left</source>
-        <translation>Acima Esquerda</translation>
+        <translation>Зліва вгорі</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="109"/>
         <source>Top Right</source>
-        <translation>Acima Direita</translation>
+        <translation>Верхній правий</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="109"/>
         <source>Bottom Left</source>
-        <translation>Abaixo Esquerda</translation>
+        <translation>Внизу зліва</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="109"/>
         <source>Bottom Right</source>
-        <translation>Abaixo Dereita</translation>
+        <translation>Внизу праворуч</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="144"/>
         <source>Horizontal</source>
-        <translation>Horizontal</translation>
+        <translation>Горизонтальний</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="144"/>
         <source>Vertical</source>
-        <translation>Vertical</translation>
+        <translation>Вертикальний</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="171"/>
         <source>Line Mode</source>
-        <translation>Modo Linha</translation>
+        <translation>Лінійний режим</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="176"/>
@@ -340,43 +340,43 @@
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="178"/>
         <source>Eraser Mode - E</source>
-        <translation>Modo Borracha - E</translation>
+        <translation>Режим гумки - E</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="192"/>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="280"/>
         <source>Line Options</source>
-        <translation>Opções de Linha</translation>
+        <translation>Параметри лінії</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="194"/>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="282"/>
         <source>Bendable</source>
-        <translation>Flexível</translation>
+        <translation>Гнучка</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="195"/>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="283"/>
         <source>Straight</source>
-        <translation>Direta</translation>
+        <translation>Пряма</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="213"/>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="301"/>
         <source>Tips</source>
-        <translation>Dicas</translation>
+        <translation>Підказки</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="229"/>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="320"/>
         <source>Mouse Right Click or X Key</source>
-        <translation>Clique com o botão direito ou Tecla X</translation>
+        <translation>Клацніть правою кнопкою або натисніть клавішу «X»</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="229"/>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="320"/>
         <source>Close the line path</source>
-        <translation>Fechar o caminho da linha</translation>
+        <translation>Закінчення контуру лінії</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="230"/>
@@ -388,17 +388,17 @@
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="230"/>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="321"/>
         <source>Align line to horizontal/vertical axis</source>
-        <translation>Alinhar linha ao eixo horizontal/vertical</translation>
+        <translation>Вирівнювання лінії за горизонтальною/вертикальною віссю</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="323"/>
         <source>Ctrl + Left Mouse Button</source>
-        <translation>Ctrl + Botão Esquerdo do Mouse</translation>
+        <translation>Ctrl + ліва кнопка</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometricsettings.cpp" line="323"/>
         <source>Set width/height proportional dimensions</source>
-        <translation>Definir dimensões de largura/altura proporcionais</translation>
+        <translation>Зберегти співвідношення ширина/висота</translation>
     </message>
 </context>
 <context>
@@ -407,25 +407,25 @@
         <location filename="../../../plugins/tools/geometric/geometrictool.cpp" line="118"/>
         <location filename="../../../plugins/tools/geometric/geometrictool.cpp" line="120"/>
         <source>Rectangle</source>
-        <translation>Retângulo</translation>
+        <translation>Прямокутник</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometrictool.cpp" line="127"/>
         <location filename="../../../plugins/tools/geometric/geometrictool.cpp" line="129"/>
         <source>Ellipse</source>
-        <translation>Elipse</translation>
+        <translation>Еліпс</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometrictool.cpp" line="136"/>
         <location filename="../../../plugins/tools/geometric/geometrictool.cpp" line="138"/>
         <source>Line</source>
-        <translation>Linha</translation>
+        <translation>Лінія</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometrictool.cpp" line="145"/>
         <location filename="../../../plugins/tools/geometric/geometrictool.cpp" line="147"/>
         <source>Triangle</source>
-        <translation>Triângulo</translation>
+        <translation>Трикутник</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometrictool.cpp" line="146"/>
@@ -437,7 +437,7 @@
         <location filename="../../../plugins/tools/geometric/geometrictool.cpp" line="154"/>
         <location filename="../../../plugins/tools/geometric/geometrictool.cpp" line="156"/>
         <source>Hexagon</source>
-        <translation>Hexágono</translation>
+        <translation>Шестикутник</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/geometric/geometrictool.cpp" line="155"/>
@@ -469,7 +469,7 @@
     <message>
         <location filename="../../../plugins/export/imageplugin/imageplugin.cpp" line="47"/>
         <source>Image Sequence</source>
-        <translation>Sequência de Imagens</translation>
+        <translation>Послідовність зображень</translation>
     </message>
 </context>
 <context>
@@ -477,57 +477,57 @@
     <message>
         <location filename="../../../plugins/tools/ink/inksettings.cpp" line="67"/>
         <source>Ink Properties</source>
-        <translation>Propriedades da Tinta</translation>
+        <translation>Властивості пера</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/ink/inksettings.cpp" line="72"/>
         <source>Device</source>
-        <translation>Dispositivo</translation>
+        <translation>Пристрій</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/ink/inksettings.cpp" line="77"/>
         <source>Mouse</source>
-        <translation>Rato</translation>
+        <translation>Миша</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/ink/inksettings.cpp" line="78"/>
         <source>Pen</source>
-        <translation>Caneta</translation>
+        <translation>Перо</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/ink/inksettings.cpp" line="87"/>
         <source>Appearance</source>
-        <translation>Aparência</translation>
+        <translation>Вигляд</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/ink/inksettings.cpp" line="93"/>
         <source>Enable Border</source>
-        <translation>Ativar Contorno</translation>
+        <translation>Увімкн. межу</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/ink/inksettings.cpp" line="98"/>
         <source>Enable Fill</source>
-        <translation>Ativar Preenchimento</translation>
+        <translation>Увімкн. заповнення</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/ink/inksettings.cpp" line="104"/>
         <source>Parameters</source>
-        <translation>Parâmetros</translation>
+        <translation>Параметри</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/ink/inksettings.cpp" line="111"/>
         <source>Border Size</source>
-        <translation>Tamanho do Contorno</translation>
+        <translation>Розмір межі</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/ink/inksettings.cpp" line="127"/>
         <source>Pressure Level</source>
-        <translation>Nível de Pressão</translation>
+        <translation>Рівень тиску</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/ink/inksettings.cpp" line="143"/>
         <source>Smoothness</source>
-        <translation>Suavidade</translation>
+        <translation>Згладжування</translation>
     </message>
 </context>
 <context>
@@ -536,7 +536,7 @@
         <location filename="../../../plugins/tools/ink/inktool.cpp" line="296"/>
         <location filename="../../../plugins/tools/ink/inktool.cpp" line="298"/>
         <source>Ink</source>
-        <translation>Tinta</translation>
+        <translation>Перо</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/ink/inktool.cpp" line="297"/>
@@ -550,32 +550,32 @@
     <message>
         <location filename="../../../plugins/tools/papagayo/lipsyncmanager.cpp" line="62"/>
         <source>Open Lip-Sync Creator</source>
-        <translation>Abrir o Criador de Lip-Sync</translation>
+        <translation>Відкрити помічник із синхронізації руху губ</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/lipsyncmanager.cpp" line="66"/>
         <source>Edit Lip-Sync</source>
-        <translation>Editar Lip-Sync</translation>
+        <translation>Змінити синхронізацію руху губ</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/lipsyncmanager.cpp" line="70"/>
         <source>Edit Mouth</source>
-        <translation>Editar Boca</translation>
+        <translation>Змінити зображення губ</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/lipsyncmanager.cpp" line="74"/>
         <source>Remove Lip-Sync</source>
-        <translation>Remover Lip-Sync</translation>
+        <translation>Вилучити синхронізацію руху губ</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/lipsyncmanager.cpp" line="152"/>
         <source>Are you sure you want to delete this lip-sync record?</source>
-        <translation>Tem certeza de que deseja excluir este registro de lip-sync?</translation>
+        <translation>Справді вилучити цю синхронізацію руху губ?</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/lipsyncmanager.cpp" line="153"/>
         <source>Confirmation Required</source>
-        <translation>Confirmação Necessária</translation>
+        <translation>Потрібне підтвердження</translation>
     </message>
 </context>
 <context>
@@ -583,34 +583,34 @@
     <message>
         <location filename="../../../plugins/tools/motion/motionsettings.cpp" line="53"/>
         <source>Name</source>
-        <translation>Nome</translation>
+        <translation>Назва</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/motion/motionsettings.cpp" line="63"/>
         <source>Options</source>
-        <translation>Opções</translation>
+        <translation>Параметри</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/motion/motionsettings.cpp" line="64"/>
         <source>Select Objects</source>
-        <translation>Selecionar Objetos</translation>
+        <translation>Вибрати об&apos;єкти</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/motion/motionsettings.cpp" line="65"/>
         <source>Set Path Properties</source>
-        <translation>Propriedades De Caminho</translation>
+        <translation>Задати шлях</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/motion/motionsettings.cpp" line="103"/>
         <source>Starting at frame</source>
-        <translation>Iniciar no quadro</translation>
+        <translation>Початковий кадр</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/motion/motionsettings.cpp" line="104"/>
         <location filename="../../../plugins/tools/motion/motionsettings.cpp" line="234"/>
         <location filename="../../../plugins/tools/motion/motionsettings.cpp" line="371"/>
         <source>Ending at frame</source>
-        <translation>Terminar no quadro</translation>
+        <translation>Кінцевий кадр</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/motion/motionsettings.cpp" line="122"/>
@@ -619,47 +619,47 @@
         <location filename="../../../plugins/tools/motion/motionsettings.cpp" line="233"/>
         <location filename="../../../plugins/tools/motion/motionsettings.cpp" line="372"/>
         <source>Frames Total</source>
-        <translation>Total de Quadros</translation>
+        <translation>Всього кадрів</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/motion/motionsettings.cpp" line="171"/>
         <source>Save Tween</source>
-        <translation>Guardar Tween</translation>
+        <translation>Зберегти анімацію</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/motion/motionsettings.cpp" line="175"/>
         <source>Cancel Tween</source>
-        <translation>Cancelar Tween</translation>
+        <translation>Скасувати анімацію</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/motion/motionsettings.cpp" line="265"/>
         <source>Select objects for Tweening first!</source>
-        <translation>Selecione objetos para Tween primeiro!</translation>
+        <translation>Спочатку виберіть об&apos;єкт для анімації!</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/motion/motionsettings.cpp" line="327"/>
         <source>You must select at least one object!</source>
-        <translation>Tem de selecionar pelo menos um objeto!</translation>
+        <translation>Слід вибрати хоча б один об&apos;єкт!</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/motion/motionsettings.cpp" line="350"/>
         <source>Update Tween</source>
-        <translation>Atualizar Tween</translation>
+        <translation>Оновити анімацію</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/motion/motionsettings.cpp" line="353"/>
         <source>Close Tween Properties</source>
-        <translation>Fechar Propriedades De Tween</translation>
+        <translation>Закрити властивості анімації</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/motion/motionsettings.cpp" line="414"/>
         <source>Path Color</source>
-        <translation>Cor Do Caminho</translation>
+        <translation>Колір шляху</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/motion/motionsettings.cpp" line="421"/>
         <source>Path Thickness:</source>
-        <translation>Espessura Do Caminho:</translation>
+        <translation>Товщина шляху:</translation>
     </message>
 </context>
 <context>
@@ -667,37 +667,37 @@
     <message>
         <location filename="../../../plugins/tools/papagayo/mouthsdialog.cpp" line="45"/>
         <source>Lip-Sync Mouth Examples</source>
-        <translation>Exemplos De Boca (Lip-Sync)</translation>
+        <translation>Приклади зображень губ для синхронізації руху</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/mouthsdialog.cpp" line="61"/>
         <source>Mouth Sample Pack No 1</source>
-        <translation>Pacote De Amostra De Boca No 1</translation>
+        <translation>Набір рухів губ №1</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/mouthsdialog.cpp" line="62"/>
         <source>Mouth Sample Pack No 2</source>
-        <translation>Pacote De Amostra De Boca No 2</translation>
+        <translation>Набір рухів губ №2</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/mouthsdialog.cpp" line="63"/>
         <source>Mouth Sample Pack No 3</source>
-        <translation>Pacote De Amostra De Boca No 3</translation>
+        <translation>Набір рухів губ №3</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/mouthsdialog.cpp" line="64"/>
         <source>Mouth Sample Pack No 4</source>
-        <translation>Pacote De Amostra De Boca No 4</translation>
+        <translation>Набір рухів губ №4</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/mouthsdialog.cpp" line="65"/>
         <source>Mouth Sample Pack No 5</source>
-        <translation>Pacote De Amostra De Boca No 5</translation>
+        <translation>Набір рухів губ №5</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/mouthsdialog.cpp" line="83"/>
         <source>Close</source>
-        <translation>Fechar</translation>
+        <translation>Закрити</translation>
     </message>
 </context>
 <context>
@@ -705,88 +705,88 @@
     <message>
         <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="67"/>
         <source>Nodes Properties</source>
-        <translation>Propriedades dos Nós</translation>
+        <translation>Властивості вузлів</translation>
+    </message>
+    <message>
+        <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="69"/>
+        <source>Nodes Editor</source>
+        <translation>Редактор вузлів</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="94"/>
         <source>First Node</source>
-        <translation>Primeiro Nó</translation>
+        <translation>Перший вузол</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="95"/>
         <source>Middle Node</source>
-        <translation>Nó do Meio</translation>
+        <translation>Середній вузол</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="96"/>
         <source>Random Node</source>
-        <translation>Nó Aleatório</translation>
+        <translation>Випадковий вузол</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="97"/>
         <source>Last Node</source>
-        <translation>Último Nó</translation>
+        <translation>Останній вузол</translation>
+    </message>
+    <message>
+        <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="186"/>
+        <source>Show Tips</source>
+        <translation>Показ підказок</translation>
+    </message>
+    <message>
+        <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="114"/>
+        <source>A little help for the Nodes tool</source>
+        <translation>Коротка довідка для засобу Вузли</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="111"/>
         <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="198"/>
         <source>Hide Tips</source>
-        <translation>Ocultar Dicas</translation>
-    </message>
-    <message>
-        <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="186"/>
-        <source>Show Tips</source>
-        <translation>Exibir Dicas</translation>
-    </message>
-    <message>
-        <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="114"/>
-        <source>A little help for the Nodes tool</source>
-        <translation>Uma pequena ajuda para a ferramenta Nodes</translation>
+        <translation>Приховати підказки</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="128"/>
         <source>Ctrl Key + Left Mouse Button</source>
-        <translation>Tecla Ctrl + Botão Esquerdo do Mouse</translation>
-    </message>
-    <message>
-        <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="130"/>
-        <source>Shift Key + Left Mouse Button</source>
-        <translation>Tecla Shift + Botão Esquerdo do Mouse</translation>
-    </message>
-    <message>
-        <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="131"/>
-        <source>Append a curve to the last node of the path or add a new curve between two nodes</source>
-        <translation>Acrescente uma curva ao último nó do caminho ou adicione uma nova curva entre dois nós</translation>
+        <translation>Ctrl + ліва кнопка</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="129"/>
         <source>Append a line segment to the last node of the path or add a new line node between two nodes</source>
-        <translation>Acrescente um segmento de linha ao último nó do caminho ou adicione um novo nó de linha entre dois nós</translation>
+        <translation>Додати відрізок лінії до останньої вершини контуру або додати новий вузол між двома вузлами</translation>
     </message>
     <message>
-        <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="69"/>
-        <source>Nodes Editor</source>
-        <translation>Editor de Nós</translation>
+        <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="130"/>
+        <source>Shift Key + Left Mouse Button</source>
+        <translation>Shift + ліва кнопка</translation>
+    </message>
+    <message>
+        <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="131"/>
+        <source>Append a curve to the last node of the path or add a new curve between two nodes</source>
+        <translation>Додати криву до останнього вузла шляху або додати нову криву між двома вузлами</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="132"/>
         <source>X Key</source>
-        <translation>Tecla X</translation>
+        <translation>Клавіша X</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="132"/>
         <source>Remove selected node</source>
-        <translation>Remover nó selecionado</translation>
+        <translation>Вилучити вибраний вузол</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="133"/>
         <source>M Key</source>
-        <translation>Tecla M</translation>
+        <translation>Клавіша M</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/nodes/nodesettings.cpp" line="133"/>
         <source>Switch selected node to line/curve</source>
-        <translation>Alternar nó selecionado para linha/curva</translation>
+        <translation>Перемкнути вибраний вузол на пряму/криву</translation>
     </message>
 </context>
 <context>
@@ -795,42 +795,42 @@
         <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="732"/>
         <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="734"/>
         <source>Nodes Selection</source>
-        <translation>Seleção de Nodos</translation>
+        <translation>Вибір вузлів</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="140"/>
         <source>SVG objects cannot be edited!</source>
-        <translation>Objetos SVG não podem ser editados!</translation>
+        <translation>Об&apos;єкти SVG змінити неможливо!</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="148"/>
         <source>Images have no nodes!</source>
-        <translation>As imagens não têm nós!</translation>
+        <translation>Зображення не мають вузлів!</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="166"/>
         <source>Splitting item group!</source>
-        <translation>Dividindo grupo de itens!</translation>
+        <translation>Розділення групи елементів!</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="174"/>
         <source>Only pencil/ink lines can be edited!</source>
-        <translation>Únicamente linhas de lápis/tinta podem ser editadas!</translation>
+        <translation>Змінити можна лише лінії, створені олівцем/пером!</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="347"/>
         <source>Too many nodes!</source>
-        <translation>Muitos nós!</translation>
+        <translation>Забагато вузлів!</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="349"/>
         <source>The selected path contains too many nodes.</source>
-        <translation>O caminho selecionado contém muitos nós.</translation>
+        <translation>Вибраний шлях містить надто багато вузлів.</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="350"/>
         <source>It will be simplified, so you can edit it.</source>
-        <translation>Ele será simplificado, para que você possa editá-lo.</translation>
+        <translation>Його буде спрощено, тож ви зможете його редагувати.</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/nodes/nodestool.cpp" line="733"/>
@@ -844,32 +844,32 @@
     <message>
         <location filename="../../../plugins/tools/opacity/opacitysettings.cpp" line="50"/>
         <source>Name</source>
-        <translation>Nome</translation>
+        <translation>Назва</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/opacity/opacitysettings.cpp" line="60"/>
         <source>Options</source>
-        <translation>Opções</translation>
+        <translation>Параметри</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/opacity/opacitysettings.cpp" line="61"/>
         <source>Select object</source>
-        <translation>Selecionar objeto</translation>
+        <translation>Вибрати об&apos;єкт</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/opacity/opacitysettings.cpp" line="62"/>
         <source>Set Properties</source>
-        <translation>Definir Propriedades</translation>
+        <translation>Задати властивості</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/opacity/opacitysettings.cpp" line="101"/>
         <source>Starting at frame</source>
-        <translation>Iniciar no quadro</translation>
+        <translation>Початковий кадр</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/opacity/opacitysettings.cpp" line="109"/>
         <source>Ending at frame</source>
-        <translation>Terminar no quadro</translation>
+        <translation>Кінцевий кадр</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/opacity/opacitysettings.cpp" line="132"/>
@@ -877,67 +877,67 @@
         <location filename="../../../plugins/tools/opacity/opacitysettings.cpp" line="510"/>
         <location filename="../../../plugins/tools/opacity/opacitysettings.cpp" line="517"/>
         <source>Frames Total</source>
-        <translation>Total de Quadros</translation>
+        <translation>Всього кадрів</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/opacity/opacitysettings.cpp" line="147"/>
         <source>Initial Opacity</source>
-        <translation>Opacidade Inicial</translation>
+        <translation>Початк. щільність</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/opacity/opacitysettings.cpp" line="163"/>
         <source>Ending Opacity</source>
-        <translation>Opacidade Final</translation>
+        <translation>Кінц. щільність</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/opacity/opacitysettings.cpp" line="177"/>
         <source>Iterations</source>
-        <translation>Iterações</translation>
+        <translation>Ітерацій</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/opacity/opacitysettings.cpp" line="186"/>
         <source>Loop</source>
-        <translation>Ciclo</translation>
+        <translation>Зациклити</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/opacity/opacitysettings.cpp" line="195"/>
         <source>Loop with Reverse</source>
-        <translation>Ciclo com Inversão</translation>
+        <translation>Зациклити з реверсом</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/opacity/opacitysettings.cpp" line="244"/>
         <source>Save Tween</source>
-        <translation>Guardar Tween</translation>
+        <translation>Зберегти анімацію</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/opacity/opacitysettings.cpp" line="246"/>
         <source>Cancel Tween</source>
-        <translation>Cancelar Tween</translation>
+        <translation>Скасувати анімацію</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/opacity/opacitysettings.cpp" line="314"/>
         <source>Update Tween</source>
-        <translation>Atualizar Tween</translation>
+        <translation>Оновити анімацію</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/opacity/opacitysettings.cpp" line="316"/>
         <source>Close Tween Properties</source>
-        <translation>Fechar Propriedades De Tween</translation>
+        <translation>Закрити властивості анімації</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/opacity/opacitysettings.cpp" line="322"/>
         <source>You must select at least one object!</source>
-        <translation>Tem de selecionar pelo menos um objeto!</translation>
+        <translation>Слід вибрати хоча б один об&apos;єкт!</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/opacity/opacitysettings.cpp" line="327"/>
         <source>You must set Tween properties first!</source>
-        <translation>Tem de definir as propriedades de Tween primeiro!</translation>
+        <translation>Спочатку слід задати властивості анімації!</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/opacity/opacitysettings.cpp" line="371"/>
         <source>Select objects for Tweening first!</source>
-        <translation>Selecione objetos para Tween primeiro!</translation>
+        <translation>Спочатку виберіть об&apos;єкт для анімації!</translation>
     </message>
 </context>
 <context>
@@ -945,12 +945,12 @@
     <message>
         <location filename="../../../plugins/tools/papagayo/papagayoconfigurator.cpp" line="52"/>
         <source>Papagayo Lip-Sync Files</source>
-        <translation>Ficheiros Lip-Sync do Papagayo</translation>
+        <translation>Файли синхронізації руху губ Papagayo</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/papagayoconfigurator.cpp" line="68"/>
         <source>Mouth Samples</source>
-        <translation>Amostras De Boca</translation>
+        <translation>Набори зображень губ</translation>
     </message>
 </context>
 <context>
@@ -958,17 +958,17 @@
     <message>
         <location filename="../../../plugins/tools/papagayo/papagayosettings.cpp" line="61"/>
         <source>Editing</source>
-        <translation>Editar</translation>
+        <translation>Змінення</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/papagayosettings.cpp" line="76"/>
         <source>Starting at frame</source>
-        <translation>Iniciar no quadro</translation>
+        <translation>Початковий кадр</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/papagayosettings.cpp" line="114"/>
         <source>Mouth Position</source>
-        <translation>Posição da Boca</translation>
+        <translation>Розташування зображення губ</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/papagayosettings.cpp" line="117"/>
@@ -985,58 +985,58 @@
     <message>
         <location filename="../../../plugins/tools/papagayo/papagayosettings.cpp" line="151"/>
         <source>Mouth Rotation</source>
-        <translation>Rotação da Boca</translation>
+        <translation>Обертання зображення губ</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/papagayosettings.cpp" line="154"/>
         <source>Angle</source>
-        <translation>Ângulo</translation>
+        <translation>Кут</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/papagayosettings.cpp" line="171"/>
         <source>Mouth Scale</source>
-        <translation>Escala de Boca</translation>
+        <translation>Масштаб зображення губ</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/papagayosettings.cpp" line="212"/>
         <source>Proportion</source>
-        <translation>Proporção</translation>
+        <translation>Співвідношення сторін</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/papagayosettings.cpp" line="218"/>
         <source>Apply Forward</source>
-        <translation>Aplicar Adiante</translation>
+        <translation>Застосувати перетворення вперед</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/papagayosettings.cpp" line="219"/>
         <source>Apply On Current Frame</source>
-        <translation>Aplicar No Quadro Atual</translation>
+        <translation>Застосувати до поточного кадру</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/papagayosettings.cpp" line="228"/>
         <source>Reset Mouth</source>
-        <translation>Reiniciar a Boca</translation>
+        <translation>Скинути зміни зображення губ</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/papagayosettings.cpp" line="233"/>
         <source>Close properties</source>
-        <translation>Fechar propriedades</translation>
+        <translation>Закрити властивості</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/papagayosettings.cpp" line="290"/>
         <location filename="../../../plugins/tools/papagayo/papagayosettings.cpp" line="313"/>
         <source>Ending at frame</source>
-        <translation>Terminar no quadro</translation>
+        <translation>Кінцевий кадр</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/papagayosettings.cpp" line="291"/>
         <source>Frames Total</source>
-        <translation>Total de Quadros</translation>
+        <translation>Всього кадрів</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/papagayosettings.cpp" line="347"/>
         <source>Current Phoneme</source>
-        <translation>Fonema Atual</translation>
+        <translation>Поточна фонема</translation>
     </message>
 </context>
 <context>
@@ -1044,7 +1044,7 @@
     <message>
         <location filename="../../../plugins/tools/papagayo/papagayotool.cpp" line="227"/>
         <source>Papagayo Lip-sync</source>
-        <translation>Papagayo Lip-sync</translation>
+        <translation>Синхронизація руху губ Papagayo</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/papagayo/papagayotool.cpp" line="228"/>
@@ -1054,7 +1054,7 @@
     <message>
         <location filename="../../../plugins/tools/papagayo/papagayotool.cpp" line="553"/>
         <source>Frame</source>
-        <translation>Quadro</translation>
+        <translation>Кадр</translation>
     </message>
 </context>
 <context>
@@ -1062,12 +1062,12 @@
     <message>
         <location filename="../../../plugins/tools/pencil/pencilsettings.cpp" line="59"/>
         <source>Pencil Properties</source>
-        <translation>Propriedades do Lápis</translation>
+        <translation>Властивості олівця</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/pencil/pencilsettings.cpp" line="67"/>
         <source>Pencil Mode</source>
-        <translation>Modo Lápis</translation>
+        <translation>Режим олівця</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/pencil/pencilsettings.cpp" line="72"/>
@@ -1077,12 +1077,12 @@
     <message>
         <location filename="../../../plugins/tools/pencil/pencilsettings.cpp" line="74"/>
         <source>Eraser Mode - E</source>
-        <translation>Modo Borracha - E</translation>
+        <translation>Режим гумки - E</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/pencil/pencilsettings.cpp" line="85"/>
         <source>Smoothness</source>
-        <translation>Suavidade</translation>
+        <translation>Згладжування</translation>
     </message>
 </context>
 <context>
@@ -1091,7 +1091,7 @@
         <location filename="../../../plugins/tools/pencil/penciltool.cpp" line="62"/>
         <location filename="../../../plugins/tools/pencil/penciltool.cpp" line="64"/>
         <source>Pencil</source>
-        <translation>Lápis</translation>
+        <translation>Олівець</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/pencil/penciltool.cpp" line="63"/>
@@ -1106,7 +1106,7 @@
         <location filename="../../../plugins/tools/polyline/polylinetool.cpp" line="76"/>
         <location filename="../../../plugins/tools/polyline/polylinetool.cpp" line="78"/>
         <source>PolyLine</source>
-        <translation>PoliLinha</translation>
+        <translation>Ламана</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/polyline/polylinetool.cpp" line="77"/>
@@ -1120,22 +1120,22 @@
     <message>
         <location filename="../../../plugins/tools/polyline/polylinesettings.cpp" line="53"/>
         <source>PolyLine Properties</source>
-        <translation>Propriedades de PoliLinha</translation>
+        <translation>Властивості ламаної лінії</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/polyline/polylinesettings.cpp" line="57"/>
         <source>Tips</source>
-        <translation>Dicas</translation>
+        <translation>Підказки</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/polyline/polylinesettings.cpp" line="70"/>
         <source>X Key or Right Mouse Button</source>
-        <translation>Tecla X ou Clique com o botão direito</translation>
+        <translation>Клавіша «X» або права кнопка миші</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/polyline/polylinesettings.cpp" line="70"/>
         <source>Close line</source>
-        <translation>Fechar linha</translation>
+        <translation>Замкнути лінію</translation>
     </message>
 </context>
 <context>
@@ -1143,32 +1143,37 @@
     <message>
         <location filename="../../tupcrashhandler.cpp" line="50"/>
         <source>Fatal Error</source>
-        <translation>Erro Fatal</translation>
+        <translation>Критична помилка</translation>
     </message>
     <message>
         <location filename="../../tupcrashhandler.cpp" line="51"/>
         <source>Well, TupiTube has crashed...</source>
-        <translation>Bom, TupiTube deixou de funcionar...</translation>
+        <translation>Трапився збій TupiTube…</translation>
     </message>
     <message>
         <location filename="../../tupcrashhandler.cpp" line="52"/>
         <source>Close</source>
-        <translation>Fechar</translation>
+        <translation>Закрити</translation>
     </message>
     <message>
         <location filename="../../tupcrashhandler.cpp" line="53"/>
         <source>Re-launch TupiTube</source>
-        <translation>Relançar TupiTube</translation>
+        <translation>Перезапустити TupiTube</translation>
     </message>
     <message>
         <location filename="../../tupcrashhandler.cpp" line="54"/>
         <source>This is a general failure</source>
-        <translation>Isto é uma falha geral</translation>
+        <translation>Загальний збій застосунку</translation>
     </message>
     <message>
         <location filename="../../../plugins/export/ffmpegplugin/tffmpegmoviegenerator.cpp" line="233"/>
         <source>Animation created using TupiTube.com</source>
-        <translation>Animação criada usando TupiTube.com</translation>
+        <translation>Анімацію створено за допомогою TupiTube.com</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tupnetprojectmanagerhandler.cpp" line="436"/>
+        <source>Wall from</source>
+        <translation>Стіна від</translation>
     </message>
 </context>
 <context>
@@ -1177,76 +1182,76 @@
         <location filename="../../../mypaint/raster/brushes/rasterbrusheswidget.cpp" line="114"/>
         <location filename="../../../mypaint/raster/brushes/rasterbrusheswidget.cpp" line="159"/>
         <source>Erasers</source>
-        <translation>Borrachas</translation>
+        <translation>Гумки</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/brushes/rasterbrusheswidget.cpp" line="99"/>
         <location filename="../../../mypaint/raster/brushes/rasterbrusheswidget.cpp" line="149"/>
         <source>Art Set 1</source>
-        <translation>Grupo Arte 1</translation>
+        <translation>Художій набір 1</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/brushes/rasterbrusheswidget.cpp" line="53"/>
         <source>Brush Texture</source>
-        <translation>Textura de Pincel</translation>
+        <translation>пензля текстури</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/brushes/rasterbrusheswidget.cpp" line="102"/>
         <location filename="../../../mypaint/raster/brushes/rasterbrusheswidget.cpp" line="151"/>
         <source>Art Set 2</source>
-        <translation>Grupo Arte 2</translation>
+        <translation>Художій набір 2</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/brushes/rasterbrusheswidget.cpp" line="105"/>
         <location filename="../../../mypaint/raster/brushes/rasterbrusheswidget.cpp" line="153"/>
         <source>Art Set 3</source>
-        <translation>Grupo Arte 3</translation>
+        <translation>Художій набір 3</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/brushes/rasterbrusheswidget.cpp" line="108"/>
         <location filename="../../../mypaint/raster/brushes/rasterbrusheswidget.cpp" line="155"/>
         <source>Classic</source>
-        <translation>Clássico</translation>
+        <translation>Класичний</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/brushes/rasterbrusheswidget.cpp" line="111"/>
         <location filename="../../../mypaint/raster/brushes/rasterbrusheswidget.cpp" line="157"/>
         <source>Experimental</source>
-        <translation>Experimental</translation>
+        <translation>Експериментальний</translation>
     </message>
 </context>
 <context>
     <name>RasterColorWidget</name>
     <message>
-        <location filename="../../../mypaint/raster/color/rastercolorwidget.cpp" line="61"/>
+        <location filename="../../../mypaint/raster/color/rastercolorwidget.cpp" line="60"/>
         <source>Brush Color</source>
-        <translation>Cor do Pincel</translation>
+        <translation>Колір пензля</translation>
     </message>
     <message>
-        <location filename="../../../mypaint/raster/color/rastercolorwidget.cpp" line="132"/>
+        <location filename="../../../mypaint/raster/color/rastercolorwidget.cpp" line="131"/>
         <source>Contour</source>
-        <translation>Contorno</translation>
+        <translation>Штрих</translation>
     </message>
     <message>
-        <location filename="../../../mypaint/raster/color/rastercolorwidget.cpp" line="149"/>
-        <location filename="../../../mypaint/raster/color/rastercolorwidget.cpp" line="198"/>
+        <location filename="../../../mypaint/raster/color/rastercolorwidget.cpp" line="148"/>
+        <location filename="../../../mypaint/raster/color/rastercolorwidget.cpp" line="197"/>
         <source>HTML</source>
         <translation>HTML</translation>
     </message>
     <message>
-        <location filename="../../../mypaint/raster/color/rastercolorwidget.cpp" line="180"/>
+        <location filename="../../../mypaint/raster/color/rastercolorwidget.cpp" line="179"/>
         <source>Background</source>
-        <translation>Fundo</translation>
+        <translation>Тло</translation>
     </message>
     <message>
-        <location filename="../../../mypaint/raster/color/rastercolorwidget.cpp" line="190"/>
+        <location filename="../../../mypaint/raster/color/rastercolorwidget.cpp" line="189"/>
         <source>Reset background</source>
-        <translation>Reinicializar fundo</translation>
+        <translation>Скинути тло</translation>
     </message>
     <message>
-        <location filename="../../../mypaint/raster/color/rastercolorwidget.cpp" line="328"/>
+        <location filename="../../../mypaint/raster/color/rastercolorwidget.cpp" line="327"/>
         <source>Color Mixer</source>
-        <translation>Misturador de Cores</translation>
+        <translation>Властивості кольору</translation>
     </message>
 </context>
 <context>
@@ -1269,17 +1274,17 @@
     <message>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="104"/>
         <source>&amp;Export as Image</source>
-        <translation>&amp;Exportar como Imagem</translation>
+        <translation>&amp;Експортувати як зображення</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="106"/>
         <source>Export as Image</source>
-        <translation>Exportar como Imagem</translation>
+        <translation>Експортувати як зображення</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="109"/>
         <source>&amp;Import Image to Library</source>
-        <translation>&amp;Importar Imagem para a Biblioteca</translation>
+        <translation>&amp;Імпортувати зображення в бібліотеку</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="110"/>
@@ -1289,90 +1294,90 @@
     <message>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="111"/>
         <source>Import Image to Library</source>
-        <translation>Importar Imagem para a Biblioteca</translation>
+        <translation>Імпортувати зображення в бібліотеку</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="114"/>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="116"/>
         <source>Exit Raster Mode</source>
-        <translation>Sair do Modo Raster</translation>
+        <translation>Вийти з растрового режиму</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="123"/>
         <source>&amp;File</source>
-        <translation>&amp;Ficheiro</translation>
+        <translation>&amp;Файл</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="139"/>
         <source>Raster actions</source>
-        <translation>Ações Raster</translation>
+        <translation>Растрові операції</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="142"/>
         <source>Clear Canvas</source>
-        <translation>Limpar a Tela</translation>
+        <translation>Очистити полотно</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="147"/>
         <source>Undo</source>
-        <translation>Desfazer</translation>
+        <translation>Скасувати</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="152"/>
         <source>Redo</source>
-        <translation>Refazer</translation>
+        <translation>Повернути</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="173"/>
         <source>Raster Static Background</source>
-        <translation>Fundo Estático Raster</translation>
+        <translation>Статичне растрове тло</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="178"/>
         <source>Raster Dynamic Background</source>
-        <translation>Fundo Dinâmico Raster</translation>
+        <translation>Динамічне растрове тло</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="184"/>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="188"/>
         <source>Movement Orientation</source>
-        <translation>Orientação de Movimento</translation>
+        <translation>Напрям руху</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="189"/>
         <source>Right</source>
-        <translation>Direito</translation>
+        <translation>Праворуч</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="190"/>
         <source>Left</source>
-        <translation>Esquerda</translation>
+        <translation>Ліворуч</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="191"/>
         <source>Up</source>
-        <translation>Cima</translation>
+        <translation>Вгору</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="192"/>
         <source>Down</source>
-        <translation>Baixo</translation>
+        <translation>Вниз</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="213"/>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="220"/>
         <source>Shift Length</source>
-        <translation>Comprimento do Deslocamento</translation>
+        <translation>Довжина зміщення</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="381"/>
         <source>Open Image</source>
-        <translation>Abrir imagem</translation>
+        <translation>Відкрити зображення</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/main/rastermainwindow.cpp" line="396"/>
         <source>Export Image</source>
-        <translation>Exportar Imagem</translation>
+        <translation>Експортувати зображення</translation>
     </message>
 </context>
 <context>
@@ -1380,12 +1385,12 @@
     <message>
         <location filename="../../../mypaint/raster/size/rastersizewidget.cpp" line="44"/>
         <source>Brush Size</source>
-        <translation>Tamanho de Escova</translation>
+        <translation>Розмір пензля</translation>
     </message>
     <message>
         <location filename="../../../mypaint/raster/size/rastersizewidget.cpp" line="57"/>
         <source>Thickness</source>
-        <translation>Espessura</translation>
+        <translation>Товщина</translation>
     </message>
 </context>
 <context>
@@ -1393,32 +1398,32 @@
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="54"/>
         <source>Name</source>
-        <translation>Nome</translation>
+        <translation>Назва</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="64"/>
         <source>Options</source>
-        <translation>Opções</translation>
+        <translation>Параметри</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="65"/>
         <source>Select object</source>
-        <translation>Selecionar objeto</translation>
+        <translation>Вибрати об&apos;єкт</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="66"/>
         <source>Set Properties</source>
-        <translation>Definir Propriedades</translation>
+        <translation>Задати властивості</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="106"/>
         <source>Starting at frame</source>
-        <translation>Iniciar no quadro</translation>
+        <translation>Початковий кадр</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="114"/>
         <source>Ending at frame</source>
-        <translation>Terminar no quadro</translation>
+        <translation>Кінцевий кадр</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="137"/>
@@ -1426,122 +1431,122 @@
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="723"/>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="730"/>
         <source>Frames Total</source>
-        <translation>Total de Quadros</translation>
+        <translation>Всього кадрів</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="188"/>
         <source>Continuous</source>
-        <translation>Contínuo</translation>
+        <translation>неперервне</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="189"/>
         <source>Partial</source>
-        <translation>Parcial</translation>
+        <translation>часткове</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="193"/>
         <source>Type</source>
-        <translation>Tipo</translation>
+        <translation>Тип</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="145"/>
         <source>Speed (Degrees/Frame)</source>
-        <translation>Velocidade (Graus/Quadro)</translation>
+        <translation>Швидкість (градусів/кадр)</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="173"/>
         <source>Direction</source>
-        <translation>Direção</translation>
+        <translation>Напрям</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="177"/>
         <source>Clockwise</source>
-        <translation>Para a direita</translation>
+        <translation>за стрілкою годинника</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="178"/>
         <source>Counterclockwise</source>
-        <translation>Para a esquerda</translation>
+        <translation>проти стрілки годинника</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="217"/>
         <source>Basic</source>
-        <translation>Básico</translation>
+        <translation>Базовий</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="218"/>
         <source>Advanced</source>
-        <translation>Avançado</translation>
+        <translation>Просунутий</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="243"/>
         <source>Degrees Range</source>
-        <translation>Intervalo de Graus</translation>
+        <translation>Діапазон градусів</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="246"/>
         <source>Start at</source>
-        <translation>Iniciar em</translation>
+        <translation>Починається з</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="262"/>
         <source>Finish at</source>
-        <translation>Terminar em</translation>
+        <translation>Закінчується на</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="278"/>
         <source>Loop</source>
-        <translation>Ciclo</translation>
+        <translation>Зациклити</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="287"/>
         <source>Loop with Reverse</source>
-        <translation>Ciclo com Inversão</translation>
+        <translation>Зациклити з реверсом</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="336"/>
         <source>Save Tween</source>
-        <translation>Guardar Tween</translation>
+        <translation>Зберегти анімацію</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="338"/>
         <source>Cancel Tween</source>
-        <translation>Cancelar Tween</translation>
+        <translation>Скасувати анімацію</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="415"/>
         <source>Update Tween</source>
-        <translation>Atualizar Tween</translation>
+        <translation>Оновити анімацію</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="417"/>
         <source>Close Tween Properties</source>
-        <translation>Fechar Propriedades De Tween</translation>
+        <translation>Закрити властивості анімації</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="423"/>
         <source>You must select at least one object!</source>
-        <translation>Tem de selecionar pelo menos um objeto!</translation>
+        <translation>Слід вибрати хоча б один об&apos;єкт!</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="432"/>
         <source>You must set Tween properties first!</source>
-        <translation>Tem de definir as propriedades de Tween primeiro!</translation>
+        <translation>Спочатку слід задати властивості анімації!</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="444"/>
         <source>Angle range must be greater than 0!</source>
-        <translation>O intervalo do ângulo deve ser maior a 0!</translation>
+        <translation>Діапазон кута має бути більшим від 0!</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="454"/>
         <source>Angle range must be greater than Speed!</source>
-        <translation>O intervalo do ângulo deve ser maior que a Velocidade!</translation>
+        <translation>Діапазон кута має бути більшим від швидкості!</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/rotationsettings.cpp" line="503"/>
         <source>Select objects for Tweening first!</source>
-        <translation>Selecione objetos para Tween primeiro!</translation>
+        <translation>Спочатку виберіть об&apos;єкт для анімації!</translation>
     </message>
 </context>
 <context>
@@ -1549,32 +1554,32 @@
     <message>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="52"/>
         <source>Name</source>
-        <translation>Nome</translation>
+        <translation>Назва</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="62"/>
         <source>Options</source>
-        <translation>Opções</translation>
+        <translation>Параметри</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="63"/>
         <source>Select object</source>
-        <translation>Selecionar objeto</translation>
+        <translation>Вибрати об&apos;єкт</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="64"/>
         <source>Set Properties</source>
-        <translation>Definir Propriedades</translation>
+        <translation>Задати властивості</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="103"/>
         <source>Starting at frame</source>
-        <translation>Iniciar no quadro</translation>
+        <translation>Початковий кадр</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="111"/>
         <source>Ending at frame</source>
-        <translation>Terminar no quadro</translation>
+        <translation>Кінцевий кадр</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="134"/>
@@ -1582,82 +1587,82 @@
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="541"/>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="548"/>
         <source>Frames Total</source>
-        <translation>Total de Quadros</translation>
+        <translation>Всього кадрів</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="143"/>
         <source>Width &amp; Height</source>
-        <translation>Largura e Altura</translation>
+        <translation>ширину й висоту</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="144"/>
         <source>Only Width</source>
-        <translation>Só Largura</translation>
+        <translation>лише ширину</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="145"/>
         <source>Only Height</source>
-        <translation>Só Altura</translation>
+        <translation>лише висоту</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="146"/>
         <source>Scale in</source>
-        <translation>Escalar em</translation>
+        <translation>Змінювати</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="162"/>
         <source>Scaling Factor</source>
-        <translation>Fator de Escala</translation>
+        <translation>Коеф. масшт.</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="176"/>
         <source>Iterations</source>
-        <translation>Iterações</translation>
+        <translation>Ітерацій</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="185"/>
         <source>Loop</source>
-        <translation>Ciclo</translation>
+        <translation>Зациклити</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="194"/>
         <source>Loop with Reverse</source>
-        <translation>Ciclo com Inversão</translation>
+        <translation>Зациклити з реверсом</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="243"/>
         <source>Save Tween</source>
-        <translation>Guardar Tween</translation>
+        <translation>Зберегти анімацію</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="245"/>
         <source>Cancel Tween</source>
-        <translation>Cancelar Tween</translation>
+        <translation>Скасувати анімацію</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="321"/>
         <source>Update Tween</source>
-        <translation>Atualizar Tween</translation>
+        <translation>Оновити анімацію</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="323"/>
         <source>Close Tween Properties</source>
-        <translation>Fechar Propriedades De Tween</translation>
+        <translation>Закрити властивості анімації</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="329"/>
         <source>You must select at least one object!</source>
-        <translation>Tem de selecionar pelo menos um objeto!</translation>
+        <translation>Слід вибрати хоча б один об&apos;єкт!</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="334"/>
         <source>You must set Tween properties first!</source>
-        <translation>Tem de definir as propriedades de Tween primeiro!</translation>
+        <translation>Спочатку слід задати властивості анімації!</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/scalesettings.cpp" line="379"/>
         <source>Select objects for Tweening first!</source>
-        <translation>Selecione objetos para Tween primeiro!</translation>
+        <translation>Спочатку виберіть об&apos;єкти для анімації!</translation>
     </message>
 </context>
 <context>
@@ -1665,97 +1670,97 @@
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="60"/>
         <source>Selection Properties</source>
-        <translation>Propriedades de Seleção</translation>
+        <translation>Властивості засобу вибору</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="125"/>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="182"/>
         <source>Alignment</source>
-        <translation>Alinhamento</translation>
+        <translation>Вирівнювання</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="247"/>
         <source>Horizontal Center</source>
-        <translation>Centralizar Horizontalmente</translation>
+        <translation>Центр горизонтально</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="249"/>
         <source>Vertical Center</source>
-        <translation>Centralizar Verticalmente</translation>
+        <translation>Центр вертикально</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="251"/>
         <source>Absolute Center</source>
-        <translation>Centralizar</translation>
+        <translation>Абсолютний центр</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="132"/>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="182"/>
         <source>Flips</source>
-        <translation>Inversões</translation>
+        <translation>Відображення</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="270"/>
         <source>Horizontal Flip</source>
-        <translation>Inverter Horizontalmente</translation>
+        <translation>Відобразити горизонтально</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="272"/>
         <source>Vertical Flip</source>
-        <translation>Inverter Verticalmente</translation>
+        <translation>Відобразити вертикально</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="274"/>
         <source>Crossed Flip</source>
-        <translation>Inverter Cruzado</translation>
+        <translation>Відобразити перехресно</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="139"/>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="182"/>
         <source>Order</source>
-        <translation>Ordem</translation>
+        <translation>Порядок</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="293"/>
         <source>Send object to back</source>
-        <translation>Enviar objeto para trás</translation>
+        <translation>Розмістити об&apos;єкт позаду всіх</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="296"/>
         <source>Send object to back one level</source>
-        <translation>Enviar objeto para trás um nível</translation>
+        <translation>Перемістити об&apos;єкт на один рівень далі</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="299"/>
         <source>Send object to front</source>
-        <translation>Enviar objeto para frente</translation>
+        <translation>Розмістити об&apos;єкт попереду всіх</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="302"/>
         <source>Send object to front one level</source>
-        <translation>Enviar objeto para frente um nível</translation>
+        <translation>Перемістити об&apos;єкт на один рівень ближче</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="148"/>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="182"/>
         <source>Group</source>
-        <translation>Grupo</translation>
+        <translation>Групування</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="324"/>
         <source>Group Objects</source>
-        <translation>Agrupar Objetos</translation>
+        <translation>Згрупувати об&apos;єкти</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="327"/>
         <source>Ungroup Objects</source>
-        <translation>Desagrupar Objetos</translation>
+        <translation>Розгрупувати об&apos;єкти</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="157"/>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="183"/>
         <source>Position</source>
-        <translation>Posição</translation>
+        <translation>Розташування</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="342"/>
@@ -1773,100 +1778,100 @@
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="163"/>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="183"/>
         <source>Rotation</source>
-        <translation>Rotação</translation>
+        <translation>Обертання</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="378"/>
         <source>Angle</source>
-        <translation>Ângulo</translation>
+        <translation>Кут</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="169"/>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="183"/>
         <source>Scale</source>
-        <translation>Escala</translation>
+        <translation>Масштаб</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="430"/>
         <source>Proportion</source>
-        <translation>Proporção</translation>
+        <translation>Пропорц.</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="450"/>
         <source>Paste objects over mouse position</source>
-        <translation>Colar objetos sobre a posição do mouse</translation>
+        <translation>Вставляти об&apos;єкти на місце вказівника миші</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="85"/>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="516"/>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="533"/>
         <source>Show Tips</source>
-        <translation>Exibir Dicas</translation>
+        <translation>Показ підказок</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="86"/>
         <source>A little help for the Selection tool</source>
-        <translation>Uma pequena ajuda para a ferramenta de Seleção</translation>
+        <translation>Коротка довідка для засобу вибору</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="104"/>
         <source>Double Click on any node or Shortcut Alt + R</source>
-        <translation>Clique duas vezes em qualquer nodo ou atalho Alt + R</translation>
+        <translation>Двічі клацнути будь-який вузол або сполучення клавіш Alt + R</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="104"/>
         <source>Rotation mode</source>
-        <translation>Modo de rotação</translation>
+        <translation>Режим обертання</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="105"/>
         <source>Arrows</source>
-        <translation>Setas</translation>
+        <translation>Стрілки</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="105"/>
         <source>Movement on selection</source>
-        <translation>Movimento da seleção</translation>
+        <translation>Переміщення вибраного об&apos;єкта</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="106"/>
         <source>Shift + Arrows</source>
-        <translation>Shift + Setas</translation>
+        <translation>Shift + стрілки</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="106"/>
         <source>Slow movement on selection</source>
-        <translation>Movimento lento da seleção</translation>
+        <translation>Повільне переміщення вибраного</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="107"/>
         <source>Ctrl + Arrows</source>
-        <translation>Ctrl + Setas</translation>
+        <translation>Ctrl + стрілки</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="107"/>
         <source>Fast movement on selection</source>
-        <translation>Movimento rápido da seleção</translation>
+        <translation>Швидке переміщення вибраного</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="108"/>
         <source>Ctrl + Left Mouse Button</source>
-        <translation>Ctrl + Botão Esquerdo do Mouse</translation>
+        <translation>Ctrl + ліва кнопка</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="108"/>
         <source>Proportional scaling on selection</source>
-        <translation>Escalar proporcionalmente a seleção</translation>
+        <translation>Масштабування вибраного зі збереженням пропорцій</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="454"/>
         <source>Reset Item</source>
-        <translation>Reiniciar Item</translation>
+        <translation>Скинути зміни</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectionsettings.cpp" line="525"/>
         <source>Hide Tips</source>
-        <translation>Ocultar Dicas</translation>
+        <translation>Приховати підказки</translation>
     </message>
 </context>
 <context>
@@ -1875,7 +1880,7 @@
         <location filename="../../../plugins/tools/selection/selectiontool.cpp" line="333"/>
         <location filename="../../../plugins/tools/selection/selectiontool.cpp" line="335"/>
         <source>Object Selection</source>
-        <translation>Seleção de Objetos</translation>
+        <translation>Вибір об&apos;єкта</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/selection/selectiontool.cpp" line="334"/>
@@ -1886,7 +1891,7 @@
     <message>
         <location filename="../../../plugins/tools/selection/selectiontool.cpp" line="780"/>
         <source>SVG objects can&apos;t be grouped/ungrouped yet</source>
-        <translation>Objetos SVG ainda não podem ser agrupados/desagrupados</translation>
+        <translation>Наразі об&apos;єктів SVG не можна згрупувати/розгрупувати</translation>
     </message>
 </context>
 <context>
@@ -1894,32 +1899,32 @@
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="50"/>
         <source>Name</source>
-        <translation>Nome</translation>
+        <translation>Назва</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="60"/>
         <source>Options</source>
-        <translation>Opções</translation>
+        <translation>Параметри</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="61"/>
         <source>Select object</source>
-        <translation>Selecionar objeto</translation>
+        <translation>Вибрати об&apos;єкт</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="62"/>
         <source>Set Properties</source>
-        <translation>Definir Propriedades</translation>
+        <translation>Задати властивості</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="101"/>
         <source>Starting at frame</source>
-        <translation>Iniciar no quadro</translation>
+        <translation>Початковий кадр</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="109"/>
         <source>Ending at frame</source>
-        <translation>Terminar no quadro</translation>
+        <translation>Кінцевий кадр</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="132"/>
@@ -1927,95 +1932,82 @@
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="525"/>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="532"/>
         <source>Frames Total</source>
-        <translation>Total de Quadros</translation>
+        <translation>Всього кадрів</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="141"/>
         <source>Width &amp; Height</source>
-        <translation>Largura e Altura</translation>
+        <translation>за шириною й висотою</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="142"/>
         <source>Only Width</source>
-        <translation>Só Largura</translation>
+        <translation>лише за шириною</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="143"/>
         <source>Only Height</source>
-        <translation>Só Altura</translation>
+        <translation>лише за висотою</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="144"/>
         <source>Shear in</source>
-        <translation>Distorcer em</translation>
+        <translation>Зсунути</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="160"/>
         <source>Shear Factor</source>
-        <translation>Fator de Cisalhamento</translation>
+        <translation>коефіцієнт зсуву</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="174"/>
         <source>Iterations</source>
-        <translation>Iterações</translation>
+        <translation>Ітерацій</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="183"/>
         <source>Loop</source>
-        <translation>Ciclo</translation>
+        <translation>Зациклити</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="192"/>
         <source>Loop with Reverse</source>
-        <translation>Ciclo com Inversão</translation>
+        <translation>Зациклити з реверсом</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="240"/>
         <source>Save Tween</source>
-        <translation>Guardar Tween</translation>
+        <translation>Зберегти анімацію</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="242"/>
         <source>Cancel Tween</source>
-        <translation>Cancelar Tween</translation>
+        <translation>Скасувати анімацію</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="310"/>
         <source>Update Tween</source>
-        <translation>Atualizar Tween</translation>
+        <translation>Оновити анімацію</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="312"/>
         <source>Close Tween Properties</source>
-        <translation>Fechar Propriedades De Tween</translation>
+        <translation>Закрити властивості анімації</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="318"/>
         <source>You must select at least one object!</source>
-        <translation>Tem de selecionar pelo menos um objeto!</translation>
+        <translation>Слід вибрати хоча б один об&apos;єкт!</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="323"/>
         <source>You must set Tween properties first!</source>
-        <translation>Tem de definir as propriedades de Tween primeiro!</translation>
+        <translation>Спочатку слід задати властивості анімації!</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/shearsettings.cpp" line="368"/>
         <source>Select objects for Tweening first!</source>
-        <translation>Selecione objetos para Tween primeiro!</translation>
-    </message>
-</context>
-<context>
-    <name>SpinControl</name>
-    <message>
-        <location filename="../../../libtupi/tupgradientcreator.h" line="131"/>
-        <source>Radius</source>
-        <translation>Raio</translation>
-    </message>
-    <message>
-        <location filename="../../../libtupi/tupgradientcreator.h" line="140"/>
-        <source>Angle</source>
-        <translation>Ângulo</translation>
+        <translation>Спочатку виберіть об&apos;єкт для анімації!</translation>
     </message>
 </context>
 <context>
@@ -2023,12 +2015,12 @@
     <message>
         <location filename="../../../plugins/tools/common/stepsviewer.cpp" line="51"/>
         <source>Interval</source>
-        <translation>Intervalo</translation>
+        <translation>Крок</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/common/stepsviewer.cpp" line="51"/>
         <source>Frames</source>
-        <translation>Quadros</translation>
+        <translation>Кадри</translation>
     </message>
 </context>
 <context>
@@ -2036,42 +2028,42 @@
     <message>
         <location filename="../../../framework/gui/tbackupdialog.cpp" line="63"/>
         <source>Recovery Mode</source>
-        <translation>Modo de Recuperação</translation>
+        <translation>Режим відновлення</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tbackupdialog.cpp" line="68"/>
         <source>There was an issue while saving your project.&lt;br/&gt;Please, select a folder to try to recover it.</source>
-        <translation>Ocorreu um problema ao salvar seu projeto. &lt;br/&gt; Por favor, selecione uma pasta para tentar recuperá-lo.</translation>
+        <translation>При збереженні вашого проєкту виникли проблеми.&lt;br/&gt;Виберіть теку для спроби його відновлення.</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tbackupdialog.cpp" line="77"/>
         <source>Choose another path</source>
-        <translation>Escolha outro caminho</translation>
+        <translation>Виберіть інший шлях</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tbackupdialog.cpp" line="81"/>
         <source>Folder: </source>
-        <translation>Pasta: </translation>
+        <translation>Тека: </translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tbackupdialog.cpp" line="85"/>
         <source>Make Backup</source>
-        <translation>Faça Backup</translation>
+        <translation>Створити резервну копію</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tbackupdialog.cpp" line="89"/>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
+        <translation>Скасувати</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tbackupdialog.cpp" line="107"/>
         <source>Choose a directory...</source>
-        <translation>Escolha um diretório...</translation>
+        <translation>Вибрати каталог…</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tbackupdialog.cpp" line="124"/>
         <source>Folder doesn&apos;t exist. Please, pick one!</source>
-        <translation>Pasta não existe. Por favor, escolha um!</translation>
+        <translation>Тека не існує. Виберіть іншу!</translation>
     </message>
 </context>
 <context>
@@ -2079,35 +2071,22 @@
     <message>
         <location filename="../../../framework/gui/tbuttonbar.cpp" line="50"/>
         <source>Left button bar</source>
-        <translation>Barra de botões esquerda</translation>
+        <translation>Ліва панель кнопок</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tbuttonbar.cpp" line="55"/>
         <source>Right button bar</source>
-        <translation>Barra de botões direita</translation>
+        <translation>Права панель кнопок</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tbuttonbar.cpp" line="60"/>
         <source>Bottom button bar</source>
-        <translation>Barra de botões inferior</translation>
+        <translation>Нижня панель кнопок</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tbuttonbar.cpp" line="65"/>
         <source>Top button bar</source>
-        <translation>Barra de botões superior</translation>
-    </message>
-</context>
-<context>
-    <name>TCommandHistory</name>
-    <message>
-        <location filename="../../../framework/gui/tcommandhistory.cpp" line="40"/>
-        <source>Undo</source>
-        <translation>Desfazer</translation>
-    </message>
-    <message>
-        <location filename="../../../framework/gui/tcommandhistory.cpp" line="41"/>
-        <source>Redo</source>
-        <translation>Refazer</translation>
+        <translation>Верхня панель кнопок</translation>
     </message>
 </context>
 <context>
@@ -2115,12 +2094,12 @@
     <message>
         <location filename="../../../framework/gui/tconfigurationdialog.cpp" line="69"/>
         <source>&amp;Apply</source>
-        <translation>&amp;Aplique</translation>
+        <translation>&amp;Застосувати</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tconfigurationdialog.cpp" line="75"/>
         <source>&amp;Cancel</source>
-        <translation>&amp;Cancelar</translation>
+        <translation>С&amp;касувати</translation>
     </message>
 </context>
 <context>
@@ -2128,47 +2107,47 @@
     <message>
         <location filename="../../../framework/gui/tfontchooser.cpp" line="51"/>
         <source>Family</source>
-        <translation>Família</translation>
+        <translation>Гарнітура</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tfontchooser.cpp" line="65"/>
         <source>Bold</source>
-        <translation>Negrito</translation>
+        <translation>Жирний</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tfontchooser.cpp" line="77"/>
         <source>Underline</source>
-        <translation>Sublinhado</translation>
+        <translation>Підкреслений</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tfontchooser.cpp" line="83"/>
         <source>Overline</source>
-        <translation>Overline</translation>
+        <translation>Надкреслений</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tfontchooser.cpp" line="92"/>
         <source>Align Text To Left</source>
-        <translation>Alinhar O Texto Á Esquerda</translation>
+        <translation>Вирівняти за лівим краєм</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tfontchooser.cpp" line="98"/>
         <source>Align Text To Center</source>
-        <translation>Alinhar O Texto Ao Centro</translation>
+        <translation>Вирівняти по центру</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tfontchooser.cpp" line="104"/>
         <source>Align Text To Right</source>
-        <translation>Alinhar O Texto Á Direita</translation>
+        <translation>Вирівняти за правим краєм</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tfontchooser.cpp" line="56"/>
         <source>Size</source>
-        <translation>Tamanho</translation>
+        <translation>Розмір</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tfontchooser.cpp" line="71"/>
         <source>Italic</source>
-        <translation>Itálico</translation>
+        <translation>Курсив</translation>
     </message>
 </context>
 <context>
@@ -2176,12 +2155,12 @@
     <message>
         <location filename="../../../framework/gui/timagedialog.cpp" line="64"/>
         <source>Breaking News!</source>
-        <translation>Flash Informativo!</translation>
+        <translation>Найсвіжіші новини!</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/timagedialog.cpp" line="79"/>
         <source>Close</source>
-        <translation>Fechar</translation>
+        <translation>Закрити</translation>
     </message>
 </context>
 <context>
@@ -2189,12 +2168,12 @@
     <message>
         <location filename="../../../framework/gui/titemselector.cpp" line="212"/>
         <source>Duration:</source>
-        <translation>Duração:</translation>
+        <translation>Тривалість:</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/titemselector.cpp" line="212"/>
         <source>secs</source>
-        <translation>segundos</translation>
+        <translation>секунд</translation>
     </message>
 </context>
 <context>
@@ -2202,20 +2181,7 @@
     <message>
         <location filename="../../../framework/gui/tmainwindow.cpp" line="134"/>
         <source>Show Top Panel</source>
-        <translation>Mostrar Panel Acima</translation>
-    </message>
-</context>
-<context>
-    <name>TMsgDialog</name>
-    <message>
-        <location filename="../../../framework/gui/tmsgdialog.cpp" line="62"/>
-        <source>Breaking News!</source>
-        <translation>Flash Informativo!</translation>
-    </message>
-    <message>
-        <location filename="../../../framework/gui/tmsgdialog.cpp" line="104"/>
-        <source>Close</source>
-        <translation>Fechar</translation>
+        <translation>Показати верхню панель</translation>
     </message>
 </context>
 <context>
@@ -2223,27 +2189,27 @@
     <message>
         <location filename="../../../framework/gui/toptionaldialog.cpp" line="72"/>
         <source>View Privacy Policy</source>
-        <translation>Ver Política de Privacidade</translation>
+        <translation>Політика конфіденційності</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/toptionaldialog.cpp" line="78"/>
         <source>Don&apos;t show again</source>
-        <translation>Não mostrar novamente</translation>
+        <translation>Більше не показувати</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/toptionaldialog.cpp" line="83"/>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
+        <translation>Скасувати</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/toptionaldialog.cpp" line="91"/>
         <source>Discard</source>
-        <translation>Descartar</translation>
+        <translation>Відхилити</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/toptionaldialog.cpp" line="99"/>
         <source>Accept</source>
-        <translation>Aceitar</translation>
+        <translation>Прийняти</translation>
     </message>
 </context>
 <context>
@@ -2251,71 +2217,22 @@
     <message>
         <location filename="../../../framework/gui/tosd.cpp" line="99"/>
         <source>Information</source>
-        <translation>Informação</translation>
+        <translation>Інформація</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tosd.cpp" line="111"/>
         <source>Warning</source>
-        <translation>Aviso</translation>
+        <translation>Попередження</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tosd.cpp" line="120"/>
         <source>Error</source>
-        <translation>Erro</translation>
+        <translation>Помилка</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tosd.cpp" line="129"/>
         <source>Fatal</source>
-        <translation>Fatal</translation>
-    </message>
-</context>
-<context>
-    <name>TRulerBase</name>
-    <message>
-        <location filename="../../../framework/gui/trulerbase.cpp" line="84"/>
-        <source>Change scale to 5...</source>
-        <translation>Alterar escala para 5...</translation>
-    </message>
-    <message>
-        <location filename="../../../framework/gui/trulerbase.cpp" line="85"/>
-        <source>Change scale to 10...</source>
-        <translation>Alterar escala para 10...</translation>
-    </message>
-</context>
-<context>
-    <name>TSizeBox</name>
-    <message>
-        <location filename="../../../framework/gui/tsizebox.cpp" line="43"/>
-        <source>Width:</source>
-        <translation>Largura:</translation>
-    </message>
-    <message>
-        <location filename="../../../framework/gui/tsizebox.cpp" line="57"/>
-        <source>Height:</source>
-        <translation>Altura:</translation>
-    </message>
-</context>
-<context>
-    <name>TWizard</name>
-    <message>
-        <location filename="../../../framework/gui/twizard.cpp" line="39"/>
-        <source>Cancel</source>
-        <translation>Cancelar</translation>
-    </message>
-    <message>
-        <location filename="../../../framework/gui/twizard.cpp" line="40"/>
-        <source>&lt; &amp;Back</source>
-        <translation>&lt; &amp;Voltar</translation>
-    </message>
-    <message>
-        <location filename="../../../framework/gui/twizard.cpp" line="41"/>
-        <source>Next &gt;</source>
-        <translation>Próximo &gt;</translation>
-    </message>
-    <message>
-        <location filename="../../../framework/gui/twizard.cpp" line="42"/>
-        <source>&amp;Finish</source>
-        <translation>&amp;Terminar</translation>
+        <translation>Критична помилка</translation>
     </message>
 </context>
 <context>
@@ -2324,12 +2241,12 @@
         <location filename="../../../framework/gui/txyspinbox.cpp" line="67"/>
         <location filename="../../../framework/gui/txyspinbox.cpp" line="121"/>
         <source>Rectangle Dimension</source>
-        <translation>Dimensão Retângulo</translation>
+        <translation>Розмір прямокутника</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/txyspinbox.cpp" line="112"/>
         <source>Square Dimension</source>
-        <translation>Dimensão Quadrada</translation>
+        <translation>Квадратний вимір</translation>
     </message>
 </context>
 <context>
@@ -2337,27 +2254,27 @@
     <message>
         <location filename="../../../framework/gui/tabdialog.cpp" line="85"/>
         <source>Help</source>
-        <translation>Ajuda</translation>
+        <translation>Довідка</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tabdialog.cpp" line="95"/>
         <source>Apply</source>
-        <translation>Aplicar</translation>
+        <translation>Застосувати</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tabdialog.cpp" line="104"/>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
+        <translation>Скасувати</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tabdialog.cpp" line="114"/>
         <source>Close</source>
-        <translation>Fechar</translation>
+        <translation>Закрити</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/tabdialog.cpp" line="125"/>
         <source>OK</source>
-        <translation>OK</translation>
+        <translation>Гаразд</translation>
     </message>
 </context>
 <context>
@@ -2365,33 +2282,33 @@
     <message>
         <location filename="../../../plugins/tools/text/textconfigurator.cpp" line="56"/>
         <source>Text Properties</source>
-        <translation>Propriedades Do Texto</translation>
+        <translation>Властивості тексту</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/text/textconfigurator.cpp" line="64"/>
         <source>Text</source>
-        <translation>Texto</translation>
+        <translation>Текст</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/text/textconfigurator.cpp" line="78"/>
         <location filename="../../../plugins/tools/text/textconfigurator.cpp" line="327"/>
         <source>Add Text</source>
-        <translation>Adicione Texto</translation>
+        <translation>Додати текст</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/text/textconfigurator.cpp" line="83"/>
         <source>Reset Transformations</source>
-        <translation>Reiniciar as Transformações</translation>
+        <translation>Скинути перетворення</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/text/textconfigurator.cpp" line="88"/>
         <source>Clear Text</source>
-        <translation>Remover Texto</translation>
+        <translation>Очистити текст</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/text/textconfigurator.cpp" line="120"/>
         <source>Text Position</source>
-        <translation>Posição do Texto</translation>
+        <translation>Розташування тексту</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/text/textconfigurator.cpp" line="126"/>
@@ -2408,23 +2325,23 @@
     <message>
         <location filename="../../../plugins/tools/text/textconfigurator.cpp" line="172"/>
         <source>Text Rotation</source>
-        <translation>Rotação de Texto</translation>
+        <translation>Обертання тексту</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/text/textconfigurator.cpp" line="190"/>
         <location filename="../../../plugins/tools/text/textconfigurator.cpp" line="235"/>
         <source>Text Scale</source>
-        <translation>Escala de Texto</translation>
+        <translation>Масштаб тексту</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/text/textconfigurator.cpp" line="241"/>
         <source>Proportion</source>
-        <translation>Proporção</translation>
+        <translation>Пропорції</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/text/textconfigurator.cpp" line="324"/>
         <source>Update Text</source>
-        <translation>Atualizar O Texto</translation>
+        <translation>Оновити текст</translation>
     </message>
 </context>
 <context>
@@ -2432,7 +2349,7 @@
     <message>
         <location filename="../../../plugins/tools/text/texttool.cpp" line="563"/>
         <source>Text</source>
-        <translation>Texto</translation>
+        <translation>Текст</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/text/texttool.cpp" line="564"/>
@@ -2442,33 +2359,7 @@
     <message>
         <location filename="../../../plugins/tools/text/texttool.cpp" line="635"/>
         <source>Sorry, text can&apos;t be empty!</source>
-        <translation>Desculpe, o texto não pode estar vazio!</translation>
-    </message>
-</context>
-<context>
-    <name>TipDatabase</name>
-    <message>
-        <location filename="../../../framework/core/tipdatabase.cpp" line="177"/>
-        <source>Did you already watch this video?</source>
-        <translation>Você já assistiu este vídeo?</translation>
-    </message>
-</context>
-<context>
-    <name>TipDialog</name>
-    <message>
-        <location filename="../../../framework/gui/tipdialog.cpp" line="82"/>
-        <source>Animations</source>
-        <translation>Animações</translation>
-    </message>
-    <message>
-        <location filename="../../../framework/gui/tipdialog.cpp" line="87"/>
-        <source>Tips</source>
-        <translation>Dicas</translation>
-    </message>
-    <message>
-        <location filename="../../../framework/gui/tipdialog.cpp" line="92"/>
-        <source>Show this dialog on start</source>
-        <translation>Mostrar esta caixa de diálogo ao iniciar</translation>
+        <translation>Текст не може бути порожнім!</translation>
     </message>
 </context>
 <context>
@@ -2477,17 +2368,17 @@
         <location filename="../../../framework/gui/treewidgetsearchline.cpp" line="62"/>
         <location filename="../../../framework/gui/treewidgetsearchline.cpp" line="77"/>
         <source>Search</source>
-        <translation>Pesquisar</translation>
+        <translation>Пошук</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/treewidgetsearchline.cpp" line="265"/>
         <source>Search Columns</source>
-        <translation>Pesquisar Colunas</translation>
+        <translation>Шукати за стовпцями</translation>
     </message>
     <message>
         <location filename="../../../framework/gui/treewidgetsearchline.cpp" line="267"/>
         <source>All Visible Columns</source>
-        <translation>Todas as Colunas Visíveis</translation>
+        <translation>Всі видимі стовпці</translation>
     </message>
 </context>
 <context>
@@ -2495,30 +2386,30 @@
     <message>
         <location filename="../../../framework/gui/treewidgetsearchline.cpp" line="569"/>
         <source>Clear</source>
-        <translation>Limpar</translation>
+        <translation>Очистити</translation>
     </message>
 </context>
 <context>
     <name>TupAbout</name>
     <message>
+        <location filename="../../../libui/tupabout.cpp" line="52"/>
+        <source>About TupiTube Desk</source>
+        <translation>Про TupiTube Desk</translation>
+    </message>
+    <message>
         <location filename="../../../libui/tupabout.cpp" line="109"/>
         <source>About</source>
-        <translation>Sobre</translation>
+        <translation>Про програму</translation>
     </message>
     <message>
         <location filename="../../../libui/tupabout.cpp" line="163"/>
         <source>License Agreement</source>
-        <translation>Contrato de Licença</translation>
+        <translation>Ліцензійна угода</translation>
     </message>
     <message>
         <location filename="../../../libui/tupabout.cpp" line="164"/>
         <source>Close</source>
-        <translation>Fechar</translation>
-    </message>
-    <message>
-        <location filename="../../../libui/tupabout.cpp" line="52"/>
-        <source>About TupiTube Desk</source>
-        <translation>Sobre TupiTube Desk</translation>
+        <translation>Закрити</translation>
     </message>
 </context>
 <context>
@@ -2526,7 +2417,7 @@
     <message>
         <location filename="../../../plugins/export/ffmpegplugin/tupaudiomixer.cpp" line="858"/>
         <source>Merging audio files...</source>
-        <translation>Mesclando arquivos de áudio...</translation>
+        <translation>Об&apos;єднання аудіофайлів...</translation>
     </message>
 </context>
 <context>
@@ -2534,37 +2425,37 @@
     <message>
         <location filename="../../../components/workspace/tupbasiccamerainterface.cpp" line="52"/>
         <source>TupiTube Camera Manager</source>
-        <translation>Gestor de Câmera do TupiTube</translation>
+        <translation>Керування камерою TupiTube</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupbasiccamerainterface.cpp" line="52"/>
         <source>Current resolution:</source>
-        <translation>Resolução atual:</translation>
+        <translation>Поточна роздільність:</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupbasiccamerainterface.cpp" line="113"/>
         <source>Cameras</source>
-        <translation>Câmeras</translation>
+        <translation>Камери</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupbasiccamerainterface.cpp" line="115"/>
         <source>Camera</source>
-        <translation>Câmera</translation>
+        <translation>Камера</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupbasiccamerainterface.cpp" line="121"/>
         <source>Take picture</source>
-        <translation>Fotografar</translation>
+        <translation>Зробити знімок</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupbasiccamerainterface.cpp" line="138"/>
         <source>Close manager</source>
-        <translation>Fechar gestor</translation>
+        <translation>Закрити керування</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupbasiccamerainterface.cpp" line="202"/>
         <source>Can&apos;t create pictures directory</source>
-        <translation>Não é possível criar diretório para fotografias</translation>
+        <translation>Не вдалося створити каталог для зображень</translation>
     </message>
 </context>
 <context>
@@ -2574,52 +2465,52 @@
         <location filename="../../../components/papagayo/tupbreakdowndialog.cpp" line="274"/>
         <location filename="../../../components/papagayo/tupbreakdowndialog.cpp" line="308"/>
         <source>Word:</source>
-        <translation>Palavra:</translation>
+        <translation>Слово:</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tupbreakdowndialog.cpp" line="100"/>
         <location filename="../../../components/papagayo/tupbreakdowndialog.cpp" line="275"/>
         <location filename="../../../components/papagayo/tupbreakdowndialog.cpp" line="309"/>
         <source>Break down the word:</source>
-        <translation>Dividir a palavra:</translation>
+        <translation>Розбити слово:</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tupbreakdowndialog.cpp" line="110"/>
         <source>Phonemes:</source>
-        <translation>Fonemas:</translation>
+        <translation>Фонеми:</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tupbreakdowndialog.cpp" line="116"/>
         <source>Clear phonemes</source>
-        <translation>Remover fonemas</translation>
+        <translation>Очистити фонеми</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tupbreakdowndialog.cpp" line="139"/>
         <location filename="../../../components/papagayo/tupbreakdowndialog.cpp" line="150"/>
         <location filename="../../../components/papagayo/tupbreakdowndialog.cpp" line="280"/>
         <source>Next word</source>
-        <translation>Próxima palavra</translation>
+        <translation>Наступне слово</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tupbreakdowndialog.cpp" line="146"/>
         <location filename="../../../components/papagayo/tupbreakdowndialog.cpp" line="155"/>
         <source>Save word</source>
-        <translation>Salvar palavra</translation>
+        <translation>Зберегти слово</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tupbreakdowndialog.cpp" line="165"/>
         <source>Close</source>
-        <translation>Fechar</translation>
+        <translation>Закрити</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tupbreakdowndialog.cpp" line="322"/>
         <source>Save sentence</source>
-        <translation>Salvar frase</translation>
+        <translation>Зберегти речення</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tupbreakdowndialog.cpp" line="356"/>
         <source>Word phonemes are missing!</source>
-        <translation>Faltam fonemas de palavras!</translation>
+        <translation>Відсутні фонеми слова!</translation>
     </message>
 </context>
 <context>
@@ -2627,58 +2518,58 @@
     <message>
         <location filename="../../../components/brush/tupbrushwidget.cpp" line="41"/>
         <source>Brush Properties</source>
-        <translation>Propriedades Da Escova</translation>
+        <translation>Властивості штриха</translation>
     </message>
     <message>
         <location filename="../../../components/brush/tupbrushwidget.cpp" line="54"/>
         <source>Thickness</source>
-        <translation>Espessura</translation>
+        <translation>Товщина</translation>
     </message>
     <message>
         <location filename="../../../components/brush/tupbrushwidget.cpp" line="63"/>
         <source>Dashes</source>
-        <translation>Traço</translation>
+        <translation>Пунктир</translation>
     </message>
     <message>
         <location filename="../../../components/brush/tupbrushwidget.cpp" line="89"/>
         <source>Cap</source>
-        <translation>Ponta</translation>
+        <translation>Закінчення</translation>
     </message>
     <message>
         <location filename="../../../components/brush/tupbrushwidget.cpp" line="97"/>
         <location filename="../../../components/brush/tupbrushwidget.cpp" line="131"/>
         <source>Round</source>
-        <translation>Arredondada</translation>
+        <translation>Округлені</translation>
     </message>
     <message>
         <location filename="../../../components/brush/tupbrushwidget.cpp" line="104"/>
         <source>Square</source>
-        <translation>Quadrada</translation>
+        <translation>Квадратні</translation>
     </message>
     <message>
         <location filename="../../../components/brush/tupbrushwidget.cpp" line="111"/>
         <source>Flat</source>
-        <translation>Sem ponta</translation>
+        <translation>Плоскі</translation>
     </message>
     <message>
         <location filename="../../../components/brush/tupbrushwidget.cpp" line="123"/>
         <source>Join</source>
-        <translation>Junção</translation>
+        <translation>З&apos;єднання</translation>
     </message>
     <message>
         <location filename="../../../components/brush/tupbrushwidget.cpp" line="138"/>
         <source>Bevel</source>
-        <translation>Biselada</translation>
+        <translation>Скошене</translation>
     </message>
     <message>
         <location filename="../../../components/brush/tupbrushwidget.cpp" line="145"/>
         <source>Miter</source>
-        <translation>Ângulo Reto</translation>
+        <translation>Гостре</translation>
     </message>
     <message>
         <location filename="../../../components/brush/tupbrushwidget.cpp" line="157"/>
         <source>Border Brush</source>
-        <translation>Pincel de Borda</translation>
+        <translation>Текстура штриха</translation>
     </message>
 </context>
 <context>
@@ -2686,32 +2577,32 @@
     <message>
         <location filename="../../../components/player/tupcamerabar.cpp" line="61"/>
         <source>Rewind</source>
-        <translation>Recuar</translation>
+        <translation>Перемотати назад</translation>
     </message>
     <message>
         <location filename="../../../components/player/tupcamerabar.cpp" line="66"/>
         <source>Play in reverse</source>
-        <translation>Reproduzir em reverso</translation>
+        <translation>Зворотне відтворення</translation>
     </message>
     <message>
         <location filename="../../../components/player/tupcamerabar.cpp" line="71"/>
         <source>Play</source>
-        <translation>Reproduzir</translation>
+        <translation>Відтворити</translation>
     </message>
     <message>
         <location filename="../../../components/player/tupcamerabar.cpp" line="76"/>
         <source>Pause</source>
-        <translation>Pausa</translation>
+        <translation>Пауза</translation>
     </message>
     <message>
         <location filename="../../../components/player/tupcamerabar.cpp" line="81"/>
         <source>Stop</source>
-        <translation>Parar</translation>
+        <translation>Зупинити</translation>
     </message>
     <message>
         <location filename="../../../components/player/tupcamerabar.cpp" line="86"/>
         <source>Forward</source>
-        <translation>Avançar</translation>
+        <translation>Перемотати вперед</translation>
     </message>
 </context>
 <context>
@@ -2719,135 +2610,135 @@
     <message>
         <location filename="../../../components/workspace/tupcameradialog.cpp" line="52"/>
         <source>Camera Settings</source>
-        <translation>Definições da Câmera</translation>
+        <translation>Параметри камери</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupcameradialog.cpp" line="70"/>
         <source>Available Camera Devices:</source>
-        <translation>Dispositivos de Câmera Disponíveis:</translation>
+        <translation>Доступні камери:</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupcameradialog.cpp" line="76"/>
         <source>Camera Detected:</source>
-        <translation>Câmera Detetada:</translation>
+        <translation>Виявлено камеру:</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupcameradialog.cpp" line="88"/>
         <source>Available Camera Resolutions:</source>
-        <translation>Resoluções de Câmera Disponíveis:</translation>
+        <translation>Доступні роздільності камери:</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupcameradialog.cpp" line="105"/>
         <source>Resize my project to fit camera resolution</source>
-        <translation>Redimensionar meu projeto para ajustar à resolução da câmera</translation>
+        <translation>Змінити роздільність проєкту відповідно до роздільності камери</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupcameradialog.cpp" line="108"/>
         <source>Use the basic camera interface (low resources)</source>
-        <translation>Usar a interface básica de câmera (poucos recursos)</translation>
+        <translation>Використовувати стандартний інтерфейс камери (менше ресурсів)</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupcameradialog.cpp" line="120"/>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
+        <translation>Скасувати</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupcameradialog.cpp" line="127"/>
         <source>Ok</source>
-        <translation>Ok</translation>
+        <translation>Гаразд</translation>
     </message>
 </context>
 <context>
     <name>TupCameraInterface</name>
     <message>
-        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="60"/>
+        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="61"/>
         <source>Resolution:</source>
-        <translation>Resolução:</translation>
+        <translation>Роздільність:</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="123"/>
+        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="124"/>
         <source>Cameras</source>
-        <translation>Câmeras</translation>
+        <translation>Камери</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="125"/>
+        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="126"/>
         <source>Camera</source>
-        <translation>Câmera</translation>
+        <translation>Камера</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="131"/>
+        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="132"/>
         <source>Take picture</source>
-        <translation>Fotografar</translation>
+        <translation>Зробити знімок</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="136"/>
+        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="137"/>
         <source>Flip camera</source>
-        <translation>Rodar a câmera</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="141"/>
-        <source>Show safe area</source>
-        <translation>Mostrar área segura</translation>
+        <translation>Віддзеркалити камеру</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupcamerainterface.cpp" line="142"/>
+        <source>Show safe area</source>
+        <translation>Показати сюжетно важливу ділянку</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="143"/>
         <source>+</source>
         <translation>+</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="148"/>
+        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="149"/>
         <source>Show grid</source>
-        <translation>Mostrar grelha</translation>
+        <translation>Показати сітку</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="149"/>
+        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="150"/>
         <source>#</source>
         <translation>#</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="163"/>
+        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="164"/>
         <source>Grid spacing</source>
-        <translation>Espaçamento da grelha</translation>
+        <translation>Крок сітки</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="181"/>
+        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="182"/>
         <source>Grid line thickness</source>
-        <translation>Espessura da linha de grade</translation>
+        <translation>Товщина ліній сітки</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="194"/>
+        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="195"/>
         <source>Grid color</source>
-        <translation>Cor da grelha</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="213"/>
-        <source>Show previous images</source>
-        <translation>Exibir imagens anteriores</translation>
+        <translation>Колір сітки</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupcamerainterface.cpp" line="214"/>
+        <source>Show previous images</source>
+        <translation>Показати попередні зображення</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="215"/>
         <source>P</source>
         <translation>P</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="224"/>
+        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="225"/>
         <source>Image opacity level</source>
-        <translation>Nível de opacidade da imagem</translation>
+        <translation>Рівень щільності зображення</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="234"/>
+        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="235"/>
         <source>Amount of images to show</source>
-        <translation>Quantidade de imagens para exibir</translation>
+        <translation>Кількість показуваних зображень</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="261"/>
+        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="262"/>
         <source>Close manager</source>
-        <translation>Fechar gestor</translation>
+        <translation>Закрити вікно</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="348"/>
+        <location filename="../../../components/workspace/tupcamerainterface.cpp" line="349"/>
         <source>Can&apos;t create pictures directory</source>
-        <translation>Não é possível criar diretório para fotografias</translation>
+        <translation>Не вдалося створити каталог для зображень</translation>
     </message>
 </context>
 <context>
@@ -2855,22 +2746,22 @@
     <message>
         <location filename="../../../components/player/tupcamerastatus.cpp" line="52"/>
         <source>Play All</source>
-        <translation>Reproduzir Todo</translation>
+        <translation>Відтворити всі</translation>
     </message>
     <message>
         <location filename="../../../components/player/tupcamerastatus.cpp" line="64"/>
         <source>Scene</source>
-        <translation>Cena</translation>
+        <translation>Сцена</translation>
     </message>
     <message>
         <location filename="../../../components/player/tupcamerastatus.cpp" line="74"/>
         <source>FPS</source>
-        <translation>FPS</translation>
+        <translation>Кадр/с</translation>
     </message>
     <message>
         <location filename="../../../components/player/tupcamerastatus.cpp" line="88"/>
         <source>Loop</source>
-        <translation>Ciclo</translation>
+        <translation>Зациклити</translation>
     </message>
     <message>
         <location filename="../../../components/player/tupcamerastatus.cpp" line="91"/>
@@ -2886,27 +2777,27 @@
         <location filename="../../../components/player/tupcamerastatus.cpp" line="105"/>
         <location filename="../../../components/player/tupcamerastatus.cpp" line="212"/>
         <source>Mute</source>
-        <translation>Silenciar</translation>
+        <translation>Вимкнути звук</translation>
     </message>
     <message>
         <location filename="../../../components/player/tupcamerastatus.cpp" line="110"/>
         <source>Export</source>
-        <translation>Exportar</translation>
+        <translation>Експортувати</translation>
     </message>
     <message>
         <location filename="../../../components/player/tupcamerastatus.cpp" line="112"/>
         <source>Export Project as Video File</source>
-        <translation>Exportar Projeto como Arquivo de Vídeo</translation>
+        <translation>Експортувати проєкт у відеофайл</translation>
     </message>
     <message>
         <location filename="../../../components/player/tupcamerastatus.cpp" line="120"/>
         <source>Post</source>
-        <translation>Publicar</translation>
+        <translation>Опублікувати</translation>
     </message>
     <message>
         <location filename="../../../components/player/tupcamerastatus.cpp" line="215"/>
         <source>Unmute</source>
-        <translation>Ativar Som</translation>
+        <translation>Увімкнути звук</translation>
     </message>
 </context>
 <context>
@@ -2914,43 +2805,43 @@
     <message>
         <location filename="../../../components/player/tupcamerawidget.cpp" line="133"/>
         <source>Scene Preview</source>
-        <translation>Pré-visualização da Cena</translation>
+        <translation>Перегляд сцени</translation>
     </message>
     <message>
         <location filename="../../../components/player/tupcamerawidget.cpp" line="164"/>
         <source>Edit Project Information</source>
-        <translation>Editar Informações do Projeto</translation>
+        <translation>Змінити інформацію про проєкт</translation>
     </message>
     <message>
         <location filename="../../../components/player/tupcamerawidget.cpp" line="199"/>
         <source>Current Frame: </source>
-        <translation>Quadro Atual: </translation>
+        <translation>Поточний кадр: </translation>
     </message>
     <message>
         <location filename="../../../components/player/tupcamerawidget.cpp" line="215"/>
         <source>Timer: </source>
-        <translation>Tempo: </translation>
+        <translation>Таймер: </translation>
     </message>
     <message>
         <location filename="../../../components/player/tupcamerawidget.cpp" line="222"/>
         <source>Duration: </source>
-        <translation>Duração: </translation>
+        <translation>Тривалість: </translation>
     </message>
     <message>
         <location filename="../../../components/player/tupcamerawidget.cpp" line="239"/>
         <location filename="../../../components/player/tupcamerawidget.cpp" line="550"/>
         <source>secs</source>
-        <translation>segundos</translation>
+        <translation>секунд</translation>
     </message>
     <message>
         <location filename="../../../components/player/tupcamerawidget.cpp" line="312"/>
         <source>Scale</source>
-        <translation>Escala</translation>
+        <translation>Масштаб</translation>
     </message>
     <message>
         <location filename="../../../components/player/tupcamerawidget.cpp" line="337"/>
         <source>Size</source>
-        <translation>Dimensão</translation>
+        <translation>Розмір</translation>
     </message>
 </context>
 <context>
@@ -2958,140 +2849,158 @@
     <message>
         <location filename="../../../components/workspace/tupcamerawindow.cpp" line="148"/>
         <source>General Camera error</source>
-        <translation>Erro de câmara genérico</translation>
+        <translation>Загальна помилка камери</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupcamerawindow.cpp" line="153"/>
         <source>Camera invalid request error</source>
-        <translation>Erro de câmera: pedido inválido</translation>
+        <translation>Помилка: недопустимий запит камери</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupcamerawindow.cpp" line="158"/>
         <source>Camera service missing error</source>
-        <translation>Erro de câmera: serviço ausente</translation>
+        <translation>Помилка: відсутня служба камери</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupcamerawindow.cpp" line="163"/>
         <source>Camera not supported error</source>
-        <translation>Erro de câmara não suportada</translation>
+        <translation>Помилка: камера не підтримується</translation>
     </message>
 </context>
 <context>
     <name>TupCanvas</name>
     <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="144"/>
-        <source>Images</source>
-        <translation>Imagens</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="128"/>
-        <source>Undo</source>
-        <translation>Desfazer</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="132"/>
-        <source>Redo</source>
-        <translation>Refazer</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="120"/>
-        <source>Delete Selection</source>
-        <translation>Eliminar Seleção</translation>
-    </message>
-    <message>
         <location filename="../../../components/workspace/tupcanvas.cpp" line="92"/>
         <source>Frame Backward</source>
-        <translation>Um Quadro Para Trás</translation>
+        <translation>На кадр назад</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupcanvas.cpp" line="96"/>
         <source>Frame Forward</source>
-        <translation>Um Quadro Para A Frente</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="104"/>
-        <source>Polyline</source>
-        <translation>PoliLinha</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="116"/>
-        <source>Selection</source>
-        <translation>Seleção</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="124"/>
-        <source>Nodes</source>
-        <translation>Nodos</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="136"/>
-        <source>Zoom In</source>
-        <translation>Aproximar</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="140"/>
-        <source>Zoom Out</source>
-        <translation>Afastar</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="156"/>
-        <source>Onion Skin Factor</source>
-        <translation>Fator de Transparência</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="160"/>
-        <source>Close Full Screen</source>
-        <translation>Fechar Tela Inteira</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="307"/>
-        <source>Import an image file...</source>
-        <translation>Importar um arquivo de imagem...</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="308"/>
-        <source>Raster/Vector</source>
-        <translation>Raster/Vetor</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="342"/>
-        <source>Information</source>
-        <translation>Informação</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="344"/>
-        <source>Image is bigger than workspace.</source>
-        <translation>A imagem é maior do que a área de trabalho.</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="345"/>
-        <source>Do you want to resize it?</source>
-        <translation>Deseja redimensionar?</translation>
+        <translation>На кадр вперед</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupcanvas.cpp" line="100"/>
         <source>Pencil</source>
-        <translation>Lápis</translation>
+        <translation>Олівець</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupcanvas.cpp" line="112"/>
-        <source>Ellipse</source>
-        <translation>Elipse</translation>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="104"/>
+        <source>Polyline</source>
+        <translation>Ламана</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupcanvas.cpp" line="108"/>
         <source>Rectangle</source>
-        <translation>Retângulo</translation>
+        <translation>Прямокутник</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="112"/>
+        <source>Ellipse</source>
+        <translation>Еліпс</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="116"/>
+        <source>Selection</source>
+        <translation>Вибране</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="120"/>
+        <source>Delete Selection</source>
+        <translation>Видалити вибране</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="124"/>
+        <source>Nodes</source>
+        <translation>Вузли</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="128"/>
+        <source>Undo</source>
+        <translation>Скасувати</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="132"/>
+        <source>Redo</source>
+        <translation>Повернути</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="136"/>
+        <source>Zoom In</source>
+        <translation>Збільшити масштаб</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="140"/>
+        <source>Zoom Out</source>
+        <translation>Зменшити масштаб</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="144"/>
+        <source>Images</source>
+        <translation>Зображення</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupcanvas.cpp" line="148"/>
         <source>Color Palette</source>
-        <translation>Paleta de Cor</translation>
+        <translation>Колірна палітра</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupcanvas.cpp" line="152"/>
         <source>Pen Size</source>
-        <translation>Tamanho da Caneta</translation>
+        <translation>Розмір пера</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="156"/>
+        <source>Onion Skin Factor</source>
+        <translation>Коефіцієнт прозорості для калькування</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="160"/>
+        <source>Close Full Screen</source>
+        <translation>Вийти з повноекранного режиму</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="307"/>
+        <source>Import an image file...</source>
+        <translation>Імпортувати файл зображення...</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="308"/>
+        <source>Raster/Vector</source>
+        <translation>Растровий/Векторний</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="342"/>
+        <source>Information</source>
+        <translation>Інформація</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="344"/>
+        <source>Image is bigger than workspace.</source>
+        <translation>Зображення більше від робочого простору.</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupcanvas.cpp" line="345"/>
+        <source>Do you want to resize it?</source>
+        <translation>Змінити його розміри?</translation>
+    </message>
+</context>
+<context>
+    <name>TupChat</name>
+    <message>
+        <location filename="../../../net/tupchat.cpp" line="53"/>
+        <source>Send</source>
+        <translation>Надіслати</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tupchat.cpp" line="141"/>
+        <source>Error:</source>
+        <translation>Помилка:</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tupchat.cpp" line="142"/>
+        <source>Invalid Message. It won&apos;t be sent. Please, don&apos;t use HTML tags</source>
+        <translation>Недійсне повідомлення. Воно не буде надіслане. Будь ласка, не використовуйте HTML-теги</translation>
     </message>
 </context>
 <context>
@@ -3099,42 +3008,42 @@
     <message>
         <location filename="../../../libcolor/tupcolorbuttonpanel.cpp" line="58"/>
         <source>Transparent</source>
-        <translation>Transparente</translation>
+        <translation>Прозорий</translation>
     </message>
     <message>
         <location filename="../../../libcolor/tupcolorbuttonpanel.cpp" line="72"/>
         <source>Black</source>
-        <translation>Preto</translation>
+        <translation>Чорний</translation>
     </message>
     <message>
         <location filename="../../../libcolor/tupcolorbuttonpanel.cpp" line="86"/>
         <source>White</source>
-        <translation>Branco</translation>
+        <translation>Білий</translation>
     </message>
     <message>
         <location filename="../../../libcolor/tupcolorbuttonpanel.cpp" line="99"/>
         <source>Red</source>
-        <translation>Vermelho</translation>
+        <translation>Червоний</translation>
     </message>
     <message>
         <location filename="../../../libcolor/tupcolorbuttonpanel.cpp" line="113"/>
         <source>Green</source>
-        <translation>Verde</translation>
+        <translation>Зелений</translation>
     </message>
     <message>
         <location filename="../../../libcolor/tupcolorbuttonpanel.cpp" line="127"/>
         <source>Blue</source>
-        <translation>Azul</translation>
+        <translation>Синій</translation>
     </message>
     <message>
         <location filename="../../../libcolor/tupcolorbuttonpanel.cpp" line="137"/>
         <source>Customize Colors Bar</source>
-        <translation>Personalizar Barra de Cores</translation>
+        <translation>Налаштувати кольори на панелі</translation>
     </message>
     <message>
         <location filename="../../../libcolor/tupcolorbuttonpanel.cpp" line="141"/>
         <source>Reset Colors Bar</source>
-        <translation>Redefinir Barra de Cores</translation>
+        <translation>Скинути кольори на панелі</translation>
     </message>
 </context>
 <context>
@@ -3142,71 +3051,66 @@
     <message>
         <location filename="../../../libcolor/tupcolorform.cpp" line="96"/>
         <source>Opacity</source>
-        <translation>Opacidade</translation>
+        <translation>Щільність</translation>
     </message>
 </context>
 <context>
     <name>TupColorPaletteWidget</name>
     <message>
-        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="70"/>
+        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="68"/>
         <source>Color Palette</source>
-        <translation>Paleta de Cor</translation>
+        <translation>Колірна палітра</translation>
+    </message>
+    <message>
+        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="138"/>
+        <source>Exchange colors</source>
+        <translation>Поміняти кольори місцями</translation>
+    </message>
+    <message>
+        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="144"/>
+        <source>Contour</source>
+        <translation>Штрих</translation>
     </message>
     <message>
         <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="145"/>
-        <source>Exchange colors</source>
-        <translation>Trocar cores</translation>
-    </message>
-    <message>
-        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="151"/>
-        <source>Contour</source>
-        <translation>Contorno</translation>
-    </message>
-    <message>
-        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="152"/>
         <source>Fill</source>
-        <translation>Preenchimento</translation>
+        <translation>Заповнення</translation>
     </message>
     <message>
-        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="179"/>
+        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="172"/>
         <source>Reset colors</source>
-        <translation>Reiniciar cores</translation>
+        <translation>Скинути кольори</translation>
     </message>
     <message>
-        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="187"/>
-        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="243"/>
+        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="180"/>
+        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="232"/>
         <source>HTML</source>
         <translation>HTML</translation>
     </message>
     <message>
-        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="199"/>
+        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="192"/>
         <source>Eye Dropper - D</source>
-        <translation>Conta-Gotas - D</translation>
+        <translation>піпетка - D</translation>
     </message>
     <message>
-        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="257"/>
+        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="246"/>
         <source>Eye Dropper</source>
-        <translation>Conta-gotas</translation>
+        <translation>Піпетка</translation>
     </message>
     <message>
-        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="226"/>
+        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="215"/>
         <source>Background</source>
-        <translation>Fundo</translation>
+        <translation>Тло</translation>
     </message>
     <message>
-        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="235"/>
+        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="224"/>
         <source>Reset background</source>
-        <translation>Reinicializar fundo</translation>
+        <translation>Скинути тло</translation>
     </message>
     <message>
-        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="392"/>
+        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="377"/>
         <source>Color Mixer</source>
-        <translation>Misturador de Cores</translation>
-    </message>
-    <message>
-        <location filename="../../../components/colorpalette/tupcolorpalettewidget.cpp" line="400"/>
-        <source>Gradients</source>
-        <translation>Gradientes</translation>
+        <translation>Властивості кольору</translation>
     </message>
 </context>
 <context>
@@ -3214,12 +3118,60 @@
     <message>
         <location filename="../../../components/workspace/tupconfigurationarea.cpp" line="269"/>
         <source>Cursor here for expand</source>
-        <translation>Cursor aqui para expandir</translation>
+        <translation>Наведіть вказівник сюди, щоб розгорнути</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupconfigurationarea.cpp" line="302"/>
         <source>Properties</source>
-        <translation>Propriedades</translation>
+        <translation>Властивості</translation>
+    </message>
+</context>
+<context>
+    <name>TupConnectDialog</name>
+    <message>
+        <location filename="../../../net/tupconnectdialog.cpp" line="39"/>
+        <source>Connection Parameters</source>
+        <translation>Параметри з'єднання</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tupconnectdialog.cpp" line="50"/>
+        <source>Store password</source>
+        <translation>Зберегти пароль</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tupconnectdialog.cpp" line="56"/>
+        <source>Username:</source>
+        <translation>Ім'я користувача:</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tupconnectdialog.cpp" line="57"/>
+        <source>Password:</source>
+        <translation>Пароль:</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tupconnectdialog.cpp" line="60"/>
+        <source>Credentials</source>
+        <translation>Облікові дані</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tupconnectdialog.cpp" line="76"/>
+        <source>Server:</source>
+        <translation>Сервер:</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tupconnectdialog.cpp" line="77"/>
+        <source>Port:</source>
+        <translation>Порт:</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tupconnectdialog.cpp" line="79"/>
+        <source>Collaboration Server</source>
+        <translation>Сервер співпраці</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tupconnectdialog.cpp" line="170"/>
+        <source>Please, fill in your password</source>
+        <translation>Введіть пароль</translation>
     </message>
 </context>
 <context>
@@ -3227,18 +3179,18 @@
     <message>
         <location filename="../../tupcrashwidget.cpp" line="116"/>
         <source>What&apos;s happening?</source>
-        <translation>O que está a acontecer?</translation>
+        <translation>Что відбувається?</translation>
     </message>
     <message>
         <location filename="../../tupcrashwidget.cpp" line="158"/>
         <source>Executable information</source>
-        <translation>Informação sobre executável</translation>
+        <translation>Відомості про виконуваний файл</translation>
     </message>
     <message>
         <location filename="../../tupcrashwidget.cpp" line="160"/>
         <location filename="../../tupcrashwidget.cpp" line="163"/>
         <source>Backtrace</source>
-        <translation>Rastreio do Problema</translation>
+        <translation>Зворотне трасування</translation>
     </message>
 </context>
 <context>
@@ -3246,22 +3198,22 @@
     <message>
         <location filename="../../../components/papagayo/tupcustomizedmouthview.cpp" line="83"/>
         <source>Mouth images are missing!</source>
-        <translation>Faltam imagens da boca!</translation>
+        <translation>Відсутні зображення губ!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tupcustomizedmouthview.cpp" line="93"/>
         <source>Customized mouths are loaded!</source>
-        <translation>Bocas personalizadas estão carregadas!</translation>
+        <translation>Власні зображення губ завантажено!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tupcustomizedmouthview.cpp" line="103"/>
         <source>Mouth images are incomplete!</source>
-        <translation>As imagens da boca estão incompletas!</translation>
+        <translation>Неповний комплект зображень губ!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tupcustomizedmouthview.cpp" line="109"/>
         <source>Images directory is empty!</source>
-        <translation>Diretório de imagens está vazio!</translation>
+        <translation>Каталог зображень порожній!</translation>
     </message>
 </context>
 <context>
@@ -3269,38 +3221,43 @@
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="403"/>
         <source>Copy</source>
-        <translation>Copiar</translation>
+        <translation>Копіювати</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="406"/>
         <source>Paste</source>
-        <translation>Colar</translation>
+        <translation>Вставити</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="409"/>
         <source>Cut</source>
-        <translation>Cortar</translation>
+        <translation>Вирізати</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="412"/>
         <source>Delete</source>
-        <translation>Eliminar</translation>
+        <translation>Видалити</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="415"/>
+        <source>Project Canvas Size</source>
+        <translation>Розмір полотна проєкту</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="419"/>
         <source>Onion Skin</source>
-        <translation>Papel Vegetal</translation>
+        <translation>Режим калькування</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="422"/>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="1361"/>
         <source>Onion Skin Factor</source>
-        <translation>Fator de Transparência</translation>
+        <translation>Коефіцієнт прозорості для калькування</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="436"/>
         <source>Camera</source>
-        <translation>Câmera</translation>
+        <translation>Камера</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="436"/>
@@ -3308,135 +3265,54 @@
         <translation>Ctrl+Shift+C</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="439"/>
-        <source>Papagayo Lip-sync Module</source>
-        <translation>Módulo de Lip-sync Papagayo</translation>
-    </message>
-    <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="445"/>
         <source>Draw tools</source>
-        <translation>Ferramentas de desenho</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="510"/>
-        <source>Video Formats</source>
-        <translation>Formatos de Vídeo</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1294"/>
-        <source>Vector Static BG Properties</source>
-        <translation>Propriedades do Fundo Estático Vetorial</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1295"/>
-        <source>Vector Dynamic BG Properties</source>
-        <translation>Propriedades do Fundo Dinâmico  Vetorial</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1296"/>
-        <source>Foreground Properties</source>
-        <translation>Propriedades de Primeiro Plano</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1302"/>
-        <source>Vector Static BG Mode</source>
-        <translation>Fundo Estático Vetorial</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1303"/>
-        <source>Vector Dynamic BG Mode</source>
-        <translation>Fundo Dinâmico Vetorial</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1304"/>
-        <source>Raster Static BG Mode</source>
-        <translation>Fundo Estático Raster</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1305"/>
-        <source>Raster Dynamic BG Mode</source>
-        <translation>Fundo Dinâmico Raster</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1306"/>
-        <source>Vector Foreground Mode</source>
-        <translation>Modo de Primeiro Plano Vetorial</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1378"/>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1385"/>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1492"/>
-        <source>Static BG Opacity</source>
-        <translation>Opacidade de Fundo Estático</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1397"/>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1401"/>
-        <source>Movement Orientation</source>
-        <translation>Orientação de Movimento</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1402"/>
-        <source>Right</source>
-        <translation>Direito</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1403"/>
-        <source>Left</source>
-        <translation>Esquerda</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1404"/>
-        <source>Up</source>
-        <translation>Cima</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1405"/>
-        <source>Down</source>
-        <translation>Baixo</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1438"/>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1445"/>
-        <source>Dynamic BG Opacity</source>
-        <translation>Opacidade de Fundo Dinâmico</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1481"/>
-        <source>Show Background Context</source>
-        <translation>Mostrar Contexto de Fundo</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1600"/>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1601"/>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1608"/>
-        <source>Raster Objects</source>
-        <translation>Objetos Raster</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1612"/>
-        <source>Image imported successfully</source>
-        <translation>Imagem importada com sucesso</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2323"/>
-        <source>Please, close current camera dialog first!</source>
-        <translation>Por favor, feche o diálogo atual da câmera primeiro!</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2506"/>
-        <source>Frame</source>
-        <translation>Quadro</translation>
+        <translation>Засоби малювання</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="458"/>
         <source>Tweening</source>
-        <translation>Tweening</translation>
+        <translation>Анімації</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="517"/>
         <source>Image Sequence</source>
-        <translation>Sequência de Imagens</translation>
+        <translation>Послідовність зображень</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1294"/>
+        <source>Vector Static BG Properties</source>
+        <translation>Властивості статичного векторного тла</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1295"/>
+        <source>Vector Dynamic BG Properties</source>
+        <translation>Властивості динамічного векторного тла</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1302"/>
+        <source>Vector Static BG Mode</source>
+        <translation>Режим статичного векторного тла</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1303"/>
+        <source>Vector Dynamic BG Mode</source>
+        <translation>Режим динамічного векторного тла</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1304"/>
+        <source>Raster Static BG Mode</source>
+        <translation>Режим статичного растрового тла</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1305"/>
+        <source>Raster Dynamic BG Mode</source>
+        <translation>Режим динамічного растрового тла</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1477"/>
+        <source>Foreground Opacity</source>
+        <translation>Непрозорість переднього плану</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="1004"/>
@@ -3447,230 +3323,306 @@
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="400"/>
         <source>Modes Settings</source>
-        <translation>Configurações de Modos</translation>
+        <translation>Параметри режимів</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="415"/>
-        <source>Project Canvas Size</source>
-        <translation>Tamanho da Tela do Projeto</translation>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="439"/>
+        <source>Papagayo Lip-sync Module</source>
+        <translation>Модуль синхронізації руху губ Papagayo</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="453"/>
         <source>Shapes</source>
-        <translation>Formas</translation>
+        <translation>Фігури</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="510"/>
+        <source>Video Formats</source>
+        <translation>Формати відео</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="1288"/>
         <source>Paint area actions</source>
-        <translation>Ações da área de desenho</translation>
+        <translation>Дії області малювання</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1296"/>
+        <source>Foreground Properties</source>
+        <translation>Властивості переднього плану</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="1301"/>
         <source>Frames Mode</source>
-        <translation>Modo Quadros</translation>
+        <translation>Покадровий режим</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1306"/>
+        <source>Vector Foreground Mode</source>
+        <translation>Режим векторного переднього плану</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="1334"/>
         <source>Previous Frames</source>
-        <translation>Quadros Anteriores</translation>
+        <translation>Попередні кадри</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="1346"/>
         <source>Next Frames</source>
-        <translation>Próximos Quadros</translation>
+        <translation>Наступні кадри</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1378"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1385"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1492"/>
+        <source>Static BG Opacity</source>
+        <translation>Щільність статичного тла</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1397"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1401"/>
+        <source>Movement Orientation</source>
+        <translation>Напрям руху</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1402"/>
+        <source>Right</source>
+        <translation>Праворуч</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1403"/>
+        <source>Left</source>
+        <translation>Ліворуч</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1404"/>
+        <source>Up</source>
+        <translation>Вгору</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1405"/>
+        <source>Down</source>
+        <translation>Вниз</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="1427"/>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="1433"/>
         <source>Shift Length</source>
-        <translation>Comprimento do Deslocamento</translation>
+        <translation>Довжина зміщення</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1477"/>
-        <source>Foreground Opacity</source>
-        <translation>Opacidade do Primeiro Plano</translation>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1438"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1445"/>
+        <source>Dynamic BG Opacity</source>
+        <translation>Щільність динамічного тла</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1481"/>
+        <source>Show Background Context</source>
+        <translation>Показати фоновий контекст</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1600"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1601"/>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1608"/>
+        <source>Raster Objects</source>
+        <translation>Растрові об&apos;єкти</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="1612"/>
+        <source>Image imported successfully</source>
+        <translation>Зображення імпортовано успішно</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="2089"/>
         <source>Export Frame As</source>
-        <translation>Exportar Quadro Como</translation>
+        <translation>Експортувати кадр як</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="2090"/>
         <source>Images</source>
-        <translation>Imagens</translation>
+        <translation>Зображення</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="2096"/>
         <source>Frame has been exported successfully</source>
-        <translation>Quadro foi exportado com sucesso</translation>
+        <translation>Кадр експортовано успішно</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="2098"/>
         <source>Can&apos;t export frame as image</source>
-        <translation>Não é possível exportar quadro como imagem</translation>
+        <translation>Не вдалось експортувати кадр як зображення</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2323"/>
+        <source>Please, close current camera dialog first!</source>
+        <translation>Спочатку закрийте діалогове вікно поточної камери!</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupdocumentview.cpp" line="2438"/>
         <source>No cameras detected</source>
-        <translation>Nenhuma câmera detetada</translation>
+        <translation>Камери не виявлено</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupdocumentview.cpp" line="2506"/>
+        <source>Frame</source>
+        <translation>Кадр</translation>
     </message>
 </context>
 <context>
     <name>TupExportModule</name>
     <message>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="64"/>
+        <source>Enable Background Transparency</source>
+        <translation>Увімкнути прозорість тла</translation>
+    </message>
+    <message>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="72"/>
+        <source>Image Name Prefix: </source>
+        <translation>Префікс назви файлу: </translation>
+    </message>
+    <message>
         <location filename="../../../components/export/tupexportmodule.cpp" line="75"/>
         <source>Directory: </source>
-        <translation>Diretório: </translation>
+        <translation>Каталог: </translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportmodule.cpp" line="77"/>
         <source>File: </source>
-        <translation>Ficheiro: </translation>
+        <translation>Файл: </translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportmodule.cpp" line="92"/>
         <source>Choose another path</source>
-        <translation>Escolha outro caminho</translation>
+        <translation>Виберіть інший шлях</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportmodule.cpp" line="103"/>
         <source>i.e. </source>
-        <translation>exemplo: </translation>
+        <translation>тобто </translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportmodule.cpp" line="188"/>
         <source>Can&apos;t export project</source>
-        <translation>Não é possível exportar o projeto</translation>
+        <translation>Не вдається експортувати проект</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportmodule.cpp" line="191"/>
         <source>The duration of the project is TOO SHORT to generate an accurate MP4 file.
 Please, try to export the scene several times to extend the animation duration
 until reaches at least 3 seconds.</source>
-        <translation>A duração do projeto é MUITO CURTA para gerar um arquivo MP4 preciso. Por favor, tente exportar a cena várias vezes para prolongar a duração da animação até atingir pelo menos 3 segundos.</translation>
-    </message>
-    <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="308"/>
-        <source>Choose a directory...</source>
-        <translation>Escolha um diretório...</translation>
-    </message>
-    <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="368"/>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="412"/>
-        <source>Warning!</source>
-        <translation>Alerta!</translation>
-    </message>
-    <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="413"/>
-        <source>Video file exists. Overwrite it?</source>
-        <translation>O arquivo de vídeo existe. Substituir?</translation>
-    </message>
-    <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="425"/>
-        <source>Insufficient permissions. Please, choose another directory.</source>
-        <translation>Permissões insuficientes. Por favor, escolha outro diretório.</translation>
-    </message>
-    <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="432"/>
-        <source>Insufficient permissions. Please, choose another path.</source>
-        <translation>Permissões insuficientes. Por favor, escolha outro caminho.</translation>
-    </message>
-    <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="491"/>
-        <source>Image sequence was saved successful</source>
-        <translation>Sequência de imagens foi guardada satisfatoriamente</translation>
-    </message>
-    <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="503"/>
-        <source>Fatal Error: Can&apos;t export video</source>
-        <translation>Erro fatal: Não é possível exportar vídeo</translation>
-    </message>
-    <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="511"/>
-        <source>Sorry, animation is too short!</source>
-        <translation>Desculpe, a animação é muito curta!</translation>
-    </message>
-    <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="64"/>
-        <source>Enable Background Transparency</source>
-        <translation>Ativar Transparência Do Fundo</translation>
-    </message>
-    <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="72"/>
-        <source>Image Name Prefix: </source>
-        <translation>Prefixo Do Arquivo: </translation>
+        <translation>Тривалість проекту НАДТО КОРОТКА, щоб створити точний файл MP4. Будь ласка, спробуйте експортувати сцену кілька разів, щоб збільшити тривалість анімації принаймні до 3 секунд.</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportmodule.cpp" line="283"/>
         <source>Export video as...</source>
-        <translation>Exportar vídeo como...</translation>
+        <translation>Експорт відео як…</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportmodule.cpp" line="284"/>
         <source>Video File</source>
-        <translation>Arquivo de Vídeo</translation>
+        <translation>Відеофайл</translation>
+    </message>
+    <message>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="308"/>
+        <source>Choose a directory...</source>
+        <translation>Вибір каталогу…</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportmodule.cpp" line="349"/>
         <source>Images name prefix is unset! Please, type a prefix.</source>
-        <translation>O prefixo do nome das imagens não está definido! Por favor, digite um prefixo.</translation>
+        <translation>Не задано префікс назв зображень! Введіть префікс.</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportmodule.cpp" line="354"/>
         <source>Images path can&apos;t be unset! Please, choose one.</source>
-        <translation>O caminho das imagens não está definido! Por favor, escolha um.</translation>
+        <translation>Шлях для зображень не можна не задати! Виберіть шлях.</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportmodule.cpp" line="360"/>
         <source>Images path doesn&apos;t exist! Please, choose another.</source>
-        <translation>O caminho das imagens não existe! Por favor escolha outro.</translation>
+        <translation>Не вдалося знайти шлях для зображень! Виберіть інший шлях.</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportmodule.cpp" line="368"/>
         <source>Target folder already contains images. Continue?</source>
-        <translation>A pasta de destino já contém imagens. Continuar?</translation>
+        <translation>Цільова папка вже містить зображення. Продовжити?</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportmodule.cpp" line="382"/>
         <source>Animation path is unset! Please, choose one.</source>
-        <translation>O caminho de animação não está definido! Por favor, escolha um.</translation>
+        <translation>Шлях для анімаційних роликів не задано! Виберіть шлях.</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportmodule.cpp" line="399"/>
         <source>Animation path can&apos;t be unset! Please, choose one.</source>
-        <translation>O caminho de animação não está definido! Por favor, escolha um.</translation>
+        <translation>Шлях для анімаційних роликів не можна не задати! Виберіть шлях.</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportmodule.cpp" line="405"/>
         <source>Animation path doesn&apos;t exist! Please, choose another.</source>
-        <translation>O caminho de animação não existe! Por favor escolha outro.</translation>
+        <translation>Не вдалося знайти шлях для анімаційних роликів! Виберіть інший шлях.</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="483"/>
-        <source>Format problem. TupiTube Internal error.</source>
-        <translation>Problema no formato. Erro interno do TupiTube.</translation>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="413"/>
+        <source>Video file exists. Overwrite it?</source>
+        <translation>Відеофайл існує. Перезаписати?</translation>
     </message>
     <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="489"/>
-        <source>Video file</source>
-        <translation>Arquivo de Vídeo</translation>
-    </message>
-    <message>
-        <location filename="../../../components/export/tupexportmodule.cpp" line="489"/>
-        <source>was saved successful</source>
-        <translation>foi guardado satisfatoriamente</translation>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="511"/>
+        <source>Sorry, animation is too short!</source>
+        <translation>Вибачте, анімація закоротка!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportmodule.cpp" line="194"/>
         <location filename="../../../components/export/tupexportmodule.cpp" line="507"/>
         <source>Ok</source>
-        <translation>Ok</translation>
+        <translation>Гаразд</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportmodule.cpp" line="198"/>
         <source>Sorry, export attempt failed!</source>
-        <translation>Desculpe, a tentativa de exportação falhou!</translation>
+        <translation>Вибачте, спроба експорту не вдалась!</translation>
+    </message>
+    <message>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="368"/>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="412"/>
+        <source>Warning!</source>
+        <translation>Попередження!</translation>
+    </message>
+    <message>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="425"/>
+        <source>Insufficient permissions. Please, choose another directory.</source>
+        <translation>Бракує дозволів. Виберіть інший каталог.</translation>
+    </message>
+    <message>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="432"/>
+        <source>Insufficient permissions. Please, choose another path.</source>
+        <translation>Бракує дозволів. Виберіть інший шлях.</translation>
+    </message>
+    <message>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="483"/>
+        <source>Format problem. TupiTube Internal error.</source>
+        <translation>Проблема з форматом. Внутрішня помилка TupiTube.</translation>
+    </message>
+    <message>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="489"/>
+        <source>Video file</source>
+        <translation>Відеофайл</translation>
+    </message>
+    <message>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="489"/>
+        <source>was saved successful</source>
+        <translation>збережено успішно</translation>
+    </message>
+    <message>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="491"/>
+        <source>Image sequence was saved successful</source>
+        <translation>Послідовність зображень збережено успішно</translation>
+    </message>
+    <message>
+        <location filename="../../../components/export/tupexportmodule.cpp" line="503"/>
+        <source>Fatal Error: Can&apos;t export video</source>
+        <translation>Критична помилка: не вдалося експортувати відео</translation>
     </message>
 </context>
 <context>
@@ -3679,57 +3631,57 @@ until reaches at least 3 seconds.</source>
         <location filename="../../../components/export/tupexportwidget.cpp" line="51"/>
         <location filename="../../../components/export/tupexportwidget.cpp" line="218"/>
         <source>Export To Video</source>
-        <translation>Exportar Vídeo</translation>
+        <translation>Експорт у відео</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportwidget.cpp" line="62"/>
         <source>Export To Video File</source>
-        <translation>Exportar Arquivo Do Vídeo</translation>
+        <translation>Експортувати у відеофайл</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportwidget.cpp" line="65"/>
         <location filename="../../../components/export/tupexportwidget.cpp" line="222"/>
         <source>Export To Image Sequence</source>
-        <translation>Exportar Seqüência De Imagens</translation>
+        <translation>Експортувати в послідовність зображень</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportwidget.cpp" line="112"/>
         <location filename="../../../components/export/tupexportwidget.cpp" line="114"/>
         <source>Post Animation</source>
-        <translation>Publicar Animação</translation>
+        <translation>Опублікування анімаційного ролика</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportwidget.cpp" line="112"/>
         <location filename="../../../components/export/tupexportwidget.cpp" line="139"/>
         <source>as Anonymous</source>
-        <translation>como Anônimo</translation>
+        <translation>як Анонім</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportwidget.cpp" line="114"/>
         <location filename="../../../components/export/tupexportwidget.cpp" line="141"/>
         <source>as</source>
-        <translation>como</translation>
+        <translation>як</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportwidget.cpp" line="139"/>
         <location filename="../../../components/export/tupexportwidget.cpp" line="141"/>
         <source>Post Image</source>
-        <translation>Publicar Imagem</translation>
+        <translation>Опублікування зображення</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportwidget.cpp" line="147"/>
         <source>Post</source>
-        <translation>Publicar</translation>
+        <translation>Опублікувати</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportwidget.cpp" line="265"/>
         <source>Posting...</source>
-        <translation>Publicando...</translation>
+        <translation>Опублікування…</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportwidget.cpp" line="267"/>
         <source>Exporting...</source>
-        <translation>Exportando...</translation>
+        <translation>Експортування...</translation>
     </message>
 </context>
 <context>
@@ -3737,34 +3689,34 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/export/tupexportwizard.cpp" line="41"/>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
+        <translation>Скасувати</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportwizard.cpp" line="42"/>
         <source>Back</source>
-        <translation>Voltar</translation>
+        <translation>Назад</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportwizard.cpp" line="43"/>
         <location filename="../../../components/export/tupexportwizard.cpp" line="151"/>
         <source>Next</source>
-        <translation>Seguinte</translation>
+        <translation>Далі</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportwizard.cpp" line="187"/>
         <source>Uploading Source File</source>
-        <translation>Fazendo Upload do Arquivo Fonte</translation>
+        <translation>Вивантаження початкового файлу</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportwizard.cpp" line="192"/>
         <location filename="../../../components/export/tupexportwizard.cpp" line="225"/>
         <source>Export</source>
-        <translation>Exportar</translation>
+        <translation>Експортувати</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupexportwizard.cpp" line="227"/>
         <source>Post</source>
-        <translation>Publicar</translation>
+        <translation>Опублікувати</translation>
     </message>
 </context>
 <context>
@@ -3773,7 +3725,7 @@ until reaches at least 3 seconds.</source>
         <location filename="../../../components/exposure/tupexposurescenetabwidget.cpp" line="111"/>
         <location filename="../../../components/exposure/tupexposurescenetabwidget.cpp" line="118"/>
         <source>Current Layer Opacity</source>
-        <translation>Opacidade da Camada Atual</translation>
+        <translation>Щільність поточного шару</translation>
     </message>
 </context>
 <context>
@@ -3781,78 +3733,83 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="60"/>
         <source>Exposure Sheet</source>
-        <translation>Folha de Exposição</translation>
+        <translation>Розкадрування</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="130"/>
         <source>actions</source>
-        <translation>ações</translation>
+        <translation>дії</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="131"/>
         <source>Insert</source>
-        <translation>Inserir</translation>
+        <translation>Вставити</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="133"/>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1410"/>
         <source>1 frame</source>
-        <translation>1 quadro</translation>
+        <translation>1 кадр</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="137"/>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1415"/>
         <source>5 frames</source>
-        <translation>5 quadros</translation>
+        <translation>5 кадрів</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="141"/>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1420"/>
         <source>10 frames</source>
-        <translation>10 quadros</translation>
+        <translation>10 кадрів</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="145"/>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1425"/>
         <source>20 frames</source>
-        <translation>20 quadros</translation>
+        <translation>20 кадрів</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="149"/>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1430"/>
         <source>50 frames</source>
-        <translation>50 quadros</translation>
+        <translation>50 кадрів</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="153"/>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1435"/>
         <source>100 frames</source>
-        <translation>100 quadros</translation>
+        <translation>100 кадрів</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="161"/>
         <source>Remove frame</source>
-        <translation>Remover quadro</translation>
+        <translation>Вилучити кадр</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="166"/>
         <source>Clear frame</source>
-        <translation>Limpar quadro</translation>
-    </message>
-    <message>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="171"/>
-        <source>Copy frame</source>
-        <translation>Copiar quadro</translation>
+        <translation>Очистити кадр</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="176"/>
         <source>Paste frame</source>
-        <translation>Colar quadro</translation>
+        <translation>Вставити кадр</translation>
+    </message>
+    <message>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="448"/>
+        <source>Scene 1</source>
+        <translation>Сцена 1</translation>
+    </message>
+    <message>
+        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="171"/>
+        <source>Copy frame</source>
+        <translation>Скопіювати кадр</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="382"/>
         <source>Layer %1</source>
-        <translation>Camada %1</translation>
+        <translation>Шар %1</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="388"/>
@@ -3863,24 +3820,19 @@ until reaches at least 3 seconds.</source>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1099"/>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="1549"/>
         <source>Frame</source>
-        <translation>Quadro</translation>
+        <translation>Кадр</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="406"/>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="736"/>
         <source>Scene %1</source>
-        <translation>Cena %1</translation>
+        <translation>Сцена %1</translation>
     </message>
     <message>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="413"/>
         <location filename="../../../components/exposure/tupexposuresheet.cpp" line="739"/>
         <source>Layer 1</source>
-        <translation>Camada 1</translation>
-    </message>
-    <message>
-        <location filename="../../../components/exposure/tupexposuresheet.cpp" line="448"/>
-        <source>Scene 1</source>
-        <translation>Cena 1</translation>
+        <translation>Шар 1</translation>
     </message>
 </context>
 <context>
@@ -3894,63 +3846,63 @@ until reaches at least 3 seconds.</source>
         <location filename="../../../store/tupfilemanager.cpp" line="203"/>
         <location filename="../../../store/tupfilemanager.cpp" line="253"/>
         <source>Can&apos;t save project! (Code %1)</source>
-        <translation>Não é possível salvar o projeto! (Código %1)</translation>
+        <translation>Не можу зберегти проєкту! (Код %1)</translation>
     </message>
     <message>
         <location filename="../../../store/tupfilemanager.cpp" line="386"/>
         <location filename="../../../store/tupfilemanager.cpp" line="398"/>
         <source>Information</source>
-        <translation>Informação</translation>
+        <translation>Інформація</translation>
     </message>
     <message>
         <location filename="../../../store/tupfilemanager.cpp" line="388"/>
         <source>A copy of your project was successfully saved at:&lt;br/&gt;&lt;b&gt;%1&lt;/b&gt;</source>
-        <translation>Uma cópia do seu projeto foi salva com sucesso em: &lt;br/&gt;&lt;b&gt;%1&lt;/b&gt;</translation>
+        <translation>Копію проєкту успішно збережено в:&lt;br/&gt;&lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../../../store/tupfilemanager.cpp" line="389"/>
         <source>Please, contact TupiTube&apos;s developer team to recovery it. &lt;b&gt;https://www.tupitube.com&lt;/b&gt;</source>
-        <translation>Entre em contato com a equipe de desenvolvedores do TupiTube para recuperá-lo. &lt;b&gt;https://www.tupitube.com&lt;/b&gt;</translation>
+        <translation>Для відновлення зверніться до групи розробників TupiTube. &lt;b&gt;https://www.tupitube.com&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../../../store/tupfilemanager.cpp" line="400"/>
         <source>Sorry, the project &lt;b&gt;%1.tup&lt;/b&gt; couldn&apos;t be recovered.&lt;br/&gt;Please, try to backup your animation files often.</source>
-        <translation>Desculpe, o projeto &lt;b&gt;%1.tup&lt;/b&gt; não pôde ser recuperado.&lt;br/&gt;Tente fazer backup dos arquivos de animação com frequência.</translation>
+        <translation>Сталася помилка, не вдалося відновити проєкт &lt;b&gt;%1.tup&lt;/b&gt;.&lt;br/&gt;Намагайтеся частіше зберігати резервну копію файлів анімаційних роликів.</translation>
     </message>
     <message>
         <location filename="../../../store/tupfilemanager.cpp" line="434"/>
         <source>Can&apos;t open project config file!</source>
-        <translation>Não é possível abrir o arquivo de configuração do projeto!</translation>
+        <translation>Не вдається відкрити конфігураційний файл проекту!</translation>
     </message>
     <message>
         <location filename="../../../store/tupfilemanager.cpp" line="477"/>
         <source>Can&apos;t open scene config file!</source>
-        <translation>Não é possível abrir o arquivo de configuração da cena!</translation>
+        <translation>Не вдається відкрити файл конфігурації сцени!</translation>
     </message>
     <message>
         <location filename="../../../store/tupfilemanager.cpp" line="487"/>
         <source>Can&apos;t load scene config file!</source>
-        <translation>Não é possível carregar o arquivo de configuração da cena!</translation>
+        <translation>Не вдається завантажити файл конфігурації сцени!</translation>
     </message>
     <message>
         <location filename="../../../store/tupfilemanager.cpp" line="504"/>
         <source>Can&apos;t read scene config file!</source>
-        <translation>Não é possível ler o arquivo de configuração da cena!</translation>
+        <translation>Не вдається прочитати файл конфігурації сцени!</translation>
     </message>
     <message>
         <location filename="../../../store/tupfilemanager.cpp" line="549"/>
         <source>Scene %1</source>
-        <translation>Cena %1</translation>
+        <translation>Сцена %1</translation>
     </message>
     <message>
         <location filename="../../../store/tupfilemanager.cpp" line="550"/>
         <source>Layer %1</source>
-        <translation>Camada %1</translation>
+        <translation>Шар %1</translation>
     </message>
     <message>
         <location filename="../../../store/tupfilemanager.cpp" line="551"/>
         <source>Frame %1</source>
-        <translation>Quadro %1</translation>
+        <translation>Кадр %1</translation>
     </message>
 </context>
 <context>
@@ -3958,7 +3910,7 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../store/tupframe.cpp" line="262"/>
         <source>Frame</source>
-        <translation>Quadro</translation>
+        <translation>Кадр</translation>
     </message>
 </context>
 <context>
@@ -3966,216 +3918,183 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="54"/>
         <source>General</source>
-        <translation>Geral</translation>
+        <translation>Загальні</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="55"/>
         <source>Cache</source>
-        <translation>Cache</translation>
+        <translation>Кеш</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="56"/>
         <source>Social Network</source>
-        <translation>Rede Social</translation>
+        <translation>Соціальна мережа</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="99"/>
         <source>Always open last project</source>
-        <translation>Sempre abrir último projeto</translation>
+        <translation>Завжди відкривати останній проєкт</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="100"/>
         <source>Allow TupiTube to collect app usage statistics (Anonymous data)</source>
-        <translation>Permitir que o TupiTube colete estatísticas de uso do aplicativo (Dados anônimos)</translation>
+        <translation>Дозволити TupiTube збирати статистику використання програми (анонімні дані)</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="108"/>
         <source>Confirm &quot;Remove frame&quot; action</source>
-        <translation>Confirmar ação &quot;Remover quadro&quot;</translation>
+        <translation>Підтверджувати дію «Вилучити кадр»</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="108"/>
         <source>Confirm &quot;Remove layer&quot; action</source>
-        <translation>Confirmar ação &quot;Remover camada&quot;</translation>
+        <translation>Підтверджувати дію «Вилучити шар»</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="109"/>
         <source>Confirm &quot;Remove scene&quot; action</source>
-        <translation>Confirmar ação &quot;Remover cena&quot;</translation>
+        <translation>Підтверджувати дію «Вилучити сцену»</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="109"/>
         <source>Confirm &quot;Remove object&quot; action from library</source>
-        <translation>Confirmar ação &quot;Remover objeto&quot; da biblioteca</translation>
+        <translation>Підтверджувати дію «Вилучити об&apos;єкт» із бібліотеки</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="116"/>
         <source>Render and play project automatically</source>
-        <translation>Renderize e reproduza o projeto automaticamente</translation>
+        <translation>Збирати та відтворювати проєкт автоматично</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="120"/>
         <source>General Preferences</source>
-        <translation>Preferências Gerais</translation>
+        <translation>Загальні параметри</translation>
     </message>
     <message>
-        <location filename="../../../libui/tupgeneralpreferences.cpp" line="151"/>
+        <location filename="../../../libui/tupgeneralpreferences.cpp" line="150"/>
         <source>Language:</source>
-        <translation>Idioma:</translation>
+        <translation>Мова:</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="170"/>
         <source>Confirmation Dialogs</source>
-        <translation>Diálogos de Confirmação</translation>
+        <translation>Діалогові вікна підтвердження</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="126"/>
         <source>Interface</source>
-        <translation>Interface</translation>
+        <translation>Інтерфейс</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="131"/>
         <source>Enable autosave feature every</source>
-        <translation>Ativar recurso de salvamento automático a cada</translation>
+        <translation>Увімкнути функцію автозбереження кожних</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="141"/>
         <source>minutes</source>
-        <translation>minutos</translation>
+        <translation>хвилин</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="173"/>
         <source>Player</source>
-        <translation>Reprodutor</translation>
+        <translation>Програвач</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="199"/>
         <source>Cache Settings</source>
-        <translation>Configurações de Cache</translation>
+        <translation>Параметри кешу</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="205"/>
         <source>The CACHE path is the folder where TupiTube creates temporary files while you work on your animation projects.&lt;br/&gt;&lt;b&gt;Note:&lt;/b&gt; Don&apos;t change this parameter unless you know what you are doing.</source>
-        <translation>O caminho do CACHE é a pasta em que o TupiTube cria arquivos temporários enquanto você trabalha em seus projetos de animação.&lt;br/&gt;&lt;b&gt;Nota:&lt;/b&gt; Não altere esse parâmetro, a menos que saiba o que está fazendo.</translation>
+        <translation>Шлях КЕШ — це тека, в якій TupiTube створює тимчасові файли під час роботи над анімаційними проєктами.&lt;br/&gt;&lt;b&gt;Примітка:&lt;/b&gt; Змінюючи цей параметр, слід добре розуміти сенс виконуваних дій.</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="216"/>
         <source>Choose another path</source>
-        <translation>Escolha outro caminho</translation>
+        <translation>Виберіть інший шлях</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="220"/>
         <source>CACHE Path: </source>
-        <translation>Caminho do CACHE: </translation>
+        <translation>Шлях КЕШ: </translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="224"/>
         <source>Restore default value</source>
-        <translation>Restaurar valor padrão</translation>
+        <translation>Відновити типове значення</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="252"/>
         <source>TupiTube Credentials</source>
-        <translation>Credenciais do TupiTube</translation>
+        <translation>Облікові дані TupiTube</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="259"/>
         <source>Username / Email: </source>
-        <translation>Nome de Usuário / E-mail:</translation>
+        <translation>Ім&apos;я користувача / ел. адреса: </translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="262"/>
         <source>Password: </source>
-        <translation>Senha: </translation>
+        <translation>Пароль: </translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="277"/>
         <source>Enable anonymous mode</source>
-        <translation>Ativar modo anônimo</translation>
+        <translation>Увімкнути анонімний режим</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="283"/>
         <source>Don&apos;t have a TupiTube account?</source>
-        <translation>Não tem uma conta no TupiTube?</translation>
+        <translation>Немає облікового запису на TupiTube?</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="288"/>
         <source>Email: </source>
-        <translation>Email: </translation>
+        <translation>Електронна адреса: </translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="298"/>
         <source>Register</source>
-        <translation>Registro</translation>
+        <translation>Зареєструватися</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="363"/>
         <source>Email is invalid. Please, fix it!</source>
-        <translation>Email inválido. Por favor, conserte!</translation>
+        <translation>Недопустима адреса електронної пошти. Виправте!</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="370"/>
         <source>Email field is empty. Type one!</source>
-        <translation>O campo Email está vazio. Digite um!</translation>
+        <translation>Поле електронної пошти не заповнене. Заповніть поле!</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="388"/>
         <source>Error: Email already registered!</source>
-        <translation>Erro: Email já registrado!</translation>
+        <translation>Помилка: електронну адресу вже зареєстровано!</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="400"/>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="408"/>
         <source>Please contact us at info@tupitube.com</source>
-        <translation>Entre em contato conosco em info@tupitube.com</translation>
+        <translation>Зв&apos;яжіться з нами за адресою info@tupitube.com</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="461"/>
         <source>Choose a directory...</source>
-        <translation>Escolha um diretório...</translation>
+        <translation>Вибір каталогу…</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="511"/>
         <source>Cache path is empty. Set a value!</source>
-        <translation>O caminho do Cache está vazio. Defina um valor!</translation>
+        <translation>Відсутній шлях кешу. Задайте значення!</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="518"/>
         <source>Cache path doesn&apos;t exist. Create it!</source>
-        <translation>O caminho do Cache não existe. Crie!</translation>
-    </message>
-</context>
-<context>
-    <name>TupGradientCreator</name>
-    <message>
-        <location filename="../../../libtupi/tupgradientcreator.cpp" line="65"/>
-        <source>Linear</source>
-        <translation>Linear</translation>
-    </message>
-    <message>
-        <location filename="../../../libtupi/tupgradientcreator.cpp" line="65"/>
-        <source>Radial</source>
-        <translation>Radial</translation>
-    </message>
-    <message>
-        <location filename="../../../libtupi/tupgradientcreator.cpp" line="65"/>
-        <source>Conical</source>
-        <translation>Cónico</translation>
-    </message>
-    <message>
-        <location filename="../../../libtupi/tupgradientcreator.cpp" line="72"/>
-        <source>Pad</source>
-        <translation>Uniforme</translation>
-    </message>
-    <message>
-        <location filename="../../../libtupi/tupgradientcreator.cpp" line="72"/>
-        <source>Reflect</source>
-        <translation>Reflexo</translation>
-    </message>
-    <message>
-        <location filename="../../../libtupi/tupgradientcreator.cpp" line="72"/>
-        <source>Repeat</source>
-        <translation>Repetir</translation>
+        <translation>Шлях кешу не існує. Створіть його!</translation>
     </message>
 </context>
 <context>
@@ -4183,59 +4102,59 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/workspace/tupimagedialog.cpp" line="46"/>
         <source>Image Properties</source>
-        <translation>Propriedades da Imagem</translation>
+        <translation>Властивості зображення</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupimagedialog.cpp" line="51"/>
         <source>Title</source>
-        <translation>Título</translation>
+        <translation>Заголовок</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupimagedialog.cpp" line="52"/>
         <source>My Picture</source>
-        <translation>Minha Imagem</translation>
+        <translation>Моє зображення</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupimagedialog.cpp" line="58"/>
         <source>Topics</source>
-        <translation>Tópicos</translation>
+        <translation>Теми</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupimagedialog.cpp" line="59"/>
         <source>#topic1 #topic2 #topic3</source>
-        <translation>#tópico1 #tópico2 #tópico3</translation>
+        <translation>#тема1 #тема2 #тема3</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupimagedialog.cpp" line="64"/>
         <source>Description</source>
-        <translation>Descrição</translation>
+        <translation>Опис</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupimagedialog.cpp" line="70"/>
         <source>Just a little taste of my style :)</source>
-        <translation>Uma pequena amostra do meu estilo :)</translation>
+        <translation>Просто невелика демонстрація мого творчого стилю :)</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupimagedialog.cpp" line="83"/>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
+        <translation>Скасувати</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupimagedialog.cpp" line="87"/>
         <source>Post Image</source>
-        <translation>Publicar Imagem</translation>
+        <translation>Опублікувати зображення</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupimagedialog.cpp" line="109"/>
         <location filename="../../../components/workspace/tupimagedialog.cpp" line="115"/>
         <location filename="../../../components/workspace/tupimagedialog.cpp" line="126"/>
         <source>Set a title for the picture here!</source>
-        <translation>Defina aqui um título para a imagem!</translation>
+        <translation>Введіть тут заголовок зображення!</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupimagedialog.cpp" line="137"/>
         <source>Set some topic tags for the picture here!</source>
-        <translation>Defina aqui algumas etiquetas de tópicos para a imagem!</translation>
+        <translation>Задайте тут кілька тегів для зображення!</translation>
     </message>
 </context>
 <context>
@@ -4243,27 +4162,27 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/player/tupinfodialog.cpp" line="46"/>
         <source>Project Information</source>
-        <translation>Informações do Projeto</translation>
+        <translation>Відомості про проєкт</translation>
     </message>
     <message>
         <location filename="../../../components/player/tupinfodialog.cpp" line="51"/>
         <source>Author</source>
-        <translation>Autor</translation>
+        <translation>Автор</translation>
     </message>
     <message>
         <location filename="../../../components/player/tupinfodialog.cpp" line="58"/>
         <source>Description</source>
-        <translation>Descrição</translation>
+        <translation>Опис</translation>
     </message>
     <message>
         <location filename="../../../components/player/tupinfodialog.cpp" line="67"/>
         <source>Update</source>
-        <translation>Atualizar</translation>
+        <translation>Оновити</translation>
     </message>
     <message>
         <location filename="../../../components/player/tupinfodialog.cpp" line="71"/>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
+        <translation>Скасувати</translation>
     </message>
 </context>
 <context>
@@ -4271,72 +4190,72 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/library/tupitemmanager.cpp" line="76"/>
         <source>New folder %1</source>
-        <translation>Nova pasta %1</translation>
+        <translation>Нова тека %1</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupitemmanager.cpp" line="249"/>
         <location filename="../../../components/library/tupitemmanager.cpp" line="404"/>
         <source>Options</source>
-        <translation>Opções</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="272"/>
-        <source>Edit with Inkscape</source>
-        <translation>Editar com Inkscape</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="282"/>
-        <source>Edit with Gimp</source>
-        <translation>Editar com Gimp</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="292"/>
-        <source>Edit with Krita</source>
-        <translation>Editar com Krita</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="302"/>
-        <source>Edit with MyPaint</source>
-        <translation>Editar com MyPaint</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="314"/>
-        <source>Clone</source>
-        <translation>Clonar</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tupitemmanager.cpp" line="319"/>
-        <source>Export</source>
-        <translation>Exportar</translation>
+        <translation>Параметри</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupitemmanager.cpp" line="252"/>
         <location filename="../../../components/library/tupitemmanager.cpp" line="322"/>
         <source>Rename</source>
-        <translation>Renomear</translation>
+        <translation>Перейменувати</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupitemmanager.cpp" line="255"/>
         <location filename="../../../components/library/tupitemmanager.cpp" line="325"/>
         <source>Delete</source>
-        <translation>Eliminar</translation>
+        <translation>Видалити</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="272"/>
+        <source>Edit with Inkscape</source>
+        <translation>Змінити в Inkscape</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="282"/>
+        <source>Edit with Gimp</source>
+        <translation>Змінити в GIMP</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="292"/>
+        <source>Edit with Krita</source>
+        <translation>Змінити в Krita</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="302"/>
+        <source>Edit with MyPaint</source>
+        <translation>Змінити в MyPaint</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="314"/>
+        <source>Clone</source>
+        <translation>Клонувати</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tupitemmanager.cpp" line="319"/>
+        <source>Export</source>
+        <translation>Експортувати</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupitemmanager.cpp" line="336"/>
         <source>Open lip-sync editor</source>
-        <translation>Abrir o editor de lip-sync</translation>
+        <translation>Відкрити редактор синхронізації губ</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupitemmanager.cpp" line="345"/>
         <location filename="../../../components/library/tupitemmanager.cpp" line="408"/>
         <source>Create new raster item</source>
-        <translation>Criar novo item raster</translation>
+        <translation>Створити новий растровий елемент</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupitemmanager.cpp" line="351"/>
         <location filename="../../../components/library/tupitemmanager.cpp" line="413"/>
         <source>Create new svg item</source>
-        <translation>Criar novo item svg</translation>
+        <translation>Створити новий елемент svg</translation>
     </message>
 </context>
 <context>
@@ -4344,7 +4263,7 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../libtupi/tupitempreview.cpp" line="73"/>
         <source>Library is empty :(</source>
-        <translation>Biblioteca está vazia :(</translation>
+        <translation>Бібліотека порожня :(</translation>
     </message>
 </context>
 <context>
@@ -4352,37 +4271,37 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../store/tupitemtweener.cpp" line="384"/>
         <source>Motion</source>
-        <translation>Movimento</translation>
+        <translation>Переміщення</translation>
     </message>
     <message>
         <location filename="../../../store/tupitemtweener.cpp" line="387"/>
         <source>Rotation</source>
-        <translation>Rotação</translation>
+        <translation>Обертання</translation>
     </message>
     <message>
         <location filename="../../../store/tupitemtweener.cpp" line="390"/>
         <source>Scale</source>
-        <translation>Escala</translation>
+        <translation>Масштабування</translation>
     </message>
     <message>
         <location filename="../../../store/tupitemtweener.cpp" line="393"/>
         <source>Shear</source>
-        <translation>Distorcer</translation>
+        <translation>Зсув</translation>
     </message>
     <message>
         <location filename="../../../store/tupitemtweener.cpp" line="396"/>
         <source>Opacity</source>
-        <translation>Opacidade</translation>
+        <translation>Щільність</translation>
     </message>
     <message>
         <location filename="../../../store/tupitemtweener.cpp" line="399"/>
         <source>Coloring</source>
-        <translation>Cor</translation>
+        <translation>Забарвлення</translation>
     </message>
     <message>
         <location filename="../../../store/tupitemtweener.cpp" line="402"/>
         <source>Papagayo Lip-sync</source>
-        <translation>Papagayo Lip-sync</translation>
+        <translation>Синхронізація губ Papagayo</translation>
     </message>
 </context>
 <context>
@@ -4390,12 +4309,12 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../store/tuplayer.cpp" line="44"/>
         <source>Layer</source>
-        <translation>Camada</translation>
+        <translation>Шар</translation>
     </message>
     <message>
         <location filename="../../../store/tuplayer.cpp" line="253"/>
         <source>Frame</source>
-        <translation>Quadro</translation>
+        <translation>Кадр</translation>
     </message>
 </context>
 <context>
@@ -4403,27 +4322,27 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/workspace/tuplibrarydialog.cpp" line="51"/>
         <source>Library Object</source>
-        <translation>Objeto de Biblioteca</translation>
+        <translation>Об&apos;єкт бібліотеки</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuplibrarydialog.cpp" line="91"/>
         <source>Name</source>
-        <translation>Nome</translation>
+        <translation>Назва</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuplibrarydialog.cpp" line="94"/>
         <source>Item %1</source>
-        <translation>Item %1</translation>
+        <translation>Елемент %1</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuplibrarydialog.cpp" line="112"/>
         <source>Library object&apos;s name is missing!</source>
-        <translation>Nome do objeto da biblioteca está faltando!</translation>
+        <translation>Відсутня назва бібліотечного об&apos;єкта!</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuplibrarydialog.cpp" line="121"/>
         <source>Object&apos;s name already exists. Pick a new one!</source>
-        <translation>Nome do objeto já existe. Escolha um novo!</translation>
+        <translation>Об&apos;єкт із такою назвою вже існує. Виберіть іншу назву!</translation>
     </message>
 </context>
 <context>
@@ -4431,308 +4350,308 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="69"/>
         <source>Library</source>
-        <translation>Biblioteca</translation>
+        <translation>Бібліотека</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="189"/>
+        <source>Search for Assets</source>
+        <translation>Пошук ресурсів</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="200"/>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="2174"/>
         <source>Image</source>
-        <translation>Imagem</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="203"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2179"/>
-        <source>Image Sequence</source>
-        <translation>Sequência de Imagens</translation>
+        <translation>Зображення</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="201"/>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="2184"/>
         <source>Svg File</source>
-        <translation>Ficheiro Svg</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="205"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2199"/>
-        <source>Audio File</source>
-        <translation>Arquivo de Áudio</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="213"/>
-        <source>Add an object to library</source>
-        <translation>Adicionar um objeto à biblioteca</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="335"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2240"/>
-        <source>Directory</source>
-        <translation>Diretório</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="352"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="406"/>
-        <source>No preview available</source>
-        <translation>Nenhuma pré-visualização disponível</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="435"/>
-        <source>It&apos;s a directory! Please, pick a library object</source>
-        <translation>É um diretório! Por favor, escolha um objeto de biblioteca</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="444"/>
-        <source>It&apos;s an audio file! Please, pick a graphic object</source>
-        <translation>É um arquivo de áudio! Por favor, escolha um objeto gráfico</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="666"/>
-        <source>Audio</source>
-        <translation>Áudio</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="681"/>
-        <source>Export object...</source>
-        <translation>Exportar objeto...</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="724"/>
-        <source>Item exported successfully!</source>
-        <translation>Item exportado com sucesso!</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="793"/>
-        <source>Couldn&apos;t create images directory!</source>
-        <translation>Não foi possível criar diretório de imagens!</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="887"/>
-        <source>Couldn&apos;t create vector directory!</source>
-        <translation>Não foi possível criar diretório de vetor!</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="906"/>
-        <source>TupiTube library item</source>
-        <translation>Item da biblioteca TupiTube</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="652"/>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="983"/>
-        <source>Images</source>
-        <translation>Imagens</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="982"/>
-        <source>Import images...</source>
-        <translation>Importar imagens...</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1442"/>
-        <source>Information</source>
-        <translation>Informação</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1086"/>
-        <source>Image is bigger than workspace.</source>
-        <translation>A imagem é maior do que a área de trabalho.</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1087"/>
-        <source>Do you want to resize it?</source>
-        <translation>Deseja redimensionar?</translation>
+        <translation>Файл SVG</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="202"/>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="2194"/>
         <source>Native Object</source>
-        <translation>Objeto Nativo</translation>
+        <translation>Власний об&apos;єкт</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="189"/>
-        <source>Search for Assets</source>
-        <translation>Pesquisar Recursos</translation>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="203"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2179"/>
+        <source>Image Sequence</source>
+        <translation>Послідовність зображень</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="204"/>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="2189"/>
         <source>Svg Sequence</source>
-        <translation>Sequência Svg</translation>
+        <translation>Послідовність файлів SVG</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="206"/>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="2204"/>
         <source>Video File</source>
-        <translation>Arquivo de Vídeo</translation>
+        <translation>Відеофайл</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="213"/>
+        <source>Add an object to library</source>
+        <translation>Додати об&apos;єкт до бібліотеки</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="221"/>
         <source>Create new folder</source>
-        <translation>Criar nova pasta</translation>
+        <translation>Створити нову теку</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="228"/>
         <source>Insert library item into frame</source>
-        <translation>Inserir item de biblioteca em quadro</translation>
+        <translation>Вставити бібліотечний елемент у кадр</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="335"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2240"/>
+        <source>Directory</source>
+        <translation>Каталог</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="352"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="406"/>
+        <source>No preview available</source>
+        <translation>Перегляд недоступний</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="418"/>
         <source>Library is empty!</source>
-        <translation>Biblioteca está vazia!</translation>
+        <translation>Бібліотека порожня!</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="426"/>
         <source>There&apos;s no current selection!</source>
-        <translation>Não existe atualmente uma seleção!</translation>
+        <translation>Нічого не вибрано!</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="473"/>
         <source>Do you want to remove this object from Library?</source>
-        <translation>Quer remover o objeto da biblioteca?</translation>
+        <translation>Вилучити цей об&apos;єкт із бібліотеки?</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="473"/>
         <source>Confirmation</source>
-        <translation>Confirmação</translation>
+        <translation>Підтвердження</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="652"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="983"/>
+        <source>Images</source>
+        <translation>Зображення</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1811"/>
+        <source>Video file is larger than 10 MB. Too big!</source>
+        <translation>Розмір відеофайлу перевищує 10 МБ. Завеликий!</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="205"/>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="2199"/>
+        <source>Audio File</source>
+        <translation>Звуковий файл</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="435"/>
+        <source>It&apos;s a directory! Please, pick a library object</source>
+        <translation>Це каталог! Будь ласка, виберіть бібліотечний об&apos;єкт</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="444"/>
+        <source>It&apos;s an audio file! Please, pick a graphic object</source>
+        <translation>Це звуковий файл! Виберіть графічний об&apos;єкт</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="666"/>
+        <source>Audio</source>
+        <translation>Звук</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="676"/>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1238"/>
         <source>Native Objects</source>
-        <translation>Objetos Nativos</translation>
+        <translation>Власні об&apos;єкти</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="681"/>
+        <source>Export object...</source>
+        <translation>Експорт об&apos;єкта…</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="724"/>
+        <source>Item exported successfully!</source>
+        <translation>Елемент експортовано успішно!</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="793"/>
+        <source>Couldn&apos;t create images directory!</source>
+        <translation>Не вдалося створити каталог для зображень!</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="887"/>
+        <source>Couldn&apos;t create vector directory!</source>
+        <translation>Не вдалося створити каталог для векторних зображень!</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="906"/>
+        <source>TupiTube library item</source>
+        <translation>Елемент бібліотеки TupiTube</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="982"/>
+        <source>Import images...</source>
+        <translation>Імпорт зображень…</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1442"/>
+        <source>Information</source>
+        <translation>Інформація</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1086"/>
+        <source>Image is bigger than workspace.</source>
+        <translation>Зображення більше від робочого простору.</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1084"/>
         <source>File:</source>
-        <translation>Arquivo:</translation>
+        <translation>Файл:</translation>
+    </message>
+    <message>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1087"/>
+        <source>Do you want to resize it?</source>
+        <translation>Змінити його розміри?</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1168"/>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1226"/>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1288"/>
         <source>Cannot open file: %1</source>
-        <translation>Não é possível abrir o ficheiro: %1</translation>
+        <translation>Не вдалося відкрити файл: %1</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1177"/>
         <source>Import SVG files...</source>
-        <translation>Importar ficheiros SVG...</translation>
+        <translation>Імпорт файлів SVG…</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1178"/>
         <source>Vector</source>
-        <translation>Vetor</translation>
+        <translation>Векторне зображення</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1237"/>
         <source>Import objects...</source>
-        <translation>Importar objetos...</translation>
+        <translation>Імпорт об&apos;єктів…</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1302"/>
         <source>Frame</source>
-        <translation>Quadro</translation>
+        <translation>Кадр</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1325"/>
         <source>Choose the images directory...</source>
-        <translation>Escolha o diretório de imagens...</translation>
+        <translation>Вибір каталогу зображень…</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1424"/>
         <source>Image files found: %1.</source>
-        <translation>Ficheiros de Imagem encontrados: %1.</translation>
+        <translation>Знайдено файлів зображень: %1.</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1435"/>
         <source>Files are too big, so they will be resized.</source>
-        <translation>Ficheiros são demasiado grandes, por isso serão redimensionados.</translation>
+        <translation>Файли занадто великі, тому їхні розміри буде змінено.</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1436"/>
         <source>Note: This task can take a while.</source>
-        <translation>Nota: Esta tarefa pode demorar algum tempo.</translation>
+        <translation>Примітка: Виконання займе деякий час.</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1445"/>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1593"/>
         <source>Do you want to continue?</source>
-        <translation>Deseja continuar?</translation>
+        <translation>Продовжити?</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1375"/>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1644"/>
         <source>ERROR!</source>
-        <translation>ERRO!</translation>
+        <translation>ПОМИЛКА!</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1376"/>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1644"/>
         <source>ERROR: Can&apos;t open file %1. Please, check file permissions and try again.</source>
-        <translation>ERRO: Não é possível abrir o ficheiro %1. Por favor, verifique as permissões do ficheiro e tente novamente.</translation>
+        <translation>ПОМИЛКА: Не вдалося відкрити файл %1. Перевірте дозволи файлу і повторіть спробу.</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1418"/>
         <source>No image files were found.&lt;br/&gt;Please, try another directory</source>
-        <translation>Nenhum ficheiro de imagem encontrado.&lt;br/&gt;Por favor, tente outro diretório</translation>
+        <translation>Не вдалося знайти файлів зображень. &lt;br/&gt;Спробуйте відкрити інший каталог</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1493"/>
         <source>Video</source>
-        <translation>Vídeo</translation>
+        <translation>Відео</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1502"/>
         <source>Importing image %1 of %2</source>
-        <translation>Importando imagem %1 de %2</translation>
+        <translation>Імпортується зображення %1 з %2</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1559"/>
         <source>Choose the SVG files directory...</source>
-        <translation>Escolha o diretório dos ficheiros SVG...</translation>
+        <translation>Вибір каталогу файлів SVG…</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1586"/>
         <source>%1 SVG files will be loaded.</source>
-        <translation>%1 ficheiros SVG serão carregados.</translation>
+        <translation>Буде завантажено файлів SVG: %1.</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1590"/>
         <source>Question</source>
-        <translation>Pergunta</translation>
+        <translation>Питання</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1660"/>
         <source>No SVG files were found.&lt;br/&gt;Please, try another directory</source>
-        <translation>Nenhum ficheiro SVG encontrado.&lt;br/&gt;Por favor, tente outro diretório</translation>
+        <translation>Не вдалося знайти файлів SVG.&lt;br/&gt;Спробуйте відкрити інший каталог</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1689"/>
         <source>Choose a video file...</source>
-        <translation>Escolha um arquivo de vídeo...</translation>
+        <translation>Виберіть відеофайл...</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1722"/>
         <source>Couldn&apos;t create temporary directory!</source>
-        <translation>Não foi possível criar o diretório temporário!</translation>
-    </message>
-    <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1808"/>
-        <source>Can&apos;t load video file!</source>
-        <translation>Não é possível carregar o arquivo de vídeo!</translation>
+        <translation>Не вдалося створити тимчасовий каталог!</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1779"/>
         <source>Error while opening file: %1</source>
-        <translation>Erro ao abrir ficheiro: %1</translation>
+        <translation>Помилка при відкритті файлу: %1</translation>
     </message>
     <message>
-        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1811"/>
-        <source>Video file is larger than 10 MB. Too big!</source>
-        <translation>O arquivo de vídeo é maior que 10 MB. Muito grande!</translation>
+        <location filename="../../../components/library/tuplibrarywidget.cpp" line="1808"/>
+        <source>Can&apos;t load video file!</source>
+        <translation>Не вдалося завантажити відеофайл!</translation>
     </message>
     <message>
         <location filename="../../../components/library/tuplibrarywidget.cpp" line="1981"/>
         <source>Raster Objects</source>
-        <translation>Objetos Raster</translation>
+        <translation>Растрові об&apos;єкти</translation>
     </message>
 </context>
 <context>
@@ -4740,216 +4659,293 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/papagayo/tuplipsyncdoc.cpp" line="1158"/>
         <source>Voice 1</source>
-        <translation>Voz 1</translation>
+        <translation>Голос 1</translation>
+    </message>
+</context>
+<context>
+    <name>TupListProjectDialog</name>
+    <message>
+        <location filename="../../../net/tuplistprojectdialog.cpp" line="40"/>
+        <source>Projects List from Server</source>
+        <translation>Список проєктів з сервера</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tuplistprojectdialog.cpp" line="65"/>
+        <source>My works:</source>
+        <translation>Мої роботи:</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tuplistprojectdialog.cpp" line="66"/>
+        <source>My contributions:</source>
+        <translation>Мої внески:</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tuplistprojectdialog.cpp" line="102"/>
+        <source>OK</source>
+        <translation>Гаразд</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tuplistprojectdialog.cpp" line="125"/>
+        <location filename="../../../net/tuplistprojectdialog.cpp" line="127"/>
+        <source>Name</source>
+        <translation>Назва</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tuplistprojectdialog.cpp" line="125"/>
+        <location filename="../../../net/tuplistprojectdialog.cpp" line="127"/>
+        <source>Description</source>
+        <translation>Опис</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tuplistprojectdialog.cpp" line="125"/>
+        <location filename="../../../net/tuplistprojectdialog.cpp" line="127"/>
+        <source>Date</source>
+        <translation>Дата</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tuplistprojectdialog.cpp" line="127"/>
+        <source>Author</source>
+        <translation>Автор</translation>
     </message>
 </context>
 <context>
     <name>TupMainWindow</name>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="366"/>
+        <location filename="../../tupmainwindow.cpp" line="360"/>
         <source>Opening a new document...</source>
-        <translation>A abrir um novo documento...</translation>
+        <translation>Відкривається новий документ…</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="389"/>
-        <location filename="../../tupmainwindow.cpp" line="1341"/>
-        <location filename="../../tupmainwindow_gui.cpp" line="260"/>
+        <location filename="../../tupmainwindow.cpp" line="381"/>
+        <location filename="../../tupmainwindow.cpp" line="1322"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="259"/>
         <source>Animation</source>
-        <translation>Animação</translation>
+        <translation>Анімація</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="491"/>
-        <location filename="../../tupmainwindow_gui.cpp" line="268"/>
+        <location filename="../../tupmainwindow.cpp" line="481"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="267"/>
         <source>Player</source>
-        <translation>Reprodutor</translation>
+        <translation>Програвач</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="514"/>
+        <location filename="../../tupmainwindow.cpp" line="504"/>
         <source>Project &lt;b&gt;%1&lt;/b&gt; opened!</source>
-        <translation>Projeto &lt;b&gt;%1&lt;/b&gt; aberto!</translation>
+        <translation>Проєкт &lt;b&gt;«%1»&lt;/b&gt; відкрито!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="606"/>
+        <location filename="../../tupmainwindow.cpp" line="591"/>
         <source>The document has been modified.</source>
-        <translation>O documento foi modificado.</translation>
+        <translation>Документ змінено.</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="607"/>
+        <location filename="../../tupmainwindow.cpp" line="592"/>
         <source>Do you want to save the project?</source>
-        <translation>Deseja guardar o projeto?</translation>
+        <translation>Зберегти проєкт?</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="609"/>
+        <location filename="../../tupmainwindow.cpp" line="594"/>
         <source>Save</source>
-        <translation>Guardar</translation>
+        <translation>Зберегти</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="610"/>
+        <location filename="../../tupmainwindow.cpp" line="595"/>
         <source>Discard</source>
-        <translation>Descartar</translation>
+        <translation>Відхилити</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="611"/>
+        <location filename="../../tupmainwindow.cpp" line="596"/>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
+        <translation>Скасувати</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="816"/>
-        <location filename="../../tupmainwindow.cpp" line="916"/>
-        <location filename="../../tupmainwindow.cpp" line="1172"/>
-        <location filename="../../tupmainwindow.cpp" line="1245"/>
-        <location filename="../../tupmainwindow.cpp" line="1930"/>
+        <location filename="../../tupmainwindow.cpp" line="799"/>
+        <location filename="../../tupmainwindow.cpp" line="899"/>
+        <location filename="../../tupmainwindow.cpp" line="1153"/>
+        <location filename="../../tupmainwindow.cpp" line="1226"/>
+        <location filename="../../tupmainwindow.cpp" line="1910"/>
         <source>by</source>
-        <translation>por</translation>
+        <translation>Автор:</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1043"/>
+        <location filename="../../tupmainwindow.cpp" line="821"/>
+        <source>Open TupiTube project</source>
+        <translation>Відкрити проєкт TupiTube</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow.cpp" line="822"/>
+        <location filename="../../tupmainwindow.cpp" line="951"/>
+        <location filename="../../tupmainwindow.cpp" line="1113"/>
+        <location filename="../../tupmainwindow.cpp" line="1739"/>
+        <source>TupiTube Project Package (*.tup)</source>
+        <translation>Файли проєктів TupiTube (*.tup)</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow.cpp" line="856"/>
+        <location filename="../../tupmainwindow.cpp" line="920"/>
+        <source>Cannot open project!</source>
+        <translation>Не вдалося відкрити проєкт!</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow.cpp" line="1770"/>
+        <source>Close</source>
+        <translation>Закрити</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow.cpp" line="1024"/>
         <source>Gimp Palette (*.gpl *.txt *.css)</source>
-        <translation>Paleta do Gimp (*.gpl *.txt *.css)</translation>
+        <translation>Палітра GIMP (*.gpl *.txt *.css)</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1042"/>
-        <source>Import Gimp Palettes</source>
-        <translation>Importar Paleta De Gimp</translation>
+        <location filename="../../tupmainwindow.cpp" line="146"/>
+        <source>Would you like to allow TupiTube to collect anonymous performance data?</source>
+        <translation>Ви хочете дозволити TupiTube збирати анонімні дані про продуктивність?</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow.cpp" line="148"/>
+        <source>This information helps us enhance the app and provide a better experience for you.</source>
+        <translation>Ця інформація допомагає нам покращити додаток та забезпечити вам кращий досвід роботи.</translation>
     </message>
     <message>
         <location filename="../../tupmainwindow.cpp" line="150"/>
-        <source>Would you like to allow TupiTube to collect anonymous performance data?</source>
-        <translation>Você gostaria de permitir que o TupiTube colete dados anônimos de desempenho?</translation>
+        <source>It will be handled in accordance with Utopian Lab&apos;s data policy.</source>
+        <translation>З ними буде оброблятися відповідно до політики даних Utopian Lab.</translation>
     </message>
     <message>
         <location filename="../../tupmainwindow.cpp" line="152"/>
-        <source>This information helps us enhance the app and provide a better experience for you.</source>
-        <translation>Essas informações nos ajudam a aprimorar o aplicativo e proporcionar uma melhor experiência para você.</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow.cpp" line="154"/>
-        <source>It will be handled in accordance with Utopian Lab&apos;s data policy.</source>
-        <translation>Ele será tratado de acordo com a política de dados do Utopian Lab.</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow.cpp" line="156"/>
         <source>You can enable or disable this option anytime in the Preferences dialog.</source>
-        <translation>Você pode habilitar ou desabilitar esta opção a qualquer momento na caixa de diálogo Preferências.</translation>
+        <translation>Ви можете будь-коли ввімкнути або вимкнути цю опцію в діалоговому вікні «Налаштування».</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="157"/>
+        <location filename="../../tupmainwindow.cpp" line="153"/>
         <source>Help Us Improve TupiTube!</source>
-        <translation>Ajude-nos a melhorar o TupiTube!</translation>
+        <translation>Допоможіть нам покращити TupiTube!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="604"/>
+        <location filename="../../tupmainwindow.cpp" line="304"/>
+        <source>[ by %1 | net mode ]</source>
+        <translation>[ автор: %1 | мережевий режим ]</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow.cpp" line="589"/>
         <source>Confirmation Required</source>
-        <translation>Confirmação Necessária</translation>
+        <translation>Потрібне підтвердження</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="746"/>
+        <location filename="../../tupmainwindow.cpp" line="731"/>
         <source>Error while clearing cache!</source>
-        <translation>Erro ao limpar o cache!</translation>
+        <translation>Помилка при очищенні кешу!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="967"/>
+        <location filename="../../tupmainwindow.cpp" line="950"/>
         <source>Select TupiTube project</source>
-        <translation>Selecione o projeto TupiTube</translation>
+        <translation>Виберіть проєкт TupiTube</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1078"/>
+        <location filename="../../tupmainwindow.cpp" line="1023"/>
+        <source>Import Gimp Palettes</source>
+        <translation>Імпорт палітр GIMP</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow.cpp" line="1059"/>
         <source>Gimp palette import was successful</source>
-        <translation>Paleta do Gimp importada com sucesso</translation>
+        <translation>Палітру GIMP імпортовано успішно</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1080"/>
+        <location filename="../../tupmainwindow.cpp" line="1061"/>
         <source>Gimp palette import was unsuccessful</source>
-        <translation>Importação da paleta do Gimp falhou</translation>
+        <translation>Не вдалось імпортувати палітру GIMP</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1131"/>
+        <location filename="../../tupmainwindow.cpp" line="1112"/>
         <source>Save Project As</source>
-        <translation>Guardar Projeto Como</translation>
+        <translation>Зберегти проєкт як</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1149"/>
+        <location filename="../../tupmainwindow.cpp" line="1130"/>
         <source>Directory does not exist! Please, choose another path.</source>
-        <translation>Diretório não existe! Por favor, escolha outro caminho.</translation>
+        <translation>Каталогу не існує! Виберіть інший шлях.</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1158"/>
+        <location filename="../../tupmainwindow.cpp" line="1139"/>
         <source>Insufficient permissions. Please, pick another path.</source>
-        <translation>Permissões insuficientes. Por favor, escolha outro caminho.</translation>
+        <translation>Бракує дозволів. Виберіть інший шлях.</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1238"/>
+        <location filename="../../tupmainwindow.cpp" line="1219"/>
         <source>Project &lt;b&gt;%1&lt;/b&gt; saved</source>
-        <translation>Projeto &lt;b&gt;%1&lt;/b&gt; gravado</translation>
+        <translation>Проєкт &lt;b&gt;«%1»&lt;/b&gt; збережено</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1334"/>
+        <location filename="../../tupmainwindow.cpp" line="1315"/>
         <source>Project is already opened!</source>
-        <translation>O projeto já está aberto!</translation>
+        <translation>Проєкт вже відкрито!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1564"/>
+        <location filename="../../tupmainwindow.cpp" line="1323"/>
+        <source>New camera</source>
+        <translation>Нова камера</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow.cpp" line="1545"/>
         <source>To post video add more frames!</source>
-        <translation>Para postar vídeo, adicione mais quadros!</translation>
+        <translation>Для опублікування відео слід додати більше кадрів!</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow.cpp" line="1578"/>
+        <location filename="../../tupmainwindow.cpp" line="1630"/>
+        <source>Post canceled by user!</source>
+        <translation>Користувач скасував опублікування!</translation>
     </message>
     <message>
         <location filename="../../tupmainwindow.cpp" line="1597"/>
-        <location filename="../../tupmainwindow.cpp" line="1649"/>
-        <source>Post canceled by user!</source>
-        <translation>Postagem cancelada!</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow.cpp" line="1616"/>
         <source>Project is larger than 10 MB. Too big!</source>
-        <translation>O projeto tem mais de 10 MB. Muito grande!</translation>
+        <translation>Проєкт займає більше 10 Mб. Це забагато!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1676"/>
+        <location filename="../../tupmainwindow.cpp" line="1657"/>
         <source>Error while posting image. File is too big!</source>
-        <translation>Erro ao postar imagem. O arquivo é muito grande!</translation>
+        <translation>Помилка при опублікуванні зображення. Занадто великий файл!</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1786"/>
+        <location filename="../../tupmainwindow.cpp" line="1738"/>
+        <source>Upload project package</source>
+        <translation>Завантажити пакет проєкту</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow.cpp" line="1747"/>
+        <source>Can&apos;t import project. File is empty!</source>
+        <translation>Неможливо імпортувати проєкт. Файл порожній!</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow.cpp" line="1751"/>
+        <source>Can&apos;t save the project. File doesn&apos;t exist!</source>
+        <translation>Неможливо зберегти проєкт. Файл не існує!</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow.cpp" line="1766"/>
         <source>Fatal Error</source>
-        <translation>Erro Fatal</translation>
+        <translation>Критична помилка</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1788"/>
+        <location filename="../../tupmainwindow.cpp" line="1768"/>
         <source>The connection to the server has been lost.</source>
-        <translation>A conexão com o servidor foi perdida.</translation>
+        <translation>Втрачено з&apos;єднання зі сервером.</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="1789"/>
+        <location filename="../../tupmainwindow.cpp" line="1769"/>
         <source>Please, try to connect again in a while</source>
-        <translation>Por favor, tente conectar novamente daqui a pouco</translation>
+        <translation>Спробуйте через деякий час з&apos;єднатися ще раз</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="838"/>
-        <source>Open TupiTube project</source>
-        <translation>Abrir projeto TupiTube</translation>
+        <location filename="../../tupmainwindow_gui.cpp" line="49"/>
+        <source>Hide top panels</source>
+        <translation>Приховати верхні панелі</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow.cpp" line="839"/>
-        <location filename="../../tupmainwindow.cpp" line="968"/>
-        <location filename="../../tupmainwindow.cpp" line="1132"/>
-        <source>TupiTube Project Package (*.tup)</source>
-        <translation>Projeto TupiTube (*.tup)</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow.cpp" line="873"/>
-        <location filename="../../tupmainwindow.cpp" line="937"/>
-        <source>Cannot open project!</source>
-        <translation>Não é possível abrir o projeto!</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow.cpp" line="1790"/>
-        <source>Close</source>
-        <translation>Fechar</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow.cpp" line="1342"/>
-        <source>New camera</source>
-        <translation>Nova câmera</translation>
+        <location filename="../../tupmainwindow_gui.cpp" line="50"/>
+        <source>Alt</source>
+        <translation>Alt</translation>
     </message>
     <message>
         <location filename="../../tupmainwindow_gui.cpp" line="58"/>
@@ -4972,24 +4968,14 @@ until reaches at least 3 seconds.</source>
         <translation>Alt+B</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="90"/>
-        <source>Image</source>
-        <translation>Imagem</translation>
-    </message>
-    <message>
         <location filename="../../tupmainwindow_gui.cpp" line="93"/>
         <source>Alt+Shift+B</source>
         <translation>Alt+Shift+B</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="93"/>
-        <source>Image Sequence</source>
-        <translation>Sequência de Imagens</translation>
-    </message>
-    <message>
         <location filename="../../tupmainwindow_gui.cpp" line="96"/>
         <source>SVG File</source>
-        <translation>Ficheiro SVG</translation>
+        <translation>Файл SVG</translation>
     </message>
     <message>
         <location filename="../../tupmainwindow_gui.cpp" line="96"/>
@@ -4998,33 +4984,13 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <location filename="../../tupmainwindow_gui.cpp" line="99"/>
+        <source>SVG Sequence</source>
+        <translation>Послідовність файлів SVG</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow_gui.cpp" line="99"/>
         <source>Alt+Shift+S</source>
         <translation>Alt+Shift+S</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="102"/>
-        <source>Audio File</source>
-        <translation>Arquivo de Áudio</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="102"/>
-        <source>Alt+A</source>
-        <translation>Alt+A</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="105"/>
-        <source>Video</source>
-        <translation>Vídeo</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="105"/>
-        <source>Alt+V</source>
-        <translation>Alt+V</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="108"/>
-        <source>Library</source>
-        <translation>Biblioteca</translation>
     </message>
     <message>
         <location filename="../../tupmainwindow_gui.cpp" line="136"/>
@@ -5037,332 +5003,362 @@ until reaches at least 3 seconds.</source>
         <translation>Shift+T</translation>
     </message>
     <message>
+        <location filename="../../tupmainwindow_gui.cpp" line="195"/>
+        <source>Open Recent</source>
+        <translation>Відкрити попередні</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow_gui.cpp" line="355"/>
+        <source>Save Project</source>
+        <translation>Зберегти проєкт</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow_gui.cpp" line="360"/>
+        <source>Save Project As...</source>
+        <translation>Зберегти проєкт як...</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow_gui.cpp" line="371"/>
+        <source>&amp;Import GIMP Palettes</source>
+        <translation>&amp;Імпорт палітр GIMP</translation>
+    </message>
+    <message>
         <location filename="../../tupmainwindow_gui.cpp" line="186"/>
         <source>&amp;File</source>
-        <translation>&amp;Ficheiro</translation>
+        <translation>&amp;Файл</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="196"/>
-        <source>Open Recent</source>
-        <translation>Abrir Recente</translation>
+        <location filename="../../tupmainwindow_gui.cpp" line="90"/>
+        <source>Image</source>
+        <translation>Зображення</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="220"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="93"/>
+        <source>Image Sequence</source>
+        <translation>Послідовність зображень</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow_gui.cpp" line="102"/>
+        <source>Audio File</source>
+        <translation>Звуковий файл</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow_gui.cpp" line="102"/>
+        <source>Alt+A</source>
+        <translation>Alt+A</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow_gui.cpp" line="105"/>
+        <source>Video</source>
+        <translation>Відео</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow_gui.cpp" line="105"/>
+        <source>Alt+V</source>
+        <translation>Alt+V</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow_gui.cpp" line="108"/>
+        <source>Library</source>
+        <translation>Бібліотека</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow_gui.cpp" line="219"/>
         <source>&amp;Edit</source>
-        <translation>&amp;Editar</translation>
+        <translation>&amp;Зміни</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="244"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="225"/>
+        <source>&amp;Import</source>
+        <translation>&amp;Імпорт</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow_gui.cpp" line="243"/>
         <source>&amp;Export</source>
-        <translation>&amp;Export</translation>
+        <translation>&amp;Експорт</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="250"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="249"/>
         <source>&amp;Post</source>
-        <translation>&amp;Publicar</translation>
+        <translation>&amp;Публікування</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="255"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="254"/>
         <source>Modules</source>
-        <translation>Módulos</translation>
+        <translation>Модулі</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="281"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="280"/>
         <source>&amp;Help</source>
-        <translation>&amp;Ajuda</translation>
+        <translation>&amp;Довідка</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="327"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="326"/>
         <source>Ctrl+N</source>
         <translation>Ctrl+N</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="327"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="326"/>
         <source>New Project</source>
-        <translation>Novo Projeto</translation>
+        <translation>Новий проєкт</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="329"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="328"/>
         <source>Open new project</source>
-        <translation>Abrir novo projeto</translation>
+        <translation>Відкрити новий проєкт</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="332"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="331"/>
         <source>Ctrl+O</source>
         <translation>Ctrl+O</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="332"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="331"/>
         <source>Open Project</source>
-        <translation>Abrir Projeto</translation>
+        <translation>Відкрити проєкт</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="335"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="334"/>
         <source>Load existent project</source>
-        <translation>Carregar projeto existente</translation>
+        <translation>Завантажити наявний проєкт</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="348"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="336"/>
+        <source>Open Collaborative Project...</source>
+        <translation>Відкрити спільний проєкт...</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow_gui.cpp" line="340"/>
+        <source>Upload Project To Server...</source>
+        <translation>Завантажити проєкт на сервер...</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow_gui.cpp" line="344"/>
         <source>Open Example</source>
-        <translation>Abrir Exemplo</translation>
+        <translation>Відкрити приклад</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="351"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="347"/>
         <source>Open example project</source>
-        <translation>Abrir exemplo</translation>
+        <translation>Відкрити приклад проєкту</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="353"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="349"/>
         <source>Import Project</source>
-        <translation>Importar Projeto</translation>
+        <translation>Імпортувати проєкт</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="353"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="349"/>
         <source>Ctrl+I</source>
         <translation>Ctrl+I</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="356"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="352"/>
         <source>Import project</source>
-        <translation>Importar projeto</translation>
+        <translation>Імпортувати проєкт</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="359"/>
-        <source>Save Project</source>
-        <translation>Salvar Projeto</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="364"/>
-        <source>Save Project As...</source>
-        <translation>Salvar Projeto Como...</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="369"/>
-        <source>Cl&amp;ose Project</source>
-        <translation>Fechar Pr&amp;ojeto</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="375"/>
-        <source>&amp;Import GIMP Palettes</source>
-        <translation>&amp;Importar Paletas Do GIMP</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="376"/>
-        <source>Shift+G</source>
-        <translation>Shift+G</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="226"/>
-        <source>&amp;Import</source>
-        <translation>&amp;Importar</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="360"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="356"/>
         <source>Ctrl+S</source>
         <translation>Ctrl+S</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="362"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="358"/>
         <source>Save current project in current location</source>
-        <translation>Guardar projeto atual no local atual</translation>
+        <translation>Зберегти поточний проєкт у поточному місці</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="365"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="361"/>
         <source>Ctrl+Shift+S</source>
         <translation>Ctrl+Shift+S</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="366"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="362"/>
         <source>Open dialog box to save current project in any location</source>
-        <translation>Abrir caixa de diálogo para guardar projeto atual em qualquer local</translation>
+        <translation>Відкрити діалогове вікно для збереження проєкту в будь-якому місці</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="369"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="365"/>
         <source>Ctrl+W</source>
         <translation>Ctrl+W</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="371"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="365"/>
+        <source>Cl&amp;ose Project</source>
+        <translation>За&amp;крити проєкт</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow_gui.cpp" line="367"/>
         <source>Close active project</source>
-        <translation>Fechar projeto ativo</translation>
+        <translation>Закрити активний проєкт</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="377"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="372"/>
+        <source>Shift+G</source>
+        <translation>Shift+G</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow_gui.cpp" line="373"/>
         <source>Import palettes</source>
-        <translation>Importar paletas</translation>
+        <translation>Імпортувати палітри</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="380"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="376"/>
         <source>&amp;Import Papagayo Lip-sync</source>
-        <translation>&amp;Importar Arquivo de Papagayo</translation>
+        <translation>&amp;Імпорт синхронізації руху губ Papagayo</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow_gui.cpp" line="378"/>
+        <source>Import Papagayo lip-sync</source>
+        <translation>Імпортувати синхронізацію руху губ Papagayo</translation>
     </message>
     <message>
         <location filename="../../tupmainwindow_gui.cpp" line="382"/>
-        <source>Import Papagayo lip-sync</source>
-        <translation>Importar Papagayo lip-sync</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="386"/>
         <source>&amp;Export Project</source>
-        <translation>&amp;Exportar Projeto</translation>
+        <translation>&amp;Експортувати проєкт</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="387"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="383"/>
         <source>Ctrl+R</source>
         <translation>Ctrl+R</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="388"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="384"/>
         <source>Export project to several video formats</source>
-        <translation>Exportar projeto para vários formatos de vídeo</translation>
+        <translation>Експорт проєкту в різні формати відео</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="397"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="393"/>
         <source>Export Storyboard</source>
-        <translation>Exportar storyboard</translation>
+        <translation>Експорт розкадровки</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="397"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="393"/>
         <source>W</source>
         <translation>W</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="419"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="415"/>
         <source>Ctrl+Q</source>
         <translation>Ctrl+Q</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="419"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="415"/>
         <source>Quit</source>
-        <translation>Sair</translation>
+        <translation>Вийти</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="422"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="418"/>
         <source>Close application</source>
-        <translation>Fechar aplicação</translation>
+        <translation>Закрити застосунок</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="436"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="432"/>
         <source>Pr&amp;eferences...</source>
-        <translation>Pr&amp;eferências...</translation>
+        <translation>Па&amp;раметри…</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="403"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="435"/>
+        <source>Open the preferences dialog box</source>
+        <translation>Відкрити діалогове вікно налаштувань</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow_gui.cpp" line="437"/>
+        <source>Project Canvas Size</source>
+        <translation>Розмір полотна проєкту</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow_gui.cpp" line="440"/>
+        <source>Set the project canvas size</source>
+        <translation>Задати розмір полотна проєкту</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow_gui.cpp" line="399"/>
         <source>Ctrl+P</source>
         <translation>Ctrl+P</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="413"/>
-        <source>TupiTube Social Media</source>
-        <translation>TupiTube Social Media</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="415"/>
-        <source>Open TupiTube Network</source>
-        <translation>Abrir a Rede TupiTube</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="455"/>
-        <source>Ctrl+K</source>
-        <translation>Ctrl+K</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="49"/>
-        <source>Hide top panels</source>
-        <translation>Esconder painel superior</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="50"/>
-        <source>Alt</source>
-        <translation>Alt</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="99"/>
-        <source>SVG Sequence</source>
-        <translation>Sequência SVG</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="392"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="388"/>
         <source>Export Frame As Image</source>
-        <translation>Exportar Quadro Como Imagem</translation>
+        <translation>Експортувати кадр як зображення</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="402"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="398"/>
         <source>&amp;Post Animation</source>
-        <translation>&amp;Pós Animação</translation>
+        <translation>&amp;Опублікувати анімаційний ролик</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow_gui.cpp" line="400"/>
+        <source>Post project on TupiTube network</source>
+        <translation>Опублікувати проєкт у соціальній мережі TupiTube</translation>
     </message>
     <message>
         <location filename="../../tupmainwindow_gui.cpp" line="404"/>
-        <source>Post project on TupiTube network</source>
-        <translation>Postar projeto na rede TupiTube</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="408"/>
         <source>Post Frame</source>
-        <translation>Postar O Quadro</translation>
+        <translation>Опублікувати кадр</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="409"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="405"/>
         <source>Ctrl+F</source>
         <translation>Ctrl+F</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="439"/>
-        <source>Open the preferences dialog box</source>
-        <translation>Abre a caixa de diálogo de preferências</translation>
+        <location filename="../../tupmainwindow_gui.cpp" line="409"/>
+        <source>TupiTube Social Media</source>
+        <translation>Соціальна мережа TupiTube</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="441"/>
-        <source>Project Canvas Size</source>
-        <translation>Tamanho da Tela do Projeto</translation>
+        <location filename="../../tupmainwindow_gui.cpp" line="411"/>
+        <source>Open TupiTube Network</source>
+        <translation>Відкрити соціальну мережу TupiTube</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="444"/>
-        <source>Set the project canvas size</source>
-        <translation>Define o tamanho da tela do projeto</translation>
-    </message>
-    <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="450"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="446"/>
         <source>YouTube Tutorials</source>
-        <translation>Tutoriais do YouTube</translation>
+        <translation>Уроки на YouTube</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="450"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="446"/>
         <source>Y</source>
         <translation>Y</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="452"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="448"/>
         <source>Check for Updates</source>
-        <translation>Verificar Atualizações</translation>
+        <translation>Перевірити оновлення</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="455"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="451"/>
+        <source>Ctrl+K</source>
+        <translation>Ctrl+K</translation>
+    </message>
+    <message>
+        <location filename="../../tupmainwindow_gui.cpp" line="451"/>
         <source>About TupiTube Desk</source>
-        <translation>Sobre TupiTube Desk</translation>
+        <translation>Про TupiTube Desk</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="461"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="457"/>
         <source>Actions Bar</source>
-        <translation>Barra de Ações</translation>
+        <translation>Панель дій</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="556"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="550"/>
         <source>Undo</source>
-        <translation>Desfazer</translation>
+        <translation>Скасувати</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="558"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="552"/>
         <source>Ctrl+Z</source>
         <translation>Ctrl+Z</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="561"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="555"/>
         <source>Redo</source>
-        <translation>Refazer</translation>
+        <translation>Повернути</translation>
     </message>
     <message>
-        <location filename="../../tupmainwindow_gui.cpp" line="563"/>
+        <location filename="../../tupmainwindow_gui.cpp" line="557"/>
         <source>Ctrl+Y</source>
         <translation>Ctrl+Y</translation>
     </message>
@@ -5372,23 +5368,23 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="106"/>
         <source>Record Name:</source>
-        <translation>Nome do Registro:</translation>
+        <translation>Назва запису:</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="110"/>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="409"/>
         <source>Audio 01</source>
-        <translation>Audio 01</translation>
+        <translation>Звук 01</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="116"/>
         <source>Input Device:</source>
-        <translation>Dispositivo de Entrada:</translation>
+        <translation>Пристрій введення:</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="121"/>
         <source>Duration:</source>
-        <translation>Duração:</translation>
+        <translation>Тривалість:</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="125"/>
@@ -5397,46 +5393,46 @@ until reaches at least 3 seconds.</source>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="412"/>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="648"/>
         <source>sec</source>
-        <translation>seg</translation>
+        <translation>сек</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="131"/>
         <source>Default</source>
-        <translation>Aparelho Padrao</translation>
+        <translation>Типово</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="145"/>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="295"/>
         <source>Record</source>
-        <translation>Gravar</translation>
+        <translation>Запис</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="152"/>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="282"/>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="297"/>
         <source>Pause</source>
-        <translation>Pausa</translation>
+        <translation>Пауза</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="166"/>
         <source>Play</source>
-        <translation>Reproduzir</translation>
+        <translation>Відтворити</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="172"/>
         <source>Discard</source>
-        <translation>Descartar</translation>
+        <translation>Відхилити</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="184"/>
         <source>Audio Level</source>
-        <translation>Nível de Áudio</translation>
+        <translation>Рівень звуку</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="425"/>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="723"/>
         <source>Can&apos;t remove audio file!</source>
-        <translation>Não é possível remover o arquivo de áudio!</translation>
+        <translation>Не можу вилучити звукового файлу!</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="431"/>
@@ -5444,65 +5440,65 @@ until reaches at least 3 seconds.</source>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="671"/>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="729"/>
         <source>Audio file doesn&apos;t exist!</source>
-        <translation>O arquivo de áudio não existe!</translation>
+        <translation>Не вдалося знайти звукового файлу!</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="238"/>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="251"/>
         <source>Recording...</source>
-        <translation>Gravando...</translation>
+        <translation>Триває запис…</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="256"/>
         <source>Paused</source>
-        <translation>Em Pausa</translation>
+        <translation>Призупинено</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="261"/>
         <source>Stopped</source>
-        <translation>Parado</translation>
+        <translation>Зупинено</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="280"/>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="287"/>
         <source>Stop</source>
-        <translation>Parar</translation>
+        <translation>Зупинити</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="289"/>
         <source>Resume</source>
-        <translation>Retomar</translation>
+        <translation>Відновити</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="393"/>
         <source>Question</source>
-        <translation>Pergunta</translation>
+        <translation>Питання</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="395"/>
         <source>Confirm Action.</source>
-        <translation>Confirme a Ação.</translation>
+        <translation>Підтвердити дію.</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="396"/>
         <source>Do you want to delete this sound recording?</source>
-        <translation>Quer deletar esta gravação de som?</translation>
+        <translation>Видалити цей звукозапис?</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="398"/>
         <source>Ok</source>
-        <translation>Ok</translation>
+        <translation>Гаразд</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="399"/>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
+        <translation>Скасувати</translation>
     </message>
     <message>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="605"/>
         <location filename="../../../components/micmanager/tupmicmanager.cpp" line="648"/>
         <source>Playing...</source>
-        <translation>Reproduzindo...</translation>
+        <translation>Відтворення…</translation>
     </message>
 </context>
 <context>
@@ -5510,7 +5506,7 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/workspace/tupmodesitem.cpp" line="55"/>
         <source>Mode Visibility</source>
-        <translation>Visibilidade do Modo</translation>
+        <translation>Видимість режиму</translation>
     </message>
 </context>
 <context>
@@ -5518,62 +5514,102 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/workspace/tupmodessettingsdialog.cpp" line="46"/>
         <source>Modes Settings</source>
-        <translation>Configurações de Modo</translation>
+        <translation>Параметри режимів</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupmodessettingsdialog.cpp" line="61"/>
         <source>Vector Dynamic Background</source>
-        <translation>Fundo Dinâmico de Vetores</translation>
+        <translation>Динамічне векторне тло</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupmodessettingsdialog.cpp" line="66"/>
         <source>Raster Dynamic Background</source>
-        <translation>Fundo Dinâmico Raster</translation>
+        <translation>Динамічне растрове тло</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupmodessettingsdialog.cpp" line="71"/>
         <source>Vector Static Background</source>
-        <translation>Fundo Estático do Vetores</translation>
+        <translation>Статичне векторне тло</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupmodessettingsdialog.cpp" line="76"/>
         <source>Raster Static Background</source>
-        <translation>Fundo Estático Raster</translation>
+        <translation>Статичне растрове тло</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupmodessettingsdialog.cpp" line="105"/>
         <source>Move Mode Up</source>
-        <translation>Mover modo para cima</translation>
+        <translation>Перемістити режим угору</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupmodessettingsdialog.cpp" line="111"/>
         <source>Move Mode Down</source>
-        <translation>Mover modo para baixo</translation>
+        <translation>Перемістити режим униз</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupmodessettingsdialog.cpp" line="125"/>
         <source>&amp;Apply</source>
-        <translation>&amp;Aplique</translation>
+        <translation>&amp;Застосувати</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupmodessettingsdialog.cpp" line="130"/>
         <source>&amp;Cancel</source>
-        <translation>&amp;Cancelar</translation>
+        <translation>С&amp;касувати</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupmodessettingsdialog.cpp" line="149"/>
         <source>Foreground Layer</source>
-        <translation>Camada de Primeiro Plano</translation>
+        <translation>Шар переднього плану</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupmodessettingsdialog.cpp" line="154"/>
         <source>Backgrounds</source>
-        <translation>Fundos</translation>
+        <translation>Тло</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupmodessettingsdialog.cpp" line="155"/>
         <source>Foreground</source>
-        <translation>Primeiro Plano</translation>
+        <translation>Передній план</translation>
+    </message>
+</context>
+<context>
+    <name>TupNetProjectManagerHandler</name>
+    <message>
+        <location filename="../../../net/tupnetprojectmanagerhandler.cpp" line="54"/>
+        <source>Communications</source>
+        <translation>Комунікації</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tupnetprojectmanagerhandler.cpp" line="58"/>
+        <source>Chat</source>
+        <translation>Чат</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tupnetprojectmanagerhandler.cpp" line="63"/>
+        <source>Notices</source>
+        <translation>Сповіщення</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tupnetprojectmanagerhandler.cpp" line="190"/>
+        <source>Unable to connect to server</source>
+        <translation>Не вдалося підключитися до сервера</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tupnetprojectmanagerhandler.cpp" line="250"/>
+        <source>Fatal Error</source>
+        <translation>Критична помилка</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tupnetprojectmanagerhandler.cpp" line="252"/>
+        <source>User &quot;%1&quot; is disabled.
+Please, contact the animation server admin to get access.</source>
+        <translation>Користувач «%1» вимкнений.
+Будь ласка, зверніться до адміністратора сервера анімації для отримання доступу.</translation>
+    </message>
+    <message>
+        <location filename="../../../net/tupnetprojectmanagerhandler.cpp" line="376"/>
+        <source>User has no available projects in the server</source>
+        <translation>Користувач не має доступних проєктів на сервері</translation>
     </message>
 </context>
 <context>
@@ -5581,7 +5617,7 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/library/tupnewitemdialog.cpp" line="60"/>
         <source>Create new raster item</source>
-        <translation>Criar novo item raster</translation>
+        <translation>Створення нового растрового елемента</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupnewitemdialog.cpp" line="67"/>
@@ -5590,240 +5626,250 @@ until reaches at least 3 seconds.</source>
         <location filename="../../../components/library/tupnewitemdialog.cpp" line="198"/>
         <location filename="../../../components/library/tupnewitemdialog.cpp" line="202"/>
         <source>Transparent</source>
-        <translation>Transparente</translation>
+        <translation>Прозорий</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupnewitemdialog.cpp" line="68"/>
         <source>White</source>
-        <translation>Branco</translation>
+        <translation>Білий</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupnewitemdialog.cpp" line="69"/>
         <source>Black</source>
-        <translation>Preto</translation>
+        <translation>Чорний</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupnewitemdialog.cpp" line="81"/>
         <source>Create new vector item</source>
-        <translation>Criar novo item vetorial</translation>
+        <translation>Створення нового векторного елемента</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupnewitemdialog.cpp" line="117"/>
         <source>&amp;Name:</source>
-        <translation>&amp;Nome:</translation>
+        <translation>&amp;Назва:</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupnewitemdialog.cpp" line="118"/>
         <source>&amp;Extension:</source>
-        <translation>&amp;Extensão:</translation>
+        <translation>&amp;Розширення:</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupnewitemdialog.cpp" line="119"/>
         <source>&amp;Width:</source>
-        <translation>&amp;Largura:</translation>
+        <translation>&amp;Ширина:</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupnewitemdialog.cpp" line="120"/>
         <source>&amp;Height:</source>
-        <translation>&amp;Altura:</translation>
+        <translation>&amp;Висота:</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupnewitemdialog.cpp" line="123"/>
         <source>&amp;Background:</source>
-        <translation>&amp;Fundo:</translation>
+        <translation>&amp;Тло:</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupnewitemdialog.cpp" line="127"/>
         <source>&amp;Open it with:</source>
-        <translation>&amp;Abrir com:</translation>
+        <translation>&amp;Відкрити за допомогою:</translation>
     </message>
 </context>
 <context>
     <name>TupNewProject</name>
     <message>
-        <location filename="../../tupnewproject.cpp" line="57"/>
+        <location filename="../../tupnewproject.cpp" line="59"/>
         <source>Project Name</source>
-        <translation>Nome do Projeto</translation>
+        <translation>Назва проєкту</translation>
     </message>
     <message>
-        <location filename="../../tupnewproject.cpp" line="62"/>
+        <location filename="../../tupnewproject.cpp" line="64"/>
         <source>my_project</source>
-        <translation>meu_projeto</translation>
+        <translation>мій_проєкт</translation>
     </message>
     <message>
-        <location filename="../../tupnewproject.cpp" line="65"/>
+        <location filename="../../tupnewproject.cpp" line="67"/>
         <source>Author</source>
-        <translation>Autor</translation>
+        <translation>Автор</translation>
     </message>
     <message>
-        <location filename="../../tupnewproject.cpp" line="70"/>
+        <location filename="../../tupnewproject.cpp" line="72"/>
         <source>Your name</source>
-        <translation>Seu nome</translation>
+        <translation>Ваше ім&apos;я</translation>
     </message>
     <message>
-        <location filename="../../tupnewproject.cpp" line="73"/>
+        <location filename="../../tupnewproject.cpp" line="75"/>
         <source>Description</source>
-        <translation>Descrição</translation>
+        <translation>Опис</translation>
     </message>
     <message>
-        <location filename="../../tupnewproject.cpp" line="78"/>
+        <location filename="../../tupnewproject.cpp" line="80"/>
         <source>Just for fun!</source>
-        <translation>Só por diversão!</translation>
+        <translation>Просто для забавки!</translation>
     </message>
     <message>
-        <location filename="../../tupnewproject.cpp" line="82"/>
+        <location filename="../../tupnewproject.cpp" line="84"/>
         <source>Presets</source>
-        <translation>Predefinições</translation>
+        <translation>Профілі</translation>
     </message>
     <message>
-        <location filename="../../tupnewproject.cpp" line="89"/>
+        <location filename="../../tupnewproject.cpp" line="51"/>
+        <source>Create New Project</source>
+        <translation>Створення нового проєкту</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="90"/>
+        <source>Free Format</source>
+        <translation>Вільний формат</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="91"/>
         <source>520x380 - 24</source>
         <translation>520x380 - 24</translation>
     </message>
     <message>
-        <location filename="../../tupnewproject.cpp" line="90"/>
+        <location filename="../../tupnewproject.cpp" line="92"/>
         <source>640x480 - 24</source>
         <translation>640x480 - 24</translation>
     </message>
     <message>
-        <location filename="../../tupnewproject.cpp" line="94"/>
-        <source>1080 (Mobile) - 24</source>
-        <translation>1080 (Móvel) - 24</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="95"/>
-        <source>1080 (Full HD Vertical) - 24</source>
-        <translation>1080 (Full HD Vertical) - 24</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="115"/>
-        <source>Background</source>
-        <translation>Fundo</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="116"/>
-        <source>Click here to change background color</source>
-        <translation>Clique aqui para alterar a cor do fundo</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="131"/>
-        <source>Dimension</source>
-        <translation>Dimensão</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="131"/>
-        <source>X:</source>
-        <translation>X:</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="131"/>
-        <source>Y:</source>
-        <translation>Y:</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="152"/>
-        <source>Project Info</source>
-        <translation>Informação de Projeto</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="232"/>
-        <source>Settings</source>
-        <translation>Definições</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="294"/>
-        <source>Please, set a name for the project</source>
-        <translation>Por favor, defina um nome para o projeto</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="300"/>
-        <source>Please, fill in your username</source>
-        <translation>Por favor, preencha com seu nome de utilizador</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="305"/>
-        <source>Please, fill in your password</source>
-        <translation>Por favor, preencha com sua palavra-passe</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="310"/>
-        <source>Please, fill in the server name or IP</source>
-        <translation>Por favor, preencha com o nome do servidor ou IP</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="348"/>
-        <source>White</source>
-        <translation>Branco</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="104"/>
-        <source>Options</source>
-        <translation>Opções</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="49"/>
-        <source>Create New Project</source>
-        <translation>Criar Novo Projeto</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="88"/>
-        <source>Free Format</source>
-        <translation>Formato Livre</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="91"/>
+        <location filename="../../tupnewproject.cpp" line="93"/>
         <source>480 (PAL DV/DVD) - 25</source>
         <translation>480 (PAL DV/DVD) - 25</translation>
     </message>
     <message>
-        <location filename="../../tupnewproject.cpp" line="92"/>
+        <location filename="../../tupnewproject.cpp" line="94"/>
         <source>576 (PAL DV/DVD) - 25</source>
         <translation>576 (PAL DV/DVD) - 25</translation>
     </message>
     <message>
-        <location filename="../../tupnewproject.cpp" line="93"/>
+        <location filename="../../tupnewproject.cpp" line="95"/>
         <source>720 (HD) - 24</source>
         <translation>720 (HD) - 24</translation>
     </message>
     <message>
         <location filename="../../tupnewproject.cpp" line="96"/>
+        <source>1080 (Mobile) - 24</source>
+        <translation>1080 (Мобільний) - 24</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="97"/>
+        <source>1080 (Full HD Vertical) - 24</source>
+        <translation>1080 (Full HD Вертикально) - 24</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="98"/>
         <source>1080 (Full HD) - 24</source>
         <translation>1080 (Full HD) - 24</translation>
     </message>
     <message>
-        <location filename="../../tupnewproject.cpp" line="122"/>
+        <location filename="../../tupnewproject.cpp" line="106"/>
+        <source>Options</source>
+        <translation>Параметри</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="117"/>
+        <source>Background</source>
+        <translation>Тло</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="118"/>
+        <source>Click here to change background color</source>
+        <translation>Клацніть тут, щоб змінити колір тла</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="124"/>
         <source>FPS</source>
-        <translation>FPS</translation>
+        <translation>кадрів/с</translation>
     </message>
     <message>
-        <location filename="../../tupnewproject.cpp" line="146"/>
-        <source>TupiTube project</source>
-        <translation>Projeto TupiTube</translation>
+        <location filename="../../tupnewproject.cpp" line="133"/>
+        <source>Dimension</source>
+        <translation>Розмір</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="133"/>
+        <source>X:</source>
+        <translation>X:</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="133"/>
+        <source>Y:</source>
+        <translation>Y:</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="148"/>
+        <source>Collaborative Project</source>
+        <translation>Спільний проєкт</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="233"/>
+        <source>Server:</source>
+        <translation>Сервер:</translation>
     </message>
     <message>
         <location filename="../../tupnewproject.cpp" line="234"/>
-        <source>Password</source>
-        <translation>Palavra-passe</translation>
+        <source>Port:</source>
+        <translation>Порт:</translation>
     </message>
     <message>
-        <location filename="../../tupnewproject.cpp" line="234"/>
-        <source>Server</source>
-        <translation>Servidor</translation>
+        <location filename="../../tupnewproject.cpp" line="235"/>
+        <source>Username:</source>
+        <translation>Ім'я користувача:</translation>
     </message>
     <message>
-        <location filename="../../tupnewproject.cpp" line="234"/>
-        <source>Port</source>
-        <translation>Porta</translation>
+        <location filename="../../tupnewproject.cpp" line="236"/>
+        <source>Password:</source>
+        <translation>Пароль:</translation>
     </message>
     <message>
-        <location filename="../../tupnewproject.cpp" line="234"/>
-        <source>Username</source>
-        <translation>Nome de utilizador</translation>
+        <location filename="../../tupnewproject.cpp" line="153"/>
+        <source>Project Info</source>
+        <translation>Відомості про проєкт</translation>
     </message>
     <message>
-        <location filename="../../tupnewproject.cpp" line="239"/>
+        <location filename="../../tupnewproject.cpp" line="161"/>
+        <source>Network</source>
+        <translation>Мережа</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="219"/>
+        <source>This feature allows you to work with other artists around the world on the same project in real time.</source>
+        <translation>Ця функція дозволяє працювати з іншими художниками з усього світу над одним проєктом у реальному часі.</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="225"/>
+        <source>Settings</source>
+        <translation>Параметри</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="240"/>
         <source>Store password</source>
-        <translation>Guardar palavra-passe</translation>
+        <translation>Зберегти пароль</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="297"/>
+        <source>Please, set a name for the project</source>
+        <translation>Задайте назву для проєкту</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="303"/>
+        <source>Please, fill in your username</source>
+        <translation>Введіть ім&apos;я користувача</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="308"/>
+        <source>Please, fill in your password</source>
+        <translation>Введіть пароль</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="313"/>
+        <source>Please, fill in the server name or IP</source>
+        <translation>Введіть назву або IP-адресу сервера</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="351"/>
+        <source>White</source>
+        <translation>Білий</translation>
     </message>
 </context>
 <context>
@@ -5831,27 +5877,27 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/news/tupnewscollector.cpp" line="364"/>
         <source>Latest Version</source>
-        <translation>Versão Mais Recente</translation>
+        <translation>Найсвіжіша версія</translation>
     </message>
     <message>
         <location filename="../../../components/news/tupnewscollector.cpp" line="365"/>
         <source>Revision</source>
-        <translation>Revisão</translation>
+        <translation>Ревізія</translation>
     </message>
     <message>
         <location filename="../../../components/news/tupnewscollector.cpp" line="366"/>
         <source>Description</source>
-        <translation>Descrição</translation>
+        <translation>Опис</translation>
     </message>
     <message>
         <location filename="../../../components/news/tupnewscollector.cpp" line="371"/>
         <source>It&apos;s time to upgrade! Click here!</source>
-        <translation>É altura de atualizar! Clique aqui!</translation>
+        <translation>Час виконати оновлення! Клацніть тут!</translation>
     </message>
     <message>
         <location filename="../../../components/news/tupnewscollector.cpp" line="386"/>
         <source>Want to help us to make a better project? Click here!</source>
-        <translation>Quer nos ajudar a fazer um projeto melhor? Clique aqui!</translation>
+        <translation>Бажаєте допомогти поліпшити цей проєкт? Клацніть тут!</translation>
     </message>
 </context>
 <context>
@@ -5859,17 +5905,25 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/news/tupnewsdialog.cpp" line="45"/>
         <source>TupiTube Updates</source>
-        <translation>Atualizações do TupiTube</translation>
+        <translation>Оновлення TupiTube</translation>
     </message>
     <message>
         <location filename="../../../components/news/tupnewsdialog.cpp" line="62"/>
         <source>Updates</source>
-        <translation>Atualizações</translation>
+        <translation>Оновлення</translation>
     </message>
     <message>
         <location filename="../../../components/news/tupnewsdialog.cpp" line="67"/>
         <source>Close</source>
-        <translation>Fechar</translation>
+        <translation>Закрити</translation>
+    </message>
+</context>
+<context>
+    <name>TupNotice</name>
+    <message>
+        <location filename="../../../net/tupnotice.cpp" line="42"/>
+        <source>Notices</source>
+        <translation>Сповіщення</translation>
     </message>
 </context>
 <context>
@@ -5877,32 +5931,32 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/workspace/tuponiondialog.cpp" line="46"/>
         <source>Onion Skin Factor</source>
-        <translation>Fator de Transparência</translation>
+        <translation>Коефіцієнт прозорості для калькування</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuponiondialog.cpp" line="62"/>
         <source>Close</source>
-        <translation>Fechar</translation>
+        <translation>Закрити</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuponiondialog.cpp" line="97"/>
         <source>-0.05</source>
-        <translation>-0.05</translation>
+        <translation>-0,05</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuponiondialog.cpp" line="101"/>
         <source>-0.01</source>
-        <translation>-0.01</translation>
+        <translation>-0,01</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuponiondialog.cpp" line="117"/>
         <source>+0.01</source>
-        <translation>+0.01</translation>
+        <translation>+0,01</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuponiondialog.cpp" line="121"/>
         <source>+0.05</source>
-        <translation>+0.05</translation>
+        <translation>+0,05</translation>
     </message>
 </context>
 <context>
@@ -5911,12 +5965,12 @@ until reaches at least 3 seconds.</source>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="180"/>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="193"/>
         <source>Drawing area</source>
-        <translation>Área de desenho</translation>
+        <translation>Область для малювання</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="201"/>
         <source>Cut</source>
-        <translation>Cortar</translation>
+        <translation>Вирізати</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="201"/>
@@ -5926,72 +5980,119 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="202"/>
         <source>Copy</source>
-        <translation>Copiar</translation>
+        <translation>Копіювати</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="208"/>
         <source>Paste</source>
-        <translation>Colar</translation>
+        <translation>Вставити</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="210"/>
         <source>Paste in...</source>
-        <translation>Colar em...</translation>
+        <translation>Вставити на…</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="211"/>
         <source>next 5 frames</source>
-        <translation>próximos 5 quadros</translation>
+        <translation>наступні 5 кадрів</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="212"/>
         <source>next 10 frames</source>
-        <translation>próximos 10 quadros</translation>
+        <translation>наступні 10 кадрів</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="213"/>
         <source>next 20 frames</source>
-        <translation>próximos 20 quadros</translation>
+        <translation>наступні 20 кадрів</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="214"/>
         <source>next 50 frames</source>
-        <translation>próximos 50 quadros</translation>
+        <translation>наступні 50 кадрів</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="215"/>
         <source>next 100 frames</source>
-        <translation>próximos 100 quadros</translation>
+        <translation>наступні 100 кадрів</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="227"/>
         <source>Delete</source>
-        <translation>Eliminar</translation>
+        <translation>Видалити</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="229"/>
         <source>Send</source>
-        <translation>Enviar</translation>
+        <translation>Надіслати</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="232"/>
         <source>To back</source>
-        <translation>Para trás</translation>
+        <translation>Позаду всіх</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="233"/>
         <source>To front</source>
-        <translation>Para frente</translation>
+        <translation>Попереду всіх</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="234"/>
         <source>One level to back</source>
-        <translation>Para trás um nível</translation>
+        <translation>На один рівень назад</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="235"/>
         <source>One level to front</source>
-        <translation>Para frente um nível</translation>
+        <translation>На один рівень уперед</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1890"/>
+        <source>Sorry, no library was found!</source>
+        <translation>Вибачте, бібліотеку не знайдено!</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1917"/>
+        <source>Project Dimension Conflict</source>
+        <translation>Конфлікт розмірів проєкту</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1919"/>
+        <source>Imported scenes require a different dimension than the current to fit accurately.</source>
+        <translation>Для точної відповідності імпортованим сценам потрібен розмір, відмінний від поточного.</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1920"/>
+        <source>Do you want to resize your current project?</source>
+        <translation>Змінити розмір поточного проєкту?</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1988"/>
+        <source>Project assets imported successfully!</source>
+        <translation>Ресурси проєкту успішно імпортовано!</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2007"/>
+        <source>Sorry, TUP source file is invalid!</source>
+        <translation>На жаль, почтковий файл TUP неправильний!</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2046"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2138"/>
+        <source>Sorry, file format not supported!</source>
+        <translation>Формат файлу не підтримується!</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2152"/>
+        <source>Network Fatal Error. Please, contact us!</source>
+        <translation>Критична мережева помилка. Зв&apos;яжіться з нами!</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="183"/>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="241"/>
+        <source>Add to library...</source>
+        <translation>Додати до бібліотеки...</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="1095"/>
@@ -6001,70 +6102,23 @@ until reaches at least 3 seconds.</source>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="1711"/>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="1738"/>
         <source>Frame</source>
-        <translation>Quadro</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1646"/>
-        <source>Do you want to remove this frame?</source>
-        <translation>Deseja remover este quadro?</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1647"/>
-        <source>Confirmation</source>
-        <translation>Confirmação</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1890"/>
-        <source>Sorry, no library was found!</source>
-        <translation>Desculpe, nenhuma biblioteca foi encontrada!</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1917"/>
-        <source>Project Dimension Conflict</source>
-        <translation>Conflito de Dimensões do Projeto</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1919"/>
-        <source>Imported scenes require a different dimension than the current to fit accurately.</source>
-        <translation>As cenas importadas requerem uma dimensão diferente da atual para caber com precisão.</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1920"/>
-        <source>Do you want to resize your current project?</source>
-        <translation>Deseja redimensionar seu projeto atual?</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1988"/>
-        <source>Project assets imported successfully!</source>
-        <translation>Ativos do projeto importados com sucesso!</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2007"/>
-        <source>Sorry, TUP source file is invalid!</source>
-        <translation>Desculpe, o arquivo de origem TUP é inválido!</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2046"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2138"/>
-        <source>Sorry, file format not supported!</source>
-        <translation>Desculpe, formato de arquivo não suportado!</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="2152"/>
-        <source>Network Fatal Error. Please, contact us!</source>
-        <translation>Erro Fatal na Rede. Por favor, entre em contato conosco!</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="183"/>
-        <location filename="../../../components/workspace/tuppaintarea.cpp" line="241"/>
-        <source>Add to library...</source>
-        <translation>Adicionar à biblioteca...</translation>
+        <translation>Кадр</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="1266"/>
         <location filename="../../../components/workspace/tuppaintarea.cpp" line="1299"/>
         <source>No items selected</source>
-        <translation>Nenhum item selecionado</translation>
+        <translation>Елементів не вибрано</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1646"/>
+        <source>Do you want to remove this frame?</source>
+        <translation>Вилучити цей кадр?</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tuppaintarea.cpp" line="1647"/>
+        <source>Confirmation</source>
+        <translation>Підтвердження</translation>
     </message>
 </context>
 <context>
@@ -6072,22 +6126,22 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../libbase/tuppaintareabase.cpp" line="355"/>
         <source>No Scene!</source>
-        <translation>Não existem Cenas!</translation>
+        <translation>Немає сцени!</translation>
     </message>
     <message>
         <location filename="../../../libbase/tuppaintareabase.cpp" line="362"/>
         <source>Locked!</source>
-        <translation>Bloqueado!</translation>
+        <translation>Заблоковано!</translation>
     </message>
     <message>
         <location filename="../../../libbase/tuppaintareabase.cpp" line="379"/>
         <source>No Frames!</source>
-        <translation>Não existem Quadros!</translation>
+        <translation>Немає кадрів!</translation>
     </message>
     <message>
         <location filename="../../../libbase/tuppaintareabase.cpp" line="382"/>
         <source>No Layers!</source>
-        <translation>Não existem Camadas!</translation>
+        <translation>Немає шарів!</translation>
     </message>
 </context>
 <context>
@@ -6095,97 +6149,97 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../libui/tuppaintareapreferences.cpp" line="60"/>
         <source>Workspace Preferences</source>
-        <translation>Preferências da Área de Trabalho</translation>
+        <translation>Параметри робочого простору</translation>
     </message>
     <message>
         <location filename="../../../libui/tuppaintareapreferences.cpp" line="68"/>
         <source>Grid Settings</source>
-        <translation>Configurações de Grade</translation>
+        <translation>Параметри сітки</translation>
     </message>
     <message>
         <location filename="../../../libui/tuppaintareapreferences.cpp" line="85"/>
         <source>Rule Of Thirds Settings</source>
-        <translation>Configurações da Regra dos Terços</translation>
+        <translation>Параметри правила третин</translation>
     </message>
     <message>
         <location filename="../../../libui/tuppaintareapreferences.cpp" line="80"/>
         <source>Safe Area Settings</source>
-        <translation>Configurações de Área Segura</translation>
+        <translation>Параметри сюжетно важливої ділянки</translation>
     </message>
     <message>
         <location filename="../../../libui/tuppaintareapreferences.cpp" line="95"/>
         <source>Restore Default Values</source>
-        <translation>Restaurar Valores Padrão</translation>
+        <translation>Відновити типові значення</translation>
     </message>
     <message>
         <location filename="../../../libui/tuppaintareapreferences.cpp" line="105"/>
         <source>UI Settings</source>
-        <translation>Configurações da Interface do Usuário</translation>
+        <translation>Параметри інтерфейсу користувача</translation>
     </message>
     <message>
         <location filename="../../../libui/tuppaintareapreferences.cpp" line="124"/>
         <source>Grid Color:</source>
-        <translation>Cor da Grelha:</translation>
+        <translation>Колір сітки:</translation>
     </message>
     <message>
         <location filename="../../../libui/tuppaintareapreferences.cpp" line="131"/>
         <source>Grid Axis Color:</source>
-        <translation>Cor do Eixo da Grelha:</translation>
+        <translation>Колір осі сітки:</translation>
     </message>
     <message>
         <location filename="../../../libui/tuppaintareapreferences.cpp" line="138"/>
         <source>Grid Separation:</source>
-        <translation>Separação da Grelha:</translation>
+        <translation>Крок сітки:</translation>
     </message>
     <message>
         <location filename="../../../libui/tuppaintareapreferences.cpp" line="145"/>
         <source>Grid Line Thickness:</source>
-        <translation>Espessura da Linha de Grelha:</translation>
+        <translation>Товщина ліній сітки:</translation>
     </message>
     <message>
         <location filename="../../../libui/tuppaintareapreferences.cpp" line="164"/>
         <location filename="../../../libui/tuppaintareapreferences.cpp" line="199"/>
         <source>Line Color:</source>
-        <translation>Cor da Linha:</translation>
+        <translation>Колір ліній:</translation>
     </message>
     <message>
         <location filename="../../../libui/tuppaintareapreferences.cpp" line="171"/>
         <location filename="../../../libui/tuppaintareapreferences.cpp" line="206"/>
         <source>Line Thickness:</source>
-        <translation>Espessura da Linha:</translation>
+        <translation>Товщина ліній:</translation>
     </message>
     <message>
         <location filename="../../../libui/tuppaintareapreferences.cpp" line="192"/>
         <source>Rect Color:</source>
-        <translation>Cor do Reto:</translation>
+        <translation>Колір прямокутника:</translation>
     </message>
 </context>
 <context>
     <name>TupPaintAreaStatus</name>
     <message>
-        <location filename="../../../libtupi/tuppaintareastatus.cpp" line="71"/>
-        <source>Action Safe Area</source>
-        <translation>Área Segura de Ação</translation>
+        <location filename="../../../libtupi/tuppaintareastatus.cpp" line="56"/>
+        <source>Clear Frame</source>
+        <translation>Очистити кадр</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tuppaintareastatus.cpp" line="64"/>
         <source>Reset WorkSpace</source>
-        <translation>Repor Área de Trabalho</translation>
+        <translation>Скинути параметри робочого простору</translation>
     </message>
     <message>
-        <location filename="../../../libtupi/tuppaintareastatus.cpp" line="56"/>
-        <source>Clear Frame</source>
-        <translation>Limpar o Quadro</translation>
+        <location filename="../../../libtupi/tuppaintareastatus.cpp" line="71"/>
+        <source>Action Safe Area</source>
+        <translation>Показати сюжетно важливу ділянку</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tuppaintareastatus.cpp" line="80"/>
         <source>Show Grid</source>
-        <translation>Mostre as Grades</translation>
+        <translation>Показати сітку</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tuppaintareastatus.cpp" line="89"/>
         <source>Full Screen</source>
-        <translation>Tela Cheia</translation>
+        <translation>Повноекранний</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tuppaintareastatus.cpp" line="90"/>
@@ -6195,7 +6249,7 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../libtupi/tuppaintareastatus.cpp" line="100"/>
         <source>Current Frame</source>
-        <translation>Quadro atual</translation>
+        <translation>Поточний кадр</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tuppaintareastatus.cpp" line="108"/>
@@ -6205,7 +6259,7 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../libtupi/tuppaintareastatus.cpp" line="122"/>
         <source>Zoom</source>
-        <translation>Aproximação</translation>
+        <translation>Масштаб</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tuppaintareastatus.cpp" line="140"/>
@@ -6215,19 +6269,19 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../libtupi/tuppaintareastatus.cpp" line="150"/>
         <source>Rotate Workspace</source>
-        <translation>Rodar Área de Trabalho</translation>
+        <translation>Повернути робочий простір</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tuppaintareastatus.cpp" line="169"/>
         <location filename="../../../libtupi/tuppaintareastatus.cpp" line="172"/>
         <source>Contour Color</source>
-        <translation>Cor de Contorno</translation>
+        <translation>Колір штриха</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tuppaintareastatus.cpp" line="175"/>
         <location filename="../../../libtupi/tuppaintareastatus.cpp" line="178"/>
         <source>Fill Color</source>
-        <translation>Cor de Preenchimento</translation>
+        <translation>Колір заповнення</translation>
     </message>
 </context>
 <context>
@@ -6235,13 +6289,13 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="174"/>
         <source>Close</source>
-        <translation>Fechar</translation>
+        <translation>Закрити</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="183"/>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="772"/>
         <source>Open</source>
-        <translation>Abrir</translation>
+        <translation>Відкрити</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="184"/>
@@ -6256,31 +6310,31 @@ until reaches at least 3 seconds.</source>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1254"/>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1255"/>
         <source>Play</source>
-        <translation>Reproduzir</translation>
+        <translation>Відтворити</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="201"/>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="202"/>
         <source>Stop</source>
-        <translation>Parar</translation>
+        <translation>Зупинити</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="209"/>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="210"/>
         <source>Zoom In</source>
-        <translation>Aproximar</translation>
+        <translation>Збільшити масштаб</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="216"/>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="217"/>
         <source>Zoom Out</source>
-        <translation>Afastar</translation>
+        <translation>Зменшити масштаб</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="223"/>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="224"/>
         <source>Auto Zoom</source>
-        <translation>Zoom Automático</translation>
+        <translation>Автомасштабування</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="233"/>
@@ -6289,270 +6343,270 @@ until reaches at least 3 seconds.</source>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="566"/>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="569"/>
         <source>Lip-Sync Manager</source>
-        <translation>Lip-Sync Manager</translation>
+        <translation>Керування синхронізацією руху губ</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="266"/>
         <source>Mouth Sample Pack No 1</source>
-        <translation>Pacote De Amostra De Boca No 1</translation>
+        <translation>Набір рухів губ №1</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="267"/>
         <source>Mouth Sample Pack No 2</source>
-        <translation>Pacote De Amostra De Boca No 2</translation>
+        <translation>Набір рухів губ №2</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="268"/>
         <source>Mouth Sample Pack No 3</source>
-        <translation>Pacote De Amostra De Boca No 3</translation>
+        <translation>Набір рухів губ №3</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="269"/>
         <source>Mouth Sample Pack No 4</source>
-        <translation>Pacote De Amostra De Boca No 4</translation>
+        <translation>Набір рухів губ №4</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="270"/>
         <source>Mouth Sample Pack No 5</source>
-        <translation>Pacote De Amostra De Boca No 5</translation>
+        <translation>Набір рухів губ №5</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="271"/>
         <source>Set Mouth Images</source>
-        <translation>Definir Imagens De Boca</translation>
+        <translation>Вибрати набір зображень губ</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="290"/>
         <source>Load &amp;Images</source>
-        <translation>Carregar &amp;Imagens</translation>
+        <translation>Завантажити &amp;зображення</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="333"/>
         <source>Voice Settings</source>
-        <translation>Configurações de Voz</translation>
+        <translation>Параметри голосу</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="350"/>
         <source>Voice name:</source>
-        <translation>Nome de voz:</translation>
+        <translation>Назва голосу:</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="360"/>
         <source>Scene:</source>
-        <translation>Cena:</translation>
+        <translation>Сцена:</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="362"/>
         <source>Initial Frame:</source>
-        <translation>Quadro inicial:</translation>
+        <translation>Початковий кадр:</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="388"/>
         <source>Spoken text:</source>
-        <translation>Texto falado:</translation>
+        <translation>Текст, що вимовляється:</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="395"/>
         <source>Phonetic breakdown:</source>
-        <translation>Repartição fonética:</translation>
+        <translation>Фонетичний розбір:</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="403"/>
         <source>English</source>
-        <translation>Inglês</translation>
+        <translation>Англійська</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="404"/>
         <source>Spanish</source>
-        <translation>Espanhol</translation>
+        <translation>Іспанська</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="405"/>
         <source>Other Language</source>
-        <translation>Outra Língua</translation>
+        <translation>Інша мова</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="424"/>
         <source>Phonetic Breakdown</source>
-        <translation>Editar Fonemas</translation>
+        <translation>Змінити фонеми</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="434"/>
         <source>Update lip-sync record</source>
-        <translation>Atualizar registro de sincronização labial</translation>
+        <translation>Оновити запис синхронізації губ</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="437"/>
         <source>Save lip-sync record</source>
-        <translation>Salvar registro de lip-sync</translation>
+        <translation>Зберегти запис синхронізації руху губ</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="446"/>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
+        <translation>Скасувати</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="494"/>
         <source>File</source>
-        <translation>Arquivo</translation>
+        <translation>Файл</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="545"/>
         <source>Error opening audio file.</source>
-        <translation>Erro ao abrir o arquivo de áudio.</translation>
+        <translation>Помилка при відкритті звукового файлу.</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="569"/>
         <source>Updating</source>
-        <translation>Atualizando</translation>
+        <translation>Триває оновлення</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="585"/>
         <source>Do you want to save this lip-sync record?</source>
-        <translation>Quer salvar este registro de lip-sync?</translation>
+        <translation>Зберегти цей запис синхронізації руху губ?</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="585"/>
         <source>Confirmation Required</source>
-        <translation>Confirmação Necessária</translation>
+        <translation>Потрібне підтвердження</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="601"/>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1335"/>
         <source>Lip-sync item added!</source>
-        <translation>Item de lip-sync adicionado!</translation>
+        <translation>Елемент синхронізації руху губ додано!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="619"/>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1754"/>
         <source>Lip-sync item updated!</source>
-        <translation>Item de lip-sync atualizado!</translation>
+        <translation>Елемент синхронізації руху губ оновлено!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="768"/>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="770"/>
         <source>Audio files (*.mp3 *.wav *.aac)</source>
-        <translation>Arquivos de áudio (*.mp3 *.wav *.aac)</translation>
+        <translation>Аудіофайли (*.mp3 *.wav *.aac)</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="785"/>
         <source>Mouth images are unset!</source>
-        <translation>As imagens da boca não estão definidas!</translation>
+        <translation>Зображення губ не задано!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="794"/>
         <source>No voice text to play!</source>
-        <translation>Não há texto de voz para reproduzir!</translation>
+        <translation>Немає тексту для відтворення голосом!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="801"/>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="802"/>
         <source>Pause</source>
-        <translation>Pausa</translation>
+        <translation>Пауза</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1045"/>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1273"/>
         <source>Voice text is empty!</source>
-        <translation>O texto de voz está vazio!</translation>
+        <translation>Немає тексту для голосу!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1071"/>
         <source>Voice text seems to be empty!</source>
-        <translation>O texto de voz parece estar vazio!</translation>
+        <translation>Схоже, текст для голосу порожній!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1179"/>
         <source>Choose the images directory...</source>
-        <translation>Escolha o diretório de imagens...</translation>
+        <translation>Вибір каталогу зображень…</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1199"/>
         <source>Mouth image is missing!</source>
-        <translation>A imagem da boca está faltando!</translation>
+        <translation>Зображення губ відсутнє!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1215"/>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1572"/>
         <source>Mouth images are incomplete!</source>
-        <translation>As imagens da boca estão incompletas!</translation>
+        <translation>Неповний комплект зображень губ!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1222"/>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1581"/>
         <source>Images directory is empty!</source>
-        <translation>Diretório de imagens está vazio!</translation>
+        <translation>Каталог зображень порожній!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1266"/>
         <source>Voice name is empty!</source>
-        <translation>O nome da voz está vazio!</translation>
+        <translation>Відсутня назва голосу!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1282"/>
         <source>Customized mouths path is unset!</source>
-        <translation>O caminho personalizado das bocas não está definido!</translation>
+        <translation>Не задано шлях для користувацького набору зображень губ!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1309"/>
         <source>Some phonemes are missing!</source>
-        <translation>Alguns fonemas estão faltando!</translation>
+        <translation>Відсутні деякі фонеми!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1364"/>
         <source>Error while saving lip-sync!</source>
-        <translation>Erro ao salvar lip-sync!</translation>
+        <translation>Помилка при збереженні синхронізації руху губ!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1440"/>
         <source>Can&apos;t load mouth image!</source>
-        <translation>Não é possível carregar a imagem da boca!</translation>
+        <translation>Не вдалося завантажити зображення губ!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1477"/>
         <source>Can&apos;t remove temporary voice sound!</source>
-        <translation>Não é possível remover o som de voz temporário!</translation>
+        <translation>Не вдалося вилучити тимчасове голосове озвучення!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1502"/>
         <source>Can&apos;t load voice sound!</source>
-        <translation>Não é possível carregar o som de voz!</translation>
+        <translation>Не вдалося завантажити голосове озвучення!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1515"/>
         <source>Can&apos;t set lip-sync voice item!</source>
-        <translation>Não é possível definir o item de voz de lip-sync!</translation>
+        <translation>Неможливо встановити голосовий елемент для синхронізації губ!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1549"/>
         <source>Frame</source>
-        <translation>Quadro</translation>
+        <translation>Кадр</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1561"/>
         <source>Papagayo file has been imported successfully</source>
-        <translation>Ficheiro Papagayo importado com sucesso</translation>
+        <translation>Файл Papagayo успішно імпортовано</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1563"/>
         <source>Papagayo file is invalid!</source>
-        <translation>Ficheiro Papagayo é inválido!</translation>
+        <translation>Неправильний файл Papagayo!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1590"/>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1599"/>
         <source>Papagayo project is invalid!</source>
-        <translation>Projeto Papagayo é inválido!</translation>
+        <translation>Неправильний проєкт Papagayo!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1612"/>
         <source>Error while saving lip-sync record!</source>
-        <translation>Erro ao salvar o registro de lip-sync!</translation>
+        <translation>Помилка при збереженні запису синхронізації руху губ!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tuppapagayoapp.cpp" line="1761"/>
         <source>Error while updating lip-sync!</source>
-        <translation>Erro ao atualizar lip-sync!</translation>
+        <translation>Помилка при оновленні синхронізації руху губ!</translation>
     </message>
 </context>
 <context>
@@ -6560,12 +6614,12 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/workspace/tuppendialog.cpp" line="40"/>
         <source>Pen Size</source>
-        <translation>Tamanho da Caneta</translation>
+        <translation>Розмір пера</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuppendialog.cpp" line="56"/>
         <source>Close</source>
-        <translation>Fechar</translation>
+        <translation>Закрити</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tuppendialog.cpp" line="91"/>
@@ -6591,39 +6645,39 @@ until reaches at least 3 seconds.</source>
 <context>
     <name>TupPluginSelector</name>
     <message>
+        <location filename="../../../components/export/tuppluginselector.cpp" line="173"/>
+        <source>MPEG Video</source>
+        <translation>Відео MPEG</translation>
+    </message>
+    <message>
         <location filename="../../../components/export/tuppluginselector.cpp" line="37"/>
         <source>Select Plugin</source>
-        <translation>Selecione Plugin</translation>
+        <translation>Виберіть додаток</translation>
     </message>
     <message>
         <location filename="../../../components/export/tuppluginselector.cpp" line="161"/>
         <source>MP4 Video</source>
-        <translation>Vídeo MP4</translation>
-    </message>
-    <message>
-        <location filename="../../../components/export/tuppluginselector.cpp" line="173"/>
-        <source>MPEG Video</source>
-        <translation>Vídeo MPEG</translation>
+        <translation>Відео MP4</translation>
     </message>
     <message>
         <location filename="../../../components/export/tuppluginselector.cpp" line="186"/>
         <source>QuickTime Video</source>
-        <translation>Vídeo QuickTime</translation>
+        <translation>Відео QuickTime</translation>
     </message>
     <message>
         <location filename="../../../components/export/tuppluginselector.cpp" line="193"/>
         <source>PNG Image Sequence</source>
-        <translation>Sequência de Imagens PNG</translation>
+        <translation>Послідовність зображень PNG</translation>
     </message>
     <message>
         <location filename="../../../components/export/tuppluginselector.cpp" line="198"/>
         <source>JPEG Image Sequence</source>
-        <translation>Sequência de Imagens JPEG</translation>
+        <translation>Послідовність зображень JPEG</translation>
     </message>
     <message>
         <location filename="../../../components/export/tuppluginselector.cpp" line="203"/>
         <source>SVG Image Sequence</source>
-        <translation>Sequência de Imagens SVG</translation>
+        <translation>Послідовність зображень SVG</translation>
     </message>
 </context>
 <context>
@@ -6631,60 +6685,55 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../libui/tuppreferencesdialog.cpp" line="42"/>
         <source>TupiTube Preferences</source>
-        <translation>Preferências de TupiTube</translation>
+        <translation>Параметри TupiTube</translation>
     </message>
     <message>
         <location filename="../../../libui/tuppreferencesdialog.cpp" line="45"/>
         <source>General</source>
-        <translation>Geral</translation>
+        <translation>Загальні</translation>
     </message>
     <message>
         <location filename="../../../libui/tuppreferencesdialog.cpp" line="51"/>
         <source>Theme</source>
-        <translation>Tema</translation>
+        <translation>Тема</translation>
     </message>
     <message>
         <location filename="../../../libui/tuppreferencesdialog.cpp" line="54"/>
         <source>Workspace</source>
-        <translation>Área de Trabalho</translation>
+        <translation>Робочий простір</translation>
     </message>
     <message>
         <location filename="../../../libui/tuppreferencesdialog.cpp" line="69"/>
         <source>Please restart TupiTube</source>
-        <translation>Por favor, reinicie o TupiTube</translation>
+        <translation>Перезапустіть TupiTube</translation>
     </message>
     <message>
         <location filename="../../../libui/tuppreferencesdialog.cpp" line="71"/>
         <source>Preferences saved successfully</source>
-        <translation>Preferências salvas com sucesso</translation>
+        <translation>Параметри збережено успішно</translation>
     </message>
 </context>
 <context>
     <name>TupProjectActionBar</name>
     <message>
-        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="194"/>
-        <source>F5</source>
-        <translation>F5</translation>
-    </message>
-    <message>
-        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="205"/>
-        <source>F6</source>
-        <translation>F6</translation>
-    </message>
-    <message>
-        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="147"/>
-        <source>F9</source>
-        <translation>F9</translation>
-    </message>
-    <message>
         <location filename="../../../libtupi/tupprojectactionbar.cpp" line="88"/>
         <source>Insert frame</source>
-        <translation>Inserir quadro</translation>
+        <translation>Вставити кадр</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tupprojectactionbar.cpp" line="98"/>
         <source>Duplicate frame</source>
-        <translation>Duplicar quadro</translation>
+        <translation>Дублювати кадр</translation>
+    </message>
+    <message>
+        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="109"/>
+        <source>Remove frame</source>
+        <translation>Вилучити кадр</translation>
+    </message>
+    <message>
+        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="128"/>
+        <source>Move frame backward</source>
+        <translation>Перемістити кадр назад</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tupprojectactionbar.cpp" line="129"/>
@@ -6692,81 +6741,86 @@ until reaches at least 3 seconds.</source>
         <translation>F8</translation>
     </message>
     <message>
-        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="193"/>
-        <source>Insert layer</source>
-        <translation>Inserir camada</translation>
-    </message>
-    <message>
-        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="204"/>
-        <source>Remove layer</source>
-        <translation>Remover camada</translation>
-    </message>
-    <message>
-        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="109"/>
-        <source>Remove frame</source>
-        <translation>Remover quadro</translation>
-    </message>
-    <message>
-        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="128"/>
-        <source>Move frame backward</source>
-        <translation>Mover quadro para trás</translation>
-    </message>
-    <message>
         <location filename="../../../libtupi/tupprojectactionbar.cpp" line="146"/>
         <source>Move frame forward</source>
-        <translation>Mover quadro para frente</translation>
+        <translation>Перемістити кадр уперед</translation>
+    </message>
+    <message>
+        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="147"/>
+        <source>F9</source>
+        <translation>F9</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tupprojectactionbar.cpp" line="164"/>
         <source>Reverse frame selection</source>
-        <translation>Reverter a seleção de quadros</translation>
+        <translation>Розвернути вибрані кадри</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tupprojectactionbar.cpp" line="175"/>
         <source>Copy frame</source>
-        <translation>Copiar quadro</translation>
+        <translation>Скопіювати кадр</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tupprojectactionbar.cpp" line="184"/>
         <source>Paste frame</source>
-        <translation>Colar quadro</translation>
+        <translation>Вставити кадр</translation>
+    </message>
+    <message>
+        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="193"/>
+        <source>Insert layer</source>
+        <translation>Вставити шар</translation>
+    </message>
+    <message>
+        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="194"/>
+        <source>F5</source>
+        <translation>F5</translation>
+    </message>
+    <message>
+        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="204"/>
+        <source>Remove layer</source>
+        <translation>Вилучити шар</translation>
+    </message>
+    <message>
+        <location filename="../../../libtupi/tupprojectactionbar.cpp" line="205"/>
+        <source>F6</source>
+        <translation>F6</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tupprojectactionbar.cpp" line="215"/>
         <source>Insert scene</source>
-        <translation>Inserir cena</translation>
+        <translation>Вставити сцену</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tupprojectactionbar.cpp" line="225"/>
         <source>Duplicate scene</source>
-        <translation>Duplicar a cena</translation>
+        <translation>Дублюйте сцену</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tupprojectactionbar.cpp" line="235"/>
         <source>Remove scene</source>
-        <translation>Remover cena</translation>
+        <translation>Вилучити сцену</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tupprojectactionbar.cpp" line="287"/>
         <location filename="../../../libtupi/tupprojectactionbar.cpp" line="309"/>
         <location filename="../../../libtupi/tupprojectactionbar.cpp" line="330"/>
         <source>Confirmation</source>
-        <translation>Confirmação</translation>
+        <translation>Підтвердження</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tupprojectactionbar.cpp" line="286"/>
         <source>Do you want to remove current selection?</source>
-        <translation>Deseja remover a seleção atual?</translation>
+        <translation>Вилучити вибране?</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tupprojectactionbar.cpp" line="308"/>
         <source>Do you want to remove this layer?</source>
-        <translation>Deseja remover esta camada?</translation>
+        <translation>Вилучити цей шар?</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tupprojectactionbar.cpp" line="329"/>
         <source>Do you want to remove this scene?</source>
-        <translation>Deseja remover esta cena?</translation>
+        <translation>Вилучити цю сцену?</translation>
     </message>
 </context>
 <context>
@@ -6774,27 +6828,27 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/workspace/tupprojectimporterdialog.cpp" line="47"/>
         <source>Project Assets</source>
-        <translation>Ativos do Projeto</translation>
+        <translation>Ресурси проєкту</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupprojectimporterdialog.cpp" line="63"/>
         <source>Please, pick the elements you want to import:</source>
-        <translation>Por favor, escolha os elementos que deseja importar:</translation>
+        <translation>Виберіть елементи, які ви хочете імпортувати:</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupprojectimporterdialog.cpp" line="80"/>
         <source>Library</source>
-        <translation>Biblioteca</translation>
+        <translation>Бібліотека</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupprojectimporterdialog.cpp" line="89"/>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
+        <translation>Скасувати</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupprojectimporterdialog.cpp" line="93"/>
         <source>Import Assets</source>
-        <translation>Importar Ativos</translation>
+        <translation>Імпортувати ресурси</translation>
     </message>
 </context>
 <context>
@@ -6802,17 +6856,17 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../store/tupprojectmanager.cpp" line="167"/>
         <source>Scene %1</source>
-        <translation>Cena %1</translation>
+        <translation>Сцена %1</translation>
     </message>
     <message>
         <location filename="../../../store/tupprojectmanager.cpp" line="170"/>
         <source>Layer %1</source>
-        <translation>Camada %1</translation>
+        <translation>Шар %1</translation>
     </message>
     <message>
         <location filename="../../../store/tupprojectmanager.cpp" line="173"/>
         <source>Frame</source>
-        <translation>Quadro</translation>
+        <translation>Кадр</translation>
     </message>
 </context>
 <context>
@@ -6820,22 +6874,22 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/workspace/tupprojectsizedialog.cpp" line="43"/>
         <source>Project Canvas Size</source>
-        <translation>Tamanho da Tela do Projeto</translation>
+        <translation>Розмір полотна проєкту</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupprojectsizedialog.cpp" line="61"/>
         <source>Apply</source>
-        <translation>Aplicar</translation>
+        <translation>Застосувати</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupprojectsizedialog.cpp" line="65"/>
         <source>Please, set the project canvas size:</source>
-        <translation>Por favor, defina o tamanho da tela do projeto:</translation>
+        <translation>Задайте розмір полотна проєкту:</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupprojectsizedialog.cpp" line="69"/>
         <source>Free Format</source>
-        <translation>Formato Livre</translation>
+        <translation>Вільний формат</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupprojectsizedialog.cpp" line="70"/>
@@ -6865,12 +6919,12 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/workspace/tupprojectsizedialog.cpp" line="75"/>
         <source>1080 (Mobile) - 24</source>
-        <translation>1080 (Móvel) - 24</translation>
+        <translation>1080 (Мобільний) - 24</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupprojectsizedialog.cpp" line="76"/>
         <source>1080 (Full HD Vertical) - 24</source>
-        <translation>1080 (Full HD Vertical) - 24</translation>
+        <translation>1080 (Full HD Вертикально) - 24</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupprojectsizedialog.cpp" line="77"/>
@@ -6880,144 +6934,144 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/workspace/tupprojectsizedialog.cpp" line="82"/>
         <source>Width:</source>
-        <translation>Largura:</translation>
+        <translation>Ширина:</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupprojectsizedialog.cpp" line="82"/>
         <source>Height:</source>
-        <translation>Altura:</translation>
+        <translation>Висота:</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupprojectsizedialog.cpp" line="96"/>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
+        <translation>Скасувати</translation>
     </message>
 </context>
 <context>
     <name>TupReflexInterface</name>
     <message>
-        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="57"/>
+        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="58"/>
         <source>TupiTube Camera Manager</source>
-        <translation>Gestor de Câmera do TupiTube</translation>
+        <translation>Керування камерою TupiTube</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="57"/>
+        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="58"/>
         <source>Current resolution:</source>
-        <translation>Resolução atual:</translation>
+        <translation>Поточна роздільність:</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="96"/>
+        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="97"/>
         <source>Camera</source>
-        <translation>Câmera</translation>
+        <translation>Камера</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="112"/>
+        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="113"/>
         <source>Take picture</source>
-        <translation>Fotografar</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="117"/>
-        <source>Show safe area</source>
-        <translation>Mostrar área segura</translation>
+        <translation>Зробити знімок</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupreflexinterface.cpp" line="118"/>
+        <source>Show safe area</source>
+        <translation>Показати сюжетно важливу ділянку</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="119"/>
         <source>+</source>
         <translation>+</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="124"/>
+        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="125"/>
         <source>Show grid</source>
-        <translation>Mostrar grelha</translation>
+        <translation>Показати сітку</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="125"/>
+        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="126"/>
         <source>#</source>
         <translation>#</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="135"/>
+        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="136"/>
         <source>Grid spacing</source>
-        <translation>Espaçamento da grelha</translation>
+        <translation>Крок сітки</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="146"/>
+        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="147"/>
         <source>Grid color</source>
-        <translation>Cor da grelha</translation>
-    </message>
-    <message>
-        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="162"/>
-        <source>Show previous images</source>
-        <translation>Exibir imagens anteriores</translation>
+        <translation>Колір сітки</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupreflexinterface.cpp" line="163"/>
+        <source>Show previous images</source>
+        <translation>Показати попередні зображення</translation>
+    </message>
+    <message>
+        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="164"/>
         <source>P</source>
         <translation>P</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="175"/>
+        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="176"/>
         <source>Image opacity level</source>
-        <translation>Nível de opacidade da imagem</translation>
+        <translation>Рівень щільності зображення</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="185"/>
+        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="186"/>
         <source>Amount of images to show</source>
-        <translation>Quantidade de imagens para exibir</translation>
+        <translation>Кількість показуваних зображень</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="200"/>
+        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="201"/>
         <source>Close manager</source>
-        <translation>Fechar gestor</translation>
+        <translation>Закрити керування</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="246"/>
+        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="247"/>
         <source>Can&apos;t create pictures directory</source>
-        <translation>Não é possível criar diretório para fotografias</translation>
+        <translation>Не вдалося створити каталог для зображень</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="317"/>
+        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="318"/>
         <source>General Camera error</source>
-        <translation>Erro de câmara genérico</translation>
+        <translation>Загальна помилка камери</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="322"/>
+        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="323"/>
         <source>Camera invalid request error</source>
-        <translation>Erro de câmera: pedido inválido</translation>
+        <translation>Помилка: недопустимий запит камери</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="327"/>
+        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="328"/>
         <source>Camera service missing error</source>
-        <translation>Erro de câmera: serviço ausente</translation>
+        <translation>Помилка: відсутня служба камери</translation>
     </message>
     <message>
-        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="332"/>
+        <location filename="../../../components/workspace/tupreflexinterface.cpp" line="333"/>
         <source>Camera not supported error</source>
-        <translation>Erro de câmara não suportada</translation>
+        <translation>Помилка: камера не підтримується</translation>
     </message>
 </context>
 <context>
     <name>TupScene</name>
     <message>
+        <location filename="../../../store/tupscene.cpp" line="148"/>
+        <source>Layer 1</source>
+        <translation>Шар 1</translation>
+    </message>
+    <message>
+        <location filename="../../../store/tupscene.cpp" line="205"/>
+        <source>Sound layer %1</source>
+        <translation>Шар звуку %1</translation>
+    </message>
+    <message>
         <location filename="../../../store/tupscene.cpp" line="730"/>
         <source>Layer %1</source>
-        <translation>Camada %1</translation>
+        <translation>Шар %1</translation>
     </message>
     <message>
         <location filename="../../../store/tupscene.cpp" line="149"/>
         <location filename="../../../store/tupscene.cpp" line="731"/>
         <source>Frame</source>
-        <translation>Quadro</translation>
-    </message>
-    <message>
-        <location filename="../../../store/tupscene.cpp" line="148"/>
-        <source>Layer 1</source>
-        <translation>Camada 1</translation>
-    </message>
-    <message>
-        <location filename="../../../store/tupscene.cpp" line="205"/>
-        <source>Sound layer %1</source>
-        <translation>Camada de som %1</translation>
+        <translation>Кадр</translation>
     </message>
 </context>
 <context>
@@ -7025,22 +7079,22 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../libtupi/tupscenenamedialog.cpp" line="51"/>
         <source>Rename Scene</source>
-        <translation>Renomear Cena</translation>
+        <translation>Перейменувати сцену</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tupscenenamedialog.cpp" line="53"/>
         <source>Add Scene</source>
-        <translation>Adicionar Cena</translation>
+        <translation>Додати сцену</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tupscenenamedialog.cpp" line="71"/>
         <source>Scene Name:</source>
-        <translation>Nome da Cena:</translation>
+        <translation>Назва сцени:</translation>
     </message>
     <message>
         <location filename="../../../libtupi/tupscenenamedialog.cpp" line="90"/>
         <source>Close</source>
-        <translation>Fechar</translation>
+        <translation>Закрити</translation>
     </message>
 </context>
 <context>
@@ -7048,17 +7102,17 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/export/tupsceneselector.cpp" line="40"/>
         <source>Select Scenes</source>
-        <translation>Selecionar Cenas</translation>
+        <translation>Вибір сцени</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupsceneselector.cpp" line="43"/>
         <source>Add Scene</source>
-        <translation>Adicionar Cena</translation>
+        <translation>Додати сцену</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupsceneselector.cpp" line="43"/>
         <source>Remove Scene</source>
-        <translation>Remover Cena</translation>
+        <translation>Вилучити сцену</translation>
     </message>
 </context>
 <context>
@@ -7066,192 +7120,192 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="57"/>
         <source>Assets Search Engine</source>
-        <translation>Motor de Busca de Recursos</translation>
+        <translation>Рушій пошуку ресурсів</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="72"/>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="123"/>
         <source>Search</source>
-        <translation>Pesquisa</translation>
+        <translation>Пошук</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="80"/>
         <source>Close</source>
-        <translation>Fechar</translation>
+        <translation>Закрити</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="127"/>
         <source>Keywords</source>
-        <translation>Palavras Chave</translation>
+        <translation>Ключові слова</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="128"/>
         <source>Keywords Database</source>
-        <translation>Banco de Dados de Palavras-Chave</translation>
+        <translation>База даних ключових слів</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="136"/>
         <source>Object</source>
-        <translation>Objeto</translation>
+        <translation>Об&apos;єкт</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="137"/>
         <source>Character</source>
-        <translation>Personagem</translation>
+        <translation>Персонаж</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="138"/>
         <source>Static Background</source>
-        <translation>Fundo Estático</translation>
+        <translation>Статичне тло</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="139"/>
         <source>Dynamic Background</source>
-        <translation>Fundo Dinâmico</translation>
+        <translation>Динамічне тло</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="140"/>
         <source>Sound</source>
-        <translation>Som</translation>
+        <translation>Звук</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="188"/>
         <source>Import Asset</source>
-        <translation>Importar Recurso</translation>
+        <translation>Імпортувати ресурс</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="234"/>
         <source>Searching...</source>
-        <translation>Procurando...</translation>
+        <translation>Триває пошук…</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="273"/>
         <source>But we are working on new assets...</source>
-        <translation>Mas estamos trabalhando em novos recursos...</translation>
+        <translation>Але ми працюємо над новими ресурсами...</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="304"/>
         <source>Error while processing request. Please, try again.</source>
-        <translation>Erro ao processar a solicitação. Por favor, tente novamente.</translation>
+        <translation>Помилка під час обробки запиту. Повторіть спробу.</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="455"/>
         <source>Invalid search: Empty pattern!</source>
-        <translation>Pesquisa inválida: padrão vazio!</translation>
+        <translation>Недопустимий запит: Порожній шаблон!</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="477"/>
         <source>Network Error 609. Please, contact us!</source>
-        <translation>Erro de Rede 609. Entre em contato conosco!</translation>
+        <translation>Мережева помилка 609. Зв&apos;яжіться з нами!</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="485"/>
         <source>Network Fatal Error. Please, contact us!</source>
-        <translation>Erro Fatal na Rede. Por favor, entre em contato conosco!</translation>
+        <translation>Критична мережева помилка. Зв&apos;яжіться з нами!</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="541"/>
         <source>No Results for</source>
-        <translation>Sem resultados para</translation>
+        <translation>Результатів пошуку за запитом немає</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="541"/>
         <source>YET!</source>
-        <translation>AINDA!</translation>
+        <translation>ПОКИ ЩО!</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="624"/>
         <source>Getting item</source>
-        <translation>Obtendo item</translation>
+        <translation>Отримання елемента</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="723"/>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="729"/>
         <source>Can&apos;t load the result images!</source>
-        <translation>Não é possível carregar as imagens de resultado!</translation>
+        <translation>Не вдалося завантажити зображення результату пошуку!</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="925"/>
         <source>Can&apos;t save the asset!</source>
-        <translation>Não é possível salvar o recurso!</translation>
+        <translation>Не вдалося зберегти ресурс!</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="932"/>
         <source>Can&apos;t load the asset!</source>
-        <translation>Não é possível carregar o recurso!</translation>
+        <translation>Не вдалося завантажити ресурс!</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="957"/>
         <source>Can&apos;t load the asset file!</source>
-        <translation>Não é possível carregar o arquivo de recurso!</translation>
+        <translation>Не вдалося завантажити файл ресурсу!</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="759"/>
         <source>Asset Extension:</source>
-        <translation>Extensão de Recurso:</translation>
+        <translation>Розширення ресурсу:</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="761"/>
         <source>Creator:</source>
-        <translation>O Criador:</translation>
+        <translation>Автор:</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="764"/>
         <source>License:</source>
-        <translation>Licença:</translation>
+        <translation>Ліцензія:</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsearchdialog.cpp" line="903"/>
         <source>Network Error 809. Please, contact us!</source>
-        <translation>Erro de Rede 809. Entre em contato conosco!</translation>
+        <translation>Мережева помилка 809. Зв&apos;яжіться з нами!</translation>
     </message>
 </context>
 <context>
     <name>TupSignDialog</name>
     <message>
-        <location filename="../../tupsigndialog.cpp" line="49"/>
+        <location filename="../../tupsigndialog.cpp" line="50"/>
         <source>Sign In</source>
-        <translation>Conecte-se</translation>
+        <translation>Авторизація</translation>
     </message>
     <message>
-        <location filename="../../tupsigndialog.cpp" line="73"/>
+        <location filename="../../tupsigndialog.cpp" line="74"/>
         <source>Username</source>
-        <translation>Nome de utilizador</translation>
+        <translation>Ім&apos;я користувача</translation>
     </message>
     <message>
-        <location filename="../../tupsigndialog.cpp" line="73"/>
+        <location filename="../../tupsigndialog.cpp" line="74"/>
         <source>Password</source>
-        <translation>Palavra-passe</translation>
+        <translation>Пароль</translation>
     </message>
     <message>
-        <location filename="../../tupsigndialog.cpp" line="76"/>
+        <location filename="../../tupsigndialog.cpp" line="77"/>
         <source>Store password</source>
-        <translation>Guardar palavra-passe</translation>
+        <translation>Зберегти пароль</translation>
     </message>
     <message>
-        <location filename="../../tupsigndialog.cpp" line="82"/>
+        <location filename="../../tupsigndialog.cpp" line="83"/>
         <source>Sign Up</source>
-        <translation>Inscrever-se</translation>
+        <translation>Зареєструватися</translation>
     </message>
     <message>
-        <location filename="../../tupsigndialog.cpp" line="90"/>
+        <location filename="../../tupsigndialog.cpp" line="91"/>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
+        <translation>Скасувати</translation>
     </message>
     <message>
-        <location filename="../../tupsigndialog.cpp" line="86"/>
+        <location filename="../../tupsigndialog.cpp" line="87"/>
         <source>Accept</source>
-        <translation>Aceitar</translation>
+        <translation>Прийняти</translation>
     </message>
     <message>
-        <location filename="../../tupsigndialog.cpp" line="112"/>
+        <location filename="../../tupsigndialog.cpp" line="113"/>
         <source>Please, fill in your username</source>
-        <translation>Por favor, preencha com seu nome de utilizador</translation>
+        <translation>Введіть ім&apos;я користувача</translation>
     </message>
     <message>
-        <location filename="../../tupsigndialog.cpp" line="116"/>
+        <location filename="../../tupsigndialog.cpp" line="117"/>
         <source>Please, fill in your password</source>
-        <translation>Por favor, preencha sua senha</translation>
+        <translation>Введіть пароль</translation>
     </message>
 </context>
 <context>
@@ -7259,83 +7313,83 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/library/tupsounddialog.cpp" line="77"/>
         <source>Record Audio</source>
-        <translation>Gravar Audio</translation>
+        <translation>Запис звуку</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsounddialog.cpp" line="71"/>
         <source>Import Audio Asset</source>
-        <translation>Importar Recurso de Áudio</translation>
+        <translation>Імпорт звукового ресурсу</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsounddialog.cpp" line="76"/>
         <source>Audio File</source>
-        <translation>Arquivo de Áudio</translation>
+        <translation>Звуковий файл</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsounddialog.cpp" line="94"/>
         <source>Audio Path:</source>
-        <translation>Caminho de Áudio:</translation>
+        <translation>Шлях до звукових файлів:</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsounddialog.cpp" line="109"/>
         <source>Load audio file</source>
-        <translation>Carregar arquivo de áudio</translation>
+        <translation>Завантажити звуковий файл</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsounddialog.cpp" line="116"/>
         <source>Import audio file</source>
-        <translation>Importar arquivo de áudio</translation>
+        <translation>Імпортувати звуковий файл</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsounddialog.cpp" line="123"/>
         <location filename="../../../components/library/tupsounddialog.cpp" line="179"/>
         <source>Open lip-sync module</source>
-        <translation>Abrir o módulo de lip-sync</translation>
+        <translation>Відкрити модуль синхронізації руху губ</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsounddialog.cpp" line="130"/>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
+        <translation>Скасувати</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsounddialog.cpp" line="172"/>
         <source>Import recorded audio</source>
-        <translation>Importar áudio gravado</translation>
+        <translation>Імпортувати записаний звук</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsounddialog.cpp" line="219"/>
         <source>Audio file</source>
-        <translation>Arquivo de áudio</translation>
+        <translation>Звуковий файл</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsounddialog.cpp" line="245"/>
         <source>File:</source>
-        <translation>Arquivo:</translation>
+        <translation>Файл:</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsounddialog.cpp" line="247"/>
         <source>Audio file only has one channel (Mono). The file must have two channels (Stereo).</source>
-        <translation>O arquivo de áudio possui apenas um canal (Mono). O arquivo deve ter dois canais (estéreo).</translation>
+        <translation>Аудіофайл має лише один канал (моно). Файл повинен мати два канали (стерео).</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsounddialog.cpp" line="248"/>
         <source>Tip: Use an online service to convert your audio file from Mono to Stereo.</source>
-        <translation>Dica: Use um serviço online para converter seu arquivo de áudio de Mono para Estéreo.</translation>
+        <translation>Порада: скористайтеся онлайн-службою, щоб перетворити аудіофайл із монофонічного на стереофонічний.</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsounddialog.cpp" line="264"/>
         <source>Audio file doesn&apos;t exist!</source>
-        <translation>O arquivo de áudio não existe!</translation>
+        <translation>Звукового файлу не існує!</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsounddialog.cpp" line="267"/>
         <source>Please, choose an audio file!</source>
-        <translation>Por favor, escolha um arquivo de áudio!</translation>
+        <translation>Виберіть звуковий файл!</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsounddialog.cpp" line="210"/>
         <source>Import audio file...</source>
-        <translation>Importar ficheiro de áudio...</translation>
+        <translation>Імпорт звукового файлу...</translation>
     </message>
 </context>
 <context>
@@ -7343,28 +7397,28 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/library/tupsoundform.cpp" line="55"/>
         <source>Play audio at:</source>
-        <translation>Reproduzir áudio em:</translation>
+        <translation>Відтворити аудіо на:</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsoundform.cpp" line="49"/>
         <source>All Scenes (Background Track)</source>
-        <translation>Todas as Cenas (Faixa de Fundo)</translation>
+        <translation>Усі сцени (фонова доріжка)</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsoundform.cpp" line="61"/>
         <source>At Frames:</source>
-        <translation>Nos quadros:</translation>
+        <translation>На кадрах:</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsoundform.cpp" line="82"/>
         <location filename="../../../components/library/tupsoundform.cpp" line="85"/>
         <source>Add Frame</source>
-        <translation>Adicionar Quadro</translation>
+        <translation>Додати рамку</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsoundform.cpp" line="89"/>
         <source>Remove Frame</source>
-        <translation>Remover Quadro</translation>
+        <translation>Видалити рамку</translation>
     </message>
 </context>
 <context>
@@ -7372,12 +7426,12 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/library/tupsoundplayer.cpp" line="213"/>
         <source>Audio Properties</source>
-        <translation>Propriedades de Áudio</translation>
+        <translation>Властивості звуку</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsoundplayer.cpp" line="68"/>
         <source>Play</source>
-        <translation>Reproduzir</translation>
+        <translation>Відтворити</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsoundplayer.cpp" line="60"/>
@@ -7385,7 +7439,7 @@ until reaches at least 3 seconds.</source>
         <location filename="../../../components/library/tupsoundplayer.cpp" line="248"/>
         <location filename="../../../components/library/tupsoundplayer.cpp" line="293"/>
         <source>Duration:</source>
-        <translation>Duração:</translation>
+        <translation>Тривалість:</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsoundplayer.cpp" line="72"/>
@@ -7397,23 +7451,23 @@ until reaches at least 3 seconds.</source>
         <location filename="../../../components/library/tupsoundplayer.cpp" line="160"/>
         <location filename="../../../components/library/tupsoundplayer.cpp" line="370"/>
         <source>Mute</source>
-        <translation>Silenciar</translation>
+        <translation>Вимкнути звук</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsoundplayer.cpp" line="77"/>
         <source>Loop</source>
-        <translation>Ciclo</translation>
+        <translation>Зациклити</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsoundplayer.cpp" line="155"/>
         <location filename="../../../components/library/tupsoundplayer.cpp" line="374"/>
         <source>Unmute</source>
-        <translation>Ativar Som</translation>
+        <translation>Увімкнути звук</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsoundplayer.cpp" line="216"/>
         <source>Lipsync Audio</source>
-        <translation>Áudio Sincronizado com Lábios</translation>
+        <translation>Lipsync Audio</translation>
     </message>
 </context>
 <context>
@@ -7421,7 +7475,7 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="103"/>
         <source>Storyboard Settings</source>
-        <translation>Propriedades do Storyboard</translation>
+        <translation>Параметри розкадрування</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="114"/>
@@ -7431,135 +7485,135 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="115"/>
         <source>Export as PDF</source>
-        <translation>Exportar como PDF</translation>
+        <translation>Експортувати як PDF</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="124"/>
         <source>Close</source>
-        <translation>Fechar</translation>
+        <translation>Закрити</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="133"/>
         <source>&amp;Post</source>
-        <translation>&amp;Publicar</translation>
+        <translation>&amp;Опублікувати</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="186"/>
         <source>Title</source>
-        <translation>Título</translation>
+        <translation>Заголовок</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="192"/>
         <source>Author</source>
-        <translation>Autor</translation>
+        <translation>Автор</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="197"/>
         <source>Summary</source>
-        <translation>Sumário</translation>
+        <translation>Опис</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="215"/>
         <source>Topics</source>
-        <translation>Tópicos</translation>
+        <translation>Теми</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="247"/>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="293"/>
         <source>Duration</source>
-        <translation>Duração</translation>
+        <translation>Тривалість</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="243"/>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="332"/>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="370"/>
         <source>Cover</source>
-        <translation>Capa</translation>
+        <translation>Обкладинка</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="475"/>
         <source>Storyboard</source>
-        <translation>Storyboard</translation>
+        <translation>Розкадрування</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="395"/>
         <source>Scene</source>
-        <translation>Cena</translation>
+        <translation>Сцена</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="688"/>
         <source>Storyboard exported successfully!</source>
-        <translation>Storyboard exportado com sucesso!</translation>
+        <translation>Розкадрування експортовано успішно!</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="641"/>
         <source>Save PDF file</source>
-        <translation>Guardar ficheiro PDF</translation>
+        <translation>Зберегти файл PDF</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="119"/>
         <source>&amp;Animatic</source>
-        <translation>&amp;Animatic</translation>
+        <translation>&amp;Аніматик</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="120"/>
         <source>Export as Animatic</source>
-        <translation>Exportar Como Animatic</translation>
+        <translation>Експортувати як аніматик</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="232"/>
         <source>Cover Information</source>
-        <translation>Informação Da Capa</translation>
+        <translation>Інформація на обкладинці</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="233"/>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="316"/>
         <source>Animatic</source>
-        <translation>Animatic</translation>
+        <translation>Аніматик</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="261"/>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="303"/>
         <source>seconds</source>
-        <translation>segundos</translation>
+        <translation>секунд</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="353"/>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="512"/>
         <source>Storyboard
 Cover</source>
-        <translation>Capa Do
-Storyboard</translation>
+        <translation>Обкладинка
+розкадрування</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="409"/>
         <source>Scene No %1</source>
-        <translation>Cena No %1</translation>
+        <translation>Сцена № %1</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="539"/>
         <source>By</source>
-        <translation>De</translation>
+        <translation>Автор</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="641"/>
         <source>PDF file (*.pdf)</source>
-        <translation>Ficheiro PDF (*.pdf)</translation>
+        <translation>Файл PDF (*.pdf)</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="698"/>
         <source>Export Animatic As</source>
-        <translation>Exportar Animatic Como</translation>
+        <translation>Експортувати аніматик як</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="699"/>
         <source>Videos</source>
-        <translation>Vídeos</translation>
+        <translation>Відеофайли</translation>
     </message>
     <message>
         <location filename="../../../components/workspace/tupstoryboarddialog.cpp" line="727"/>
         <source>Animatic exported successfully!</source>
-        <translation>Animatic exportado com sucesso!</translation>
+        <translation>Аніматик експортовано успішно!</translation>
     </message>
 </context>
 <context>
@@ -7567,27 +7621,27 @@ Storyboard</translation>
     <message>
         <location filename="../../../components/library/tupsymboleditor.cpp" line="48"/>
         <source>Symbol editor</source>
-        <translation>Editor de símbolo</translation>
+        <translation>Редактор символів</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsymboleditor.cpp" line="58"/>
         <source>Brushes</source>
-        <translation>Pincéis</translation>
+        <translation>Пензлі</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsymboleditor.cpp" line="61"/>
         <source>Selection</source>
-        <translation>Seleção</translation>
+        <translation>Вибране</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsymboleditor.cpp" line="64"/>
         <source>Fill</source>
-        <translation>Preenchimento</translation>
+        <translation>Заповнення</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupsymboleditor.cpp" line="67"/>
         <source>View</source>
-        <translation>Visualização</translation>
+        <translation>Перегляд</translation>
     </message>
 </context>
 <context>
@@ -7595,64 +7649,64 @@ Storyboard</translation>
     <message>
         <location filename="../../../libui/tupthemepreferences.cpp" line="75"/>
         <source>Theme Preferences</source>
-        <translation>Preferências de Tema</translation>
+        <translation>Параметри теми</translation>
     </message>
     <message>
         <location filename="../../../libui/tupthemepreferences.cpp" line="100"/>
         <location filename="../../../libui/tupthemepreferences.cpp" line="119"/>
         <source>Black</source>
-        <translation>Preto</translation>
+        <translation>Чорний</translation>
     </message>
     <message>
         <location filename="../../../libui/tupthemepreferences.cpp" line="125"/>
         <location filename="../../../libui/tupthemepreferences.cpp" line="129"/>
         <source>Restore Default Theme</source>
-        <translation>Restaurar Tema Padrão</translation>
+        <translation>Відновити типову тему</translation>
     </message>
     <message>
         <location filename="../../../libui/tupthemepreferences.cpp" line="98"/>
         <source>Gray</source>
-        <translation>Cinza</translation>
+        <translation>Сірий</translation>
     </message>
     <message>
         <location filename="../../../libui/tupthemepreferences.cpp" line="87"/>
         <source>Theme Color</source>
-        <translation>Cor do Tema</translation>
+        <translation>Колір теми</translation>
     </message>
     <message>
         <location filename="../../../libui/tupthemepreferences.cpp" line="98"/>
         <source>Brown</source>
-        <translation>Marrom</translation>
+        <translation>Коричневий</translation>
     </message>
     <message>
         <location filename="../../../libui/tupthemepreferences.cpp" line="98"/>
         <source>Chocolate</source>
-        <translation>Chocolate</translation>
+        <translation>Шоколадний</translation>
     </message>
     <message>
         <location filename="../../../libui/tupthemepreferences.cpp" line="98"/>
         <source>Blue</source>
-        <translation>Azul</translation>
+        <translation>Синій</translation>
     </message>
     <message>
         <location filename="../../../libui/tupthemepreferences.cpp" line="99"/>
         <source>Honey</source>
-        <translation>Mel</translation>
+        <translation>Медовий</translation>
     </message>
     <message>
         <location filename="../../../libui/tupthemepreferences.cpp" line="99"/>
         <source>Green</source>
-        <translation>Verde</translation>
+        <translation>Зелений</translation>
     </message>
     <message>
         <location filename="../../../libui/tupthemepreferences.cpp" line="99"/>
         <source>Violet</source>
-        <translation>Tolet</translation>
+        <translation>Фіолетовий</translation>
     </message>
     <message>
         <location filename="../../../libui/tupthemepreferences.cpp" line="99"/>
         <source>Orange</source>
-        <translation>Laranja</translation>
+        <translation>Помаранчевий</translation>
     </message>
 </context>
 <context>
@@ -7660,19 +7714,19 @@ Storyboard</translation>
     <message>
         <location filename="../../../components/timeline/tuptimeline.cpp" line="55"/>
         <source>Time Line</source>
-        <translation>Linha de Tempo</translation>
+        <translation>Монтажний стіл</translation>
     </message>
     <message>
         <location filename="../../../components/timeline/tuptimeline.cpp" line="91"/>
         <location filename="../../../components/timeline/tuptimeline.cpp" line="98"/>
         <source>Current Layer Opacity</source>
-        <translation>Opacidade da Camada Atual</translation>
+        <translation>Щільність поточного шару</translation>
     </message>
     <message>
         <location filename="../../../components/timeline/tuptimeline.cpp" line="367"/>
         <location filename="../../../components/timeline/tuptimeline.cpp" line="794"/>
         <source>Layer %1</source>
-        <translation>Camada %1</translation>
+        <translation>Шар %1</translation>
     </message>
     <message>
         <location filename="../../../components/timeline/tuptimeline.cpp" line="370"/>
@@ -7685,24 +7739,24 @@ Storyboard</translation>
         <location filename="../../../components/timeline/tuptimeline.cpp" line="849"/>
         <location filename="../../../components/timeline/tuptimeline.cpp" line="950"/>
         <source>Frame</source>
-        <translation>Quadro</translation>
+        <translation>Кадр</translation>
     </message>
     <message>
         <location filename="../../../components/timeline/tuptimeline.cpp" line="876"/>
         <source>Scene 1</source>
-        <translation>Cena 1</translation>
+        <translation>Сцена 1</translation>
     </message>
     <message>
         <location filename="../../../components/timeline/tuptimeline.cpp" line="255"/>
         <location filename="../../../components/timeline/tuptimeline.cpp" line="839"/>
         <source>Scene %1</source>
-        <translation>Cena %1</translation>
+        <translation>Сцена %1</translation>
     </message>
     <message>
         <location filename="../../../components/timeline/tuptimeline.cpp" line="258"/>
         <location filename="../../../components/timeline/tuptimeline.cpp" line="846"/>
         <source>Layer 1</source>
-        <translation>Camada 1</translation>
+        <translation>Шар 1</translation>
     </message>
 </context>
 <context>
@@ -7711,7 +7765,7 @@ Storyboard</translation>
         <location filename="../../../libtupi/tuptoolstatus.cpp" line="45"/>
         <location filename="../../../libtupi/tuptoolstatus.cpp" line="48"/>
         <source>Current Tool</source>
-        <translation>Ferramenta Atual</translation>
+        <translation>Поточний засіб</translation>
     </message>
 </context>
 <context>
@@ -7719,102 +7773,102 @@ Storyboard</translation>
     <message>
         <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="62"/>
         <source>Photograms Extractor</source>
-        <translation>Extrator de Fotogramas</translation>
+        <translation>Витягач фотограм</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="85"/>
         <source>Select the number of photograms to import:</source>
-        <translation>Selecione o número de fotogramas a importar:</translation>
+        <translation>Виберіть кількість фотограм для імпорту:</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="106"/>
         <source>Project size and video size are different:</source>
-        <translation>O tamanho do projeto e o tamanho do vídeo são diferentes:</translation>
+        <translation>Розміри проєкту та відео відрізняються:</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="109"/>
         <source>Project Size:</source>
-        <translation>Tamanho do Projeto:</translation>
+        <translation>Розмір проєкту:</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="112"/>
         <source>Video Size:</source>
-        <translation>Tamanho do Vídeo:</translation>
+        <translation>Розмір відео:</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="116"/>
         <source>What do you want to do?</source>
-        <translation>O que você quer fazer?</translation>
+        <translation>Що ви хочете зробити?</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="117"/>
         <source>Keep original project and video sizes</source>
-        <translation>Mantenha os tamanhos originais do projeto e do vídeo</translation>
+        <translation>Зберегти оригінальні розміри проєкту та відео</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="118"/>
         <source>Adjust video size to project size</source>
-        <translation>Ajustar o tamanho do vídeo ao tamanho do projeto</translation>
+        <translation>Змінити розмір відео відповідно до розміру проєкту</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="119"/>
         <source>Adjust project size to video size</source>
-        <translation>Ajustar o tamanho do projeto ao tamanho do vídeo</translation>
+        <translation>Змінити розмір проєкту відповідно до розміру відео</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="137"/>
         <source>Import audio if it&apos;s available</source>
-        <translation>Importar áudio se estiver disponível</translation>
+        <translation>Імпортувати аудіо, якщо воно доступне</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="163"/>
         <source>Close</source>
-        <translation>Fechar</translation>
+        <translation>Закрити</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="206"/>
         <source>Starting procedure...</source>
-        <translation>Iniciando procedimento...</translation>
+        <translation>Початок роботи...</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="215"/>
         <source>Couldn&apos;t create temporary directory!</source>
-        <translation>Não foi possível criar o diretório temporário!</translation>
+        <translation>Не вдалося створити тимчасовий каталог!</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="223"/>
         <source>Can&apos;t extract photograms!</source>
-        <translation>Não é possível extrair fotogramas!</translation>
+        <translation>Не вдалося витягти фотограми!</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="236"/>
         <source>Importing audio...</source>
-        <translation>Importando áudio...</translation>
+        <translation>Імпорт аудіо...</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="243"/>
         <source>Importing audio track from video file...</source>
-        <translation>Importação de áudio de ficheiro de vídeo...</translation>
+        <translation>Імпорт аудіодоріжки з відеофайлу...</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="270"/>
         <source>Extracting photogram %1 of %2</source>
-        <translation>A extrair o fotograma %1 de %2</translation>
+        <translation>Витягання фотограми %1 з %2</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="272"/>
         <source>Extracting audio frame %1 of %2</source>
-        <translation>Extraindo quadro de áudio %1 de %2</translation>
+        <translation>Видобування аудіокадру %1 з %2</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="286"/>
         <source>Importing images...</source>
-        <translation>Importando imagens...</translation>
+        <translation>Імпортуються зображення...</translation>
     </message>
     <message>
         <location filename="../../../components/library/tupvideoimporterdialog.cpp" line="319"/>
         <source>Video imported successfully!</source>
-        <translation>Vídeo importado com sucesso!</translation>
+        <translation>Відео імпортовано успішно!</translation>
     </message>
 </context>
 <context>
@@ -7822,27 +7876,27 @@ Storyboard</translation>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="72"/>
         <source>Title</source>
-        <translation>Título</translation>
+        <translation>Заголовок</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="92"/>
         <source>Description</source>
-        <translation>Descrição</translation>
+        <translation>Опис</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="47"/>
         <source>Animation Properties</source>
-        <translation>Propriedades de Animação</translation>
+        <translation>Властивості анімації</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="73"/>
         <source>My Animation</source>
-        <translation>Minha Animação</translation>
+        <translation>Моя анімація</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="82"/>
         <source>Hashtags</source>
-        <translation>Hashtags</translation>
+        <translation>Гештеги</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="83"/>
@@ -7852,190 +7906,190 @@ Storyboard</translation>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="94"/>
         <source>Create and share animations easily with TupiTube</source>
-        <translation>Crie e compartilhe animações facilmente com o TupiTube</translation>
+        <translation>Створювати та публікувати анімаційні ролики на TupiTube легко</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="142"/>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
+        <translation>Скасувати</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="799"/>
         <source>Set a title for the picture here!</source>
-        <translation>Defina aqui um título para a imagem!</translation>
+        <translation>Введіть тут заголовок зображення!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="811"/>
         <source>Set some topic tags for the picture here!</source>
-        <translation>Defina aqui algumas etiquetas de tópicos para a imagem!</translation>
+        <translation>Задайте тут кілька тематичних тегів для зображення!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="467"/>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="659"/>
         <source>Access denied. Invalid password!</source>
-        <translation>Acesso negado. Senha inválida!</translation>
+        <translation>Доступ заборонено. Неправильний пароль!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="75"/>
         <source>My Image</source>
-        <translation>Minha Imagem</translation>
+        <translation>Моє зображення</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="85"/>
         <source>#tupitube #image #fun</source>
-        <translation>#tupitube #imagem #diversão</translation>
+        <translation>#tupitube #image #amusement</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="222"/>
         <source>Set a title for the post here!</source>
-        <translation>Defina um título para a postagem aqui!</translation>
+        <translation>Введіть тут заголовок публікації!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="226"/>
         <source>Title is missing!</source>
-        <translation>Falta título!</translation>
+        <translation>Відсутній заголовок!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="230"/>
         <source>Set some topic tags for the post here!</source>
-        <translation>Defina algumas tags de tópico para a postagem aqui!</translation>
+        <translation>Задайте тут кілька тематичних тегів для публікації!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="234"/>
         <source>Tags are missing!</source>
-        <translation>Faltam tags!</translation>
+        <translation>Відсутні теги!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="477"/>
         <source>Network Error 500. Please, contact us!</source>
-        <translation>Erro de rede 500. Entre em contato conosco!</translation>
+        <translation>Мережева помилка 500. Зв&apos;яжіться з нами!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="487"/>
         <source>Network Error 501. Please, contact us!</source>
-        <translation>Erro de rede 501. Entre em contato conosco!</translation>
+        <translation>Мережева помилка 501. Зв&apos;яжіться з нами!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="497"/>
         <source>Network Error 502. Please, contact us!</source>
-        <translation>Erro de rede 502. Entre em contato conosco!</translation>
+        <translation>Мережева помилка 502. Зв&apos;яжіться з нами!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="507"/>
         <source>Network Error 503. Please, contact us!</source>
-        <translation>Erro de rede 503. Entre em contato conosco!</translation>
+        <translation>Мережева помилка 503. Зв&apos;яжіться з нами!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="517"/>
         <source>Network Error 504. Please, contact us!</source>
-        <translation>Erro de rede 504. Entre em contato conosco!</translation>
+        <translation>Мережева помилка 504. Зв&apos;яжіться з нами!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="527"/>
         <source>Network Error 505. Please, contact us!</source>
-        <translation>Erro de rede 505. Entre em contato conosco!</translation>
+        <translation>Мережева помилка 505. Зв&apos;яжіться з нами!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="537"/>
         <source>Network Error 506. Please, contact us!</source>
-        <translation>Erro de rede 506. Entre em contato conosco!</translation>
+        <translation>Мережева помилка 506. Зв&apos;яжіться з нами!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="546"/>
         <source>Network Error 507. Please, contact us!</source>
-        <translation>Erro de rede 507. Entre em contato conosco!</translation>
+        <translation>Мережева помилка 507. Зв&apos;яжіться з нами!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="555"/>
         <source>Network Error 508. Please, contact us!</source>
-        <translation>Erro de rede 508. Entre em contato conosco!</translation>
+        <translation>Мережева помилка 508. Зв&apos;яжіться з нами!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="562"/>
         <source>Network Error 509. Please, contact us!</source>
-        <translation>Erro de rede 509. Entre em contato conosco!</translation>
+        <translation>Мережева помилка 509. Зв&apos;яжіться з нами!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="600"/>
         <source>Post action cancelled!</source>
-        <translation>Ação de publicação cancelada!</translation>
+        <translation>Опублікування скасовано!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="636"/>
         <source>Project was uploaded successfully!</source>
-        <translation>O projeto foi enviado com sucesso!</translation>
+        <translation>Проєкт вивантажено успішно!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="645"/>
         <source>Network Error 400. Please, contact us!</source>
-        <translation>Erro de rede 400. Entre em contato conosco!</translation>
+        <translation>Мережева помилка 400. Зв&apos;яжіться з нами!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="668"/>
         <source>Network Error 402. Please, contact us!</source>
-        <translation>Erro de rede 402. Entre em contato conosco!</translation>
+        <translation>Мережева помилка 402. Зв&apos;яжіться з нами!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="677"/>
         <source>Network Error 403. Please, contact us!</source>
-        <translation>Erro de rede 403. Entre em contato conosco!</translation>
+        <translation>Мережева помилка 403. Зв&apos;яжіться з нами!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="686"/>
         <source>Network Error 404. Please, contact us!</source>
-        <translation>Erro de rede 404. Entre em contato conosco!</translation>
+        <translation>Мережева помилка 404. Зв&apos;яжіться з нами!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="695"/>
         <source>Network Error 405. Please, contact us!</source>
-        <translation>Erro de rede 405. Entre em contato conosco!</translation>
+        <translation>Мережева помилка 405. Зв&apos;яжіться з нами!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="704"/>
         <source>Network Error 406. Please, contact us!</source>
-        <translation>Erro de rede 406. Entre em contato conosco!</translation>
+        <translation>Мережева помилка 406. Зв&apos;яжіться з нами!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="713"/>
         <source>Network Error 407. Please, contact us!</source>
-        <translation>Erro de rede 407. Entre em contato conosco!</translation>
+        <translation>Мережева помилка 407. Зв&apos;яжіться з нами!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="720"/>
         <source>Network Error 408. Please, contact us!</source>
-        <translation>Erro de rede 408. Entre em contato conosco!</translation>
+        <translation>Мережева помилка 408. Зв&apos;яжіться з нами!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="727"/>
         <source>Network Error 409. Please, contact us!</source>
-        <translation>Erro de rede 409. Entre em contato conosco!</translation>
+        <translation>Мережева помилка 409. Зв&apos;яжіться з нами!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="746"/>
         <source>Network Fatal Error. Please, contact us!</source>
-        <translation>Erro Fatal na Rede. Por favor, entre em contato conosco!</translation>
+        <translation>Критична мережева помилка. Зв&apos;яжіться з нами!</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="861"/>
         <source>Can&apos;t post project</source>
-        <translation>Não é possível postar o projeto</translation>
+        <translation>Не вдається опублікувати проект</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="864"/>
         <source>The duration of the project is TOO SHORT to generate an accurate MP4 file.
 Please, try to export the scene several times to extend the animation duration
 until reaches at least 3 seconds.</source>
-        <translation>A duração do projeto é MUITO CURTA para gerar um arquivo MP4 preciso. Por favor, tente exportar a cena várias vezes para prolongar a duração da animação até atingir pelo menos 3 segundos.</translation>
+        <translation>Тривалість проекту НАДТО КОРОТКА, щоб створити точний файл MP4. Будь ласка, спробуйте експортувати сцену кілька разів, щоб збільшити тривалість анімації принаймні до 3 секунд.</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="867"/>
         <source>Ok</source>
-        <translation>Ok</translation>
+        <translation>Гаразд</translation>
     </message>
     <message>
         <location filename="../../../components/export/tupvideoproperties.cpp" line="871"/>
         <source>Sorry, post attempt failed!</source>
-        <translation>Desculpe, a tentativa de postagem falhou!</translation>
+        <translation>Вибачте, спроба публікації не вдалася!</translation>
     </message>
 </context>
 <context>
@@ -8043,32 +8097,32 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../libcolor/tupviewcolorcells.cpp" line="93"/>
         <source>Default Palette</source>
-        <translation>Paleta Padrão</translation>
+        <translation>Типова палітра</translation>
     </message>
     <message>
         <location filename="../../../libcolor/tupviewcolorcells.cpp" line="100"/>
         <source>Named Colors</source>
-        <translation>Cores Etiquetadas</translation>
+        <translation>Іменовані кольори</translation>
     </message>
     <message>
         <location filename="../../../libcolor/tupviewcolorcells.cpp" line="107"/>
         <source>Custom Color Palette</source>
-        <translation>Paleta de Cor Personalizada</translation>
+        <translation>Власна колірна палітра</translation>
     </message>
     <message>
         <location filename="../../../libcolor/tupviewcolorcells.cpp" line="113"/>
         <source>Custom Gradient Palette</source>
-        <translation>Paleta de Gradiente Personalizada</translation>
+        <translation>Власна палітра градієнтів</translation>
     </message>
     <message>
         <location filename="../../../libcolor/tupviewcolorcells.cpp" line="362"/>
         <source>Add Color</source>
-        <translation>Adicionar Cor</translation>
+        <translation>Додати колір</translation>
     </message>
     <message>
         <location filename="../../../libcolor/tupviewcolorcells.cpp" line="369"/>
         <source>Remove Color</source>
-        <translation>Remover Cor</translation>
+        <translation>Вилучити колір</translation>
     </message>
 </context>
 <context>
@@ -8076,17 +8130,17 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../components/papagayo/tupwaveformview.cpp" line="74"/>
         <source>Drop audio file here</source>
-        <translation>Solte o arquivo de áudio aqui</translation>
+        <translation>Перетягніть звуковий файл сюди</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tupwaveformview.cpp" line="168"/>
         <source>Sound file has no voices!</source>
-        <translation>O arquivo de som não tem vozes!</translation>
+        <translation>У звуковому файлі відсутні голоси!</translation>
     </message>
     <message>
         <location filename="../../../components/papagayo/tupwaveformview.cpp" line="583"/>
         <source>Mouth images are unset!</source>
-        <translation>As imagens da boca não estão definidas!</translation>
+        <translation>Зображення губ не задано!</translation>
     </message>
 </context>
 <context>
@@ -8094,94 +8148,35 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../plugins/tools/common/tweenmanager.cpp" line="49"/>
         <source>Create a new Tween</source>
-        <translation>Criar um novo Tween</translation>
+        <translation>Створити нову анімацію</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/common/tweenmanager.cpp" line="125"/>
         <source>Tween name already exists!</source>
-        <translation>Nome do Tween já existe!</translation>
+        <translation>Анімація з такою назвою вже існує!</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/common/tweenmanager.cpp" line="178"/>
         <source>Edit</source>
-        <translation>Editar</translation>
+        <translation>Змінити</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/common/tweenmanager.cpp" line="180"/>
         <source>Remove</source>
-        <translation>Remover</translation>
+        <translation>Вилучити</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/common/tweenmanager.cpp" line="183"/>
         <source>Options</source>
-        <translation>Opções</translation>
+        <translation>Параметри</translation>
     </message>
 </context>
 <context>
     <name>Tweener</name>
     <message>
-        <location filename="../../../plugins/tools/motion/tweener.cpp" line="260"/>
-        <location filename="../../../plugins/tools/motion/tweener.cpp" line="970"/>
-        <location filename="../../../plugins/tools/motion/tweener.cpp" line="973"/>
-        <location filename="../../../plugins/tools/motion/tweener.cpp" line="974"/>
-        <location filename="../../../plugins/tools/motion/tweener.cpp" line="975"/>
-        <source>Motion</source>
-        <translation>Movimento</translation>
-    </message>
-    <message>
-        <location filename="../../../plugins/tools/motion/tweener.cpp" line="266"/>
-        <location filename="../../../plugins/tools/rotation/tweener.cpp" line="175"/>
-        <location filename="../../../plugins/tools/scale/tweener.cpp" line="167"/>
-        <location filename="../../../plugins/tools/shear/tweener.cpp" line="170"/>
-        <location filename="../../../plugins/tools/opacity/tweener.cpp" line="162"/>
-        <location filename="../../../plugins/tools/color/tweener.cpp" line="174"/>
-        <source>Warning</source>
-        <translation>Aviso</translation>
-    </message>
-    <message>
-        <location filename="../../../plugins/tools/motion/tweener.cpp" line="268"/>
-        <location filename="../../../plugins/tools/rotation/tweener.cpp" line="177"/>
-        <location filename="../../../plugins/tools/scale/tweener.cpp" line="169"/>
-        <location filename="../../../plugins/tools/shear/tweener.cpp" line="172"/>
-        <location filename="../../../plugins/tools/opacity/tweener.cpp" line="164"/>
-        <location filename="../../../plugins/tools/color/tweener.cpp" line="176"/>
-        <source>The selected items already have this kind of tween assigned.</source>
-        <translation>Os itens selecionados já possuem esse tipo de interpolação atribuído.</translation>
-    </message>
-    <message>
-        <location filename="../../../plugins/tools/motion/tweener.cpp" line="269"/>
-        <location filename="../../../plugins/tools/rotation/tweener.cpp" line="178"/>
-        <location filename="../../../plugins/tools/scale/tweener.cpp" line="170"/>
-        <location filename="../../../plugins/tools/shear/tweener.cpp" line="173"/>
-        <location filename="../../../plugins/tools/opacity/tweener.cpp" line="165"/>
-        <location filename="../../../plugins/tools/color/tweener.cpp" line="177"/>
-        <source>Please, edit the previous tween of these objects.</source>
-        <translation>Por favor, edite a interpolação anterior desses objetos.</translation>
-    </message>
-    <message>
-        <location filename="../../../plugins/tools/motion/tweener.cpp" line="270"/>
-        <location filename="../../../plugins/tools/rotation/tweener.cpp" line="179"/>
-        <location filename="../../../plugins/tools/scale/tweener.cpp" line="171"/>
-        <location filename="../../../plugins/tools/shear/tweener.cpp" line="174"/>
-        <location filename="../../../plugins/tools/opacity/tweener.cpp" line="166"/>
-        <location filename="../../../plugins/tools/color/tweener.cpp" line="178"/>
-        <source>Accept</source>
-        <translation>Aceitar</translation>
-    </message>
-    <message>
-        <location filename="../../../plugins/tools/motion/tweener.cpp" line="476"/>
-        <source>Motion Tween</source>
-        <translation>Interpolação de Movimento</translation>
-    </message>
-    <message>
-        <location filename="../../../plugins/tools/motion/tweener.cpp" line="477"/>
-        <source>Shift+W</source>
-        <translation>Shift+W</translation>
-    </message>
-    <message>
         <location filename="../../../plugins/tools/color/tweener.cpp" line="288"/>
         <source>Coloring Tween</source>
-        <translation>Tween de Cor</translation>
+        <translation>Анімація розмальовування</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/tweener.cpp" line="169"/>
@@ -8190,17 +8185,17 @@ until reaches at least 3 seconds.</source>
         <location filename="../../../plugins/tools/color/tweener.cpp" line="586"/>
         <location filename="../../../plugins/tools/color/tweener.cpp" line="587"/>
         <source>Coloring</source>
-        <translation>Cor</translation>
+        <translation>Розмальовування</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/tweener.cpp" line="194"/>
         <source>Coloring Tween can&apos;t be applied to raster images</source>
-        <translation>Tween de cor não pode ser aplicado a imagens raster</translation>
+        <translation>Анімація розмальовування не застосовна до растрових зображень</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/tweener.cpp" line="201"/>
         <source>Coloring Tween can&apos;t be applied to SVG files</source>
-        <translation>Tween de cor não pode ser aplicado a ficheiros SVG</translation>
+        <translation>Анімація розмальовування не застосовна до файлів SVG</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/color/tweener.cpp" line="289"/>
@@ -8215,7 +8210,7 @@ until reaches at least 3 seconds.</source>
         <location filename="../../../plugins/tools/opacity/tweener.cpp" line="377"/>
         <location filename="../../../plugins/tools/color/tweener.cpp" line="453"/>
         <source>Tween name is missing!</source>
-        <translation>Nome do Tween em falta!</translation>
+        <translation>Відсутня назва анімації!</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/motion/tweener.cpp" line="801"/>
@@ -8225,7 +8220,7 @@ until reaches at least 3 seconds.</source>
         <location filename="../../../plugins/tools/opacity/tweener.cpp" line="481"/>
         <location filename="../../../plugins/tools/color/tweener.cpp" line="555"/>
         <source>Frame</source>
-        <translation>Quadro</translation>
+        <translation>Кадр</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/motion/tweener.cpp" line="815"/>
@@ -8235,12 +8230,12 @@ until reaches at least 3 seconds.</source>
         <location filename="../../../plugins/tools/opacity/tweener.cpp" line="495"/>
         <location filename="../../../plugins/tools/color/tweener.cpp" line="569"/>
         <source>Tween %1 applied!</source>
-        <translation>Tween %1 aplicado!</translation>
+        <translation>Анімацію %1 застосовано!</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/opacity/tweener.cpp" line="240"/>
         <source>Opacity Tween</source>
-        <translation>Tween de Opacidade</translation>
+        <translation>Анімація щільності</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/opacity/tweener.cpp" line="156"/>
@@ -8249,7 +8244,7 @@ until reaches at least 3 seconds.</source>
         <location filename="../../../plugins/tools/opacity/tweener.cpp" line="514"/>
         <location filename="../../../plugins/tools/opacity/tweener.cpp" line="515"/>
         <source>Opacity</source>
-        <translation>Opacidade</translation>
+        <translation>Щільність</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/opacity/tweener.cpp" line="241"/>
@@ -8257,9 +8252,68 @@ until reaches at least 3 seconds.</source>
         <translation>Shift+O</translation>
     </message>
     <message>
+        <location filename="../../../plugins/tools/motion/tweener.cpp" line="260"/>
+        <location filename="../../../plugins/tools/motion/tweener.cpp" line="970"/>
+        <location filename="../../../plugins/tools/motion/tweener.cpp" line="973"/>
+        <location filename="../../../plugins/tools/motion/tweener.cpp" line="974"/>
+        <location filename="../../../plugins/tools/motion/tweener.cpp" line="975"/>
+        <source>Motion</source>
+        <translation>Переміщення</translation>
+    </message>
+    <message>
+        <location filename="../../../plugins/tools/motion/tweener.cpp" line="266"/>
+        <location filename="../../../plugins/tools/rotation/tweener.cpp" line="175"/>
+        <location filename="../../../plugins/tools/scale/tweener.cpp" line="167"/>
+        <location filename="../../../plugins/tools/shear/tweener.cpp" line="170"/>
+        <location filename="../../../plugins/tools/opacity/tweener.cpp" line="162"/>
+        <location filename="../../../plugins/tools/color/tweener.cpp" line="174"/>
+        <source>Warning</source>
+        <translation>Попередження</translation>
+    </message>
+    <message>
+        <location filename="../../../plugins/tools/motion/tweener.cpp" line="268"/>
+        <location filename="../../../plugins/tools/rotation/tweener.cpp" line="177"/>
+        <location filename="../../../plugins/tools/scale/tweener.cpp" line="169"/>
+        <location filename="../../../plugins/tools/shear/tweener.cpp" line="172"/>
+        <location filename="../../../plugins/tools/opacity/tweener.cpp" line="164"/>
+        <location filename="../../../plugins/tools/color/tweener.cpp" line="176"/>
+        <source>The selected items already have this kind of tween assigned.</source>
+        <translation>До вибраних елементів уже застосовано цей тип анімації.</translation>
+    </message>
+    <message>
+        <location filename="../../../plugins/tools/motion/tweener.cpp" line="269"/>
+        <location filename="../../../plugins/tools/rotation/tweener.cpp" line="178"/>
+        <location filename="../../../plugins/tools/scale/tweener.cpp" line="170"/>
+        <location filename="../../../plugins/tools/shear/tweener.cpp" line="173"/>
+        <location filename="../../../plugins/tools/opacity/tweener.cpp" line="165"/>
+        <location filename="../../../plugins/tools/color/tweener.cpp" line="177"/>
+        <source>Please, edit the previous tween of these objects.</source>
+        <translation>Змініть попередню анімацію цих об&apos;єктів.</translation>
+    </message>
+    <message>
+        <location filename="../../../plugins/tools/motion/tweener.cpp" line="270"/>
+        <location filename="../../../plugins/tools/rotation/tweener.cpp" line="179"/>
+        <location filename="../../../plugins/tools/scale/tweener.cpp" line="171"/>
+        <location filename="../../../plugins/tools/shear/tweener.cpp" line="174"/>
+        <location filename="../../../plugins/tools/opacity/tweener.cpp" line="166"/>
+        <location filename="../../../plugins/tools/color/tweener.cpp" line="178"/>
+        <source>Accept</source>
+        <translation>Прийняти</translation>
+    </message>
+    <message>
+        <location filename="../../../plugins/tools/motion/tweener.cpp" line="476"/>
+        <source>Motion Tween</source>
+        <translation>Анімація переміщення</translation>
+    </message>
+    <message>
+        <location filename="../../../plugins/tools/motion/tweener.cpp" line="477"/>
+        <source>Shift+W</source>
+        <translation>Shift+W</translation>
+    </message>
+    <message>
         <location filename="../../../plugins/tools/rotation/tweener.cpp" line="275"/>
         <source>Rotation Tween</source>
-        <translation>Tween de Rotação</translation>
+        <translation>Анімація обертання</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/tweener.cpp" line="169"/>
@@ -8268,7 +8322,7 @@ until reaches at least 3 seconds.</source>
         <location filename="../../../plugins/tools/rotation/tweener.cpp" line="613"/>
         <location filename="../../../plugins/tools/rotation/tweener.cpp" line="614"/>
         <source>Rotation</source>
-        <translation>Rotação</translation>
+        <translation>Обертання</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/rotation/tweener.cpp" line="276"/>
@@ -8278,7 +8332,7 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../plugins/tools/scale/tweener.cpp" line="275"/>
         <source>Scale Tween</source>
-        <translation>Tween de Escala</translation>
+        <translation>Анімація масштабування</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/tweener.cpp" line="161"/>
@@ -8287,7 +8341,7 @@ until reaches at least 3 seconds.</source>
         <location filename="../../../plugins/tools/scale/tweener.cpp" line="560"/>
         <location filename="../../../plugins/tools/scale/tweener.cpp" line="561"/>
         <source>Scale</source>
-        <translation>Escala</translation>
+        <translation>Масштаб</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/scale/tweener.cpp" line="276"/>
@@ -8297,7 +8351,7 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../plugins/tools/shear/tweener.cpp" line="268"/>
         <source>Shear Tween</source>
-        <translation>Tween de Distorção</translation>
+        <translation>Анімація зсуву</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/tweener.cpp" line="164"/>
@@ -8306,7 +8360,7 @@ until reaches at least 3 seconds.</source>
         <location filename="../../../plugins/tools/shear/tweener.cpp" line="564"/>
         <location filename="../../../plugins/tools/shear/tweener.cpp" line="565"/>
         <source>Shear</source>
-        <translation>Distorcer</translation>
+        <translation>Зсув</translation>
     </message>
     <message>
         <location filename="../../../plugins/tools/shear/tweener.cpp" line="269"/>

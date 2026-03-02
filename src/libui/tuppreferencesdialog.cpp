@@ -34,8 +34,11 @@
 
 #include "tuppreferencesdialog.h"
 #include "tapplicationproperties.h"
+#include "talgorithm.h"
 #include "tosd.h"
 #include "tapptheme.h"
+
+#include <QMessageBox>
 
 TupPreferencesDialog::TupPreferencesDialog(QWidget *parent) : TConfigurationDialog(parent)
 {
@@ -65,10 +68,32 @@ void TupPreferencesDialog::apply()
     if (general->saveValues()) {
         theme->saveValues();
         workspace->saveValues();
-        if (general->showWarning() || theme->showWarning())
-            TOsd::self()->display(TOsd::Warning, tr("Please restart TupiTube"));
-        else
+        if (general->showWarning() || theme->showWarning()) {
+            QMessageBox msgBox;
+
+            // Use the currently selected theme parameters for styling
+            QString themeName = "default";
+            if (theme->getAppTheme() == DARK_THEME)
+                themeName = "dark";
+            QString uiStyleSheet = TAppTheme::themeStyles(themeName, theme->getCurrentColor());
+            msgBox.setStyleSheet(uiStyleSheet);
+
+            msgBox.setWindowTitle(tr("Preferences Saved"));
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.setText(tr("Please restart TupiTube to apply the changes."));
+            msgBox.addButton(QString(tr("OK")), QMessageBox::AcceptRole);
+            msgBox.show();
+
+            QPair<int, int> dimension = TAlgorithm::screenDimension();
+            int screenWidth = dimension.first;
+            int screenHeight = dimension.second;
+            msgBox.move(static_cast<int>((screenWidth - msgBox.width()) / 2),
+                        static_cast<int>((screenHeight - msgBox.height()) / 2));
+
+            msgBox.exec();
+        } else {
             TOsd::self()->display(TOsd::Info, tr("Preferences saved successfully"));
+        }
         accept();
     }
 }

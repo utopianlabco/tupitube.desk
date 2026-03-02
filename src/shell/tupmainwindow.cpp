@@ -746,6 +746,32 @@ void TupMainWindow::resetUI()
 
 void TupMainWindow::setupNetworkProject()
 {
+    // Check if all connection credentials are already stored
+    TCONFIG->beginGroup("Network");
+    QString server = TCONFIG->value("Server", "").toString();
+    int port = TCONFIG->value("Port", 5000).toInt();
+    QString login = TCONFIG->value("Login", "").toString();
+    QString password = TCONFIG->value("Password", "").toString();
+    bool storePassword = TCONFIG->value("StorePassword", false).toBool();
+
+    // If all credentials are available and password is stored, connect directly
+    if (!server.isEmpty() && !login.isEmpty() && !password.isEmpty() && storePassword) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupMainWindow::setupNetworkProject()] - Using stored credentials for server:" << server;
+        #endif
+
+        TupNetProjectManagerParams *params = new TupNetProjectManagerParams();
+        params->setServer(server);
+        params->setPort(port);
+        netUser = login;
+        params->setLogin(netUser);
+        params->setPassword(password);
+
+        setupNetworkProject(params);
+        return;
+    }
+
+    // Otherwise, show the dialog to get/confirm credentials
     TupConnectDialog *netDialog = new TupConnectDialog(this);
     netDialog->show();
 
@@ -770,6 +796,7 @@ void TupMainWindow::setupNetworkProject(TupProjectManagerParams *params)
     if (closeProject()) {
         netProjectManager =  new TupNetProjectManagerHandler;
         connect(netProjectManager, SIGNAL(authenticationSuccessful()), this, SLOT(requestProject()));
+        connect(netProjectManager, SIGNAL(authenticationFailed()), this, SLOT(handleAuthenticationFailed()));
         connect(netProjectManager, SIGNAL(openNewArea(const QString &, const QStringList &)), 
                 this, SLOT(createNewNetProject(const QString &, const QStringList &)));
         connect(netProjectManager, SIGNAL(updateUsersList(const QString &, int)),
@@ -1774,6 +1801,32 @@ void TupMainWindow::unexpectedClose()
                  static_cast<int> ((screenHeight - msgBox.height()) / 2));
 
     msgBox.exec();
+}
+
+void TupMainWindow::handleAuthenticationFailed()
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupMainWindow::handleAuthenticationFailed()] - Authentication failed, showing dialog...";
+    #endif
+
+    // Show the connection dialog so user can correct credentials
+    TupConnectDialog *netDialog = new TupConnectDialog(this);
+    netDialog->show();
+
+    netDialog->move(static_cast<int> ((screenWidth - netDialog->width()) / 2),
+                    static_cast<int> ((screenHeight - netDialog->height()) / 2));
+
+    TupNetProjectManagerParams *params = new TupNetProjectManagerParams();
+
+    if (netDialog->exec() == QDialog::Accepted) {
+        params->setServer(netDialog->server());
+        params->setPort(netDialog->port());
+        netUser = netDialog->login();
+        params->setLogin(netUser);
+        params->setPassword(netDialog->password());
+
+        setupNetworkProject(params);
+    }
 }
 
 void TupMainWindow::netProjectSaved()

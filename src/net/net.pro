@@ -42,7 +42,7 @@ HEADERS += tupnetprojectmanagerparams.h \
            tupprojectparser.h \
            tuplistprojectspackage.h \
            tupprojectlistparser.h \
-           tuplistprojectdialog.h \
+           tupprojectlistdialog.h \
            tupnotificationparser.h \
            tupackparser.h \
            tupimportprojectpackage.h \
@@ -70,7 +70,7 @@ SOURCES += tupnetprojectmanagerparams.cpp \
            tupprojectparser.cpp \
            tuplistprojectspackage.cpp \
            tupprojectlistparser.cpp \
-           tuplistprojectdialog.cpp \
+           tupprojectlistdialog.cpp \
            tupnotificationparser.cpp \
            tupackparser.cpp \
            tupimportprojectpackage.cpp \

@@ -215,6 +215,7 @@ class TupMainWindow : public TabbedMainWindow
         void checkExposureVisibility(bool visible);
         void updateBucketTool(TColorCell::FillType type);
         void openTupiTubeNetwork();
+        void handleAuthenticationFailed();
         void updateColorPanelStatus(bool flag);
         void updatePenPanelStatus(bool flag);
         void updateLibraryPanelStatus(bool flag);

@@ -32,8 +32,8 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#ifndef TUPLISTPROJECTDIALOG_H
-#define TUPLISTPROJECTDIALOG_H
+#ifndef TUPPROJECTLISTDIALOG_H
+#define TUPPROJECTLISTDIALOG_H
 
 #include "tglobal.h"
 #include "tapplicationproperties.h"
@@ -49,14 +49,15 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QTreeWidgetItem>
+#include <QIcon>
 
-class TUPITUBE_EXPORT TupListProjectDialog : public QDialog
+class TUPITUBE_EXPORT TupProjectListDialog : public QDialog
 {
     Q_OBJECT
 
     public:
-        TupListProjectDialog(int works, int contributions, const QString &serverName);
-        ~TupListProjectDialog();
+        TupProjectListDialog(int works, int contributions, const QString &serverName);
+        ~TupProjectListDialog();
 
         void addWork(const QString &filename, const QString &name, const QString &desc, const QString &date);
         void addContribution(const QString &project, const QString &name, const QString &author, const QString &desc,

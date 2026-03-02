@@ -914,6 +914,10 @@
         <source>Animation created using TupiTube.com</source>
         <translation>使用muvizu.cn創建的動畫</translation>
     </message>
+    <message>
+        <source>Wall from</source>
+        <translation>來自</translation>
+    </message>
 </context>
 <context>
     <name>RasterBrushesWidget</name>
@@ -1563,17 +1567,6 @@
     </message>
 </context>
 <context>
-    <name>SpinControl</name>
-    <message>
-        <source>Angle</source>
-        <translation>角度</translation>
-    </message>
-    <message>
-        <source>Radius</source>
-        <translation>半徑</translation>
-    </message>
-</context>
-<context>
     <name>StepsViewer</name>
     <message>
         <source>Frames</source>
@@ -1636,17 +1629,6 @@
     <message>
         <source>Top button bar</source>
         <translation>頂部按鈕列</translation>
-    </message>
-</context>
-<context>
-    <name>TCommandHistory</name>
-    <message>
-        <source>Redo</source>
-        <translation>重作</translation>
-    </message>
-    <message>
-        <source>Undo</source>
-        <translation>復原</translation>
     </message>
 </context>
 <context>
@@ -1729,17 +1711,6 @@
     </message>
 </context>
 <context>
-    <name>TMsgDialog</name>
-    <message>
-        <source>Close</source>
-        <translation>關閉</translation>
-    </message>
-    <message>
-        <source>Breaking News!</source>
-        <translation>最新新聞！</translation>
-    </message>
-</context>
-<context>
     <name>TOptionalDialog</name>
     <message>
         <source>Accept</source>
@@ -1779,47 +1750,6 @@
     <message>
         <source>Fatal</source>
         <translation>嚴重錯誤</translation>
-    </message>
-</context>
-<context>
-    <name>TRulerBase</name>
-    <message>
-        <source>Change scale to 10...</source>
-        <translation>改變比例尺為 10...</translation>
-    </message>
-    <message>
-        <source>Change scale to 5...</source>
-        <translation>改變比例尺為 5...</translation>
-    </message>
-</context>
-<context>
-    <name>TSizeBox</name>
-    <message>
-        <source>Width:</source>
-        <translation>寬度:</translation>
-    </message>
-    <message>
-        <source>Height:</source>
-        <translation>高度:</translation>
-    </message>
-</context>
-<context>
-    <name>TWizard</name>
-    <message>
-        <source>Cancel</source>
-        <translation>取消</translation>
-    </message>
-    <message>
-        <source>Next &gt;</source>
-        <translation>下一個 &gt;</translation>
-    </message>
-    <message>
-        <source>&amp;Finish</source>
-        <translation>結束(&amp;F)</translation>
-    </message>
-    <message>
-        <source>&lt; &amp;Back</source>
-        <translation>&lt; 返回(&amp;B)</translation>
     </message>
 </context>
 <context>
@@ -1920,28 +1850,6 @@
     <message>
         <source>Sorry, text can&apos;t be empty!</source>
         <translation>抱歉，文字不能為空！</translation>
-    </message>
-</context>
-<context>
-    <name>TipDatabase</name>
-    <message>
-        <source>Did you already watch this video?</source>
-        <translation>你已看過此視訊了嗎？</translation>
-    </message>
-</context>
-<context>
-    <name>TipDialog</name>
-    <message>
-        <source>Tips</source>
-        <translation>提示</translation>
-    </message>
-    <message>
-        <source>Animations</source>
-        <translation>動畫</translation>
-    </message>
-    <message>
-        <source>Show this dialog on start</source>
-        <translation>在開始時顯示此對話框</translation>
     </message>
 </context>
 <context>
@@ -2443,6 +2351,21 @@
     </message>
 </context>
 <context>
+    <name>TupChat</name>
+    <message>
+        <source>Send</source>
+        <translation>發送</translation>
+    </message>
+    <message>
+        <source>Error:</source>
+        <translation>錯誤：</translation>
+    </message>
+    <message>
+        <source>Invalid Message. It won&apos;t be sent. Please, don&apos;t use HTML tags</source>
+        <translation>無效訊息。它將不會被傳送。請不要使用HTML標籤</translation>
+    </message>
+</context>
+<context>
     <name>TupColorButtonPanel</name>
     <message>
         <source>Red</source>
@@ -2507,10 +2430,6 @@
         <translation>色彩混合器</translation>
     </message>
     <message>
-        <source>Gradients</source>
-        <translation>漸層色</translation>
-    </message>
-    <message>
         <source>Contour</source>
         <translation>輪廓</translation>
     </message>
@@ -2544,6 +2463,45 @@
     <message>
         <source>Properties</source>
         <translation>屬性</translation>
+    </message>
+</context>
+<context>
+    <name>TupConnectDialog</name>
+    <message>
+        <source>Connection Parameters</source>
+        <translation>連線參數</translation>
+    </message>
+    <message>
+        <source>Store password</source>
+        <translation>儲存密碼</translation>
+    </message>
+    <message>
+        <source>Username:</source>
+        <translation>使用者名稱：</translation>
+    </message>
+    <message>
+        <source>Password:</source>
+        <translation>密碼：</translation>
+    </message>
+    <message>
+        <source>Credentials</source>
+        <translation>憑證</translation>
+    </message>
+    <message>
+        <source>Server:</source>
+        <translation>伺服器：</translation>
+    </message>
+    <message>
+        <source>Port:</source>
+        <translation>連接埠：</translation>
+    </message>
+    <message>
+        <source>Collaboration Server</source>
+        <translation>協作伺服器</translation>
+    </message>
+    <message>
+        <source>Please, fill in your password</source>
+        <translation>請輸入您的密碼</translation>
     </message>
 </context>
 <context>
@@ -3258,33 +3216,6 @@ until reaches at least 3 seconds.</source>
     </message>
 </context>
 <context>
-    <name>TupGradientCreator</name>
-    <message>
-        <source>Pad</source>
-        <translation>填充</translation>
-    </message>
-    <message>
-        <source>Linear</source>
-        <translation>線性</translation>
-    </message>
-    <message>
-        <source>Radial</source>
-        <translation>徑向</translation>
-    </message>
-    <message>
-        <source>Repeat</source>
-        <translation>重複</translation>
-    </message>
-    <message>
-        <source>Reflect</source>
-        <translation>反射</translation>
-    </message>
-    <message>
-        <source>Conical</source>
-        <translation>錐形的</translation>
-    </message>
-</context>
-<context>
     <name>TupImageDialog</name>
     <message>
         <source>Title</source>
@@ -3721,6 +3652,41 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Voice 1</source>
         <translation>語音 1</translation>
+    </message>
+</context>
+<context>
+    <name>TupListProjectDialog</name>
+    <message>
+        <source>Projects List from Server</source>
+        <translation>伺服器專案列表</translation>
+    </message>
+    <message>
+        <source>My works:</source>
+        <translation>我的作品：</translation>
+    </message>
+    <message>
+        <source>My contributions:</source>
+        <translation>我的貢獻：</translation>
+    </message>
+    <message>
+        <source>OK</source>
+        <translation>確定</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation>名字</translation>
+    </message>
+    <message>
+        <source>Description</source>
+        <translation>描述</translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation>日期</translation>
+    </message>
+    <message>
+        <source>Author</source>
+        <translation>作者</translation>
     </message>
 </context>
 <context>
@@ -4213,6 +4179,30 @@ until reaches at least 3 seconds.</source>
         <source>Help Us Improve TupiTube!</source>
         <translation>幫助我們改進 TupiTube！</translation>
     </message>
+    <message>
+        <source>[ by %1 | net mode ]</source>
+        <translation>[ 作者：%1 | 網路模式 ]</translation>
+    </message>
+    <message>
+        <source>Upload project package</source>
+        <translation>上傳專案套件</translation>
+    </message>
+    <message>
+        <source>Can&apos;t import project. File is empty!</source>
+        <translation>無法匯入專案。檔案為空！</translation>
+    </message>
+    <message>
+        <source>Can&apos;t save the project. File doesn&apos;t exist!</source>
+        <translation>無法儲存專案。檔案不存在！</translation>
+    </message>
+    <message>
+        <source>Open Collaborative Project...</source>
+        <translation>開啟協作專案...</translation>
+    </message>
+    <message>
+        <source>Upload Project To Server...</source>
+        <translation>上傳專案到伺服器...</translation>
+    </message>
 </context>
 <context>
     <name>TupMicManager</name>
@@ -4372,6 +4362,39 @@ until reaches at least 3 seconds.</source>
     </message>
 </context>
 <context>
+    <name>TupNetProjectManagerHandler</name>
+    <message>
+        <source>Communications</source>
+        <translation>通訊</translation>
+    </message>
+    <message>
+        <source>Chat</source>
+        <translation>聊天</translation>
+    </message>
+    <message>
+        <source>Notices</source>
+        <translation>通知</translation>
+    </message>
+    <message>
+        <source>Unable to connect to server</source>
+        <translation>無法連線到伺服器</translation>
+    </message>
+    <message>
+        <source>Fatal Error</source>
+        <translation>嚴重錯誤</translation>
+    </message>
+    <message>
+        <source>User &quot;%1&quot; is disabled.
+Please, contact the animation server admin to get access.</source>
+        <translation>使用者「%1」已被停用。
+請聯繫動畫伺服器管理員以取得存取權限。</translation>
+    </message>
+    <message>
+        <source>User has no available projects in the server</source>
+        <translation>使用者在伺服器上沒有可用的專案</translation>
+    </message>
+</context>
+<context>
     <name>TupNewItemDialog</name>
     <message>
         <source>&amp;Open it with:</source>
@@ -4429,10 +4452,6 @@ until reaches at least 3 seconds.</source>
         <translation>480 (PAL DV/DVD) - 25</translation>
     </message>
     <message>
-        <source>Port</source>
-        <translation>端口</translation>
-    </message>
-    <message>
         <source>White</source>
         <translation>白色</translation>
     </message>
@@ -4465,10 +4484,6 @@ until reaches at least 3 seconds.</source>
         <translation>自由格式</translation>
     </message>
     <message>
-        <source>Server</source>
-        <translation>伺服器</translation>
-    </message>
-    <message>
         <source>Options</source>
         <translation>選項</translation>
     </message>
@@ -4497,24 +4512,12 @@ until reaches at least 3 seconds.</source>
         <translation>520x380 - 24</translation>
     </message>
     <message>
-        <source>Password</source>
-        <translation>密碼</translation>
-    </message>
-    <message>
         <source>640x480 - 24</source>
         <translation>640x480 - 24</translation>
     </message>
     <message>
-        <source>TupiTube project</source>
-        <translation>繪幻想項目</translation>
-    </message>
-    <message>
         <source>Description</source>
         <translation>描述</translation>
-    </message>
-    <message>
-        <source>Username</source>
-        <translation>用戶名</translation>
     </message>
     <message>
         <source>576 (PAL DV/DVD) - 25</source>
@@ -4568,6 +4571,34 @@ until reaches at least 3 seconds.</source>
         <source>Y:</source>
         <translation>Y:</translation>
     </message>
+    <message>
+        <source>Collaborative Project</source>
+        <translation>協作專案</translation>
+    </message>
+    <message>
+        <source>Network</source>
+        <translation>網路</translation>
+    </message>
+    <message>
+        <source>This feature allows you to work with other artists around the world on the same project in real time.</source>
+        <translation>此功能可讓您與世界各地的其他藝術家即時共同創作同一專案。</translation>
+    </message>
+    <message>
+        <source>Server:</source>
+        <translation>伺服器：</translation>
+    </message>
+    <message>
+        <source>Port:</source>
+        <translation>連接埠：</translation>
+    </message>
+    <message>
+        <source>Username:</source>
+        <translation>使用者名稱：</translation>
+    </message>
+    <message>
+        <source>Password:</source>
+        <translation>密碼：</translation>
+    </message>
 </context>
 <context>
     <name>TupNewsCollector</name>
@@ -4605,6 +4636,13 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Close</source>
         <translation>關閉</translation>
+    </message>
+</context>
+<context>
+    <name>TupNotice</name>
+    <message>
+        <source>Notices</source>
+        <translation>通知</translation>
     </message>
 </context>
 <context>

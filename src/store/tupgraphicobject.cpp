@@ -240,6 +240,11 @@ void TupGraphicObject::storeItemTransformation(const QString &properties)
         qDebug() << "[TupGraphicObject::storeItemTransformation()] - properties -> " << properties;
     #endif
 
+    // Apply the transformation to the graphical item (needed for network sync)
+    QDomDocument doc;
+    doc.setContent(properties);
+    TupSerializer::loadProperties(graphicItem, doc.documentElement());
+
     transformDoList << properties;
 }
 

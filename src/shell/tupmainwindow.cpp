@@ -77,11 +77,13 @@
 #include <QClipboard>
 #include <QDesktopServices>
 #include <QFileOpenEvent>
+#include <QTabBar>
 
 TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
                              TabbedMainWindow(winKey, AnimationView), m_projectManager(nullptr),
                              animationTab(nullptr), playerTab(nullptr),
-                             netProjectManager(nullptr), m_viewChat(nullptr),
+                             netProjectManager(nullptr), m_viewChat(nullptr), m_chatTabWidget(nullptr),
+                             m_chatTabHighlighted(false), m_noticesTabHighlighted(false),
                              m_exposureSheet(nullptr), isSaveDialogOpen(false)
 {
     #ifdef TUP_DEBUG
@@ -308,8 +310,11 @@ void TupMainWindow::createNewNetProject(const QString &title, const QStringList 
         delete m_viewChat;
     }
 
-    m_viewChat = addToolView(netProjectManager->communicationWidget(), Qt::BottomDockWidgetArea, AnimationView, "Chat");
+    m_chatTabWidget = netProjectManager->communicationWidget();
+    m_viewChat = addToolView(m_chatTabWidget, Qt::BottomDockWidgetArea, AnimationView, "Chat");
     m_viewChat->setVisible(false);
+    connect(m_viewChat, SIGNAL(visibilityChanged(bool)), this, SLOT(handleChatVisibilityChanged(bool)));
+    connect(m_chatTabWidget, SIGNAL(currentChanged(int)), this, SLOT(handleChatTabChanged(int)));
 
     enableToolViews(true);
     setMenuItemsContext(true);
@@ -804,6 +809,7 @@ void TupMainWindow::setupNetworkProject(TupProjectManagerParams *params)
         connect(netProjectManager, SIGNAL(connectionHasBeenLost()), this, SLOT(unexpectedClose()));
         connect(netProjectManager, SIGNAL(savingSuccessful()), this, SLOT(netProjectSaved()));
         connect(netProjectManager, SIGNAL(postOperationDone()), this, SLOT(resetMousePointer()));
+        connect(netProjectManager, SIGNAL(newMessageReceived(int)), this, SLOT(notifyChatMessage(int)));
 
         m_projectManager->setHandler(netProjectManager, true);
         m_projectManager->setParams(params);
@@ -1833,6 +1839,102 @@ void TupMainWindow::netProjectSaved()
 {
     m_projectManager->setModificationStatus(false);
     QApplication::restoreOverrideCursor();
+}
+
+void TupMainWindow::notifyChatMessage(int messageType)
+{
+    if (m_viewChat && !m_viewChat->isVisible()) {
+        m_viewChat->startBlinking();
+    }
+    
+    // If it's a chat message (0) and panel is visible but Chat tab is not selected
+    if (messageType == 0 && m_viewChat && m_viewChat->isVisible()) {
+        if (m_chatTabWidget && m_chatTabWidget->currentIndex() != 0) {
+            // Highlight the Chat tab with blue background
+            m_chatTabWidget->tabBar()->setStyleSheet("QTabBar::tab:first { background-color: #308cc6; color: white; }");
+            m_chatTabHighlighted = true;
+        }
+    }
+    
+    // If it's a notice message (1) and panel is visible but Notices tab is not selected
+    if (messageType == 1 && m_viewChat && m_viewChat->isVisible()) {
+        if (m_chatTabWidget && m_chatTabWidget->currentIndex() != 1) {
+            // Highlight the Notices tab with blue background
+            m_chatTabWidget->tabBar()->setStyleSheet("QTabBar::tab:last { background-color: #308cc6; color: white; }");
+            m_noticesTabHighlighted = true;
+        }
+    }
+    
+    // If panel is not visible, mark for highlighting when opened
+    if (m_viewChat && !m_viewChat->isVisible()) {
+        if (messageType == 0)
+            m_chatTabHighlighted = true;
+        else if (messageType == 1)
+            m_noticesTabHighlighted = true;
+    }
+}
+
+void TupMainWindow::handleChatVisibilityChanged(bool visible)
+{
+    if (visible && m_viewChat && m_viewChat->isBlinking()) {
+        m_viewChat->stopBlinking();
+    }
+    
+    // When panel becomes visible, highlight tabs if there are unread messages
+    if (visible && m_chatTabWidget) {
+        int currentIndex = m_chatTabWidget->currentIndex();
+        
+        // Handle Chat tab highlighting
+        if (m_chatTabHighlighted) {
+            if (currentIndex != 0) {
+                m_chatTabWidget->tabBar()->setStyleSheet("QTabBar::tab:first { background-color: #308cc6; color: white; }");
+            } else {
+                m_chatTabHighlighted = false;
+            }
+        }
+        
+        // Handle Notices tab highlighting
+        if (m_noticesTabHighlighted) {
+            if (currentIndex != 1) {
+                m_chatTabWidget->tabBar()->setStyleSheet("QTabBar::tab:last { background-color: #308cc6; color: white; }");
+            } else {
+                m_noticesTabHighlighted = false;
+            }
+        }
+        
+        // Handle both tabs highlighted
+        if (m_chatTabHighlighted && m_noticesTabHighlighted) {
+            m_chatTabWidget->tabBar()->setStyleSheet(
+                "QTabBar::tab:first { background-color: #308cc6; color: white; }"
+                "QTabBar::tab:last { background-color: #308cc6; color: white; }");
+        }
+    }
+}
+
+void TupMainWindow::handleChatTabChanged(int index)
+{
+    if (!m_chatTabWidget)
+        return;
+        
+    // When user clicks on Chat tab (index 0), clear its highlighting
+    if (index == 0 && m_chatTabHighlighted) {
+        m_chatTabHighlighted = false;
+        if (m_noticesTabHighlighted) {
+            m_chatTabWidget->tabBar()->setStyleSheet("QTabBar::tab:last { background-color: #308cc6; color: white; }");
+        } else {
+            m_chatTabWidget->tabBar()->setStyleSheet("");
+        }
+    }
+    
+    // When user clicks on Notices tab (index 1), clear its highlighting
+    if (index == 1 && m_noticesTabHighlighted) {
+        m_noticesTabHighlighted = false;
+        if (m_chatTabHighlighted) {
+            m_chatTabWidget->tabBar()->setStyleSheet("QTabBar::tab:first { background-color: #308cc6; color: white; }");
+        } else {
+            m_chatTabWidget->tabBar()->setStyleSheet("");
+        }
+    }
 }
 
 void TupMainWindow::updatePlayer(bool removeAction)

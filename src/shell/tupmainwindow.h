@@ -186,6 +186,9 @@ class TupMainWindow : public TabbedMainWindow
         void requestProject();
         void createNewNetProject(const QString &title, const QStringList &users);
         void netProjectSaved();
+        void notifyChatMessage(int messageType);
+        void handleChatVisibilityChanged(bool visible);
+        void handleChatTabChanged(int index);
         void updatePlayer();
         void updatePlayer(bool removeAction);
 
@@ -258,6 +261,9 @@ class TupMainWindow : public TabbedMainWindow
         TupNetProjectManagerHandler *netProjectManager;
         bool isNetworked;
         ToolView *m_viewChat;
+        QTabWidget *m_chatTabWidget;
+        bool m_chatTabHighlighted;
+        bool m_noticesTabHighlighted;
 
     // Components
     private:

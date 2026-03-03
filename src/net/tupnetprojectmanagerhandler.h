@@ -114,6 +114,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void postOperationDone();
         void connectionHasBeenLost();
         void authenticationFailed();
+        void newMessageReceived(int messageType);
 
     public slots:
         void sendExportImageRequest(int frameIndex, int sceneIndex, const QString &title, const QString &topics, const QString &description);

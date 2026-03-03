@@ -40,6 +40,7 @@
 #include <QToolButton>
 #include <QToolBar>
 #include <QMouseEvent>
+#include <QTimer>
 
 class ToolView;
 
@@ -55,15 +56,25 @@ class T_GUI_EXPORT TViewButton : public QToolButton
         Qt::ToolBarArea area() const;
         ToolView *toolView() const;
 
+        void startBlinking();
+        void stopBlinking();
+        bool isBlinking() const;
+
     protected:
         virtual void mousePressEvent(QMouseEvent *);
 		
     public slots:
         void toggleView();
 
+    private slots:
+        void toggleBlinkState();
+
     private:
         Qt::ToolBarArea m_area;
         ToolView *m_toolView;
+        QTimer *m_blinkTimer;
+        bool m_blinkState;
+        QString m_originalStyleSheet;
 };
 
 #endif

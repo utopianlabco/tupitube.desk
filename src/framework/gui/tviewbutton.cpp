@@ -39,6 +39,10 @@ TViewButton::TViewButton(ToolView *toolView, QWidget *parent): QToolButton(paren
 {
     setText(m_toolView->windowTitle());
     setIcon(m_toolView->windowIcon());
+
+    m_blinkTimer = new QTimer(this);
+    m_blinkState = false;
+    connect(m_blinkTimer, &QTimer::timeout, this, &TViewButton::toggleBlinkState);
 }
 
 TViewButton::~TViewButton()
@@ -76,4 +80,36 @@ void TViewButton::toggleView()
 ToolView *TViewButton::toolView() const
 {
     return m_toolView;
+}
+
+void TViewButton::startBlinking()
+{
+    if (!m_blinkTimer->isActive()) {
+        m_originalStyleSheet = styleSheet();
+        m_blinkTimer->start(500); // Blink every 500ms
+    }
+}
+
+void TViewButton::stopBlinking()
+{
+    if (m_blinkTimer->isActive()) {
+        m_blinkTimer->stop();
+        m_blinkState = false;
+        setStyleSheet(m_originalStyleSheet);
+    }
+}
+
+bool TViewButton::isBlinking() const
+{
+    return m_blinkTimer->isActive();
+}
+
+void TViewButton::toggleBlinkState()
+{
+    m_blinkState = !m_blinkState;
+    if (m_blinkState) {
+        setStyleSheet("background-color: #308cc6; color: white;"); // Blue highlight
+    } else {
+        setStyleSheet(m_originalStyleSheet);
+    }
 }

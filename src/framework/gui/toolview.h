@@ -62,6 +62,10 @@ class T_GUI_EXPORT ToolView: public QDockWidget
         void setPerspective(UIView wsp);
         UIView perspective() const;
 
+        void startBlinking();
+        void stopBlinking();
+        bool isBlinking() const;
+
     public slots:
         void expandDock();
 

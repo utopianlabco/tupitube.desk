@@ -128,3 +128,18 @@ void ToolView::enableButton(bool flag)
 {
     currentButton->setEnabled(flag);
 }
+
+void ToolView::startBlinking()
+{
+    currentButton->startBlinking();
+}
+
+void ToolView::stopBlinking()
+{
+    currentButton->stopBlinking();
+}
+
+bool ToolView::isBlinking() const
+{
+    return currentButton->isBlinking();
+}

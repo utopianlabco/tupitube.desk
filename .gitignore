@@ -100,3 +100,4 @@ src/themes/default/Makefile
 src/themes/default/cursors/Makefile
 src/themes/default/icons/Makefile
 src/themes/default/images/Makefile
+src/shell/data/translations/*.qm

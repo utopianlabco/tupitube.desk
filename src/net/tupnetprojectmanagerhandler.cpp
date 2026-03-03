@@ -413,6 +413,7 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                TupCommunicationParser parser(package);
                if (parser.parse()) {
                    chat->addMessage(parser.login(), parser.message());
+                   emit newMessageReceived(0); // 0 = chat message
                }
     } else if (root == "communication_notice") {
                TupCommunicationParser parser(package);
@@ -428,6 +429,7 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
 
                    TOsd::self()->display(TOsd::Info, message);
                    notices->addMessage(message);
+                   emit newMessageReceived(1); // 1 = notice message
                } 
     } else if (root == "communication_wall") {
                TupCommunicationParser parser(package);
@@ -435,6 +437,7 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                    QString message = QObject::tr("Message from") + " <b>" + parser.login() + "</b>:<br>" + parser.message();
                    TOsd::self()->display(TOsd::Info, message);
                    notices->addMessage(message);
+                   emit newMessageReceived(1); // 1 = notice message
                }
     } else if (root == "storyboard_update") {
                // SQA: storyboard package must be parsed and the related scene must be updated  

@@ -432,8 +432,9 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
     } else if (root == "communication_wall") {
                TupCommunicationParser parser(package);
                if (parser.parse()) {
-                   QString message = QObject::tr("Wall from") + ": "+ parser.login() + "\n" + parser.message();
+                   QString message = QObject::tr("Message from") + " <b>" + parser.login() + "</b>:<br>" + parser.message();
                    TOsd::self()->display(TOsd::Info, message);
+                   notices->addMessage(message);
                }
     } else if (root == "storyboard_update") {
                // SQA: storyboard package must be parsed and the related scene must be updated  

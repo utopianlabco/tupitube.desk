@@ -139,9 +139,9 @@ int TupConnectDialog::port() const
 void TupConnectDialog::loadSettings()
 {
     TCONFIG->beginGroup("Network");
-    serverLine->setText(TCONFIG->value("Server", "tupitu.be").toString());
-    portBox->setValue(TCONFIG->value("Port", 5000).toInt());
-    loginLine->setText(TCONFIG->value("Login", QString::fromLocal8Bit(::getenv("USER"))).toString());
+    serverLine->setText(TCONFIG->value("Server", "").toString());
+    portBox->setValue(TCONFIG->value("Port", 8080).toInt());
+    loginLine->setText(TCONFIG->value("Login", "").toString());
     passwdLine->setText(TCONFIG->value("Password", "").toString());
     
     storePasswdBox->setChecked(TCONFIG->value("StorePassword").toInt());

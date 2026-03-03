@@ -749,7 +749,7 @@ void TupMainWindow::setupNetworkProject()
     // Check if all connection credentials are already stored
     TCONFIG->beginGroup("Network");
     QString server = TCONFIG->value("Server", "").toString();
-    int port = TCONFIG->value("Port", 5000).toInt();
+    int port = TCONFIG->value("Port", 8080).toInt();
     QString login = TCONFIG->value("Login", "").toString();
     QString password = TCONFIG->value("Password", "").toString();
     bool storePassword = TCONFIG->value("StorePassword", false).toBool();

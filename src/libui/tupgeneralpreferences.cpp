@@ -45,6 +45,7 @@
 #include <QFileDialog>
 #include <QNetworkAccessManager>
 #include <QDesktopServices>
+#include <QFormLayout>
 
 TupGeneralPreferences::TupGeneralPreferences()
 {
@@ -53,6 +54,7 @@ TupGeneralPreferences::TupGeneralPreferences()
     tabWidget = new QTabWidget;
     tabWidget->addTab(generalTab(), tr("General"));
     tabWidget->addTab(cacheTab(), tr("Cache"));
+    tabWidget->addTab(classroomTab(), tr("Classroom"));
     tabWidget->addTab(socialTab(), tr("Social Network"));
 
     layout->addWidget(tabWidget, Qt::AlignLeft);
@@ -322,6 +324,60 @@ QWidget * TupGeneralPreferences::socialTab()
     return widget;
 }
 
+QWidget * TupGeneralPreferences::classroomTab()
+{
+    QWidget *widget = new QWidget;
+    QVBoxLayout *layout = new QVBoxLayout(widget);
+
+    TCONFIG->beginGroup("Network");
+    QString server = TCONFIG->value("Server", "").toString();
+    int port = TCONFIG->value("Port", 8080).toInt();
+    QString login = TCONFIG->value("Login", "").toString();
+    QString password = TCONFIG->value("Password", "").toString();
+    bool storePassword = TCONFIG->value("StorePassword", false).toBool();
+
+    QLabel *classroomLabel = new QLabel(tr("Collaborative Credentials"));
+    QFont font = this->font();
+    font.setBold(true);
+    font.setPointSize(font.pointSize() + 3);
+    classroomLabel->setFont(font);
+
+    QLabel *serverLabel = new QLabel(tr("Server Address:"));
+    serverEdit = new QLineEdit;
+    serverEdit->setText(server);
+
+    QLabel *portLabel = new QLabel(tr("Port:"));
+    portSpin = new QSpinBox;
+    portSpin->setRange(1, 65535);
+    portSpin->setValue(port);
+
+    QLabel *usernameLabel = new QLabel(tr("Username:"));
+    classUsernameEdit = new QLineEdit;
+    classUsernameEdit->setText(login);
+
+    QLabel *passwordLabel = new QLabel(tr("Password:"));
+    classPasswordEdit = new QLineEdit;
+    classPasswordEdit->setEchoMode(QLineEdit::Password);
+    classPasswordEdit->setText(password);
+
+    storePasswordCheck = new QCheckBox(tr("Remember password"));
+    storePasswordCheck->setChecked(storePassword);
+
+    QFormLayout *form = new QFormLayout;
+    form->addRow(serverLabel, serverEdit);
+    form->addRow(portLabel, portSpin);
+    form->addRow(usernameLabel, classUsernameEdit);
+    form->addRow(passwordLabel, classPasswordEdit);
+
+    layout->addWidget(classroomLabel);
+    layout->addSpacing(15);
+    layout->addLayout(form);
+    layout->addWidget(storePasswordCheck);
+    layout->addStretch();
+
+    return widget;
+}
+
 void TupGeneralPreferences::formatEmail()
 {
     QString input = emailEdit->text();
@@ -545,6 +601,19 @@ bool TupGeneralPreferences::saveValues()
     total = player.count();
     for (int i=0; i<total; i++)
          TCONFIG->setValue(player.at(i), playerList.at(i)->isChecked());
+
+    // Classroom Credentials
+    TCONFIG->beginGroup("Network");
+    TCONFIG->setValue("Server", serverEdit->text());
+    TCONFIG->setValue("Port", portSpin->value());
+    TCONFIG->setValue("Login", classUsernameEdit->text());
+    if (storePasswordCheck->isChecked()) {
+        TCONFIG->setValue("Password", classPasswordEdit->text());
+        TCONFIG->setValue("StorePassword", true);
+    } else {
+        TCONFIG->setValue("Password", "");
+        TCONFIG->setValue("StorePassword", false);
+    }
 
     TCONFIG->sync();
 

@@ -42,6 +42,7 @@
 #include <QComboBox>
 #include <QCheckBox>
 #include <QPushButton>
+#include <QSpinBox>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
@@ -79,6 +80,7 @@ class TUPITUBE_EXPORT TupGeneralPreferences : public QWidget
         QWidget * generalTab();
         QWidget * cacheTab();
         QWidget * socialTab();
+        QWidget * classroomTab();
 
         QTabWidget *tabWidget;
         QString cacheID;
@@ -113,6 +115,13 @@ class TUPITUBE_EXPORT TupGeneralPreferences : public QWidget
         QPushButton *registerButton;
 
         QNetworkAccessManager *manager;
+
+        // Classroom settings
+        QLineEdit *serverEdit;
+        QSpinBox *portSpin;
+        QLineEdit *classUsernameEdit;
+        QLineEdit *classPasswordEdit;
+        QCheckBox *storePasswordCheck;
 };
 
 #endif

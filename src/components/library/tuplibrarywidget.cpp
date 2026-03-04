@@ -2739,6 +2739,7 @@ void TupLibraryWidget::importAsset(const QString &name, TupSearchDialog::AssetTy
     TupProjectRequest request = TupRequestBuilder::createLibraryRequest(TupProjectRequest::Add, key,
                                                    type, currentMode, data, QString(),
                                                    currentFrame.scene, currentFrame.layer, currentFrame.frame);
+    localImportPendingInsert = true;
     emit requestTriggered(&request);
     data.clear();
 }

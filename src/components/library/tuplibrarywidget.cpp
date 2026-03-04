@@ -1959,7 +1959,7 @@ void TupLibraryWidget::libraryResponse(TupLibraryResponse *response)
                          previewItem(item);
 
                          if (nativeFromFileSystem) {
-                             if (!isNetworked && !folderName.endsWith(".pgo") && !library->isLoadingAssets()
+                             if (!folderName.endsWith(".pgo") && !library->isLoadingAssets()
                                  && !isExternalLibraryAsset)
                                  insertObjectInWorkspace();
                              nativeFromFileSystem = false;
@@ -1977,7 +1977,7 @@ void TupLibraryWidget::libraryResponse(TupLibraryResponse *response)
                          libraryTree->setCurrentItem(item);
                          previewItem(item);
 
-                         if (!isNetworked && !folderName.endsWith(".pgo") && !library->isLoadingAssets()
+                         if (!folderName.endsWith(".pgo") && !library->isLoadingAssets()
                              && folderName.compare(tr("Raster Objects")) != 0 && !isExternalLibraryAsset)
                              insertObjectInWorkspace();
                        }
@@ -1987,7 +1987,7 @@ void TupLibraryWidget::libraryResponse(TupLibraryResponse *response)
                          item->setIcon(0, QIcon(THEME_DIR + "icons/svg.png"));
                          libraryTree->setCurrentItem(item);
                          previewItem(item);
-                         if (!isNetworked && !library->isLoadingAssets() && !isExternalLibraryAsset)
+                         if (!library->isLoadingAssets() && !isExternalLibraryAsset)
                              insertObjectInWorkspace();
                        }
                      break;

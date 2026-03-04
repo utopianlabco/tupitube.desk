@@ -795,7 +795,10 @@ void TupMainWindow::setupNetworkProject()
         params->setLogin(netUser);
         params->setPassword(netDialog->password());
 
+        delete netDialog;
         setupNetworkProject(params);
+    } else {
+        delete netDialog;
     }
 }
 
@@ -1834,7 +1837,10 @@ void TupMainWindow::handleAuthenticationFailed()
         params->setLogin(netUser);
         params->setPassword(netDialog->password());
 
+        delete netDialog;
         setupNetworkProject(params);
+    } else {
+        delete netDialog;
     }
 }
 

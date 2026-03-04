@@ -143,14 +143,13 @@ void TupConnectDialog::loadSettings()
     portBox->setValue(TCONFIG->value("Port", 8080).toInt());
     loginLine->setText(TCONFIG->value("Login", "").toString());
     passwdLine->setText(TCONFIG->value("Password", "").toString());
-    
     storePasswdBox->setChecked(TCONFIG->value("StorePassword").toInt());
+    TCONFIG->endGroup();
 }
 
 void TupConnectDialog::saveSettings()
 {
     TCONFIG->beginGroup("Network");
-    
     TCONFIG->setValue("Server", serverLine->text());
     TCONFIG->setValue("Port", portBox->value());
     TCONFIG->setValue("Login", loginLine->text());
@@ -161,6 +160,7 @@ void TupConnectDialog::saveSettings()
         TCONFIG->setValue("Password", "");
     
     TCONFIG->setValue("StorePassword", storePasswdBox->isChecked() ? 1 : 0);
+    TCONFIG->endGroup();
     TCONFIG->sync();
 }
 

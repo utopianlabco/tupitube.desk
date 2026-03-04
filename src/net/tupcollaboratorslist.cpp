@@ -33,7 +33,7 @@ TupCollaboratorsList::TupCollaboratorsList(QWidget *parent) : QWidget(parent)
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(5, 5, 5, 5);
     
-    QLabel *titleLabel = new QLabel(tr("Collaborators"));
+    QLabel *titleLabel = new QLabel(tr("Team"));
     titleLabel->setStyleSheet("font-weight: bold; padding: 5px;");
     layout->addWidget(titleLabel);
     

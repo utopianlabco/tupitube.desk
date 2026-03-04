@@ -51,8 +51,6 @@ TupNetProjectManagerHandler::TupNetProjectManagerHandler(QObject *parent) : TupA
     dialogIsOpen = false;
     
     communicationModule = new QTabWidget;
-    communicationModule->setWindowTitle(tr("Communications"));
-    communicationModule->setWindowIcon(QPixmap(THEME_DIR + "icons/chat.png"));
 
     chat = new TupChat;
     communicationModule->addTab(chat, tr("Chat"));
@@ -61,6 +59,18 @@ TupNetProjectManagerHandler::TupNetProjectManagerHandler(QObject *parent) : TupA
     
     notices = new TupNotice;
     communicationModule->addTab(notices, tr("Notices"));
+    
+    // Create collaborators list
+    collaboratorsList = new TupCollaboratorsList;
+    
+    // Create container with splitter
+    communicationContainer = new QSplitter(Qt::Horizontal);
+    communicationContainer->setWindowTitle(tr("Communications"));
+    communicationContainer->setWindowIcon(QPixmap(THEME_DIR + "icons/chat.png"));
+    communicationContainer->addWidget(collaboratorsList);
+    communicationContainer->addWidget(communicationModule);
+    communicationContainer->setStretchFactor(0, 0); // Collaborators list doesn't stretch
+    communicationContainer->setStretchFactor(1, 1); // Tab widget stretches
     
     // connect(notices, SIGNAL(requestSendMessage(const QString&)), this, SLOT(sendNoticeMessage(const QString&)));
 }
@@ -462,6 +472,22 @@ void TupNetProjectManagerHandler::sendPackage(const QDomDocument &doc)
 QTabWidget *TupNetProjectManagerHandler::communicationWidget()
 {
     return communicationModule;
+}
+
+QWidget *TupNetProjectManagerHandler::communicationPanel()
+{
+    return communicationContainer;
+}
+
+void TupNetProjectManagerHandler::updateCollaboratorStatus(const QString &login, int state)
+{
+    collaboratorsList->updateUserStatus(login, state);
+}
+
+void TupNetProjectManagerHandler::setCollaborators(const QStringList &users)
+{
+    collaboratorsList->setCurrentUser(username);
+    collaboratorsList->setInitialUsers(users);
 }
 
 void TupNetProjectManagerHandler::setProject(TupProject *work)

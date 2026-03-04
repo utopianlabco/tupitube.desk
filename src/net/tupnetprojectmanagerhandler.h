@@ -67,6 +67,7 @@
 #include "tupprojectlistdialog.h"
 #include "tupchat.h"
 #include "tupnotice.h"
+#include "tupcollaboratorslist.h"
 
 #include <QDomDocument>
 #include <QTabWidget>
@@ -74,6 +75,7 @@
 #include <QTabWidget>
 #include <QDesktopWidget>
 #include <QMessageBox>
+#include <QSplitter>
 
 class TupNetSocket;
 
@@ -105,6 +107,9 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void sendPackage(const QDomDocument &doc);
 
         QTabWidget *communicationWidget();
+        QWidget *communicationPanel();
+        void updateCollaboratorStatus(const QString &login, int state);
+        void setCollaborators(const QStringList &users);
         void closeConnection();
 
     signals:
@@ -144,6 +149,8 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         QTabWidget *communicationModule;
         TupChat *chat;
         TupNotice *notices;
+        TupCollaboratorsList *collaboratorsList;
+        QSplitter *communicationContainer;
 
         bool projectIsOpen;
         bool dialogIsOpen;

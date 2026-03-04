@@ -48,6 +48,7 @@ HEADERS += tupnetprojectmanagerparams.h \
            tupimportprojectpackage.h \
            tupchatpackage.h \
            tupnotice.h \
+           tupcollaboratorslist.h \
            # tupnoticepackage.h \
            tupcommunicationparser.h \
            tupimageexportpackage.h \
@@ -76,6 +77,7 @@ SOURCES += tupnetprojectmanagerparams.cpp \
            tupimportprojectpackage.cpp \
            tupchatpackage.cpp \
            tupnotice.cpp \
+           tupcollaboratorslist.cpp \
            # tupnoticepackage.cpp \
            tupcommunicationparser.cpp \
            tupimageexportpackage.cpp \

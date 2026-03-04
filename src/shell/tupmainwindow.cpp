@@ -311,10 +311,13 @@ void TupMainWindow::createNewNetProject(const QString &title, const QStringList 
     }
 
     m_chatTabWidget = netProjectManager->communicationWidget();
-    m_viewChat = addToolView(m_chatTabWidget, Qt::BottomDockWidgetArea, AnimationView, "Chat");
+    m_viewChat = addToolView(netProjectManager->communicationPanel(), Qt::BottomDockWidgetArea, AnimationView, "Chat");
     m_viewChat->setVisible(false);
     connect(m_viewChat, SIGNAL(visibilityChanged(bool)), this, SLOT(handleChatVisibilityChanged(bool)));
     connect(m_chatTabWidget, SIGNAL(currentChanged(int)), this, SLOT(handleChatTabChanged(int)));
+    
+    // Initialize collaborators list with the initial users
+    netProjectManager->setCollaborators(users);
 
     enableToolViews(true);
     setMenuItemsContext(true);
@@ -1967,6 +1970,10 @@ void TupMainWindow::resetMousePointer()
 void TupMainWindow::updateUsersOnLine(const QString &login, int state)
 {
     animationTab->updateUsersOnLine(login, state);
+    
+    // Update collaborators list in the chat panel
+    if (netProjectManager)
+        netProjectManager->updateCollaboratorStatus(login, state);
 }
 
 void TupMainWindow::resizePlayerCameraDimension(const QSize dimension)

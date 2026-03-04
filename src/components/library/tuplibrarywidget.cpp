@@ -61,6 +61,7 @@ TupLibraryWidget::TupLibraryWidget(QWidget *parent) : TupModuleWidgetBase(parent
     videoSoundPath = "";
     currentMode = TupProject::FRAMES_MODE;
     nativeFromFileSystem = false;
+    localImportPendingInsert = false;
     isExternalLibraryAsset = false;
     removeTempVideo = false;
     removeTempVideo = "";
@@ -1132,6 +1133,7 @@ void TupLibraryWidget::importImageFromByteArray(const QString &imageName, const 
         TupProjectRequest request = TupRequestBuilder::createLibraryRequest(TupProjectRequest::Add, key,
                                                                             TupLibraryObject::Image, project->spaceContext(), data, folder,
                                                                             currentFrame.scene, currentFrame.layer, currentFrame.frame);
+        localImportPendingInsert = true;
         emit requestTriggered(&request);
     }
 }
@@ -1201,6 +1203,7 @@ void TupLibraryWidget::importSvgFromByteArray(const QString &filename, QByteArra
     TupProjectRequest request = TupRequestBuilder::createLibraryRequest(TupProjectRequest::Add, filename,
                                                    TupLibraryObject::Svg, project->spaceContext(), data, folder,
                                                    currentFrame.scene, currentFrame.layer, currentFrame.frame);
+    localImportPendingInsert = true;
     emit requestTriggered(&request);
 }
 
@@ -1258,6 +1261,7 @@ void TupLibraryWidget::importNativeObjectFromByteArray(const QString &filename, 
     TupProjectRequest request = TupRequestBuilder::createLibraryRequest(TupProjectRequest::Add, filename,
                                                    TupLibraryObject::Item, project->spaceContext(), data, folder,
                                                    currentFrame.scene, currentFrame.layer, currentFrame.frame);
+    localImportPendingInsert = true;
     emit requestTriggered(&request);
 }
 
@@ -1960,8 +1964,12 @@ void TupLibraryWidget::libraryResponse(TupLibraryResponse *response)
 
                          if (nativeFromFileSystem) {
                              if (!folderName.endsWith(".pgo") && !library->isLoadingAssets()
-                                 && !isExternalLibraryAsset)
-                                 insertObjectInWorkspace();
+                                 && !isExternalLibraryAsset) {
+                                 if (localImportPendingInsert || !isNetworked) {
+                                     insertObjectInWorkspace();
+                                     localImportPendingInsert = false;
+                                 }
+                             }
                              nativeFromFileSystem = false;
                          } else {
                              if ((currentMode == TupProject::VECTOR_STATIC_BG_MODE
@@ -1978,8 +1986,12 @@ void TupLibraryWidget::libraryResponse(TupLibraryResponse *response)
                          previewItem(item);
 
                          if (!folderName.endsWith(".pgo") && !library->isLoadingAssets()
-                             && folderName.compare(tr("Raster Objects")) != 0 && !isExternalLibraryAsset)
-                             insertObjectInWorkspace();
+                             && folderName.compare(tr("Raster Objects")) != 0 && !isExternalLibraryAsset) {
+                             if (localImportPendingInsert || !isNetworked) {
+                                 insertObjectInWorkspace();
+                                 localImportPendingInsert = false;
+                             }
+                         }
                        }
                      break;
                      case TupLibraryObject::Svg:
@@ -1987,8 +1999,12 @@ void TupLibraryWidget::libraryResponse(TupLibraryResponse *response)
                          item->setIcon(0, QIcon(THEME_DIR + "icons/svg.png"));
                          libraryTree->setCurrentItem(item);
                          previewItem(item);
-                         if (!library->isLoadingAssets() && !isExternalLibraryAsset)
-                             insertObjectInWorkspace();
+                         if (!library->isLoadingAssets() && !isExternalLibraryAsset) {
+                             if (localImportPendingInsert || !isNetworked) {
+                                 insertObjectInWorkspace();
+                                 localImportPendingInsert = false;
+                             }
+                         }
                        }
                      break;
                      case TupLibraryObject::Audio:

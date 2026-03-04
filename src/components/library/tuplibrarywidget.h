@@ -219,6 +219,7 @@ class TUPITUBE_EXPORT TupLibraryWidget : public TupModuleWidgetBase
         bool renaming;
         bool mkdir;
         bool isNetworked;
+        bool localImportPendingInsert;
         bool nativeFromFileSystem;
         bool isExternalLibraryAsset;
 

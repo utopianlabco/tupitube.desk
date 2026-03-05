@@ -203,8 +203,11 @@ void TupScenesWidget::sceneResponse(TupSceneResponse *e)
                int previousIndex = scenesTable->currentSceneIndex();
                scenesTable->insertScene(index, e->getArg().toString());
                // Restore previous selection if external request
-               if (e->external() && previousIndex >= 0)
-                   scenesTable->selectScene(previousIndex);
+               if (e->external() && previousIndex >= 0) {
+                   // Account for index shift: if previous scene was at or after insertion point, it shifted by +1
+                   int restoredIndex = (previousIndex >= index) ? previousIndex + 1 : previousIndex;
+                   scenesTable->selectScene(restoredIndex);
+               }
              }
             break;
             case TupProjectRequest::Remove:

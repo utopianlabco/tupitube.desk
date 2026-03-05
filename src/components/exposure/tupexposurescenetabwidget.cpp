@@ -137,8 +137,11 @@ void TupExposureSceneTabWidget::addScene(int index, const QString &sceneName,
 
     scenesTabber->blockSignals(true);
     scenesTabber->insertTab(index, tableContainer, sceneName);
-    if (preserveSelection && previousIndex >= 0)
-        scenesTabber->setCurrentIndex(previousIndex);
+    if (preserveSelection && previousIndex >= 0) {
+        // Account for index shift: if previous tab was at or after insertion point, it shifted by +1
+        int restoredIndex = (previousIndex >= index) ? previousIndex + 1 : previousIndex;
+        scenesTabber->setCurrentIndex(restoredIndex);
+    }
     scenesTabber->blockSignals(false);
 }
 

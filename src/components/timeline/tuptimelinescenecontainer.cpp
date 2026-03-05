@@ -60,8 +60,11 @@ void TupTimelineSceneContainer::addScene(int sceneIndex, TupTimeLineTable *frame
 
     blockSignals(true);
     QTabWidget::insertTab(sceneIndex, framesTable, sceneName);
-    if (preserveSelection && previousIndex >= 0)
-        setCurrentIndex(previousIndex);
+    if (preserveSelection && previousIndex >= 0) {
+        // Account for index shift: if previous tab was at or after insertion point, it shifted by +1
+        int restoredIndex = (previousIndex >= sceneIndex) ? previousIndex + 1 : previousIndex;
+        setCurrentIndex(restoredIndex);
+    }
     blockSignals(false);
 }
 

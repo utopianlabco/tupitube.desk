@@ -522,6 +522,10 @@ void TupPaintArea::sceneResponse(TupSceneResponse *event)
         switch(event->getAction()) {
             case TupProjectRequest::Select:
               {
+                  // Skip view change if this request came from another user
+                  if (event->external())
+                      return;
+
                   if (sceneIndex >= 0) {
                       if (project->scenesCount() == 1)
                           setCurrentScene(0);

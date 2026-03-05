@@ -219,6 +219,10 @@ void TupScenesWidget::sceneResponse(TupSceneResponse *e)
             break;
             case TupProjectRequest::Select:
              {
+               // Skip view change if this request came from another user
+               if (e->external())
+                   return;
+
                if (scenesTable->currentSceneIndex() != index)
                    scenesTable->selectScene(index);
              }

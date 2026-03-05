@@ -789,6 +789,10 @@ void TupExposureSheet::sceneResponse(TupSceneResponse *response)
         break;
         case TupProjectRequest::Select:
             {
+                // Skip view change if this request came from another user
+                if (response->external())
+                    return;
+
                 setCurrentScene(sceneIndex);
                 if (currentExposureTable && scenesContainer) {
                     scenesContainer->blockSignals(true);

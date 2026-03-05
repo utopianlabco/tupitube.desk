@@ -303,6 +303,10 @@ void TupTimeLine::sceneResponse(TupSceneResponse *response)
         break;
         case TupProjectRequest::Select:
         {
+            // Skip view change if this request came from another user
+            if (response->external())
+                return;
+
             scenesContainer->setCurrentIndex(sceneIndex);
             updateLayerOpacity(sceneIndex, 0);
 

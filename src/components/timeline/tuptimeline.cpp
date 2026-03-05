@@ -463,6 +463,24 @@ void TupTimeLine::frameResponse(TupFrameResponse *response)
             break;
             case TupProjectRequest::Remove:
               {
+                  // Handle external request - another user removed a frame
+                  if (response->external()) {
+                      int currentLayerIndex = framesTable->currentLayer();
+                      int currentFrameIndex = framesTable->currentFrame();
+
+                      // Remove the frame from UI
+                      framesTable->removeFrame(layerIndex, frameIndex);
+
+                      // Check if local user's selection needs adjustment - only if same layer
+                      if (layerIndex == currentLayerIndex) {
+                          int lastFrame = framesTable->lastFrameByLayer(layerIndex);
+                          // If current frame index is now invalid (> lastFrame), adjust
+                          if (currentFrameIndex > lastFrame && lastFrame >= 0)
+                              framesTable->selectFrame(layerIndex, lastFrame);
+                      }
+                      return;
+                  }
+
                   if (response->getMode() == TupProjectResponse::Redo || response->getMode() == TupProjectResponse::Undo) {
                       int lastFrame = framesTable->framesCountAtCurrentLayer() - 1;
                       int target = frameIndex;
@@ -514,6 +532,10 @@ void TupTimeLine::frameResponse(TupFrameResponse *response)
             break;
             case TupProjectRequest::Select:
               {
+                  // Skip selection change if this request came from another user
+                  if (response->external())
+                      return;
+
                   if (selectedLayer != layerIndex)
                       updateLayerOpacity(sceneIndex, layerIndex);
 

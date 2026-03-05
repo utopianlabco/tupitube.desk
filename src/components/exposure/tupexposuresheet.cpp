@@ -999,6 +999,47 @@ void TupExposureSheet::frameResponse(TupFrameResponse *response)
                 case TupProjectRequest::Remove:
                   {
                      if (response->getMode() == TupProjectResponse::Do) {
+                         // Handle external request - another user removed a frame
+                         if (response->external()) {
+                             int currentLayerIndex = table->currentLayer();
+                             int currentFrameIndex = table->currentFrame();
+                             int lastFrame = table->framesCountAtCurrentLayer() - 1;
+                             int target = frameIndex;
+
+                             if (target == lastFrame) { // Removing last frame from layer
+                                 table->removeFrame(layerIndex, target);
+                                 if (target <= 0)
+                                     table->clearSelection();
+                             } else {
+                                 // When the item deleted is not the last one
+                                 TupScene *scene = project->sceneAt(sceneIndex);
+                                 if (scene) {
+                                     TupLayer *layer = scene->layerAt(layerIndex);
+                                     if (layer) {
+                                         for (int index=target+1; index <= lastFrame; index++) {
+                                              TupFrame *frame = layer->frameAt(index-1);
+                                              TupExposureTable::FrameType type = TupExposureTable::Empty;
+                                              if (!frame->isEmpty())
+                                                  type = TupExposureTable::Used;
+                                              table->updateFrameState(layerIndex, index - 1, type);
+                                              QString label = currentExposureTable->frameName(layerIndex, index);
+                                              renameFrame(layerIndex, index - 1, label);
+                                         }
+                                         table->removeFrame(layerIndex, lastFrame);
+                                     }
+                                 }
+                             }
+
+                             // Check if local user's selection needs adjustment - only if same layer
+                             if (layerIndex == currentLayerIndex) {
+                                 int newLastFrame = table->framesCountAtLayer(layerIndex) - 1;
+                                 // If current frame index is now invalid (> newLastFrame), adjust
+                                 if (currentFrameIndex > newLastFrame && newLastFrame >= 0)
+                                     table->selectFrame(layerIndex, newLastFrame);
+                             }
+                             return;
+                         }
+
                          if (localRequest) {
                              localRequest = false;
                              table->removeFrame(layerIndex, frameIndex);
@@ -1136,6 +1177,10 @@ void TupExposureSheet::frameResponse(TupFrameResponse *response)
                 break;
                 case TupProjectRequest::Select:
                   {
+                      // Skip selection change if this request came from another user
+                      if (response->external())
+                          return;
+
                       table->blockSignals(true);
                       table->selectFrame(layerIndex, frameIndex, response->getArg().toString());
                       table->blockSignals(false);

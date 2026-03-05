@@ -323,17 +323,55 @@ void TupPaintArea::frameResponse(TupFrameResponse *response)
                       guiScene->drawCurrentPhotogram();
               }
             break;
-            case TupProjectRequest::Add:
             case TupProjectRequest::Select:
+              {
+                  // Skip view change if this request came from another user
+                  if (response->external())
+                      return;
+
+                  if (guiScene->currentFrameIndex() != response->getFrameIndex())
+                      emit frameChanged(response->getFrameIndex());
+                  guiScene->setCurrentFrame(response->getLayerIndex(), response->getFrameIndex());
+
+                  if (spaceMode == TupProject::FRAMES_MODE) {
+                      guiScene->drawPhotogram(response->getFrameIndex(), true);
+                  } else if (spaceMode == TupProject::VECTOR_FG_MODE) {
+                      guiScene->setVectorFgEnvironment();
+                  } else {
+                      guiScene->clearWorkSpace();
+                      guiScene->drawSceneBackground(guiScene->currentFrameIndex());
+                  }
+
+                  if (guiScene->currentTool()->toolType() == TupToolInterface::Selection)
+                      guiScene->resetCurrentTool();
+              }
+            break;
+            case TupProjectRequest::Add:
+              {
+                  // Skip view change if this request came from another user
+                  if (response->external())
+                      return;
+
+                  emit frameChanged(response->getFrameIndex());
+                  guiScene->setCurrentFrame(response->getLayerIndex(), response->getFrameIndex());
+
+                  if (spaceMode == TupProject::FRAMES_MODE) {
+                      guiScene->drawPhotogram(response->getFrameIndex(), true);
+                  } else if (spaceMode == TupProject::VECTOR_FG_MODE) {
+                      guiScene->setVectorFgEnvironment();
+                  } else {
+                      guiScene->clearWorkSpace();
+                      guiScene->drawSceneBackground(guiScene->currentFrameIndex());
+                  }
+
+                  if (guiScene->currentTool()->toolType() == TupToolInterface::Selection)
+                      guiScene->resetCurrentTool();
+              }
+            break;
             case TupProjectRequest::Paste:
             case TupProjectRequest::Reset:
               {
-                  if (response->getAction() == TupProjectRequest::Select) {
-                      if (guiScene->currentFrameIndex() != response->getFrameIndex())
-                          emit frameChanged(response->getFrameIndex());
-                  } else {
-                      emit frameChanged(response->getFrameIndex());
-                  }
+                  emit frameChanged(response->getFrameIndex());
                   guiScene->setCurrentFrame(response->getLayerIndex(), response->getFrameIndex());
 
                   if (spaceMode == TupProject::FRAMES_MODE) {

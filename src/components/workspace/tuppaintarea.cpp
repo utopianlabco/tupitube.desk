@@ -348,24 +348,8 @@ void TupPaintArea::frameResponse(TupFrameResponse *response)
             break;
             case TupProjectRequest::Add:
               {
-                  // Skip view change if this request came from another user
-                  if (response->external())
-                      return;
-
-                  emit frameChanged(response->getFrameIndex());
-                  guiScene->setCurrentFrame(response->getLayerIndex(), response->getFrameIndex());
-
-                  if (spaceMode == TupProject::FRAMES_MODE) {
-                      guiScene->drawPhotogram(response->getFrameIndex(), true);
-                  } else if (spaceMode == TupProject::VECTOR_FG_MODE) {
-                      guiScene->setVectorFgEnvironment();
-                  } else {
-                      guiScene->clearWorkSpace();
-                      guiScene->drawSceneBackground(guiScene->currentFrameIndex());
-                  }
-
-                  if (guiScene->currentTool()->toolType() == TupToolInterface::Selection)
-                      guiScene->resetCurrentTool();
+                  // Frame Add does not change selection - selection is handled by Select request
+                  // This prevents view change when adding frames as part of layer creation
               }
             break;
             case TupProjectRequest::Paste:

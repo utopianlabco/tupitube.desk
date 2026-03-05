@@ -34,7 +34,7 @@
 
 #include "tupprojectresponse.h"
 
-TupProjectResponse::TupProjectResponse(int p, int a) : part(p), action(a)
+TupProjectResponse::TupProjectResponse(int p, int a) : part(p), action(a), isExternal(false)
 {
 }
 

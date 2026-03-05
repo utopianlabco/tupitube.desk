@@ -81,7 +81,7 @@ QString TupProjectRequestArgument::toString()
     return m_value;
 }
 
-TupProjectRequest::TupProjectRequest(const QString &data) : xml(data)
+TupProjectRequest::TupProjectRequest(const QString &data) : xml(data), isExternal(false)
 {
 }
 

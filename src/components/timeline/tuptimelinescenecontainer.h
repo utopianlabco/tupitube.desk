@@ -50,7 +50,7 @@ class T_GUI_EXPORT TupTimelineSceneContainer : public QTabWidget
         TupTimelineSceneContainer(QWidget *parent = nullptr);
         ~TupTimelineSceneContainer();
 
-        void addScene(int sceneIndex, TupTimeLineTable *framesTable, const QString &title);
+        void addScene(int sceneIndex, TupTimeLineTable *framesTable, const QString &title, bool preserveSelection = false);
         void restoreScene(int sceneIndex, const QString &title);
         void moveScene(int pos, int newPos);
         void removeScene(int sceneIndex, bool withBackup);

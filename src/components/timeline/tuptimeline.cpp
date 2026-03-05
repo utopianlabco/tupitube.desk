@@ -138,7 +138,7 @@ TupTimeLineTable *TupTimeLine::framesTable(int sceneIndex)
     return nullptr;
 }
 
-void TupTimeLine::addScene(int sceneIndex, const QString &name)
+void TupTimeLine::addScene(int sceneIndex, const QString &name, bool preserveSelection)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupTimeLine::addScene()] - sceneIndex ->" << sceneIndex << " - name ->" << name;
@@ -166,7 +166,7 @@ void TupTimeLine::addScene(int sceneIndex, const QString &name)
     connect(framesTable, SIGNAL(layerMoved(int, int)), this, SLOT(requestLayerMove(int, int)));
     connect(framesTable, SIGNAL(newPerspective(UIView)), this, SIGNAL(newPerspective(UIView)));
 
-    scenesContainer->addScene(sceneIndex, framesTable, name);
+    scenesContainer->addScene(sceneIndex, framesTable, name, preserveSelection);
 }
 
 void TupTimeLine::removeScene(int sceneIndex)
@@ -196,21 +196,8 @@ void TupTimeLine::sceneResponse(TupSceneResponse *response)
         case TupProjectRequest::Add:
         {
             if (response->getMode() == TupProjectResponse::Do) {
-                // Save current tab index before adding if external request
-                int previousIndex = scenesContainer->currentIndex();
-                bool isExternal = response->external();
-
-                // Block signals to prevent currentChanged from triggering scene selection
-                if (isExternal)
-                    scenesContainer->blockSignals(true);
-
-                addScene(sceneIndex, response->getArg().toString());
-
-                // Restore previous selection if external request
-                if (isExternal && previousIndex >= 0) {
-                    scenesContainer->setCurrentIndex(previousIndex);
-                    scenesContainer->blockSignals(false);
-                }
+                // Pass external flag to preserve selection when scene is added by remote user
+                addScene(sceneIndex, response->getArg().toString(), response->external());
             } else { 
                 scenesContainer->restoreScene(sceneIndex, response->getArg().toString());
                 TupProjectRequest request = TupRequestBuilder::createSceneRequest(sceneIndex, TupProjectRequest::Select);

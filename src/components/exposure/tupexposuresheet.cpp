@@ -220,7 +220,7 @@ void TupExposureSheet::createMenuForSelection()
 }
 */
 
-void TupExposureSheet::addScene(int sceneIndex, const QString &name)
+void TupExposureSheet::addScene(int sceneIndex, const QString &name, bool preserveSelection)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupExposureSheet::addScene()] - index ->"
@@ -245,7 +245,7 @@ void TupExposureSheet::addScene(int sceneIndex, const QString &name)
     connect(scene, SIGNAL(layerVisibilityChanged(int,bool)), this, SLOT(changeLayerVisibility(int,bool)));
     connect(scene, SIGNAL(newPerspective(UIView)), this, SIGNAL(newPerspective(UIView)));
 
-    scenesContainer->addScene(sceneIndex, name, scene);
+    scenesContainer->addScene(sceneIndex, name, scene, preserveSelection);
 }
 
 void TupExposureSheet::renameScene(int sceneIndex, const QString &name)
@@ -664,21 +664,8 @@ void TupExposureSheet::sceneResponse(TupSceneResponse *response)
         case TupProjectRequest::Add:
             {
                 if (response->getMode() == TupProjectResponse::Do) {
-                    // Save current tab index before adding if external request
-                    int previousIndex = scenesContainer->currentSceneIndex();
-                    bool isExternal = response->external();
-
-                    // Block signals to prevent currentChanged from triggering scene selection
-                    if (isExternal)
-                        scenesContainer->blockSignals(true);
-
-                    addScene(sceneIndex, response->getArg().toString());
-
-                    // Restore previous selection if external request
-                    if (isExternal && previousIndex >= 0) {
-                        scenesContainer->setCurrentSceneIndex(previousIndex);
-                        scenesContainer->blockSignals(false);
-                    }
+                    // Pass external flag to preserve selection when scene is added by remote user
+                    addScene(sceneIndex, response->getArg().toString(), response->external());
 
                     return;
                 }

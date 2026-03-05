@@ -72,7 +72,7 @@ class TUPITUBE_EXPORT TupTimeLine : public TupModuleWidgetBase
         void sceneChanged(int sceneIndex);
 
     public slots:
-        void addScene(int sceneIndex, const QString &name);
+        void addScene(int sceneIndex, const QString &name, bool preserveSelection = false);
         void removeScene(int sceneIndex);
         void updateFPS(int fps);
 

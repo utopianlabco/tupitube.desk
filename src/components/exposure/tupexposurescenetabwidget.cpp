@@ -92,12 +92,16 @@ void TupExposureSceneTabWidget::removeAllTabs()
 }
 
 void TupExposureSceneTabWidget::addScene(int index, const QString &sceneName,
-                                         TupExposureTable *exposureTable)
+                                         TupExposureTable *exposureTable, bool preserveSelection)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupExposureSceneTabWidget::addScene()] - index ->" << index;
         qDebug() << "[TupExposureSceneTabWidget::addScene()] - name ->" << sceneName;
     #endif
+
+    int previousIndex = -1;
+    if (preserveSelection)
+        previousIndex = scenesTabber->currentIndex();
 
     QFrame *tableContainer = new QFrame;
     QVBoxLayout *tableLayout = new QVBoxLayout(tableContainer);
@@ -130,7 +134,12 @@ void TupExposureSceneTabWidget::addScene(int index, const QString &sceneName,
 
     sceneTables.insert(index, exposureTable);
     sceneContainers.insert(index, tableContainer);
+
+    scenesTabber->blockSignals(true);
     scenesTabber->insertTab(index, tableContainer, sceneName);
+    if (preserveSelection && previousIndex >= 0)
+        scenesTabber->setCurrentIndex(previousIndex);
+    scenesTabber->blockSignals(false);
 }
 
 void TupExposureSceneTabWidget::restoreScene(int sceneIndex, const QString &sceneName)

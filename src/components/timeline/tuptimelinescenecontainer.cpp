@@ -45,15 +45,24 @@ TupTimelineSceneContainer::~TupTimelineSceneContainer()
 {
 }
 
-void TupTimelineSceneContainer::addScene(int sceneIndex, TupTimeLineTable *framesTable, const QString &sceneName)
+void TupTimelineSceneContainer::addScene(int sceneIndex, TupTimeLineTable *framesTable, const QString &sceneName, bool preserveSelection)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupTimelineSceneContainer::addScene()] - sceneIndex ->" << sceneIndex;
         qDebug() << "[TupTimelineSceneContainer::addScene()] - sceneName ->" << sceneName;
     #endif
 
+    int previousIndex = -1;
+    if (preserveSelection)
+        previousIndex = currentIndex();
+
     scenes << framesTable;
+
+    blockSignals(true);
     QTabWidget::insertTab(sceneIndex, framesTable, sceneName);
+    if (preserveSelection && previousIndex >= 0)
+        setCurrentIndex(previousIndex);
+    blockSignals(false);
 }
 
 void TupTimelineSceneContainer::restoreScene(int sceneIndex, const QString &sceneName)

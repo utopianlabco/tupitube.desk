@@ -199,7 +199,12 @@ void TupScenesWidget::sceneResponse(TupSceneResponse *e)
     switch (e->getAction()) {
             case TupProjectRequest::Add:
              {
+               // Save current selection before adding if external request
+               int previousIndex = scenesTable->currentSceneIndex();
                scenesTable->insertScene(index, e->getArg().toString());
+               // Restore previous selection if external request
+               if (e->external() && previousIndex >= 0)
+                   scenesTable->selectScene(previousIndex);
              }
             break;
             case TupProjectRequest::Remove:

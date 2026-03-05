@@ -664,7 +664,12 @@ void TupExposureSheet::sceneResponse(TupSceneResponse *response)
         case TupProjectRequest::Add:
             {
                 if (response->getMode() == TupProjectResponse::Do) {
+                    // Save current tab index before adding if external request
+                    int previousIndex = scenesContainer->currentSceneIndex();
                     addScene(sceneIndex, response->getArg().toString());
+                    // Restore previous selection if external request
+                    if (response->external() && previousIndex >= 0)
+                        scenesContainer->setCurrentSceneIndex(previousIndex);
 
                     return;
                 }

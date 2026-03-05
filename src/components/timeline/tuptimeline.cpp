@@ -196,7 +196,12 @@ void TupTimeLine::sceneResponse(TupSceneResponse *response)
         case TupProjectRequest::Add:
         {
             if (response->getMode() == TupProjectResponse::Do) {
+                // Save current tab index before adding if external request
+                int previousIndex = scenesContainer->currentIndex();
                 addScene(sceneIndex, response->getArg().toString());
+                // Restore previous selection if external request
+                if (response->external() && previousIndex >= 0)
+                    scenesContainer->setCurrentIndex(previousIndex);
             } else { 
                 scenesContainer->restoreScene(sceneIndex, response->getArg().toString());
                 TupProjectRequest request = TupRequestBuilder::createSceneRequest(sceneIndex, TupProjectRequest::Select);

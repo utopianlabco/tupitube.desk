@@ -654,12 +654,13 @@ void TupPaintArea::libraryResponse(TupLibraryResponse *response)
 
     if (!guiScene->userIsDrawing()) {
         int frameIndex = guiScene->currentFrameIndex();
+        TupProject::Mode responseSpaceMode = response->getSpaceMode();
         switch (response->getAction()) {
             case TupProjectRequest::InsertSymbolIntoFrame:
               {
-                  if (spaceMode == TupProject::FRAMES_MODE) {
+                  if (responseSpaceMode == TupProject::FRAMES_MODE) {
                       guiScene->drawCurrentPhotogram();
-                  } else if (spaceMode == TupProject::VECTOR_FG_MODE) {                      
+                  } else if (responseSpaceMode == TupProject::VECTOR_FG_MODE) {                      
                       guiScene->setVectorFgEnvironment();
                   } else {
                       guiScene->clearWorkSpace();
@@ -675,9 +676,9 @@ void TupPaintArea::libraryResponse(TupLibraryResponse *response)
             case TupProjectRequest::Remove:
             case TupProjectRequest::RemoveSymbolFromFrame:
               {
-                  if (spaceMode == TupProject::FRAMES_MODE) {
+                  if (responseSpaceMode == TupProject::FRAMES_MODE) {
                       guiScene->drawCurrentPhotogram();
-                  } else if (spaceMode == TupProject::VECTOR_FG_MODE) {                      
+                  } else if (responseSpaceMode == TupProject::VECTOR_FG_MODE) {                      
                       guiScene->setVectorFgEnvironment();
                   } else {
                       guiScene->clearWorkSpace();

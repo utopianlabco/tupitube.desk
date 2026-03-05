@@ -217,7 +217,9 @@ void TupPathItem::redoPath()
 }
 
 // This method is used to simplify complex paths by removing nodes from
-// the beginning, the middle, random position or the end of the path
+// the beginning, the middle, random position or the end of the path.
+// When removing a curve node, the adjacent segments are merged by scaling
+// control points to maintain a shape similar to the original.
 
 QString TupPathItem::refactoringPath(NodeLocation policy, int nodesTotal)
 {
@@ -244,132 +246,180 @@ QString TupPathItem::refactoringPath(NodeLocation policy, int nodesTotal)
         return pathCollection[nodesTotal-1];
     }
 
-    QChar t;
     QPainterPath route = path();
     int elementsTotal = route.elementCount();
-    QString pathStr = "";
-    QList<int> curveIndexes;
 
-    // Capture the indexes of all the significant elements of the path
-    bool lookingData = false;
-    int dataCounter = 0;
-    int curvesCounter = 0;
-    for(int i=0; i<elementsTotal; i++) {
+    // Structure to hold parsed segment data
+    struct PathSegment {
+        enum Type { Move, Line, Curve };
+        Type type;
+        QPointF startPoint; // Where this segment starts (end of previous segment)
+        QPointF endPoint;   // Where this segment ends
+        QPointF c1; // Control point 1 (for curves)
+        QPointF c2; // Control point 2 (for curves)
+    };
+
+    // First pass: Parse the path into segments
+    QList<PathSegment> segments;
+    QPointF currentPoint(0, 0);
+    for (int i = 0; i < elementsTotal; i++) {
         QPainterPath::Element e = route.elementAt(i);
-        if (e.type == QPainterPath::CurveToElement || e.type == QPainterPath::MoveToElement
-            || e.type == QPainterPath::LineToElement) {
-            curveIndexes << curvesCounter;
-            curvesCounter++;
-        }
-    }
-
-    // Variable "mark" contains the index of the node to be removed
-    int mark = curveIndexes.at(0); // FirstNode
-    if (curvesCounter > 1) {
-        if (policy == MiddleNode) {
-            if (curvesCounter % 2 == 0) { // Remove the middle node
-                mark = curveIndexes.at(curvesCounter/2);
-            } else {
-                if (curvesCounter == 3)
-                    mark = curveIndexes.at(1);
-                else
-                    mark = curveIndexes.at((curvesCounter/2) + 1);
-            }
-        } else if (policy == RandomNode) {
-            int index = TAlgorithm::randomNumber(curvesCounter);
-            if (index == 0)
-                index = 1;
-            if (index == (curvesCounter - 1))
-                index = curvesCounter - 2;
-
-            mark = curveIndexes.at(index);
-        } else if (policy == LastNode) {
-            mark = curveIndexes.at(curvesCounter - 1);
-        }
-    }
-
-    // Rebuild the path structure but ignoring the node selected previously,
-    // store it and return it
-
-    bool replace = false;
-    curvesCounter = 0;
-    for(int i=0; i<elementsTotal; i++) {
-        QPainterPath::Element e = route.elementAt(i);
+        PathSegment seg;
 
         switch (e.type) {
             case QPainterPath::MoveToElement:
-            {
-                if (policy == FirstNode && curvesCounter == mark) {
-                    replace = true;
-                } else {
-                    if (t != 'M') {
-                        t = 'M';
-                        pathStr += "M " + QString::number(e.x) + " " + QString::number(e.y) + " ";
-                    } else {
-                        pathStr += QString::number(e.x) + " " + QString::number(e.y) + " ";
-                    }
-                }
-
-                curvesCounter++;
-            }
-            break;
+                seg.type = PathSegment::Move;
+                seg.startPoint = currentPoint;
+                seg.endPoint = QPointF(e.x, e.y);
+                currentPoint = seg.endPoint;
+                segments.append(seg);
+                break;
             case QPainterPath::LineToElement:
-            {
-                if (replace) {
-                    if (t != 'M') {
-                        t = 'M';
-                        pathStr += "M " + QString::number(e.x) + " " + QString::number(e.y) + " ";
-                    } else {
-                        pathStr += QString::number(e.x) + " " + QString::number(e.y) + " ";
-                    }
-                    replace = false;
-                } else if (curvesCounter != mark) {
-                    if (t != 'L') {
-                        t = 'L';
-                        pathStr += " L " + QString::number(e.x) + " " + QString::number(e.y) + " ";
-                    } else {
-                        pathStr += QString::number(e.x) + " " + QString::number(e.y) + " ";
-                    }
-                }
-
-                curvesCounter++;
-            }
-            break;
+                seg.type = PathSegment::Line;
+                seg.startPoint = currentPoint;
+                seg.endPoint = QPointF(e.x, e.y);
+                currentPoint = seg.endPoint;
+                segments.append(seg);
+                break;
             case QPainterPath::CurveToElement:
             {
-                if (!replace && curvesCounter != mark) {
-                    if (t != 'C') {
-                        t = 'C';
-                        pathStr += " C " + QString::number(e.x) + " " + QString::number(e.y) + " ";
-                    } else {
-                        pathStr += "  " + QString::number(e.x) + " " + QString::number(e.y) + " ";
-                    }
-                } else {
-                    lookingData = true;
+                seg.type = PathSegment::Curve;
+                seg.startPoint = currentPoint;
+                seg.c1 = QPointF(e.x, e.y);
+                // Read the two CurveToDataElements
+                if (i + 2 < elementsTotal) {
+                    QPainterPath::Element e2 = route.elementAt(i + 1);
+                    QPainterPath::Element e3 = route.elementAt(i + 2);
+                    seg.c2 = QPointF(e2.x, e2.y);
+                    seg.endPoint = QPointF(e3.x, e3.y);
+                    i += 2; // Skip the data elements
                 }
-                curvesCounter++;
+                currentPoint = seg.endPoint;
+                segments.append(seg);
             }
             break;
-            case QPainterPath::CurveToDataElement:
-            {
-                if (!lookingData) {
-                    if (t == 'C')
-                        pathStr +=  " " + QString::number(e.x) + "  " + QString::number(e.y) + " ";
+            default:
+                break;
+        }
+    }
+
+    int segmentsCount = segments.size();
+    if (segmentsCount <= 2) {
+        pathCollection[nodesTotal-1] = pathToString();
+        return pathCollection[nodesTotal-1];
+    }
+
+    // Determine which node to remove based on policy
+    int mark = 0; // FirstNode
+    if (segmentsCount > 1) {
+        if (policy == MiddleNode) {
+            if (segmentsCount % 2 == 0)
+                mark = segmentsCount / 2;
+            else
+                mark = (segmentsCount == 3) ? 1 : (segmentsCount / 2) + 1;
+        } else if (policy == RandomNode) {
+            mark = TAlgorithm::randomNumber(segmentsCount);
+            if (mark == 0)
+                mark = 1;
+            if (mark == segmentsCount - 1)
+                mark = segmentsCount - 2;
+        } else if (policy == LastNode) {
+            mark = segmentsCount - 1;
+        }
+    }
+
+    // Rebuild path, merging segments when removing a middle node
+    QString pathStr = "";
+    QChar t;
+    bool firstNodeRemoved = (mark == 0);
+
+    for (int i = 0; i < segmentsCount; i++) {
+        if (i == mark) {
+            // Skip this node, but merge adjacent segments to preserve shape
+            if (i > 0 && i < segmentsCount - 1) {
+                PathSegment &currSeg = segments[i];
+                PathSegment &nextSeg = segments[i + 1];
+
+                // The removed node position (B) - this is where the path originally went through
+                QPointF removedNode = currSeg.endPoint;
+                // Start point (A) and end point (C)
+                QPointF startPt = currSeg.startPoint;
+                QPointF endPt = nextSeg.endPoint;
+
+                // Unified algorithm for all segment type combinations:
+                // Create a bezier curve from A to C that bends towards the removed node B
+                // Control points are positioned at 1/3 and 2/3 along A→C, then pulled towards B
+                double bendFactor = 0.667;
+
+                // Calculate C1: Start from 1/3 point on A→C, pull towards B
+                double t1 = 0.333;
+                QPointF straightPt1(startPt.x() + t1 * (endPt.x() - startPt.x()),
+                                    startPt.y() + t1 * (endPt.y() - startPt.y()));
+                QPointF newC1(straightPt1.x() + bendFactor * (removedNode.x() - straightPt1.x()),
+                              straightPt1.y() + bendFactor * (removedNode.y() - straightPt1.y()));
+
+                // Calculate C2: Start from 2/3 point on A→C, pull towards B
+                double t2 = 0.667;
+                QPointF straightPt2(startPt.x() + t2 * (endPt.x() - startPt.x()),
+                                    startPt.y() + t2 * (endPt.y() - startPt.y()));
+                QPointF newC2(straightPt2.x() + bendFactor * (removedNode.x() - straightPt2.x()),
+                              straightPt2.y() + bendFactor * (removedNode.y() - straightPt2.y()));
+
+                if (t != 'C') {
+                    t = 'C';
+                    pathStr += " C ";
                 } else {
-                    dataCounter++;
-
-                    if (dataCounter == 2) {
-                        lookingData = false;
-                        dataCounter = 0;
-
-                        if (replace) {
-                            replace = false;
-                            pathStr += "M " + QString::number(e.x) + " " + QString::number(e.y) + " ";
-                        }
-                    }
+                    pathStr += "  ";
                 }
+                pathStr += QString::number(newC1.x()) + " " + QString::number(newC1.y()) + "  ";
+                pathStr += QString::number(newC2.x()) + " " + QString::number(newC2.y()) + "  ";
+                pathStr += QString::number(endPt.x()) + " " + QString::number(endPt.y()) + " ";
+
+                // Skip the next segment since we merged it
+                i++;
             }
-            break;
+            // Handle first/last node removal (just skip)
+            continue;
+        }
+
+        // When first node was removed, convert the next segment to a MoveTo
+        if (firstNodeRemoved && i == 1) {
+            PathSegment &seg = segments[i];
+            t = 'M';
+            pathStr += "M " + QString::number(seg.endPoint.x()) + " " + QString::number(seg.endPoint.y()) + " ";
+            continue;
+        }
+
+        // Output segment normally
+        PathSegment &seg = segments[i];
+        switch (seg.type) {
+            case PathSegment::Move:
+                if (t != 'M') {
+                    t = 'M';
+                    pathStr += "M " + QString::number(seg.endPoint.x()) + " " + QString::number(seg.endPoint.y()) + " ";
+                } else {
+                    pathStr += QString::number(seg.endPoint.x()) + " " + QString::number(seg.endPoint.y()) + " ";
+                }
+                break;
+            case PathSegment::Line:
+                if (t != 'L') {
+                    t = 'L';
+                    pathStr += " L " + QString::number(seg.endPoint.x()) + " " + QString::number(seg.endPoint.y()) + " ";
+                } else {
+                    pathStr += QString::number(seg.endPoint.x()) + " " + QString::number(seg.endPoint.y()) + " ";
+                }
+                break;
+            case PathSegment::Curve:
+                if (t != 'C') {
+                    t = 'C';
+                    pathStr += " C ";
+                } else {
+                    pathStr += "  ";
+                }
+                pathStr += QString::number(seg.c1.x()) + " " + QString::number(seg.c1.y()) + "  ";
+                pathStr += QString::number(seg.c2.x()) + " " + QString::number(seg.c2.y()) + "  ";
+                pathStr += QString::number(seg.endPoint.x()) + " " + QString::number(seg.endPoint.y()) + " ";
+                break;
         }
     }
 
@@ -3284,3 +3334,4 @@ QPair<QList<QPointF>, QList<QPointF>> TupPathItem::splitStraightLine(const QPoin
 
     return qMakePair(firstSegment, secondSegment);
 }
+

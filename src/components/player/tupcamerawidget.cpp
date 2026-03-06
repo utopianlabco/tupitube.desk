@@ -451,7 +451,9 @@ void TupCameraWidget::sceneResponse(TupSceneResponse *response)
         case TupProjectRequest::Add:
         {
              cameraStatus->setScenes(project->getSceneNames());
-             cameraStatus->setCurrentScene(sceneIndex);
+             // Only switch scene for local requests
+             if (!response->external())
+                 cameraStatus->setCurrentScene(sceneIndex);
              updateFramesTotal(sceneIndex);
         }
         break;
@@ -481,6 +483,10 @@ void TupCameraWidget::sceneResponse(TupSceneResponse *response)
         break;
         case TupProjectRequest::Select:
         {
+             // Skip view change if this request came from another user
+             if (response->external())
+                 return;
+
              currentSceneIndex = sceneIndex;
 
              int fps = project->getFPS(currentSceneIndex);

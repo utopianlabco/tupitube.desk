@@ -844,6 +844,10 @@ void TupScreen::sceneResponse(TupSceneResponse *event)
         break;
         case TupProjectRequest::Select:
           {
+              // Skip view change if this request came from another user
+              if (event->external())
+                  return;
+
               updateSceneIndex(index);
           }
         break;

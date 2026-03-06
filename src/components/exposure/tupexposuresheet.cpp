@@ -973,7 +973,8 @@ void TupExposureSheet::frameResponse(TupFrameResponse *response)
                   {
                       if (response->getMode() == TupProjectResponse::Do) {
                           table->insertFrame(layerIndex, frameIndex, response->getArg().toString(), response->external());
-                          if (layerIndex == 0 && frameIndex == 0) {
+                          // Only switch scene for local requests (first frame of new scene)
+                          if (layerIndex == 0 && frameIndex == 0 && !response->external()) {
                               setCurrentScene(sceneIndex);
                               table->blockSignals(true);
                               table->selectFrame(0, 0);

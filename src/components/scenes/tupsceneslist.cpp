@@ -53,16 +53,30 @@ TupScenesList::~TupScenesList()
 {
 }
 
-void TupScenesList::insertScene(int index, const QString &name)
+void TupScenesList::insertScene(int index, const QString &name, bool preserveSelection)
 {
+    int previousIndex = -1;
+    if (preserveSelection)
+        previousIndex = currentSceneIndex();
+
     scenesCountRegister++;
     QTreeWidgetItem *newScene = new QTreeWidgetItem(this);
     newScene->setText(0, name);
     newScene->setFlags(newScene->flags() | Qt::ItemIsEditable);
+
+    blockSignals(true);
     insertTopLevelItem(index, newScene);
 
-    if (index == 0)
+    if (preserveSelection && previousIndex >= 0) {
+        // Account for index shift: if previous scene was at or after insertion point, it shifted by +1
+        int restoredIndex = (previousIndex >= index) ? previousIndex + 1 : previousIndex;
+        QTreeWidgetItem *item = topLevelItem(restoredIndex);
+        if (item)
+            setCurrentItem(item);
+    } else if (index == 0) {
         setCurrentItem(newScene);
+    }
+    blockSignals(false);
 }
 
 int TupScenesList::removeCurrentScene()

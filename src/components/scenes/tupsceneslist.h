@@ -52,7 +52,7 @@ class TUPITUBE_EXPORT TupScenesList : public TreeListWidget
         TupScenesList(QWidget *parent = nullptr);
         ~TupScenesList();
 
-        void insertScene(int index, const QString &name);
+        void insertScene(int index, const QString &name, bool preserveSelection = false);
 
         int removeCurrentScene();
         int currentSceneIndex();

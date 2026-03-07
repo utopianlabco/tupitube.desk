@@ -150,14 +150,33 @@ void InkTool::release(const TupInputDeviceInformation *input, TupBrushManager *b
 
     if (length > 10) {
         // Drawing a stroke
+        QList<qreal> strokeWidths;
+        
         if (device == InkSettings::Mouse) {
-            for (int i=0; i<guidePoints.size(); i++) {
-                qreal press = 3 + (rand() % 5);
-                processPoint(guidePoints.at(i), press);
-            }
+            // Calculate velocity-based widths for more natural mouse strokes
+            // Using sensibility to control width variation intensity
+            qreal baseWidth = initPenWidth * (4 + sensibility);  // sensibility: 1-5
+            strokeWidths = calculateVelocityWidths(guidePoints, baseWidth, sensibility);
         } else {
-            for (int i=0; i<guidePoints.size(); i++)
-                processPoint(guidePoints.at(i), pointPress.at(i));
+            // Use recorded pressure values for pen mode
+            strokeWidths = pointPress;
+        }
+
+        // Smooth width transitions to avoid abrupt changes
+        // Map smoothness (0-10) to smoothing factor (0.1-0.5)
+        // Lower smoothness value = more smoothing (lower factor)
+        double smoothFactor = 0.1 + (smoothness / 10.0) * 0.4;
+        smoothWidths(strokeWidths, smoothFactor);
+
+        // Apply natural tapering at stroke start and end
+        // Taper length scales with sensibility (more pressure sensitivity = longer taper)
+        int taperLen = qMin(static_cast<int>(guidePoints.size() / 4), 4 + sensibility);
+        applyTapering(strokeWidths, taperLen);
+
+        // Process points with improved widths
+        for (int i = 0; i < guidePoints.size(); i++) {
+            qreal width = (i < strokeWidths.size()) ? strokeWidths.at(i) : initPenWidth;
+            processPoint(guidePoints.at(i), width);
         }
     } else {
         // Drawing a point
@@ -1367,4 +1386,111 @@ void InkTool::processPoint(QPointF currentPoint, qreal strokeWidth)
         oldPos = currentPoint;
         // oldSlope = m;
     }
+}
+
+// Apply natural tapering at stroke start and end
+void InkTool::applyTapering(QList<qreal> &widths, int taperLength)
+{
+    int size = widths.size();
+    if (size < 2 || taperLength <= 0)
+        return;
+
+    // Ensure taper doesn't exceed half the stroke
+    taperLength = qMin(taperLength, size / 2);
+
+    // Taper at start (ease-in: thin to thick)
+    for (int i = 0; i < taperLength; i++) {
+        qreal t = static_cast<qreal>(i) / taperLength;
+        // Ease-in quadratic curve for natural feel
+        qreal factor = t * t;
+        widths[i] *= factor;
+    }
+
+    // Taper at end (ease-out: thick to thin)
+    for (int i = 0; i < taperLength; i++) {
+        int idx = size - 1 - i;
+        qreal t = static_cast<qreal>(i) / taperLength;
+        // Ease-out quadratic
+        qreal factor = t * t;
+        widths[idx] *= factor;
+    }
+}
+
+// Smooth width transitions using exponential moving average
+void InkTool::smoothWidths(QList<qreal> &widths, double factor)
+{
+    if (widths.size() < 2 || factor <= 0)
+        return;
+
+    // Forward pass
+    QList<qreal> smoothed;
+    smoothed.reserve(widths.size());
+    smoothed << widths[0];
+
+    for (int i = 1; i < widths.size(); i++) {
+        qreal smoothedValue = factor * widths[i] + (1.0 - factor) * smoothed[i - 1];
+        smoothed << smoothedValue;
+    }
+
+    // Backward pass for symmetric smoothing
+    for (int i = widths.size() - 2; i >= 0; i--) {
+        smoothed[i] = factor * smoothed[i] + (1.0 - factor) * smoothed[i + 1];
+    }
+
+    widths = smoothed;
+}
+
+// Calculate velocity-based widths for mouse mode (slower = thicker, faster = thinner)
+// sensitivity (1-5) controls how much velocity affects width variation
+QList<qreal> InkTool::calculateVelocityWidths(const QList<QPointF> &points, qreal baseWidth, int sensitivity)
+{
+    QList<qreal> widths;
+    if (points.isEmpty())
+        return widths;
+
+    // Calculate distances between consecutive points (as velocity proxy)
+    QList<qreal> distances;
+    for (int i = 1; i < points.size(); i++) {
+        qreal dx = points[i].x() - points[i - 1].x();
+        qreal dy = points[i].y() - points[i - 1].y();
+        qreal dist = sqrt(dx * dx + dy * dy);
+        distances << dist;
+    }
+
+    if (distances.isEmpty()) {
+        widths << baseWidth;
+        return widths;
+    }
+
+    // Find typical distance for normalization
+    qreal avgDist = 0;
+    for (qreal d : distances)
+        avgDist += d;
+    avgDist /= distances.size();
+
+    // Clamp to reasonable range
+    avgDist = qMax(avgDist, 3.0);
+
+    // First point uses base width
+    widths << baseWidth;
+
+    // Sensitivity affects range of velocity factor (1=subtle, 5=dramatic)
+    qreal minFactor = 1.0 - (0.1 * sensitivity);  // 0.9 to 0.5
+    qreal maxFactor = 1.0 + (0.2 * sensitivity);  // 1.2 to 2.0
+
+    // Generate widths based on velocity (inverse relationship)
+    for (int i = 0; i < distances.size(); i++) {
+        qreal dist = distances[i];
+        // Normalize: fast movement (high dist) = thin, slow movement (low dist) = thick
+        qreal velocityFactor = avgDist / qMax(dist, 1.0);
+        // Clamp factor based on sensitivity setting
+        velocityFactor = qBound(minFactor, velocityFactor, maxFactor);
+        // Apply variation with some randomness for organic feel (more random at higher sensitivity)
+        qreal randomRange = 0.05 + (0.03 * sensitivity);  // 0.08 to 0.20
+        qreal variation = (1.0 - randomRange) + (rand() % 100) / 100.0 * (2 * randomRange);
+        qreal width = baseWidth * velocityFactor * variation;
+        widths << width;
+    }
+
+    return widths;
 }

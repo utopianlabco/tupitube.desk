@@ -95,6 +95,9 @@ class TUPITUBE_PLUGIN InkTool : public TupToolPlugin
         void smoothPath(QPainterPath &guidePainterPath, double smoothness, int from = 0,
                         int to = -1, bool closePath = false);
         void removeExtraPoints();
+        void applyTapering(QList<qreal> &widths, int taperLength);
+        void smoothWidths(QList<qreal> &widths, double factor);
+        QList<qreal> calculateVelocityWidths(const QList<QPointF> &points, qreal baseWidth, int sensitivity);
 
     private:
         QPointF firstPoint;

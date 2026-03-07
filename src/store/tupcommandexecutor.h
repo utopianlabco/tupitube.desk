@@ -135,6 +135,8 @@ class TUPITUBE_EXPORT TupCommandExecutor : public QObject
         void responsed(TupProjectResponse *response);
 
     private:
+        bool validateIndices(int sceneIdx, int layerIdx = -1, int frameIdx = -1, int itemIdx = -1);
+
         TupProject *project;
         QList<QString> selectionFramesCopy;
         QStringList copyParams;

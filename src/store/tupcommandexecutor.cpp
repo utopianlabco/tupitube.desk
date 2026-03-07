@@ -35,6 +35,8 @@
 #include "tupcommandexecutor.h"
 #include "tupproject.h"
 #include "tupscene.h"
+#include "tuplayer.h"
+#include "tupframe.h"
 #include "tuprequestbuilder.h"
 #include "tupprojectrequest.h"
 #include "tupprojectresponse.h"
@@ -45,6 +47,55 @@ TupCommandExecutor::TupCommandExecutor(TupProject *animation) : QObject(animatio
 
 TupCommandExecutor::~TupCommandExecutor()
 {
+}
+
+bool TupCommandExecutor::validateIndices(int sceneIdx, int layerIdx, int frameIdx, int itemIdx)
+{
+    if (sceneIdx >= 0) {
+        if (sceneIdx >= project->scenesCount()) {
+            #ifdef TUP_DEBUG
+                qDebug() << "[TupCommandExecutor::validateIndices()] - Invalid scene index:" << sceneIdx;
+            #endif
+            return false;
+        }
+
+        TupScene *scene = project->sceneAt(sceneIdx);
+        if (!scene)
+            return false;
+
+        if (layerIdx >= 0) {
+            if (layerIdx >= scene->layersCount()) {
+                #ifdef TUP_DEBUG
+                    qDebug() << "[TupCommandExecutor::validateIndices()] - Invalid layer index:" << layerIdx;
+                #endif
+                return false;
+            }
+
+            TupLayer *layer = scene->layerAt(layerIdx);
+            if (!layer)
+                return false;
+
+            if (frameIdx >= 0) {
+                if (frameIdx >= layer->framesCount()) {
+                    #ifdef TUP_DEBUG
+                        qDebug() << "[TupCommandExecutor::validateIndices()] - Invalid frame index:" << frameIdx;
+                    #endif
+                    return false;
+                }
+
+                if (itemIdx >= 0) {
+                    TupFrame *frame = layer->frameAt(frameIdx);
+                    if (!frame || itemIdx >= frame->graphicsCount()) {
+                        #ifdef TUP_DEBUG
+                            qDebug() << "[TupCommandExecutor::validateIndices()] - Invalid item index:" << itemIdx;
+                        #endif
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+    return true;
 }
 
 void TupCommandExecutor::getScenes(TupSceneResponse *response)
@@ -94,6 +145,9 @@ bool TupCommandExecutor::duplicateScene(TupSceneResponse *response)
     if (sceneIndex < 0)
         return false;
 
+    if (!validateIndices(sceneIndex))
+        return true; // Silent skip for invalid scene
+
     if (response->getMode() == TupProjectResponse::Do) {
         bool result = project->duplicateScene(sceneIndex, response->getArg().toString());
         if (!result)
@@ -127,6 +181,10 @@ bool TupCommandExecutor::removeScene(TupSceneResponse *response)
     #endif
 
     int pos = response->getSceneIndex();
+
+    if (!validateIndices(pos))
+        return true; // Already removed - not an error
+
     TupScene *scene = project->sceneAt(pos);
     if (scene) {
         QDomDocument document;
@@ -157,6 +215,9 @@ bool TupCommandExecutor::moveScene(TupSceneResponse *response)
         qDebug() << "[TupCommandExecutor::moveScene()] - oldPos ->" << oldPos;
         qDebug() << "[TupCommandExecutor::moveScene()] - newPos ->" << newPos;
     #endif
+
+    if (!validateIndices(oldPos))
+        return true; // Silent skip for invalid scene
 
     if (project->moveScene(oldPos, newPos)) {
         emit responsed(response);

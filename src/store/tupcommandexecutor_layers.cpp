@@ -50,6 +50,9 @@ bool TupCommandExecutor::createLayer(TupLayerResponse *response)
     int position = response->getLayerIndex();
     QString name = response->getArg().toString();
 
+    if (!validateIndices(scenePosition))
+        return true; // Silent skip for invalid scene
+
     TupScene *scene = project->sceneAt(scenePosition);
     if (scene) {
         if (response->getMode() == TupProjectResponse::Do) {
@@ -79,6 +82,9 @@ bool TupCommandExecutor::removeLayer(TupLayerResponse *response)
 
     int scenePos = response->getSceneIndex();
     int position = response->getLayerIndex();
+
+    if (!validateIndices(scenePos, position))
+        return true; // Already removed - not an error
 
     TupScene *scene = project->sceneAt(scenePos);
     if (scene) {
@@ -110,6 +116,9 @@ bool TupCommandExecutor::moveLayer(TupLayerResponse *response)
         qDebug() << "[TupCommandExecutor::moveLayer()] - oldPosition -> " << position;
         qDebug() << "[TupCommandExecutor::moveLayer()] - newPosition -> " << newPosition;
     #endif
+
+    if (!validateIndices(scenePos, position))
+        return true; // Silent skip for invalid indices
 
     TupScene *scene = project->sceneAt(scenePos);
 
@@ -222,6 +231,9 @@ bool TupCommandExecutor::addLipSync(TupLayerResponse *response)
     int scenePos = response->getSceneIndex();
     int position = response->getLayerIndex();
     QString xml = response->getArg().toString();
+
+    if (!validateIndices(scenePos, position))
+        return true; // Silent skip for invalid indices
 
     TupScene *scene = project->sceneAt(scenePos);
     if (!scene) {

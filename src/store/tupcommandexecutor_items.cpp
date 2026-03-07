@@ -70,6 +70,14 @@ bool TupCommandExecutor::createItem(TupItemResponse *response)
     TupProject::Mode mode = response->spaceMode();
     QString xml = response->getArg().toString();
 
+    // Validate indices for FRAMES_MODE
+    if (mode == TupProject::FRAMES_MODE && !validateIndices(sceneIndex, layerIndex, frameIndex))
+        return true; // Silent skip for invalid indices
+
+    // For background modes, only validate scene
+    if (mode != TupProject::FRAMES_MODE && !validateIndices(sceneIndex))
+        return true;
+
     /*
     if (xml.isEmpty()) {
         #ifdef TUP_DEBUG
@@ -218,6 +226,13 @@ bool TupCommandExecutor::removeItem(TupItemResponse *response)
     TupLibraryObject::ObjectType type = response->getItemType();
     TupProject::Mode mode = response->spaceMode();
 
+    // Validate indices - if target doesn't exist, consider it already removed
+    if (mode == TupProject::FRAMES_MODE && !validateIndices(sceneIndex, layerIndex, frameIndex))
+        return true; // Already removed - not an error
+
+    if (mode != TupProject::FRAMES_MODE && !validateIndices(sceneIndex))
+        return true;
+
     TupScene *scene = project->sceneAt(sceneIndex);
 
     if (scene) {
@@ -323,6 +338,13 @@ bool TupCommandExecutor::moveItem(TupItemResponse *response)
     int action = response->getArg().toInt();
     TupLibraryObject::ObjectType type = response->getItemType();
     TupProject::Mode mode = response->spaceMode();
+
+    // Validate indices
+    if (mode == TupProject::FRAMES_MODE && !validateIndices(sceneIndex, layerIndex, frameIndex))
+        return true; // Silent skip for invalid indices
+
+    if (mode != TupProject::FRAMES_MODE && !validateIndices(sceneIndex))
+        return true;
 
     if (response->getMode() == TupProjectResponse::Undo) {
         // SQA: Recalculate the variable values based on the action code 
@@ -723,6 +745,13 @@ bool TupCommandExecutor::transformItem(TupItemResponse *response)
     TupProject::Mode mode = response->spaceMode();
     TupLibraryObject::ObjectType type = response->getItemType();
     QString xml = response->getArg().toString();
+
+    // Validate indices
+    if (mode == TupProject::FRAMES_MODE && !validateIndices(sceneIndex, layerIndex, frameIndex))
+        return true; // Silent skip for invalid indices
+
+    if (mode != TupProject::FRAMES_MODE && !validateIndices(sceneIndex))
+        return true;
 
     #ifdef TUP_DEBUG
         qDebug() << "[TupCommandExecutor::transformItem()] - xml -> " << xml;

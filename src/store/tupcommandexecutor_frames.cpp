@@ -52,6 +52,9 @@ bool TupCommandExecutor::createFrame(TupFrameResponse *response)
     int pos = response->getFrameIndex();
     QString name = response->getArg().toString();
 
+    if (!validateIndices(sceneIndex, layerIndex))
+        return true; // Silent skip for invalid remote operations
+
     TupScene *scene = project->sceneAt(sceneIndex);
     if (scene) {
         scene->insertStoryboardScene(pos);
@@ -87,6 +90,9 @@ bool TupCommandExecutor::removeFrame(TupFrameResponse *response)
     int sceneIndex = response->getSceneIndex();
     int layerIndex = response->getLayerIndex();
     int pos = response->getFrameIndex();
+
+    if (!validateIndices(sceneIndex, layerIndex))
+        return true; // Already removed or invalid - not an error
 
     TupScene *scene = project->sceneAt(sceneIndex);
     if (scene) {
@@ -203,7 +209,10 @@ bool TupCommandExecutor::resetFrame(TupFrameResponse *response)
     int sceneIndex = response->getSceneIndex();
     int layerIndex = response->getLayerIndex();
     int pos = response->getFrameIndex();
-   
+
+    if (!validateIndices(sceneIndex, layerIndex, pos))
+        return true; // Silent skip for invalid indices
+
     TupScene *scene = project->sceneAt(sceneIndex);
     if (scene) {
         scene->resetStoryboardScene(pos);
@@ -236,6 +245,9 @@ bool TupCommandExecutor::moveFrame(TupFrameResponse *response)
     int pos = response->getFrameIndex();
     int newPosition = response->getArg().toInt();
 
+    if (!validateIndices(sceneIndex, layerIndex, pos))
+        return true; // Silent skip for invalid indices
+
     TupScene *scene = project->sceneAt(sceneIndex);
     if (scene) {
         scene->moveStoryboardScene(pos, newPosition); 
@@ -262,6 +274,9 @@ bool TupCommandExecutor::exchangeFrame(TupFrameResponse *response)
     int layerIndex = response->getLayerIndex();
     int pos = response->getFrameIndex();
     int newPosition = response->getArg().toInt();
+
+    if (!validateIndices(sceneIndex, layerIndex, pos))
+        return true; // Silent skip for invalid indices
 
     TupScene *scene = project->sceneAt(sceneIndex);
     if (scene) {
@@ -413,6 +428,9 @@ bool TupCommandExecutor::extendFrame(TupFrameResponse *response)
     int frameIndex = response->getFrameIndex();
     int pos = response->getFrameIndex();
     int times = response->getArg().toInt();
+
+    if (!validateIndices(sceneIndex, layerIndex, pos))
+        return true; // Silent skip for invalid indices
 
     TupScene *scene = project->sceneAt(sceneIndex);
     if (scene) {

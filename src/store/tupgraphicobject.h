@@ -47,6 +47,7 @@ class TUPITUBE_EXPORT TupGraphicObject : public QObject, public TupAbstractSeria
 {
     public:
         enum Transformations { ScaleX = 1, ScaleY, Rotate, TranslateX, TranslateY };
+        enum ItemProperty { FillItem = 100 };  // Custom data keys for QGraphicsItem::setData()
         
         TupGraphicObject(QGraphicsItem *item, TupFrame *parent);
         ~TupGraphicObject();

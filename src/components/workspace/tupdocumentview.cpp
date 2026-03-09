@@ -718,7 +718,8 @@ void TupDocumentView::loadPlugins()
     toolbar->addSeparator();
     toolbar->addAction(textAction);
     toolbar->addSeparator();
-    toolbar->addAction(bucketAction);
+    if (bucketAction)
+        toolbar->addAction(bucketAction);
     toolbar->addSeparator();
     toolbar->addAction(motionMenu->menuAction());
 

@@ -281,17 +281,17 @@ class Q_DECL_EXPORT TupDocumentView: public QMainWindow
         bool isNetworked;
         QStringList onLineUsers;
 
-        TAction *pencilAction;
-        TAction *inkAction;
+        TAction *pencilAction = nullptr;
+        TAction *inkAction = nullptr;
         // Note: Enable it only for debugging
         // TAction *schemeAction;
-        TAction *polyLineAction;
-        TAction *textAction;
-        TAction *selectionAction;
-        TAction *nodesAction;
-        TAction *bucketAction;
-        TAction *papagayoAction;
-        TAction *eyedropperAction;
+        TAction *polyLineAction = nullptr;
+        TAction *textAction = nullptr;
+        TAction *selectionAction = nullptr;
+        TAction *nodesAction = nullptr;
+        TAction *bucketAction = nullptr;
+        TAction *papagayoAction = nullptr;
+        TAction *eyedropperAction = nullptr;
 
         TupCanvas *fullScreen;
         RasterMainWindow *rasterWindow;

@@ -16,7 +16,7 @@ win32 {
 INSTALLS += target 
 target.path = /plugins/
 
-HEADERS += buckettool.h 
+HEADERS += buckettool.h
 
 SOURCES += buckettool.cpp
 

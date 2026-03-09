@@ -46,6 +46,7 @@
 #include <QImage>
 #include <QPaintDevice>
 #include <QGraphicsView>
+#include <QStack>
 
 class TUPITUBE_PLUGIN BucketTool : public TupToolPlugin
 {
@@ -85,6 +86,7 @@ class TUPITUBE_PLUGIN BucketTool : public TupToolPlugin
         virtual void saveConfig();
         virtual void keyPressEvent(QKeyEvent *event);
         virtual QCursor toolCursor(); // const;
+        virtual void itemResponse(const TupItemResponse *event);
 
         void setColorMode(TColorCell::FillType colorMode);
 
@@ -94,6 +96,14 @@ class TUPITUBE_PLUGIN BucketTool : public TupToolPlugin
  
     private:
         void setupActions();
+        
+        // Flood fill methods
+        QImage renderSceneToImage(TupGraphicsScene *gScene);
+        QImage floodFillMask(const QImage &image, const QPoint &seedPoint, int tolerance, int maxPixels = 0, bool *aborted = nullptr);
+        bool colorsMatch(QRgb c1, QRgb c2, int tolerance);
+        QVector<QPoint> traceBoundary(const QImage &mask);
+        QPainterPath boundaryToPath(const QVector<QPoint> &boundary, double smoothness);
+        void performFloodFill(const QPointF &pos, TupBrushManager *brushManager, TupGraphicsScene *gScene);
 
     private:
         QMap<TAction::ActionId, TAction *> bucketActions;

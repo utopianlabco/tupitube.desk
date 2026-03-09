@@ -147,8 +147,8 @@ void TupFrame::reset()
 
 void TupFrame::clear()
 {
-    for (int i=0; i<graphics.count(); i++) {
-         TupGraphicObject *object = graphics.takeAt(i);
+    while (!graphics.isEmpty()) {
+         TupGraphicObject *object = graphics.takeAt(0);
          if (object) {
              delete object;
              object = nullptr;
@@ -1113,7 +1113,17 @@ bool TupFrame::moveItem(TupLibraryObject::ObjectType objectType, int currentInde
 
 bool TupFrame::removeGraphic(int position)
 {
+    if (position < 0 || position >= graphics.size()) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupFrame::removeGraphic()] - Error: Invalid index:" << position << "/ size:" << graphics.size();
+        #endif
+        return false;
+    }
+
     TupGraphicObject *object = graphics.at(position);
+    if (!object)
+        return false;
+
     itemsUndoList << object;
     QString index = objectIndexes.at(position);
     objectUndoIndexes << index;
@@ -1179,7 +1189,17 @@ bool TupFrame::removeGraphicAt(int position)
 
 bool TupFrame::removeSvg(int position)
 {
+    if (position < 0 || position >= svg.size()) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupFrame::removeSvg()] - Error: Invalid index:" << position << "/ size:" << svg.size();
+        #endif
+        return false;
+    }
+
     TupSvgItem *item = svg.at(position);
+    if (!item)
+        return false;
+
     svgUndoList << item;
     QString index = svgIndexes.at(position);
     svgUndoIndexes << index;

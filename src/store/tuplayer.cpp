@@ -264,10 +264,18 @@ bool TupLayer::restoreResettedFrame(int pos)
     if (resettedFrames.count() > 0) {
         TupFrame *frame = resettedFrames.takeLast();
         if (frame) {
-            frames.removeAt(pos);
-            frames.insert(pos, frame);
-
-            return true;
+            if (pos >= 0 && pos < frames.count()) {
+                frames.removeAt(pos);
+                frames.insert(pos, frame);
+                return true;
+            } else {
+                #ifdef TUP_DEBUG
+                    qWarning() << "[TupLayer::restoreResettedFrame()] - Error: Invalid index:" << pos << "/ size:" << frames.count();
+                #endif
+                // Put it back since we can't use it
+                resettedFrames << frame;
+                return false;
+            }
         }
     } else {
         #ifdef TUP_DEBUG
@@ -286,11 +294,13 @@ int TupLayer::resettedFramesCount()
 
 void TupLayer::clear()
 {
-    for (int i=0; i<frames.count(); i++) {
-         TupFrame *frame = frames.takeAt(i);
-         frame->clear();
-         delete frame;
-         frame = nullptr;
+    while (!frames.isEmpty()) {
+         TupFrame *frame = frames.takeAt(0);
+         if (frame) {
+             frame->clear();
+             delete frame;
+             frame = nullptr;
+         }
     }
     
     layerName = "";

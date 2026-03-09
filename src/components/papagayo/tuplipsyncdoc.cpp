@@ -497,7 +497,10 @@ QList<LipsyncWord *> LipsyncPhrase::getWords()
 
 LipsyncWord* LipsyncPhrase::getLastWord()
 {
-    return words.last();
+    if (!words.isEmpty())
+        return words.last();
+
+    return nullptr;
 }
 
 int LipsyncPhrase::getStartFrameFromWordAt(int index)
@@ -537,6 +540,11 @@ LipsyncVoice::~LipsyncVoice()
     #ifdef TUP_DEBUG
         qDebug() << "[~LipsyncVoice()]";
     #endif
+
+    if (phrase) {
+        delete phrase;
+        phrase = nullptr;
+    }
 }
 
 void LipsyncVoice::setName(const QString &name)
@@ -1055,6 +1063,21 @@ void TupLipsyncDoc::resetDocument()
         delete audioExtractor;
         audioExtractor = nullptr;
     }
+
+    if (voice) {
+        delete voice;
+        voice = nullptr;
+    }
+
+    if (englishLipsyncDictionary) {
+        delete englishLipsyncDictionary;
+        englishLipsyncDictionary = nullptr;
+    }
+
+    if (spanishLipsyncDictionary) {
+        delete spanishLipsyncDictionary;
+        spanishLipsyncDictionary = nullptr;
+    }
 }
 
 TupLipsyncDictionary * TupLipsyncDoc::getDictionary()
@@ -1304,10 +1327,11 @@ void TupLipsyncDoc::setVoice(LipsyncVoice *voice)
 
 void TupLipsyncDoc::clearVoice()
 {
-    if (voice)
+    if (voice) {
         voice->clearPhrase();
-
-    delete voice;
+        delete voice;
+        voice = nullptr;
+    }
 }
 
 void TupLipsyncDoc::setPGOFilePath(const QString &path)

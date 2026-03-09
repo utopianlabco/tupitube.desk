@@ -737,17 +737,17 @@ void TupScene::clear()
 {
     if (background) {
         background->clearBackground();
-
-        background = nullptr;
         delete background;
+        background = nullptr;
     }
 
-    for (int i=0; i<layers.count(); i++) {
-         TupLayer *layer = layers.takeAt(i);
-         layer->clear();
-
-         layer = nullptr;
-         delete layer;
+    while (!layers.isEmpty()) {
+         TupLayer *layer = layers.takeAt(0);
+         if (layer) {
+             layer->clear();
+             delete layer;
+             layer = nullptr;
+         }
     }
 
     layerCount = 1;

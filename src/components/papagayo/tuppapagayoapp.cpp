@@ -64,9 +64,18 @@ TupPapagayoApp::TupPapagayoApp(PapagayoAppMode mode, TupProject *project, const 
     pgoFolderPath = project->getDataDir() + "/pgo/";
     soundFilePath = soundFile;
 
-    sceneIndex= indexes.at(0);
-    layerIndex = indexes.at(1);
-    frameIndex = indexes.at(2);
+    if (indexes.size() >= 3) {
+        sceneIndex = indexes.at(0);
+        layerIndex = indexes.at(1);
+        frameIndex = indexes.at(2);
+    } else {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupPapagayoApp::TupPapagayoApp()] - Warning: indexes list has less than 3 elements";
+        #endif
+        sceneIndex = 0;
+        layerIndex = 0;
+        frameIndex = 0;
+    }
 
     setUICore(soundFilePath);
 }
@@ -115,9 +124,18 @@ TupPapagayoApp::TupPapagayoApp(PapagayoAppMode mode, TupProject *project, TupLip
         #endif
     }
 
-    sceneIndex= indexes.at(0);
-    layerIndex = indexes.at(1);
-    frameIndex = indexes.at(2);
+    if (indexes.size() >= 3) {
+        sceneIndex = indexes.at(0);
+        layerIndex = indexes.at(1);
+        frameIndex = indexes.at(2);
+    } else {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupPapagayoApp::TupPapagayoApp()] - Warning: indexes list has less than 3 elements";
+        #endif
+        sceneIndex = 0;
+        layerIndex = 0;
+        frameIndex = 0;
+    }
 
     setUICore(pgoFilePath);
 }

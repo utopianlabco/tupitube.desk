@@ -51,7 +51,8 @@ TupMouthView::TupMouthView(TupLipsyncDictionary *dictionary, QWidget *parent) : 
         }
 	}
 
-    currentPath = mouthsPath.at(0);
+    if (!mouthsPath.isEmpty())
+        currentPath = mouthsPath.at(0);
 
     #ifdef TUP_DEBUG
         qDebug() << "[TupMouthView()] - Current mouth image -> " << currentPath;
@@ -60,6 +61,10 @@ TupMouthView::TupMouthView(TupLipsyncDictionary *dictionary, QWidget *parent) : 
 
 TupMouthView::~TupMouthView()
 {
+    for (int i = 0; i < 5; i++) {
+        qDeleteAll(mouths[i]);
+        mouths[i].clear();
+    }
 }
 
 void TupMouthView::setDocument(TupLipsyncDoc *doc)

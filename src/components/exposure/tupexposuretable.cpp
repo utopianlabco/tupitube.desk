@@ -278,6 +278,14 @@ void TupExposureTable::requestFrameSelection(int currentSelectedRow, int current
 
             if ((previousColumn != currentColumn) || (columnCount() == 1))
                 header->updateSelection(currentColumn);
+        } else {
+            // Cell doesn't exist yet - this handles pen tablet clicks where cellClicked might not fire
+            // Call markUsedFrames to create the frame and emit frameSelected
+            if (previousColumn != currentColumn || previousRow != currentSelectedRow) {
+                markUsedFrames(currentSelectedRow, currentColumn);
+                if ((previousColumn != currentColumn) || (columnCount() == 1))
+                    header->updateSelection(currentColumn);
+            }
         }
     } else { // A layer is being removed
         removingLayer = false;

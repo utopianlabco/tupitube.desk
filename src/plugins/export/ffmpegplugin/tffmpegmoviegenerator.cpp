@@ -314,7 +314,16 @@ AVStream * TFFmpegMovieGenerator::addVideoStream()
     videoStream->time_base.den = fps;
     videoCodecContext->time_base = videoStream->time_base;
 
-    videoCodecContext->gop_size = 12; // emit one intra frame every twelve frames at most
+    // Adjust GOP size for low FPS to ensure keyframes are present
+    // At 1 FPS, gop_size = 12 would mean 12 seconds between keyframes
+    videoCodecContext->gop_size = (fps < 12) ? fps : 12;
+    
+    // For low FPS, disable B-frames to prevent frame buffering issues
+    // B-frames require future frames which causes the encoder to buffer
+    if (fps < 12) {
+        videoCodecContext->max_b_frames = 0;
+    }
+    
     videoCodecContext->pix_fmt = AV_PIX_FMT_YUV420P;
     if (videoCodecContext->codec_id == AV_CODEC_ID_MPEG2VIDEO) {
         // just for testing, we also add B-frames
@@ -448,8 +457,22 @@ bool TFFmpegMovieGenerator::openVideoStream()
         qDebug() << "[TFFmpegMovieGenerator::openVideoStream()]";
     #endif
 
-    // Open the codec
-    int error = avcodec_open2(videoCodecContext, videoCodec, nullptr);
+    // Open the codec with options for low FPS
+    AVDictionary *codecOptions = nullptr;
+    
+    // For low FPS, use zerolatency to disable all lookahead buffering
+    // This ensures frames are output immediately without encoder delay
+    // (only affects libx264, ignored by other codecs)
+    if (fps < 12) {
+        av_dict_set(&codecOptions, "tune", "zerolatency", 0);
+        #ifdef TUP_DEBUG
+            qDebug() << "[TFFmpegMovieGenerator::openVideoStream()] - Setting tune=zerolatency for fps:" << fps;
+        #endif
+    }
+    
+    int error = avcodec_open2(videoCodecContext, videoCodec, &codecOptions);
+    av_dict_free(&codecOptions);
+    
     if (error < 0) {
         errorMsg = "ffmpeg error: Can't open video codec.";
         #ifdef TUP_DEBUG
@@ -675,7 +698,7 @@ bool TFFmpegMovieGenerator::createVideoFrame(const QImage &image)
         videoFrame->format = AV_PIX_FMT_YUV420P;
         videoFrame->width = videoW;
         videoFrame->height = videoH;
-        videoFrame->pts += av_rescale_q(1, videoCodecContext->time_base, videoStream->time_base);
+        // PTS is incremented AFTER encoding, not before (see end of function)
     }
 
     int error = avcodec_send_frame(videoCodecContext, videoFrame);
@@ -687,6 +710,9 @@ bool TFFmpegMovieGenerator::createVideoFrame(const QImage &image)
 
         return false;
     }
+    
+    // Increment PTS for the NEXT frame (after current frame is sent)
+    videoFrame->pts += av_rescale_q(1, videoCodecContext->time_base, videoStream->time_base);
 
     while (error >= 0) {
         error = avcodec_receive_packet(videoCodecContext, packet);
@@ -732,8 +758,17 @@ int TFFmpegMovieGenerator::writeVideoFrame(AVPacket *packet)
     // rescale output packet timestamp values from codec to stream timebase
     av_packet_rescale_ts(packet, videoStream->time_base, videoStream->time_base);
     packet->stream_index = videoStream->index;
+    
+    // Calculate duration based on actual stream time_base (muxer may have changed it)
+    // Duration = 1 frame = time_base.den / fps (in stream time_base units)
+    // Or more simply: calculate 1 frame duration by rescaling from codec time base
+    int64_t frameDuration = av_rescale_q(1, videoCodecContext->time_base, videoStream->time_base);
+    packet->duration = frameDuration;
 
     #ifdef TUP_DEBUG
+        qDebug() << "[TFFmpegMovieGenerator::writeVideoFrame()] - pts:" << packet->pts 
+                 << "duration:" << packet->duration << "stream_time_base:" 
+                 << videoStream->time_base.num << "/" << videoStream->time_base.den;
         logPacket(Video, videoStream->time_base, packet, "in");
     #endif
 
@@ -764,20 +799,42 @@ void TFFmpegMovieGenerator::saveMovie(const QString &filename)
     #ifdef TUP_DEBUG
         qDebug() << "***";
         qDebug() << "[TFFmpegMovieGenerator::saveMovie()] - filename ->" << filename;
+        qDebug() << "[TFFmpegMovieGenerator::saveMovie()] - framesCount ->" << framesCount;
+        qDebug() << "[TFFmpegMovieGenerator::saveMovie()] - realFrames ->" << realFrames;
     #endif
-
-    int missingFrames = framesCount - realFrames;
-
-    if (missingFrames > 0) {
-        for (int i=0; i<missingFrames; i++) {
-            QImage image = QImage(videoW, videoH, QImage::Format_RGB32);
-            image.fill(Qt::white);
-            createVideoFrame(image);
-        }
-    }
 
     endVideoFile();
     copyMovieFile(filename);
+}
+
+void TFFmpegMovieGenerator::flushEncoder()
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TFFmpegMovieGenerator::flushEncoder()]";
+    #endif
+
+    if (videoCodecContext) {
+        AVPacket *packet = av_packet_alloc();
+        if (packet) {
+            // Signal end of stream to encoder
+            int ret = avcodec_send_frame(videoCodecContext, nullptr);
+            #ifdef TUP_DEBUG
+                qDebug() << "[TFFmpegMovieGenerator::flushEncoder()] - send_frame returned:" << ret;
+            #endif
+            
+            // Drain all remaining packets
+            int flushedFrames = 0;
+            while (avcodec_receive_packet(videoCodecContext, packet) == 0) {
+                flushedFrames++;
+                writeVideoFrame(packet);
+                av_packet_unref(packet);
+            }
+            #ifdef TUP_DEBUG
+                qDebug() << "[TFFmpegMovieGenerator::flushEncoder()] - Flushed frames:" << flushedFrames;
+            #endif
+            av_packet_free(&packet);
+        }
+    }
 }
 
 void TFFmpegMovieGenerator::endVideoFile()
@@ -785,6 +842,18 @@ void TFFmpegMovieGenerator::endVideoFile()
     #ifdef TUP_DEBUG
         qDebug() << "[TFFmpegMovieGenerator::endVideoFile()]";
     #endif
+
+    // Flush encoder to get any remaining buffered frames
+    flushEncoder();
+
+    // Explicitly set stream duration for correct container duration
+    // Duration = number of frames in stream time_base units (at 1 FPS, time_base=1/1)
+    if (videoStream) {
+        videoStream->duration = framesCount;
+        #ifdef TUP_DEBUG
+            qDebug() << "[TFFmpegMovieGenerator::endVideoFile()] - Setting stream duration:" << framesCount;
+        #endif
+    }
 
     av_write_trailer(formatContext);
 

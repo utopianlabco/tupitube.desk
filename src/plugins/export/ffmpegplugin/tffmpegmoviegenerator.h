@@ -91,6 +91,7 @@ class TUPITUBE_PLUGIN TFFmpegMovieGenerator : public TMovieGenerator
     private:
         bool initVideoFile();
         void setFileExtension(int format);
+        void flushEncoder();
         bool openVideoStream();
         bool openAudioInputStream();
         bool openAudioOutputStream();

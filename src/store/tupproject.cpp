@@ -71,7 +71,7 @@ TupProject::~TupProject()
     scenesList.clear();
 }
 
-void TupProject::loadLibrary(const QString &filename)
+bool TupProject::loadLibrary(const QString &filename)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupProject::loadLibrary()]";
@@ -80,12 +80,32 @@ void TupProject::loadLibrary(const QString &filename)
     QFile file(filename);
 
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        library->fromXml(QString::fromLocal8Bit(file.readAll()));
+        int size = file.size();
+        if (size == 0) {
+            #ifdef TUP_DEBUG
+                qWarning() << "[TupProject::loadLibrary()] - Fatal Error: Library file (TPL) has size ZERO! ->" << filename;
+            #endif
+            file.close();
+            return false;
+        }
+
+        QString content = QString::fromLocal8Bit(file.readAll());
         file.close();
+
+        if (content.trimmed().isEmpty()) {
+            #ifdef TUP_DEBUG
+                qWarning() << "[TupProject::loadLibrary()] - Fatal Error: Library file (TPL) is empty! ->" << filename;
+            #endif
+            return false;
+        }
+
+        library->fromXml(content);
+        return true;
     } else {
         #ifdef TUP_DEBUG
             qDebug() << "[TupProject::loadLibrary()] - Cannot open library from ->" << filename;
         #endif
+        return false;
     }
 }
 

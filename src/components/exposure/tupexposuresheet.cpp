@@ -530,7 +530,30 @@ void TupExposureSheet::requestPasteSelectionInCurrentFrame()
 
 void TupExposureSheet::requestExtendCurrentFrame(int times)
 {
-    TupProjectRequest request = TupRequestBuilder::createFrameRequest(scenesContainer->currentSceneIndex(),
+    int sceneIndex = scenesContainer->currentSceneIndex();
+    
+    // Check if multiple layers are selected at the same frame index
+    QList<int> coords = currentExposureTable->currentSelection();
+    if (coords.count() == 4) {
+        int firstLayer = coords.at(0);
+        int lastLayer = coords.at(1);
+        int firstFrame = coords.at(2);
+        int lastFrame = coords.at(3);
+        
+        // Only extend multiple layers if they're all at the same frame index
+        if (firstFrame == lastFrame && firstLayer != lastLayer) {
+            // Extend frame for each selected layer (iterate in reverse to maintain indices)
+            for (int layer = lastLayer; layer >= firstLayer; layer--) {
+                TupProjectRequest request = TupRequestBuilder::createFrameRequest(sceneIndex, layer, firstFrame,
+                                                                                  TupProjectRequest::Extend, times);
+                emit requestTriggered(&request);
+            }
+            return;
+        }
+    }
+    
+    // Single layer case
+    TupProjectRequest request = TupRequestBuilder::createFrameRequest(sceneIndex,
                                                    currentExposureTable->currentLayer(),
                                                    currentExposureTable->currentFrame(),
                                                    TupProjectRequest::Extend, times);
@@ -599,6 +622,33 @@ void TupExposureSheet::extendFrameForward(int layerIndex, int frameIndex)
     #endif
 
     int sceneIndex = scenesContainer->currentSceneIndex();
+    
+    // Check if multiple layers are selected at the same frame index
+    QList<int> coords = currentExposureTable->currentSelection();
+    if (coords.count() == 4) {
+        int firstLayer = coords.at(0);
+        int lastLayer = coords.at(1);
+        int firstFrame = coords.at(2);
+        int lastFrame = coords.at(3);
+        
+        // Only extend multiple layers if they're all at the same frame index
+        if (firstFrame == lastFrame && firstLayer != lastLayer) {
+            #ifdef TUP_DEBUG
+                qDebug() << "[TupExposureSheet::extendFrameForward()] - Extending frame" 
+                         << firstFrame << "across layers" << firstLayer << "to" << lastLayer;
+            #endif
+            
+            // Extend frame for each selected layer (iterate in reverse to maintain indices)
+            for (int layer = lastLayer; layer >= firstLayer; layer--) {
+                TupProjectRequest request = TupRequestBuilder::createFrameRequest(sceneIndex, layer, firstFrame,
+                                                                                  TupProjectRequest::Extend, 1);
+                emit requestTriggered(&request);
+            }
+            return;
+        }
+    }
+    
+    // Single layer case - use provided indices
     TupProjectRequest request = TupRequestBuilder::createFrameRequest(sceneIndex, layerIndex, frameIndex,
                                                                       TupProjectRequest::Extend, 1);
     emit requestTriggered(&request);

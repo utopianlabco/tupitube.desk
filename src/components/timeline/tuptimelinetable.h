@@ -88,6 +88,7 @@ class TUPITUBE_EXPORT TupTimeLineTable : public QTableWidget
 
         QList<int> currentSelection();
         int framesCountAtCurrentLayer();
+        bool frameIsEmpty(int layerIndex, int frameIndex);
         void updateFrameState(int layerIndex, int frameIndex, bool value);
         void adjustCellsSize();
 

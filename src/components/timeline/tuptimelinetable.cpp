@@ -588,6 +588,18 @@ void TupTimeLineTable::requestFrameSelection(int currentLayerIndex, int currentF
     }
 }
 
+bool TupTimeLineTable::frameIsEmpty(int layerIndex, int frameIndex)
+{
+    if (layerIndex < 0 || frameIndex < 0)
+        return true;
+
+    QTableWidgetItem *frame = item(layerIndex, frameIndex);
+    if (frame)
+        return frame->data(TupTimeLineTableItem::IsEmpty).toBool();
+
+    return true;
+}
+
 void TupTimeLineTable::updateFrameState(int layerIndex, int frameIndex, bool value)
 {
     /*
@@ -600,7 +612,7 @@ void TupTimeLineTable::updateFrameState(int layerIndex, int frameIndex, bool val
     if (layerIndex < 0 || frameIndex < 0)
         return;
 
-    QTableWidgetItem *frame = item(frameIndex, layerIndex);
+    QTableWidgetItem *frame = item(layerIndex, frameIndex);
     if (frame) {
         frame->setData(TupTimeLineTableItem::IsEmpty, value);
     } else {

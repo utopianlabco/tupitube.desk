@@ -298,6 +298,8 @@ bool NodesTool::setPathNodes(QPointF coord, QList<QGraphicsItem *> currentSelect
                     if (pathItem->isNotEdited())
                         pathItem->saveOriginalPath();
 
+                    configPanel->setNodesTotal(pathItem->nodesCount());
+
                     #ifdef TUP_DEBUG
                         qDebug() << "---";
                     #endif
@@ -593,10 +595,8 @@ void NodesTool::itemResponse(const TupItemResponse *response)
                      }
                  }
 
-                 if (response->getMode() == TupProjectResponse::Redo || response->getMode() == TupProjectResponse::Undo) {
-                     if (TupPathItem *pathItem = qgraphicsitem_cast<TupPathItem *>(item))
-                         configPanel->setNodesTotal(pathItem->nodesCount());
-                 }
+                 if (TupPathItem *pathItem = qgraphicsitem_cast<TupPathItem *>(item))
+                     configPanel->setNodesTotal(pathItem->nodesCount());
             }
         }
         break;
@@ -944,6 +944,8 @@ void NodesTool::removeNodeFromPath(int index)
                                                                            QPointF(), scene->getSpaceContext(), TupLibraryObject::Item,
                                                                            TupProjectRequest::EditNodes, path);
             emit requested(&event);
+
+            configPanel->setNodesTotal(pathItem->nodesCount());
         }
     }
 }

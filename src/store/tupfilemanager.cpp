@@ -449,8 +449,27 @@ bool TupFileManager::load(const QString &fileName, TupProject *project)
         }
 
         project->setDataDir(packageHandler.importedProjectPath());
+
         // Loading library assets
-        project->loadLibrary(projectDir.path() + "/library.tpl");
+        QString libraryPath = projectDir.path() + "/library.tpl";
+        QFile libraryFile(libraryPath);
+        if (!libraryFile.exists()) {
+            #ifdef TUP_DEBUG
+                qWarning() << "[TupFileManager::load()] - Fatal Error: Library file (TPL) doesn't exist! ->" << libraryPath;
+            #endif
+            TOsd::self()->display(TOsd::Error, tr("Can't find library file!"));
+
+            return false;
+        }
+
+        if (!project->loadLibrary(libraryPath)) {
+            #ifdef TUP_DEBUG
+                qWarning() << "[TupFileManager::load()] - Fatal Error: Library file (TPL) is corrupted! ->" << libraryPath;
+            #endif
+            TOsd::self()->display(TOsd::Error, tr("Library file is corrupted!"));
+
+            return false;
+        }
 
         QStringList scenes = projectDir.entryList(QStringList() << "*.tps", QDir::Readable | QDir::Files);
         QFile *file;

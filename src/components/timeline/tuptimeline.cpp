@@ -528,8 +528,16 @@ void TupTimeLine::frameResponse(TupFrameResponse *response)
               {
                   int times = response->getArg().toInt();
                   if (response->getMode() == TupProjectResponse::Do || response->getMode() == TupProjectResponse::Redo) {
+                      // Get the empty state of the source frame before extending
+                      bool sourceIsEmpty = framesTable->frameIsEmpty(layerIndex, frameIndex);
+                      int lastFrame = framesTable->lastFrameByLayer(layerIndex);
+                      
                       for (int i=0; i<times; i++)
                           framesTable->insertFrame(layerIndex);
+                      
+                      // Update the extended frames to match the source frame's state
+                      for (int i=1; i<=times; i++)
+                          framesTable->updateFrameState(layerIndex, lastFrame + i, sourceIsEmpty);
                   } else {
                       framesTable->removeFrameSelection(layerIndex, frameIndex, 1, times);
                   }
@@ -1035,10 +1043,37 @@ void TupTimeLine::requestRemoveFrame(bool flag)
 void TupTimeLine::extendFrameForward(int layerIndex, int frameIndex)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupCommandExecutor::copyFrameSelection()]";
+        qDebug() << "[TupTimeLine::extendFrameForward()]";
     #endif
 
     int sceneIndex = scenesContainer->currentIndex();
+    
+    // Check if multiple layers are selected at the same frame index
+    QList<int> coords = framesTable(sceneIndex)->currentSelection();
+    if (coords.count() == 4) {
+        int firstLayer = coords.at(0);
+        int lastLayer = coords.at(1);
+        int firstFrame = coords.at(2);
+        int lastFrame = coords.at(3);
+        
+        // Only extend multiple layers if they're all at the same frame index
+        if (firstFrame == lastFrame && firstLayer != lastLayer) {
+            #ifdef TUP_DEBUG
+                qDebug() << "[TupTimeLine::extendFrameForward()] - Extending frame" 
+                         << firstFrame << "across layers" << firstLayer << "to" << lastLayer;
+            #endif
+            
+            // Extend frame for each selected layer (iterate in reverse to maintain indices)
+            for (int layer = lastLayer; layer >= firstLayer; layer--) {
+                TupProjectRequest request = TupRequestBuilder::createFrameRequest(sceneIndex, layer, firstFrame,
+                                                                                  TupProjectRequest::Extend, 1);
+                emit requestTriggered(&request);
+            }
+            return;
+        }
+    }
+    
+    // Single layer case - use provided indices
     TupProjectRequest request = TupRequestBuilder::createFrameRequest(sceneIndex, layerIndex, frameIndex,
                                                                       TupProjectRequest::Extend, 1);
     emit requestTriggered(&request);

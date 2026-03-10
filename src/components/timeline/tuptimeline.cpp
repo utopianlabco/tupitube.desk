@@ -84,6 +84,8 @@ TupTimeLine::TupTimeLine(TupProject *projectData, QWidget *parent) : TupModuleWi
     // Opacity Component
 
     QHBoxLayout *toolsLayout = new QHBoxLayout;
+    toolsLayout->setContentsMargins(0, 0, 0, 0);
+    toolsLayout->setSpacing(2);
     toolsLayout->setAlignment(Qt::AlignHCenter);
 
     QLabel *header = new QLabel();
@@ -105,10 +107,12 @@ TupTimeLine::TupTimeLine(TupProject *projectData, QWidget *parent) : TupModuleWi
 
     QWidget *toolBar = new QWidget;
     QHBoxLayout *toolbarLayout = new QHBoxLayout(toolBar);
+    toolbarLayout->setContentsMargins(2, 0, 2, 0);
+    toolbarLayout->setSpacing(2);
     toolbarLayout->addWidget(actionBar);
-    toolbarLayout->addSpacing(3);
+    toolbarLayout->addSpacing(8);
     toolbarLayout->addWidget(new TSeparator(Qt::Vertical));
-    toolbarLayout->addSpacing(3);
+    toolbarLayout->addSpacing(8);
     toolbarLayout->addLayout(toolsLayout);
 
     addChild(toolBar, Qt::AlignHCenter);

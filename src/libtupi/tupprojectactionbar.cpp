@@ -74,10 +74,10 @@ void TupProjectActionBar::setup(QList<Action> actionsList)
     }
     
     mainLayout->setSpacing(0);
-    mainLayout->setMargin(1);
+    mainLayout->setMargin(0);
     
-    buttonLayout->setSpacing(2);
-    buttonLayout->setMargin(1);
+    buttonLayout->setSpacing(3);
+    buttonLayout->setMargin(0);
     buttonLayout->addStretch();
 
     int iconSize = TResponsiveUI::fitActionBarIconSize();

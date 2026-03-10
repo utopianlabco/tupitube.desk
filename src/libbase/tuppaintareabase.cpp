@@ -579,8 +579,20 @@ void TupPaintAreaBase::drawGrid(QPainter *painter, int width, int height)
     if (gridSeparation < 40)
         showAllNumbers = false;
 
-    QFont font("Arial", 18, QFont::Bold);
+    // Calculate font size relative to workspace dimensions (based on smaller dimension)
+    int smallerDimension = qMin(width, height);
+    int fontSize = qBound(8, smallerDimension / 60, 24);
+    QFont font("Arial", fontSize, QFont::Bold);
     painter->setFont(font);
+
+    // Scale offsets based on font size ratio (18 is the reference size)
+    qreal scaleFactor = fontSize / 18.0;
+    int topMargin = qRound(20 * scaleFactor);
+    int singleDigitOffset = qRound(5 * scaleFactor);
+    int doubleDigitOffset = qRound(10 * scaleFactor);
+    int leftMarginSingle = qRound(40 * scaleFactor);
+    int leftMarginDouble = qRound(45 * scaleFactor);
+    int verticalCenter = qRound(5 * scaleFactor);
 
     int midX = width / 2;
     int midY = height / 2;
@@ -592,16 +604,16 @@ void TupPaintAreaBase::drawGrid(QPainter *painter, int width, int height)
     // Vertical lines - first section
     int initX = midX - gridSeparation;
     int counter = 1;
-    int yPos = minY - 20;
+    int yPos = minY - topMargin;
     for (int i=initX; i > minX; i -= gridSeparation) {
         painter->setPen(gridPen);
         painter->drawLine(i, minY, i, maxY);
 
         if (showAllNumbers || (counter % 2 == 0)) {
             painter->setPen(numberPen);
-            int xPos = i - 10;
+            int xPos = i - doubleDigitOffset;
             if (counter < 10)
-                xPos = i - 5;
+                xPos = i - singleDigitOffset;
             painter->drawText(QPointF(xPos, yPos), QString::number(counter));
         }
         counter++;
@@ -616,9 +628,9 @@ void TupPaintAreaBase::drawGrid(QPainter *painter, int width, int height)
 
         if (showAllNumbers || (counter % 2 == 0)) {
             painter->setPen(numberPen);
-            int xPos = i - 10;
+            int xPos = i - doubleDigitOffset;
             if (counter < 10)
-                xPos = i - 5;
+                xPos = i - singleDigitOffset;
             painter->drawText(QPointF(xPos, yPos), QString::number(counter));
         }
         counter++;
@@ -632,11 +644,11 @@ void TupPaintAreaBase::drawGrid(QPainter *painter, int width, int height)
         painter->drawLine(minX, i, maxX, i);
 
         if (showAllNumbers || (counter % 2 == 0)) {
-            int xPos = minX - 45;
+            int xPos = minX - leftMarginDouble;
             if (counter < 10)
-                xPos = minX - 40;
+                xPos = minX - leftMarginSingle;
             painter->setPen(numberPen);
-            painter->drawText(QPointF(xPos, i + 5), QString::number(counter));            
+            painter->drawText(QPointF(xPos, i + verticalCenter), QString::number(counter));            
         }
         counter++;
     }
@@ -649,11 +661,11 @@ void TupPaintAreaBase::drawGrid(QPainter *painter, int width, int height)
         painter->drawLine(minX, i, maxX, i);
 
         if (showAllNumbers || (counter % 2 == 0)) {
-            int xPos = minX - 45;
+            int xPos = minX - leftMarginDouble;
             if (counter < 10)
-                xPos = minX - 40;
+                xPos = minX - leftMarginSingle;
             painter->setPen(numberPen);
-            painter->drawText(QPointF(xPos, i + 5), QString::number(counter));            
+            painter->drawText(QPointF(xPos, i + verticalCenter), QString::number(counter));            
         }
         counter++;
     }
@@ -663,8 +675,8 @@ void TupPaintAreaBase::drawGrid(QPainter *painter, int width, int height)
     painter->drawLine(midX, minY, midX, maxY);
     painter->drawLine(minX, midY, maxX, midY);
 
-    painter->drawText(QPointF(midX - 5, yPos), "0");
-    painter->drawText(QPointF(minX - 40, midY + 10), "0");
+    painter->drawText(QPointF(midX - singleDigitOffset, yPos), "0");
+    painter->drawText(QPointF(minX - leftMarginSingle, midY + verticalCenter * 2), "0");
 }
 
 void TupPaintAreaBase::drawSafeArea(QPainter *painter, int width, int height)

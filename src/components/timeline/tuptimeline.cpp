@@ -73,11 +73,14 @@ TupTimeLine::TupTimeLine(TupProject *projectData, QWidget *parent) : TupModuleWi
     actions << TupProjectActionBar::Separator;
     actions << TupProjectActionBar::CopyFrame << TupProjectActionBar::PasteFrame;
     actions << TupProjectActionBar::Separator;
-    actions << TupProjectActionBar::InsertLayer << TupProjectActionBar::RemoveLayer;
+    actions << TupProjectActionBar::InsertLayer << TupProjectActionBar::DuplicateLayer
+            << TupProjectActionBar::RemoveLayer;
+    actions << TupProjectActionBar::MoveLayerUp << TupProjectActionBar::MoveLayerDown;
     actions << TupProjectActionBar::Separator;
     actions << TupProjectActionBar::InsertScene
             << TupProjectActionBar::DuplicateScene
             << TupProjectActionBar::RemoveScene;
+    actions << TupProjectActionBar::MoveSceneUp << TupProjectActionBar::MoveSceneDown;
 
     actionBar = new TupProjectActionBar(QString("TimeLine"), actions);
 
@@ -381,6 +384,22 @@ void TupTimeLine::layerResponse(TupLayerResponse *response)
                 }
             }
             break;
+            case TupProjectRequest::Duplicate:
+            {
+                TupScene *scene = project->sceneAt(sceneIndex);
+                if (scene) {
+                    int newLayerIndex = layerIndex + 1;
+                    TupLayer *layer = scene->layerAt(newLayerIndex);
+                    if (layer) {
+                        framesTable->insertLayer(newLayerIndex, layer->getLayerName());
+                        QList<TupFrame *> frames = layer->getFrames();
+                        int total = frames.count();
+                        for (int i = 0; i < total; i++)
+                            framesTable->insertFrame(newLayerIndex);
+                    }
+                }
+            }
+            break;
             case TupProjectRequest::Move:
             {
                 int newLayerIndex = response->getArg().toInt();
@@ -673,6 +692,18 @@ void TupTimeLine::requestCommand(int action)
         return;
     }
 
+    // Scene actions don't require valid layer/frame selection
+    if (TupProjectActionBar::SceneActions & action) {
+        if (!requestSceneAction(action, sceneIndex)) {
+            #ifdef TUP_DEBUG
+                qWarning() << "[TupTimeLine::requestCommand()] - Fatal Error: Scene action has failed! - sceneIndex ->"
+                           << sceneIndex;
+            #endif
+        }
+
+        return;
+    }
+
     int layerIndex = framesTable(sceneIndex)->currentLayer();
     if (layerIndex < 0) {
         #ifdef TUP_DEBUG
@@ -707,17 +738,6 @@ void TupTimeLine::requestCommand(int action)
         if (!requestLayerAction(action, layerIndex, sceneIndex)) {
             #ifdef TUP_DEBUG
                 qWarning() << "[TupTimeLine::requestCommand()] - Fatal Error: Layer action has failed!";
-            #endif
-        }
-
-        return;
-    }
-
-    if (TupProjectActionBar::SceneActions & action) {
-        if (!requestSceneAction(action, sceneIndex)) {
-            #ifdef TUP_DEBUG
-                qWarning() << "[TupTimeLine::requestCommand()] - Fatal Error: Scene action has failed! - sceneIndex ->"
-                           << sceneIndex;
             #endif
         }
 
@@ -846,11 +866,37 @@ bool TupTimeLine::requestLayerAction(int action, int layerIndex, int sceneIndex,
 
             return true;
         }
+        case TupProjectActionBar::DuplicateLayer:
+        {
+            request = TupRequestBuilder::createLayerRequest(sceneIndex, layerIndex, TupProjectRequest::Duplicate);
+            emit requestTriggered(&request);
+
+            return true;
+        }
         case TupProjectActionBar::RemoveLayer:
         {
             request = TupRequestBuilder::createLayerRequest(sceneIndex, layerIndex, TupProjectRequest::Remove, arg);
             emit requestTriggered(&request);
 
+            return true;
+        }
+        case TupProjectActionBar::MoveLayerUp:
+        {
+            if (layerIndex > 0) {
+                request = TupRequestBuilder::createLayerRequest(sceneIndex, layerIndex,
+                                                                TupProjectRequest::Move, layerIndex - 1);
+                emit requestTriggered(&request);
+            }
+            return true;
+        }
+        case TupProjectActionBar::MoveLayerDown:
+        {
+            int totalLayers = framesTable(sceneIndex)->layersCount();
+            if (layerIndex < totalLayers - 1) {
+                request = TupRequestBuilder::createLayerRequest(sceneIndex, layerIndex,
+                                                                TupProjectRequest::Move, layerIndex + 1);
+                emit requestTriggered(&request);
+            }
             return true;
         }
         default:
@@ -920,15 +966,20 @@ bool TupTimeLine::requestSceneAction(int action, int sceneIndex, const QVariant 
         }
         case TupProjectActionBar::MoveSceneUp:
         {
-            request = TupRequestBuilder::createSceneRequest(sceneIndex, TupProjectRequest::Move, sceneIndex + 1);
-            emit requestTriggered(&request);
+            if (sceneIndex > 0 && scenesContainer->count() > 1) {
+                request = TupRequestBuilder::createSceneRequest(sceneIndex, TupProjectRequest::Move, sceneIndex - 1);
+                emit requestTriggered(&request);
+            }
 
             return true;
         }
         case TupProjectActionBar::MoveSceneDown:
         {
-            request = TupRequestBuilder::createSceneRequest(sceneIndex, TupProjectRequest::Move, sceneIndex - 1);
-            emit requestTriggered(&request);
+            int scenesTotal = scenesContainer->count();
+            if (sceneIndex < scenesTotal - 1 && scenesTotal > 1) {
+                request = TupRequestBuilder::createSceneRequest(sceneIndex, TupProjectRequest::Move, sceneIndex + 1);
+                emit requestTriggered(&request);
+            }
 
             return true;
         }

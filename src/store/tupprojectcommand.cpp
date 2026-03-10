@@ -406,6 +406,11 @@ void TupProjectCommand::layerCommand()
                  executor->createLayer(res);
             }
             break;
+            case TupProjectRequest::Duplicate:
+            {
+                 executor->duplicateLayer(res);
+            }
+            break;
             case TupProjectRequest::AddLipSync:
             {
                  executor->addLipSync(res);

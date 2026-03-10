@@ -81,6 +81,7 @@ void TupProjectActionBar::setup(QList<Action> actionsList)
     buttonLayout->addStretch();
 
     int iconSize = TResponsiveUI::fitActionBarIconSize();
+    int smallIconSize = qMax(12, iconSize - 4);  // Smaller size for layer movement icons
 
     foreach(Action action, actionsList) {
         if (action == InsertFrame) {
@@ -199,6 +200,15 @@ void TupProjectActionBar::setup(QList<Action> actionsList)
             // button->setAnimated(isAnimated);
         }
 
+        if (action == DuplicateLayer) {
+            TImageButton *button = new TImageButton(QIcon(ICONS_DIR + "duplicate_layer.png"), iconSize);
+            button->setToolTip(tr("Duplicate layer"));
+
+            actions.addButton(button, DuplicateLayer);
+
+            buttonLayout->addWidget(button);
+        }
+
         if (action == RemoveLayer) {
             TImageButton *button = new TImageButton(QIcon(ICONS_DIR + "remove_layer.png"), iconSize);
             button->setToolTip(tr("Remove layer"));
@@ -208,6 +218,42 @@ void TupProjectActionBar::setup(QList<Action> actionsList)
 
             buttonLayout->addWidget(button);
             // button->setAnimated(isAnimated);
+        }
+
+        if (action == MoveLayerLeft) {
+            TImageButton *button = new TImageButton(QIcon(ICONS_DIR + "previous.png"), smallIconSize);
+            button->setToolTip(tr("Move layer left"));
+
+            actions.addButton(button, MoveLayerLeft);
+
+            buttonLayout->addWidget(button);
+        }
+
+        if (action == MoveLayerRight) {
+            TImageButton *button = new TImageButton(QIcon(ICONS_DIR + "next.png"), smallIconSize);
+            button->setToolTip(tr("Move layer right"));
+
+            actions.addButton(button, MoveLayerRight);
+
+            buttonLayout->addWidget(button);
+        }
+
+        if (action == MoveLayerUp) {
+            TImageButton *button = new TImageButton(QIcon(ICONS_DIR + "move_frame_up.png"), smallIconSize);
+            button->setToolTip(tr("Move layer up"));
+
+            actions.addButton(button, MoveLayerUp);
+
+            buttonLayout->addWidget(button);
+        }
+
+        if (action == MoveLayerDown) {
+            TImageButton *button = new TImageButton(QIcon(ICONS_DIR + "move_frame_down.png"), smallIconSize);
+            button->setToolTip(tr("Move layer down"));
+
+            actions.addButton(button, MoveLayerDown);
+
+            buttonLayout->addWidget(button);
         }
 
         if (action == InsertScene) {
@@ -238,6 +284,42 @@ void TupProjectActionBar::setup(QList<Action> actionsList)
 
             buttonLayout->addWidget(button);
             // button->setAnimated(isAnimated);
+        }
+
+        if (action == MoveSceneUp) {
+            TImageButton *button = new TImageButton(QIcon(ICONS_DIR + "previous.png"), smallIconSize);
+            button->setToolTip(tr("Move scene up"));
+
+            actions.addButton(button, MoveSceneUp);
+
+            buttonLayout->addWidget(button);
+        }
+
+        if (action == MoveSceneDown) {
+            TImageButton *button = new TImageButton(QIcon(ICONS_DIR + "next.png"), smallIconSize);
+            button->setToolTip(tr("Move scene down"));
+
+            actions.addButton(button, MoveSceneDown);
+
+            buttonLayout->addWidget(button);
+        }
+
+        if (action == MoveSceneLeft) {
+            TImageButton *button = new TImageButton(QIcon(ICONS_DIR + "previous.png"), smallIconSize);
+            button->setToolTip(tr("Move scene left"));
+
+            actions.addButton(button, MoveSceneLeft);
+
+            buttonLayout->addWidget(button);
+        }
+
+        if (action == MoveSceneRight) {
+            TImageButton *button = new TImageButton(QIcon(ICONS_DIR + "next.png"), smallIconSize);
+            button->setToolTip(tr("Move scene right"));
+
+            actions.addButton(button, MoveSceneRight);
+
+            buttonLayout->addWidget(button);
         }
 
         if (action == Separator) {

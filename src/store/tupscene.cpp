@@ -255,6 +255,43 @@ bool TupScene::removeLayer(int index)
     return false;
 }
 
+bool TupScene::duplicateLayer(int index)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupScene::duplicateLayer()] - index -> " << index;
+    #endif
+
+    if (index < 0 || index >= layers.count()) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupScene::duplicateLayer()] - Invalid index -> " << index;
+        #endif
+        return false;
+    }
+
+    TupLayer *sourceLayer = layerAt(index);
+    if (sourceLayer) {
+        QDomDocument doc;
+        doc.appendChild(sourceLayer->toXml(doc));
+
+        // Create new layer name
+        QString baseName = sourceLayer->getLayerName();
+        QString newName = baseName + " " + tr("(copy)");
+
+        QDomElement rootElement = doc.documentElement();
+        rootElement.setAttribute("name", newName);
+
+        // Create new layer at position after the source layer
+        layerCount++;
+        TupLayer *newLayer = new TupLayer(this, layerCount - 1);
+        newLayer->fromXml(doc.toString());
+        layers.insert(index + 1, newLayer);
+
+        return true;
+    }
+
+    return false;
+}
+
 // Return the layer at the index requested
 
 TupLayer *TupScene::layerAt(int index) const

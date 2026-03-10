@@ -297,10 +297,6 @@ QString TupStoryboard::cleanString(QString input) const
 
 bool TupStoryboard::storyboardHasData() const
 {
-    for (int i=0; i<duration.size(); i++) {
-        if (duration.at(i).isEmpty())
-            return false;
-    }
-
-    return true;
+    // Only save storyboard data if user has actually filled in content
+    return !title.isEmpty() || !author.isEmpty() || !summary.isEmpty();
 }

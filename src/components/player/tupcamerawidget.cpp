@@ -505,8 +505,9 @@ void TupCameraWidget::sceneResponse(TupSceneResponse *response)
         break;
         case TupProjectRequest::Move:
         {
+             int newIndex = response->getArg().toInt();
              cameraStatus->setScenes(project->getSceneNames());
-             cameraStatus->setCurrentScene(sceneIndex);
+             cameraStatus->setCurrentScene(newIndex);
         }
         break;
         default:

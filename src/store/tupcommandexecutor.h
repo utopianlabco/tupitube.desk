@@ -61,6 +61,7 @@ class TUPITUBE_EXPORT TupCommandExecutor : public QObject
         bool createScene(TupSceneResponse *response);
         bool duplicateScene(TupSceneResponse *response);
         bool createLayer(TupLayerResponse *response);
+        bool duplicateLayer(TupLayerResponse *response);
         bool addLipSync(TupLayerResponse *response);
         bool createFrame(TupFrameResponse *response);
         // bool restoreFrameSelection(TupFrameResponse *response);

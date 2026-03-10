@@ -91,6 +91,8 @@ void TupTimelineSceneContainer::moveScene(int sceneIndex, int newIndex)
     blockSignals(true);
         QTabWidget::tabBar()->moveTab(sceneIndex, newIndex);
         scenes.swapItemsAt(sceneIndex, newIndex);
+        // Keep focus on the moved scene
+        setCurrentIndex(newIndex);
     blockSignals(false);
 }
 

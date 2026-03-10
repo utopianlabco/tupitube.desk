@@ -2931,9 +2931,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.1933256"
-     inkscape:cx="144.30142"
-     inkscape:cy="802.6624"
+     inkscape:zoom="1.5509154"
+     inkscape:cx="149.26668"
+     inkscape:cy="1575.5211"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -21865,5 +21865,12 @@
          inkscape:export-xdpi="96"
          inkscape:export-ydpi="96" />
     </g>
+    <path
+       id="path5311-8-0-3"
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       d="m 214.40428,634.29714 -29.52929,0.40234 0.40039,26.72266 c 0,0 30.1324,0.49767 31.49414,0.65234 -0.81372,-0.75249 -2.36523,-27.77729 -2.36524,-27.77734 z m 2.36524,27.77734 0.002,0.002 c 0.0129,0.0114 0.0265,0.0158 0.0391,0.0137 0.0277,-0.005 0.008,-0.0101 -0.041,-0.0156 z m -21.58008,-18.68164 0.23242,3.06641 3.5918,0.0137 -0.21094,2.81445 -3.16992,0.0547 0.29883,3.6543 -4.0879,-0.0156 -0.0742,-3.5664 -3.40039,0.0723 -0.0996,-3.08594 3.41601,0.0312 -0.043,-2.73242 z m 13.59179,0 0.23047,3.06641 3.59375,0.0137 -0.21093,2.81445 -3.16993,0.0547 0.29688,3.6543 -4.08789,-0.0156 -0.0723,-3.5664 -3.40039,0.0723 -0.10156,-3.08594 3.41797,0.0312 -0.043,-2.73242 z"
+       inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/default/icons/hd/duplicate_layer.png"
+       inkscape:export-xdpi="120.19"
+       inkscape:export-ydpi="120.19" />
   </g>
 </svg>

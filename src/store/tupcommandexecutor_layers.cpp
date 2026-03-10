@@ -74,6 +74,29 @@ bool TupCommandExecutor::createLayer(TupLayerResponse *response)
     return false;
 }
 
+bool TupCommandExecutor::duplicateLayer(TupLayerResponse *response)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupCommandExecutor::duplicateLayer()]";
+    #endif
+
+    int sceneIndex = response->getSceneIndex();
+    int layerIndex = response->getLayerIndex();
+
+    if (!validateIndices(sceneIndex, layerIndex))
+        return true;
+
+    TupScene *scene = project->sceneAt(sceneIndex);
+    if (scene) {
+        if (scene->duplicateLayer(layerIndex)) {
+            emit responsed(response);
+            return true;
+        }
+    }
+
+    return false;
+}
+
 bool TupCommandExecutor::removeLayer(TupLayerResponse *response)
 {
     #ifdef TUP_DEBUG

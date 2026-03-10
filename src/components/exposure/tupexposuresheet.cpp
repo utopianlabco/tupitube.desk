@@ -61,10 +61,13 @@ TupExposureSheet::TupExposureSheet(QWidget *parent, TupProject *work) : TupModul
     setWindowIcon(QPixmap(ICONS_DIR + "exposure_sheet.png"));
 
     QList<TupProjectActionBar::Action> generalActions;
-    generalActions << TupProjectActionBar::InsertLayer << TupProjectActionBar::RemoveLayer;
+    generalActions << TupProjectActionBar::InsertLayer << TupProjectActionBar::DuplicateLayer
+                   << TupProjectActionBar::RemoveLayer;
+    generalActions << TupProjectActionBar::MoveLayerLeft << TupProjectActionBar::MoveLayerRight;
     generalActions << TupProjectActionBar::Separator;
     generalActions << TupProjectActionBar::InsertScene << TupProjectActionBar::DuplicateScene
                    << TupProjectActionBar::RemoveScene;
+    generalActions << TupProjectActionBar::MoveSceneLeft << TupProjectActionBar::MoveSceneRight;
 
     topActionBar = new TupProjectActionBar(QString("Exposure"), generalActions);
 
@@ -391,12 +394,47 @@ void TupExposureSheet::applyAction(int action)
             }
         break;
 
+        case TupProjectActionBar::DuplicateLayer:
+            {
+                int sceneIndex = scenesContainer->currentSceneIndex();
+                int layerIndex = currentExposureTable->currentLayer();
+                TupProjectRequest request = TupRequestBuilder::createLayerRequest(sceneIndex, layerIndex,
+                                                                                  TupProjectRequest::Duplicate);
+                emit requestTriggered(&request);
+            }
+        break;
+
         case TupProjectActionBar::RemoveLayer:
             {
                 TupProjectRequest request = TupRequestBuilder::createLayerRequest(scenesContainer->currentSceneIndex(),
                                                                                   currentExposureTable->currentLayer(),
                                                                                   TupProjectRequest::Remove);
                 emit requestTriggered(&request);
+            }
+        break;
+
+        case TupProjectActionBar::MoveLayerLeft:
+            {
+                int currentLayer = currentExposureTable->currentLayer();
+                if (currentLayer > 0) {
+                    TupProjectRequest request = TupRequestBuilder::createLayerRequest(scenesContainer->currentSceneIndex(),
+                                                                                      currentLayer,
+                                                                                      TupProjectRequest::Move, currentLayer - 1);
+                    emit requestTriggered(&request);
+                }
+            }
+        break;
+
+        case TupProjectActionBar::MoveLayerRight:
+            {
+                int currentLayer = currentExposureTable->currentLayer();
+                int totalLayers = currentExposureTable->columnCount();
+                if (currentLayer < totalLayers - 1) {
+                    TupProjectRequest request = TupRequestBuilder::createLayerRequest(scenesContainer->currentSceneIndex(),
+                                                                                      currentLayer,
+                                                                                      TupProjectRequest::Move, currentLayer + 1);
+                    emit requestTriggered(&request);
+                }
             }
         break;
 
@@ -446,6 +484,27 @@ void TupExposureSheet::applyAction(int action)
                     emit requestTriggered(&request);
                 } else {
                     request = TupRequestBuilder::createSceneRequest(sceneIndex, TupProjectRequest::Reset, tr("Scene 1"));
+                    emit requestTriggered(&request);
+                }
+            }
+        break;
+
+        case TupProjectActionBar::MoveSceneLeft:
+            {
+                int sceneIndex = scenesContainer->currentSceneIndex();
+                if (sceneIndex > 0 && scenesContainer->count() > 1) {
+                    TupProjectRequest request = TupRequestBuilder::createSceneRequest(sceneIndex, TupProjectRequest::Move, sceneIndex - 1);
+                    emit requestTriggered(&request);
+                }
+            }
+        break;
+
+        case TupProjectActionBar::MoveSceneRight:
+            {
+                int sceneIndex = scenesContainer->currentSceneIndex();
+                int scenesTotal = scenesContainer->count();
+                if (sceneIndex < scenesTotal - 1 && scenesTotal > 1) {
+                    TupProjectRequest request = TupRequestBuilder::createSceneRequest(sceneIndex, TupProjectRequest::Move, sceneIndex + 1);
                     emit requestTriggered(&request);
                 }
             }
@@ -916,6 +975,26 @@ void TupExposureSheet::layerResponse(TupLayerResponse *response)
                         if (layerIndex == scene->layersCount())
                             index--;
                         updateLayerOpacity(sceneIndex, index);
+                    }
+                }
+            break;
+            case TupProjectRequest::Duplicate:
+                {
+                    TupScene *scene = project->sceneAt(sceneIndex);
+                    if (scene) {
+                        int newLayerIndex = layerIndex + 1;
+                        TupLayer *layer = scene->layerAt(newLayerIndex);
+                        if (layer) {
+                            framesTable->insertLayer(newLayerIndex, layer->getLayerName());
+                            QList<TupFrame *> frames = layer->getFrames();
+                            int total = frames.count();
+                            for (int i = 0; i < total; i++) {
+                                TupFrame *frame = frames.at(i);
+                                framesTable->insertFrame(newLayerIndex, i, frame->getFrameName(), response->external());
+                                if (!frame->isEmpty())
+                                    framesTable->updateFrameState(newLayerIndex, i, TupExposureTable::Used);
+                            }
+                        }
                     }
                 }
             break;

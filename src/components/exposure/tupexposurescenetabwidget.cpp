@@ -222,6 +222,8 @@ void TupExposureSceneTabWidget::moveScene(int index, int newIndex)
         // Restoring all tabs (new order)
         for (int i=0; i<tabLabels.count(); i++)
             scenesTabber->addTab(sceneContainers.at(i), tabLabels.at(i));
+        // Keep focus on the moved scene
+        scenesTabber->setCurrentIndex(newIndex);
     scenesTabber->blockSignals(false);
 }
 

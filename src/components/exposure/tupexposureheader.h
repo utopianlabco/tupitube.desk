@@ -81,6 +81,7 @@ class TUPITUBE_EXPORT TupExposureHeader: public QHeaderView
     protected:
         virtual void mousePressEvent(QMouseEvent * event);
         virtual void paintSection(QPainter *painter, const QRect & rect, int section) const;
+        virtual bool event(QEvent *event);
 
     public slots:
         void updateSelection(int section);

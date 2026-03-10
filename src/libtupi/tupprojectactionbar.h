@@ -67,9 +67,12 @@ class TUPITUBE_EXPORT TupProjectActionBar : public QWidget
             PasteFrame = 1 << 8,
  
             InsertLayer = 1 << 9,
+            DuplicateLayer = 1 << 23,
             RemoveLayer = 1 << 10,
             MoveLayerUp = 1 << 11,
             MoveLayerDown = 1 << 12,
+            MoveLayerLeft = 1 << 21,
+            MoveLayerRight = 1 << 22,
             LockLayer = 1 << 13,
             
             InsertScene = 1 << 14,
@@ -77,14 +80,16 @@ class TUPITUBE_EXPORT TupProjectActionBar : public QWidget
             RemoveScene = 1 << 16,
             MoveSceneUp = 1 << 17,
             MoveSceneDown = 1 << 18,
+            MoveSceneLeft = 1 << 24,
+            MoveSceneRight = 1 << 25,
             LockScene = 1 << 19,
             Separator = 1 << 20,
 
             FrameActions = InsertFrame | DuplicateFrame | RemoveFrame
                            | MoveFrameBackward | MoveFrameForward | ReverseFrameSelection
                            | CopyFrame | PasteFrame,
-            LayerActions = InsertLayer | RemoveLayer | MoveLayerUp | MoveLayerDown | LockLayer,
-            SceneActions = InsertScene | DuplicateScene | RemoveScene | MoveSceneUp | MoveSceneDown
+            LayerActions = InsertLayer | DuplicateLayer | RemoveLayer | MoveLayerUp | MoveLayerDown | LockLayer,
+            SceneActions = InsertScene | DuplicateScene | RemoveScene | MoveSceneUp | MoveSceneDown | MoveSceneLeft | MoveSceneRight
         };
         
         TupProjectActionBar(const QString &container = QString(), QList<Action> actions = QList<Action>(),

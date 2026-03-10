@@ -37,6 +37,8 @@
 
 #include <QMenu>
 #include <QMap>
+#include <QToolTip>
+#include <QHelpEvent>
 
 TupExposureHeader::TupExposureHeader(QWidget *parent): QHeaderView(Qt::Horizontal, parent), m_editedSection(-1), m_sectionOnMotion(false)
 {
@@ -299,4 +301,18 @@ bool TupExposureHeader::layerNameEdited()
 void TupExposureHeader::updateLayerNameFlag(bool flag)
 {
     isEditing = flag;
+}
+
+bool TupExposureHeader::event(QEvent *event)
+{
+    if (event->type() == QEvent::ToolTip) {
+        QHelpEvent *helpEvent = static_cast<QHelpEvent *>(event);
+        int section = logicalIndexAt(helpEvent->pos());
+        if (section >= 0 && section < m_sections.size()) {
+            QToolTip::showText(helpEvent->globalPos(), m_sections[section].title);
+            return true;
+        }
+    }
+
+    return QHeaderView::event(event);
 }

@@ -370,8 +370,13 @@ void TupStoryBoardDialog::thumbnailsGenerator()
     addScene(tr("Cover"), icon);
 
     int framesCount = scene->framesCount();
-    if (storyboard->size() == 0)
+    int storyboardSize = storyboard->size();
+    if (storyboardSize == 0) {
         storyboard->init(0, framesCount);
+    } else if (storyboardSize < framesCount) {
+        // Sync storyboard with current frame count (handles old projects or added frames)
+        storyboard->init(storyboardSize, framesCount);
+    }
 
     // Creating scenes thumbnails
     for (int i=0; i < framesCount; i++) {

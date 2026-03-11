@@ -197,6 +197,8 @@ class Q_DECL_EXPORT TupDocumentView: public QMainWindow
         void pluginsLoaded();
         void requestTriggered(const TupProjectRequest *event);
         void localRequestTriggered(const TupProjectRequest *event);
+        void beginUndoMacroRequested(const QString &text);
+        void endUndoMacroRequested();
         void paintAreaEventTriggered(const TupPaintAreaEvent *event);
         // void brushSizeChanged(int width);
         void saveRequested();

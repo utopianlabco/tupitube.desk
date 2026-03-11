@@ -83,6 +83,7 @@ class TUPITUBE_EXPORT TupScreen : public QFrame, public TupAbstractProjectRespon
         void stop();
         void nextFrame();
         void previousFrame();
+        void setVolume(int volume);
 
     private slots:
         void renderOneScene(int index);
@@ -166,6 +167,7 @@ class TUPITUBE_EXPORT TupScreen : public QFrame, public TupAbstractProjectRespon
         PlayMode playMode;
 
         bool mute;
+        int volume;
         bool cyclicAnimation;
         bool isScaled;
         bool firstFrameRendered;

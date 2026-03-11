@@ -649,7 +649,8 @@ void TupPaintArea::itemResponse(TupItemResponse *response)
                   viewport()->update(guiScene->sceneRect().toRect());
 
                   if (guiScene->currentTool()->toolType() != TupToolInterface::Tweener
-                      && currentToolID != TAction::Polyline && currentToolID != TAction::Line)
+                      && currentToolID != TAction::Polyline && currentToolID != TAction::Line
+                      && currentToolID != TAction::Pencil)
                       guiScene->resetCurrentTool();
               }
             break;

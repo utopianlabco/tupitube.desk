@@ -34,6 +34,7 @@
 
 #include "tupaudiomixer.h"
 #include <QFile>
+#include <QLocale>
 
 // The number of output channels
 #define OUTPUT_CHANNELS 2
@@ -222,6 +223,10 @@ int TupAudioMixer::initFilterGraph()
     QList<const AVFilter *> adelayList;
     QList<AVFilterContext *> adelayContextList;
 
+    // volume filter: Adjust volume level for each audio track.
+    QList<const AVFilter *> volumeList;
+    QList<AVFilterContext *> volumeContextList;
+
     // amix filter: Mixes multiple audio inputs into a single output.
     const AVFilter *mixFilter = nullptr;
     AVFilterContext *mixContext = nullptr;
@@ -329,6 +334,48 @@ int TupAudioMixer::initFilterGraph()
 
         adelayList << adelayFilter;
         adelayContextList << adelayContext;
+
+        // volume
+        // Create the volume filter for each audio track
+        const AVFilter *volumeFilter = avfilter_get_by_name("volume");
+        if (!volumeFilter) {
+            errorMsg = "Fatal Error: Could not find the volume filter.";
+            #ifdef TUP_DEBUG
+                qCritical() << "[TupAudioMixer::initFilterGraph()] - " << errorMsg;
+            #endif
+
+            return AVERROR_FILTER_NOT_FOUND;
+        }
+
+        int volumeLevel = soundMixerList.at(i).volume;
+        if (volumeLevel <= 0)
+            volumeLevel = 60; // Default to 60%
+
+        // Use fraction expression to avoid locale/decimal issues with FFmpeg
+        // e.g., 60% -> "60/100", 150% -> "150/100"
+        AVFilterContext *volumeContext;
+        args = QString("volume=%1/100").arg(volumeLevel);
+        QByteArray btVol = args.toUtf8();
+        const char* volumeParams = btVol.constData();
+
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupAudioMixer::initFilterGraph()] - volumeLevel ->" << volumeLevel << "%";
+            qDebug() << "[TupAudioMixer::initFilterGraph()] - volume filter args ->" << args;
+        #endif
+
+        errorCode = avfilter_graph_create_filter(&volumeContext, volumeFilter, "volume", volumeParams, nullptr, filterGraph);
+        if (errorCode < 0) {
+            errorMsg = "Fatal Error: Cannot create audio volume filter.";
+            #ifdef TUP_DEBUG
+                qCritical() << "[TupAudioMixer::initFilterGraph()] - " << errorMsg;
+                qCritical() << "ERROR CODE -> " << errorCode;
+            #endif
+
+            return errorCode;
+        }
+
+        volumeList << volumeFilter;
+        volumeContextList << volumeContext;
     }
 
     if (mixerListSize > 1) { // Several audios
@@ -435,7 +482,10 @@ int TupAudioMixer::initFilterGraph()
             errorCode = avfilter_link(abufferContextList[i], 0, adelayContextList[i], 0);
 
             if (errorCode >= 0)
-                errorCode = avfilter_link(adelayContextList[i], 0, mixContext, i);
+                errorCode = avfilter_link(adelayContextList[i], 0, volumeContextList[i], 0);
+
+            if (errorCode >= 0)
+                errorCode = avfilter_link(volumeContextList[i], 0, mixContext, i);
 
             if (errorCode < 0) {
                 errorMsg = "Fatal Error: Couldn't connect filters. (index: " + QString::number(i) + ")";
@@ -467,7 +517,9 @@ int TupAudioMixer::initFilterGraph()
 
         errorCode = avfilter_link(abufferContextList[0], 0, adelayContextList[0], 0);
         if (errorCode >= 0)
-            errorCode = avfilter_link(adelayContextList[0], 0, abuffersinkContext, 0);
+            errorCode = avfilter_link(adelayContextList[0], 0, volumeContextList[0], 0);
+        if (errorCode >= 0)
+            errorCode = avfilter_link(volumeContextList[0], 0, abuffersinkContext, 0);
         if (errorCode < 0) {
             errorMsg = "Fatal Error: Couldn't connect filters for the input file.";
             #ifdef TUP_DEBUG
@@ -1044,12 +1096,18 @@ bool TupAudioMixer::mergeAudios()
 {    
     #ifdef TUP_DEBUG
         qDebug() << "[TupAudioMixer::mergeAudios()]";
+        qDebug() << "[TupAudioMixer::mergeAudios()] - mixerListSize:" << mixerListSize;
+        qDebug() << "[TupAudioMixer::mergeAudios()] - soundsTotal:" << soundsTotal;
+        qDebug() << "[TupAudioMixer::mergeAudios()] - outputPath:" << outputPath;
     #endif
 
     int errorCode;
     for (int i=0; i < mixerListSize; i++) {
         int index = soundMixerList.at(i).audioIndex;
         QString source = sounds.at(index).path;
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupAudioMixer::mergeAudios()] - Opening audio file" << i << ":" << source;
+        #endif
         QByteArray array = source.toLocal8Bit();
         char *path = array.data();
         if (openInputFile(path) < 0) {
@@ -1121,6 +1179,12 @@ bool TupAudioMixer::mergeAudios()
         return false;
     }
 
+    // Cleanup filter graph
+    if (filterGraph) {
+        avfilter_graph_free(&filterGraph);
+        filterGraph = nullptr;
+    }
+
     if (outputCodecContext)
         avcodec_free_context(&outputCodecContext);
 
@@ -1130,18 +1194,20 @@ bool TupAudioMixer::mergeAudios()
         outputFormatContext = nullptr;
     }
 
-    for (int i = 0; i < soundsTotal; i++) {
+    // Clean up all input contexts (use actual list size, not soundsTotal)
+    int inputListSize = inputFormatContextList.size();
+    for (int i = 0; i < inputListSize; i++) {
         if (inputFormatContextList.at(i)) {
             if (inputFormatContextList.at(i)->pb) {
-                avio_closep(&inputFormatContextList.at(i)->pb); // Use avio_closep to handle nulling the pointer
+                avio_closep(&inputFormatContextList.at(i)->pb);
             }
             avformat_free_context(inputFormatContextList.at(i));
-            inputFormatContextList[i] = nullptr; // Optional: Clear the pointer in the list
+            inputFormatContextList[i] = nullptr;
         }
 
-        if (inputCodecContextList.at(i)) {
-            avcodec_free_context(&inputCodecContextList[i]); // Pass the address of the pointer
-            inputCodecContextList[i] = nullptr; // Optional: Clear the pointer in the list
+        if (i < inputCodecContextList.size() && inputCodecContextList.at(i)) {
+            avcodec_free_context(&inputCodecContextList[i]);
+            inputCodecContextList[i] = nullptr;
         }
     }
 

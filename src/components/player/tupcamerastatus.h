@@ -43,6 +43,8 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QCheckBox>
+#include <QSlider>
+#include <QLabel>
 
 class TUPITUBE_EXPORT TupCameraStatus : public QFrame
 {
@@ -59,11 +61,16 @@ class TUPITUBE_EXPORT TupCameraStatus : public QFrame
         void setCurrentScene(int index);
         bool isLooping();
         void enableButtons(bool flag);
+        void enableAudioControls(bool enabled);
+
+    public slots:
+        void setVolume(int volume);
 
     signals:
         void playModeChanged(PlayMode mode, int sceneIndex);
         void sceneIndexChanged(int index);
         void muteEnabled(bool muteAction);
+        void volumeChanged(int volume);
         void fpsChanged(int fps);
         void loopChanged();
         void exportClicked();
@@ -72,6 +79,7 @@ class TUPITUBE_EXPORT TupCameraStatus : public QFrame
     private slots:
         void muteAction();
         void updateScenesComboStatus();
+        void updateVolumeLabel(int value);
 
     private:
         QWidget *spaceWidget;
@@ -83,6 +91,8 @@ class TUPITUBE_EXPORT TupCameraStatus : public QFrame
         bool loop;
         bool mute;
         TImageButton *soundButton;
+        QSlider *volumeSlider;
+        QLabel *volumeLabel;
         QPushButton *exportButton;
         QPushButton *postButton;
         int scenesCount;

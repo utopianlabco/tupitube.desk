@@ -58,6 +58,7 @@ TupProjectManager::TupProjectManager(QObject *parent) : QObject(parent)
 
     modified = false;
     handler = nullptr;
+    macroInProgress = false;
 
     project = new TupProject(this);
     undoStack = new QUndoStack(this);
@@ -415,6 +416,36 @@ void TupProjectManager::createCommand(TupProjectCommand *command)
 TupProject *TupProjectManager::getProject()
 {
     return project;
+}
+
+void TupProjectManager::beginUndoMacro(const QString &text)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupProjectManager::beginUndoMacro()] - text:" << text;
+    #endif
+    if (macroInProgress) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupProjectManager::beginUndoMacro()] - Macro already in progress, ignoring!";
+        #endif
+        return;
+    }
+    macroInProgress = true;
+    undoStack->beginMacro(text);
+}
+
+void TupProjectManager::endUndoMacro()
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupProjectManager::endUndoMacro()]";
+    #endif
+    if (!macroInProgress) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupProjectManager::endUndoMacro()] - No macro in progress, ignoring!";
+        #endif
+        return;
+    }
+    macroInProgress = false;
+    undoStack->endMacro();
 }
 
 void TupProjectManager::undo()

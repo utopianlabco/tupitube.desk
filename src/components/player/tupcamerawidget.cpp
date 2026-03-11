@@ -281,6 +281,8 @@ void TupCameraWidget::addStatusPanel()
     connect(cameraStatus, SIGNAL(playModeChanged(PlayMode,int)), this, SLOT(updatePlayMode(PlayMode,int)));
     connect(cameraStatus, SIGNAL(sceneIndexChanged(int)), this, SLOT(selectScene(int)));
     connect(cameraStatus, SIGNAL(muteEnabled(bool)), previewScreen, SLOT(enableMute(bool)));
+    connect(cameraStatus, SIGNAL(volumeChanged(int)), previewScreen, SLOT(setVolume(int)));
+    connect(cameraStatus, SIGNAL(volumeChanged(int)), this, SIGNAL(volumeChanged(int)));
     connect(cameraStatus, SIGNAL(fpsChanged(int)), this, SLOT(updateFPS(int)));
     connect(cameraStatus, SIGNAL(loopChanged()), this, SLOT(setLoop()));
     connect(cameraStatus, SIGNAL(exportClicked()), this, SLOT(exportDialog()));
@@ -805,4 +807,23 @@ void TupCameraWidget::disablePlayButtons()
 {
     cameraBar->updatePlayButton(false);
     cameraBar->updatePlaybackButton(false);
+}
+
+void TupCameraWidget::setVolume(int volume)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupCameraWidget::setVolume()] - volume ->" << volume;
+    #endif
+
+    cameraStatus->setVolume(volume);
+    previewScreen->setVolume(volume);
+}
+
+void TupCameraWidget::enableAudioControls(bool enabled)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupCameraWidget::enableAudioControls()] - enabled ->" << enabled;
+    #endif
+
+    cameraStatus->enableAudioControls(enabled);
 }

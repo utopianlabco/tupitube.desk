@@ -126,6 +126,8 @@ class TUPITUBE_EXPORT TupToolPlugin : public QObject, public TupToolInterface
 
     signals:
         void requested(const TupProjectRequest *request);
+        void beginUndoMacro(const QString &text);
+        void endUndoMacro();
         
     public:
         // Events

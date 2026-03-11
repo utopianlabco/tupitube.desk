@@ -51,6 +51,7 @@ TupLibraryDisplay::TupLibraryDisplay() : QWidget()
     connect(soundPlayer, SIGNAL(muteEnabled(bool)), this, SIGNAL(muteEnabled(bool)));
     connect(soundPlayer, SIGNAL(soundResourceModified(SoundResource)),
             this, SIGNAL(soundResourceModified(SoundResource)));
+    connect(soundPlayer, SIGNAL(volumeUpdated(int)), this, SIGNAL(volumeUpdated(int)));
 
     QBoxLayout *layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
     layout->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
@@ -217,4 +218,13 @@ void TupLibraryDisplay::mousePressEvent(QMouseEvent *event)
             qDebug() << "[TupLibraryDisplay::mousePressEvent()] - No drag action.";
         #endif
     }
+}
+
+void TupLibraryDisplay::setVolume(int volume)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupLibraryDisplay::setVolume()] - volume ->" << volume;
+    #endif
+
+    soundPlayer->setVolume(volume);
 }

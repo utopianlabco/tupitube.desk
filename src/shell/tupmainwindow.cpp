@@ -475,6 +475,14 @@ void TupMainWindow::setWorkSpace(const QStringList &users)
         cameraWidget->setVisible(false);
 
         connect(m_libraryWidget, SIGNAL(soundUpdated()), this, SLOT(updateSoundItems()));
+        // Sync volume between Library and Player
+        connect(m_libraryWidget, SIGNAL(volumeUpdated(int)), cameraWidget, SLOT(setVolume(int)));
+        connect(cameraWidget, SIGNAL(volumeChanged(int)), m_libraryWidget, SLOT(setVolume(int)));
+        // Enable/disable audio controls based on audio file presence
+        connect(m_libraryWidget, SIGNAL(audioControlEnabled(bool)), cameraWidget, SLOT(enableAudioControls(bool)));
+        // Set initial audio control state based on project content
+        cameraWidget->enableAudioControls(m_projectManager->getProject()->hasLibrarySounds());
+
         m_libraryWidget->setNetworking(isNetworked);
         // Save event
         connect(animationTab, SIGNAL(saveRequested()), this, SLOT(callSaveProcedure()));
@@ -920,8 +928,6 @@ void TupMainWindow::openProject(const QString &path)
         tabWidget()->setCurrentWidget(animationTab);
 
         if (m_projectManager->loadProject(path)) {
-            m_libraryWidget->updateSoundItems();
-
             if (QDir::isRelativePath(path))
                 m_fileName = QDir::currentPath() + "/" + path;
             else
@@ -954,6 +960,9 @@ void TupMainWindow::openProject(const QString &path)
             saveDefaultPath(dir);
 
             setWorkSpace();
+
+            // Update sound items AFTER setWorkSpace() so volume signal connections exist
+            m_libraryWidget->updateSoundItems();
         } else {
             setUpdatesEnabled(true);
             TOsd::self()->display(TOsd::Error, tr("Cannot open project!"));
@@ -1107,6 +1116,11 @@ void TupMainWindow::connectWidgetToManager(QWidget *widget)
     connect(widget, SIGNAL(requestTriggered(const TupProjectRequest*)), m_projectManager,
             SLOT(handleProjectRequest(const TupProjectRequest*)));
 
+    connect(widget, SIGNAL(beginUndoMacroRequested(const QString&)), m_projectManager,
+            SLOT(beginUndoMacro(const QString&)));
+    connect(widget, SIGNAL(endUndoMacroRequested()), m_projectManager,
+            SLOT(endUndoMacro()));
+
     connect(m_projectManager, SIGNAL(responsed(TupProjectResponse*)), widget, 
             SLOT(handleProjectResponse(TupProjectResponse*)));
 }
@@ -1121,6 +1135,11 @@ void TupMainWindow::disconnectWidgetToManager(QWidget *widget)
 {
     disconnect(widget, SIGNAL(requestTriggered(const TupProjectRequest*)), m_projectManager,
             SLOT(handleProjectRequest(const TupProjectRequest*)));
+
+    disconnect(widget, SIGNAL(beginUndoMacroRequested(const QString&)), m_projectManager,
+            SLOT(beginUndoMacro(const QString&)));
+    disconnect(widget, SIGNAL(endUndoMacroRequested()), m_projectManager,
+            SLOT(endUndoMacro()));
 
     disconnect(m_projectManager, SIGNAL(responsed(TupProjectResponse*)), widget,
             SLOT(handleProjectResponse(TupProjectResponse*)));

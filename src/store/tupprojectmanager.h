@@ -89,6 +89,8 @@ class TUPITUBE_EXPORT TupProjectManager : public QObject
 
     public slots:
         void setModificationStatus(bool changed);
+        void beginUndoMacro(const QString &text);
+        void endUndoMacro();
 
     protected slots:
         virtual void handleProjectRequest(const TupProjectRequest *request);
@@ -112,6 +114,7 @@ class TUPITUBE_EXPORT TupProjectManager : public QObject
         int layerIndex;
         int frameIndex;
         bool isNetworked;
+        bool macroInProgress;
 
         TupProject *project;
         QUndoStack *undoStack;

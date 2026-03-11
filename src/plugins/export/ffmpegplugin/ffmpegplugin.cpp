@@ -108,6 +108,7 @@ bool FFmpegPlugin::exportToFormat(int colorAlpha, const QString &filePath, const
     #endif
 
     durationInSeconds = 0;
+    framesTotal = 0;
 
     TupLibrary *library = project->getLibrary();
     wavAudioPath = "";
@@ -119,10 +120,29 @@ bool FFmpegPlugin::exportToFormat(int colorAlpha, const QString &filePath, const
 
     calculateSceneTimes(scenes, fps);
     calculateProjectDuration(scenes, fps);
+
+    #ifdef TUP_DEBUG
+        qDebug() << "[FFmpegPlugin::exportToFormat()] - Calling loadSoundResources...";
+        qDebug() << "[FFmpegPlugin::exportToFormat()] - scenesIndexesList size ->" << scenesIndexesList.size();
+    #endif
+
     loadSoundResources(project);
+
+    #ifdef TUP_DEBUG
+        qDebug() << "[FFmpegPlugin::exportToFormat()] - After loadSoundResources: soundResources size ->" << soundResources.size();
+    #endif
+
     loadSoundMixerList(fps);
 
+    #ifdef TUP_DEBUG
+        qDebug() << "[FFmpegPlugin::exportToFormat()] - After loadSoundMixerList: soundMixerList size ->" << soundMixerList.size();
+    #endif
+
     bool hasSound = !soundResources.isEmpty();
+    #ifdef TUP_DEBUG
+        qDebug() << "[FFmpegPlugin::exportToFormat()] - hasSound ->" << hasSound;
+    #endif
+
     if (hasSound) {
         emit progressChanged(0);
 
@@ -146,8 +166,12 @@ bool FFmpegPlugin::exportToFormat(int colorAlpha, const QString &filePath, const
         }
         delete mixer;
 
-        QFile *audioFile = new QFile(wavAudioPath);
-        if (audioFile->exists()) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[FFmpegPlugin::exportToFormat()] - Checking WAV file existence:" << wavAudioPath;
+        #endif
+
+        QFile audioFile(wavAudioPath);
+        if (audioFile.exists()) {
             #ifdef TUP_DEBUG
                 qDebug() << "[FFmpegPlugin::exportToFormat()] - "
                             "WAV file created successfully! ->" << wavAudioPath;
@@ -177,8 +201,7 @@ bool FFmpegPlugin::exportToFormat(int colorAlpha, const QString &filePath, const
                             "AAC file created successfully! ->" << aacAudioPath;
             #endif
 
-            if (!audioFile->remove()) {
-                audioFile->close();
+            if (!audioFile.remove()) {
                 errorMsg = "Fatal Error: Can't remove WAV file ->" + wavAudioPath;
                 #ifdef TUP_DEBUG
                     qCritical() << "[FFmpegPlugin::exportToFormat()] - " << errorMsg;
@@ -190,14 +213,23 @@ bool FFmpegPlugin::exportToFormat(int colorAlpha, const QString &filePath, const
                     qDebug() << "[FFmpegPlugin::exportToFormat()] - WAV file has been removed successfully! ->" << wavAudioPath;
                 #endif
             }
-
-            audioFile->close();
+        } else {
+            #ifdef TUP_DEBUG
+                qCritical() << "[FFmpegPlugin::exportToFormat()] - "
+                            "Fatal Error: WAV file was NOT created! ->" << wavAudioPath;
+            #endif
+            errorMsg = "Fatal Error: WAV audio file was not created ->" + wavAudioPath;
+            return false;
         }
     } else {
         #ifdef TUP_DEBUG
             qDebug() << "[FFmpegPlugin::exportToFormat()] - Warning: Project has NO sounds!";
         #endif
     }
+
+    #ifdef TUP_DEBUG
+        qDebug() << "[FFmpegPlugin::exportToFormat()] - Creating generator with aacAudioPath:" << aacAudioPath;
+    #endif
 
     TFFmpegMovieGenerator *generator = new TFFmpegMovieGenerator(format, size, fps, durationInSeconds, aacAudioPath);
     TupAnimationRenderer renderer(library, waterMark);
@@ -367,19 +399,36 @@ void FFmpegPlugin::loadSoundResources(const TupProject *project)
         QList<SoundResource> soundItems = project->getSoundResourcesList();
         #ifdef TUP_DEBUG
             qDebug() << "[FFmpegPlugin::loadSoundResources()] - Sound items total ->" << soundItems.size();
+            qDebug() << "[FFmpegPlugin::loadSoundResources()] - scenesIndexesList ->" << scenesIndexesList;
         #endif
         if (!soundItems.isEmpty()) {
             foreach(SoundResource item, soundItems) {
+                #ifdef TUP_DEBUG
+                    qDebug() << "[FFmpegPlugin::loadSoundResources()] - Processing item:" << item.key;
+                    qDebug() << "[FFmpegPlugin::loadSoundResources()] - muted:" << item.muted;
+                    qDebug() << "[FFmpegPlugin::loadSoundResources()] - scenes count:" << item.scenes.size();
+                #endif
                 if (!item.muted && !item.scenes.isEmpty()) {
                     QList<SoundScene> scenes = item.scenes;
                     foreach(SoundScene scene, scenes) {
+                        #ifdef TUP_DEBUG
+                            qDebug() << "[FFmpegPlugin::loadSoundResources()] - Scene index:" << scene.sceneIndex
+                                     << "frames:" << scene.frames;
+                        #endif
                         if (scenesIndexesList.contains(scene.sceneIndex)
-                            && !scene.frames.isEmpty())
+                            && !scene.frames.isEmpty()) {
                             soundResources << item;
+                            #ifdef TUP_DEBUG
+                                qDebug() << "[FFmpegPlugin::loadSoundResources()] - Added item to soundResources";
+                            #endif
+                        }
                     }
                 }
             }
         }
+        #ifdef TUP_DEBUG
+            qDebug() << "[FFmpegPlugin::loadSoundResources()] - Final soundResources size:" << soundResources.size();
+        #endif
     } else {
         #ifdef TUP_DEBUG
             qDebug() << "[FFmpegPlugin::loadSoundResources()] - Fatal Error: Project variable is NULL!";
@@ -403,6 +452,7 @@ void FFmpegPlugin::loadSoundMixerList(int fps)
                     SoundMixerItem mixerItem;
                     mixerItem.audioIndex = resourceIndex;
                     mixerItem.playAt = 0;
+                    mixerItem.volume = resource.volume;
 
                     soundMixerList << mixerItem;
                 }
@@ -415,6 +465,7 @@ void FFmpegPlugin::loadSoundMixerList(int fps)
                         foreach(int frameIndex, frames) {
                             SoundMixerItem mixerItem;
                             mixerItem.audioIndex = resourceIndex;
+                            mixerItem.volume = resource.volume;
 
                             float millisecs = ((float) (frameIndex-1) / (float) fps) * 1000;
                             millisecs += scenesDuration.at(sceneIndexCounter);

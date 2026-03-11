@@ -77,6 +77,7 @@ class TUPITUBE_EXPORT TupCameraWidget : public QFrame
         void postRequested();
         void projectHasChanged(bool modified);
         void fpsUpdated(int fps);
+        void volumeChanged(int volume);
 
     private slots:
         void setLoop();
@@ -107,6 +108,8 @@ class TUPITUBE_EXPORT TupCameraWidget : public QFrame
         void previousFrame();
         void updateTimerPanel(int currentFrame);
         void updateSoundItems();
+        void setVolume(int volume);
+        void enableAudioControls(bool enabled);
 
     private:
         void addVideoHeader();

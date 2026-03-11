@@ -103,6 +103,7 @@ void PencilTool::init(TupGraphicsScene *gScene)
         view->setDragMode(QGraphicsView::NoDrag);
 
     lineAdded = false;
+    eraserMacroActive = false;
 }
 
 void PencilTool::setZValueReferences()
@@ -146,8 +147,11 @@ void PencilTool::press(const TupInputDeviceInformation *input, TupBrushManager *
     } else { // EraserMode
         eraserCircle->setPos(firstPoint - eraserDistance);
         gScene->includeObject(eraserCircle);
-        if (!lineItems.isEmpty())
+        if (!lineItems.isEmpty()) {
+            emit beginUndoMacro(tr("Erase Stroke"));
+            eraserMacroActive = true;
             runEraser(firstPoint);
+        }
     }
 }
 
@@ -250,6 +254,10 @@ void PencilTool::release(const TupInputDeviceInformation *input, TupBrushManager
         gScene->removeItem(eraserCircle);
         if (!lineItems.isEmpty())
             runEraser(currentPoint);
+        if (eraserMacroActive) {
+            emit endUndoMacro();
+            eraserMacroActive = false;
+        }
     }
 }
 
@@ -306,14 +314,13 @@ void PencilTool::updateToolMode(ToolMode tool)
     currentToolMode = tool;
     if (tool == EraserMode) {
         storePathItems();
-        /*
-        // Temporary code for debugging purposes
-        for (int i=0; i<lineItems.size(); i++) {
+        // Disable selection/movement on all path items during eraser mode
+        for (int i = 0; i < lineItems.size(); i++) {
             TupPathItem *item = lineItems.at(i);
-            addCurvePoints(item);
-            addKeyPoints(item);
+            item->setFlag(QGraphicsItem::ItemIsSelectable, false);
+            item->setFlag(QGraphicsItem::ItemIsMovable, false);
+            item->setAcceptedMouseButtons(Qt::NoButton);
         }
-        */
     }
 }
 
@@ -434,6 +441,11 @@ void PencilTool::frameResponse(const TupFrameResponse *event)
 
 void PencilTool::itemResponse(const TupItemResponse *event)
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[PencilTool::itemResponse()] - action:" << event->getAction() 
+                 << "mode:" << event->getMode() << "toolMode:" << currentToolMode;
+    #endif
+
     if (currentToolMode == EraserMode) {
         scene->drawCurrentPhotogram();
         if (event->getAction() == TupProjectRequest::Add)
@@ -505,6 +517,10 @@ void PencilTool::runEraser(const QPointF &point)
                 qDebug() << "[PencilTool::runEraser()] - MATCH!!!";
             #endif
 
+            // Save original path for undo before modifying
+            if (item->isNotEdited())
+                item->saveOriginalPath();
+
             QPair<QString, QString> segments = item->recalculatePath(point, eraserSize/2);
             QString segment1 = segments.first;
             QString segment2 = segments.second;
@@ -522,6 +538,9 @@ void PencilTool::runEraser(const QPointF &point)
                 }
 
                 if (!segment1.isEmpty() && !segment2.isEmpty()) {
+                    // First emit EditNodes for segment A (original item), then Add segment B
+                    // This order ensures correct undo: Add undoes first (removing segment B),
+                    // then EditNodes undoes (restoring original path)
                     TupProjectRequest event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(),
                                                                                    currentLayer, currentFrame, itemIndex,
                                                                                    QPointF(), scene->getSpaceContext(), TupLibraryObject::Item,

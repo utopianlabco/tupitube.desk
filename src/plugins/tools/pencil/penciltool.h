@@ -153,6 +153,7 @@ class TUPITUBE_PLUGIN PencilTool : public TupToolPlugin
         QList<TupEllipseItem *> curveEllipsesList;
         TupPathItem *lineItem;
         bool lineAdded;
+        bool eraserMacroActive;
 };
 
 #endif

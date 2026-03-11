@@ -144,6 +144,11 @@ SoundResource TupLibraryObject::getSoundResourceParams()
         params.type = soundObject->getSoundType();
         params.isBackgroundTrack = soundObject->isBackgroundTrack();
         params.duration = soundObject->getDuration();
+        params.volume = soundObject->getVolume();
+
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupLibraryObject::getSoundResourceParams()] - volume ->" << params.volume;
+        #endif
     } else {
         #ifdef TUP_DEBUG
             qDebug() << "[TupLibraryObject::getSoundResourceParams()] - Fatal Error: soundObject is NULL!";
@@ -164,6 +169,7 @@ void TupLibraryObject::updateSoundResourceParams(SoundResource params)
     soundObject->setBackgroundTrack(params.isBackgroundTrack);
     soundObject->setAudioScenes(params.scenes);
     soundObject->setDuration(params.duration);
+    soundObject->setVolume(params.volume);
 }
 
 void TupLibraryObject::setAudioScenes(QList<SoundScene> audioScenes)

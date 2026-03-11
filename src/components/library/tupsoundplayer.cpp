@@ -73,6 +73,16 @@ TupSoundPlayer::TupSoundPlayer(QWidget *parent) : QFrame(parent)
     muteButton->setToolTip(tr("Mute"));
     connect(muteButton, SIGNAL(clicked()), this, SLOT(muteAction()));
 
+    volumeSlider = new QSlider(Qt::Horizontal);
+    volumeSlider->setRange(0, 150);
+    volumeSlider->setValue(60);
+    volumeSlider->setFixedWidth(80);
+    volumeSlider->setToolTip(tr("Volume"));
+    connect(volumeSlider, SIGNAL(valueChanged(int)), this, SLOT(volumeChanged(int)));
+
+    volumeLabel = new QLabel("60%");
+    volumeLabel->setFixedWidth(35);
+
     loopBox = new QCheckBox();
     loopBox->setToolTip(tr("Loop"));
     loopBox->setIcon(QPixmap(THEME_DIR + "icons/loop.png"));
@@ -86,6 +96,9 @@ TupSoundPlayer::TupSoundPlayer(QWidget *parent) : QFrame(parent)
     buttonLayout->addWidget(new TSeparator(Qt::Vertical));
     buttonLayout->addStretch();
     buttonLayout->addWidget(muteButton);
+    buttonLayout->addSpacing(5);
+    buttonLayout->addWidget(volumeSlider);
+    buttonLayout->addWidget(volumeLabel);
     buttonLayout->addSpacing(10);
     buttonLayout->addWidget(loopBox);
     buttonLayout->addStretch();
@@ -125,6 +138,7 @@ void TupSoundPlayer::setSoundParams(SoundResource params, QStringList scenesList
         qDebug() << "[TupSoundPlayer::setSoundParams()] - params.muted ->" << params.muted;
         qDebug() << "[TupSoundPlayer::setSoundParams()] - params.path ->" << params.path;
         qDebug() << "[TupSoundPlayer::setSoundParams()] - params.duration ->" << params.duration;
+        qDebug() << "[TupSoundPlayer::setSoundParams()] - params.volume ->" << params.volume;
         qDebug() << "[TupSoundPlayer::setSoundParams()] - params.scenes.size() ->" << params.scenes.size();
         for(int i=0; i<params.scenes.size(); i++) {
             SoundScene scene = params.scenes.at(i);
@@ -163,6 +177,26 @@ void TupSoundPlayer::setSoundParams(SoundResource params, QStringList scenesList
         muteButton->setImage(QPixmap(THEME_DIR + QString("icons/speaker.png")));
     }
 
+    // Set volume from stored params (default 60 if not set)
+    int vol = (params.volume > 0) ? params.volume : 60;
+
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupSoundPlayer::setSoundParams()] - Setting slider to ->" << vol;
+    #endif
+
+    volumeSlider->blockSignals(true);
+    volumeSlider->setValue(vol);
+    volumeSlider->blockSignals(false);
+    volumeLabel->setText(QString::number(vol) + "%");
+
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupSoundPlayer::setSoundParams()] - Slider value now ->" << volumeSlider->value();
+    #endif
+
+    // Sync volume to Player panel when audio is selected
+    emit volumeUpdated(vol);
+
+    soundParams = params;
     soundForm->setSoundParams(params, scenesList, frameLimits);
 }
 
@@ -177,6 +211,7 @@ void TupSoundPlayer::updateCurrentSoundPath(const QString &soundPath)
             if (!hasDuration)
                 disconnect(soundPlayer.at(0), SIGNAL(durationChanged(qint64)), this, SLOT(durationChanged(qint64)));
             disconnect(soundPlayer.at(0), SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(stateChanged(QMediaPlayer::State)));
+            disconnect(soundPlayer.at(0), SIGNAL(error(QMediaPlayer::Error)), this, SLOT(handleMediaError(QMediaPlayer::Error)));
 
             QMediaPlayer *player = soundPlayer.takeFirst();
             player->stop();
@@ -197,6 +232,7 @@ void TupSoundPlayer::updateCurrentSoundPath(const QString &soundPath)
     if (!hasDuration)
         connect(soundPlayer.at(0), SIGNAL(durationChanged(qint64)), this, SLOT(durationChanged(qint64)));
     connect(soundPlayer.at(0), SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(stateChanged(QMediaPlayer::State)));
+    connect(soundPlayer.at(0), SIGNAL(error(QMediaPlayer::Error)), this, SLOT(handleMediaError(QMediaPlayer::Error)));
 }
 
 void TupSoundPlayer::updateFrameLimit(int sceneIndex, int maxFrames)
@@ -242,12 +278,22 @@ void TupSoundPlayer::startPlayer()
         qDebug() << "[TupSoundPlayer::startPlayer()] - Playing audio ->" << url;
     #endif
 
+    if (soundPlayer.isEmpty() || url.isEmpty()) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupSoundPlayer::startPlayer()] - Warning: No media player or URL is empty!";
+        #endif
+        return;
+    }
+
     playButton->setIcon(QIcon(QPixmap(THEME_DIR + "icons/pause.png")));
     playing = true;
 
     timer->setText(tr("Duration:") + " " + soundDuration);
 
-    soundPlayer.at(0)->setVolume(60);
+    // Set media again before playing to ensure it's ready
+    soundPlayer.at(0)->setMedia(QUrl::fromLocalFile(url));
+    // QMediaPlayer volume range is 0-100, clamp values above 100
+    soundPlayer.at(0)->setVolume(qMin(volumeSlider->value(), 100));
     soundPlayer.at(0)->play();
 }
 
@@ -388,4 +434,56 @@ QString TupSoundPlayer::getSoundID() const
     #endif
 
     return soundID;
+}
+
+void TupSoundPlayer::volumeChanged(int value)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupSoundPlayer::volumeChanged()] - value ->" << value;
+    #endif
+
+    volumeLabel->setText(QString::number(value) + "%");
+
+    // QMediaPlayer volume range is 0-100, clamp values above 100
+    if (!soundPlayer.isEmpty())
+        soundPlayer.at(0)->setVolume(qMin(value, 100));
+
+    // Update and save volume to project
+    soundParams.volume = value;
+    emit soundResourceModified(soundParams);
+    emit volumeUpdated(value);
+}
+
+void TupSoundPlayer::setVolume(int value)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupSoundPlayer::setVolume()] - value ->" << value;
+    #endif
+
+    // Block signals to avoid infinite loop
+    volumeSlider->blockSignals(true);
+    volumeSlider->setValue(value);
+    volumeSlider->blockSignals(false);
+    volumeLabel->setText(QString::number(value) + "%");
+
+    // QMediaPlayer volume range is 0-100, clamp values above 100
+    if (!soundPlayer.isEmpty())
+        soundPlayer.at(0)->setVolume(qMin(value, 100));
+
+    // Update internal params but DON'T emit soundResourceModified here
+    // This slot is called from Player panel volume changes - emitting would
+    // trigger loadSoundRecords() which stops playback
+    soundParams.volume = value;
+}
+
+void TupSoundPlayer::handleMediaError(QMediaPlayer::Error error)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupSoundPlayer::handleMediaError()] - error ->" << error;
+        if (!soundPlayer.isEmpty())
+            qDebug() << "[TupSoundPlayer::handleMediaError()] - errorString ->" << soundPlayer.at(0)->errorString();
+    #endif
+
+    playButton->setIcon(QIcon(QPixmap(THEME_DIR + "icons/play_small.png")));
+    playing = false;
 }

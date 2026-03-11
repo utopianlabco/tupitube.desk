@@ -165,10 +165,13 @@ class TUPITUBE_EXPORT TupLibraryWidget : public TupModuleWidgetBase
     public slots:
         void updateSoundPlayer();
         void updateSoundResource(SoundResource params);
+        void setVolume(int volume);
 
     signals:
         void requestCurrentGraphic();
         void soundUpdated();
+        void volumeUpdated(int volume);
+        void audioControlEnabled(bool enabled);
         void lipsyncModuleCalled(PapagayoAppMode mode, const QString &filePath);
         void soundRemoved(ModuleSource source, const QString &objectKey);
         void folderWithAudiosRemoved();

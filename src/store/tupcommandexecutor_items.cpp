@@ -106,7 +106,11 @@ bool TupCommandExecutor::createItem(TupItemResponse *response)
                                 #endif                            
                                 return false;
                             }
+                        } else if (response->getMode() == TupProjectResponse::Undo) {
+                            // Undo an Add: remove the item that was added
+                            frame->removeSvg(response->getItemIndex());
                         } else {
+                            // Redo: restore the item
                             frame->restoreSvg();
                         }
                     } else {
@@ -120,7 +124,28 @@ bool TupCommandExecutor::createItem(TupItemResponse *response)
                                 #endif    
                                 return false;
                             }
+                        } else if (response->getMode() == TupProjectResponse::Undo) {
+                            // Undo an Add: remove the item that was added
+                            int itemIdx = response->getItemIndex();
+                            int count = frame->graphicsCount();
+                            #ifdef TUP_DEBUG
+                                qDebug() << "[TupCommandExecutor::createItem()] - UNDO Add: removing item at index ->" 
+                                         << itemIdx << "/ graphics count:" << count;
+                            #endif
+                            if (itemIdx >= 0 && itemIdx < count) {
+                                bool removed = frame->removeGraphic(itemIdx);
+                                #ifdef TUP_DEBUG
+                                    qDebug() << "[TupCommandExecutor::createItem()] - UNDO Add: removeGraphic returned ->" << removed
+                                             << "/ new count:" << frame->graphicsCount();
+                                #endif
+                            } else {
+                                #ifdef TUP_DEBUG
+                                    qDebug() << "[TupCommandExecutor::createItem()] - UNDO Add: Invalid index! itemIdx=" 
+                                             << itemIdx << " count=" << count;
+                                #endif
+                            }
                         } else {
+                            // Redo: restore the item
                             frame->restoreGraphic();
                         }
                     }
@@ -170,7 +195,11 @@ bool TupCommandExecutor::createItem(TupItemResponse *response)
                                 #endif    
                                 return false;
                             }
+                        } else if (response->getMode() == TupProjectResponse::Undo) {
+                            // Undo an Add: remove the item that was added
+                            frame->removeSvg(response->getItemIndex());
                         } else {
+                            // Redo: restore the item
                             frame->restoreSvg();
                         }
                     } else { 
@@ -184,7 +213,11 @@ bool TupCommandExecutor::createItem(TupItemResponse *response)
                                 #endif    
                                 return false;
                             }
+                        } else if (response->getMode() == TupProjectResponse::Undo) {
+                            // Undo an Add: remove the item that was added
+                            frame->removeGraphic(response->getItemIndex());
                         } else {
+                            // Redo: restore the item
                             frame->restoreGraphic();
                         }
                     }
@@ -217,32 +250,49 @@ bool TupCommandExecutor::createItem(TupItemResponse *response)
 bool TupCommandExecutor::removeItem(TupItemResponse *response)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupCommandExecutor::removeItem()]";
+        qDebug() << "[TupCommandExecutor::removeItem()] - mode:" << response->getMode();
     #endif    
 
     int sceneIndex = response->getSceneIndex();
     int layerIndex = response->getLayerIndex();
     int frameIndex = response->getFrameIndex();
     TupLibraryObject::ObjectType type = response->getItemType();
-    TupProject::Mode mode = response->spaceMode();
+    TupProject::Mode spaceMode = response->spaceMode();
+    TupProjectResponse::Mode actionMode = response->getMode();
 
     // Validate indices - if target doesn't exist, consider it already removed
-    if (mode == TupProject::FRAMES_MODE && !validateIndices(sceneIndex, layerIndex, frameIndex))
+    if (spaceMode == TupProject::FRAMES_MODE && !validateIndices(sceneIndex, layerIndex, frameIndex))
         return true; // Already removed - not an error
 
-    if (mode != TupProject::FRAMES_MODE && !validateIndices(sceneIndex))
+    if (spaceMode != TupProject::FRAMES_MODE && !validateIndices(sceneIndex))
         return true;
 
     TupScene *scene = project->sceneAt(sceneIndex);
 
     if (scene) {
-        if (mode == TupProject::FRAMES_MODE) {
+        if (spaceMode == TupProject::FRAMES_MODE) {
             TupLayer *layer = scene->layerAt(layerIndex);
 
             if (layer) {
                 TupFrame *frame = layer->frameAt(frameIndex);
 
                 if (frame) {
+                    // Handle UNDO mode - restore the item instead of removing
+                    if (actionMode == TupProjectResponse::Undo) {
+                        #ifdef TUP_DEBUG
+                            qDebug() << "[TupCommandExecutor::removeItem()] - UNDO: restoring item";
+                        #endif
+                        if (type == TupLibraryObject::Svg) {
+                            frame->restoreSvg();
+                        } else {
+                            frame->restoreGraphic();
+                        }
+                        response->setFrameState(frame->isEmpty());
+                        emit responsed(response);
+                        return true;
+                    }
+
+                    // Handle DO/REDO mode - remove the item
                     if (type == TupLibraryObject::Svg) {
                         frame->removeSvg(response->getItemIndex());
 
@@ -280,11 +330,11 @@ bool TupCommandExecutor::removeItem(TupItemResponse *response)
             TupBackground *bg = scene->sceneBackground();
             if (bg) {
                 TupFrame *frame = nullptr;
-                if (mode == TupProject::VECTOR_STATIC_BG_MODE) {
+                if (spaceMode == TupProject::VECTOR_STATIC_BG_MODE) {
                     frame = bg->vectorStaticFrame();
-                } else if (mode == TupProject::VECTOR_FG_MODE) {
+                } else if (spaceMode == TupProject::VECTOR_FG_MODE) {
                     frame = bg->vectorForegroundFrame();
-                } else if (mode == TupProject::VECTOR_DYNAMIC_BG_MODE) {
+                } else if (spaceMode == TupProject::VECTOR_DYNAMIC_BG_MODE) {
                     frame = bg->vectorDynamicFrame();
                 } else {
                     #ifdef TUP_DEBUG
@@ -294,10 +344,19 @@ bool TupCommandExecutor::removeItem(TupItemResponse *response)
                 }
 
                 if (frame) {
-                    if (type == TupLibraryObject::Svg) 
-                        frame->removeSvg(response->getItemIndex());
-                    else
-                        frame->removeGraphic(response->getItemIndex());
+                    // Handle UNDO mode - restore the item
+                    if (actionMode == TupProjectResponse::Undo) {
+                        if (type == TupLibraryObject::Svg)
+                            frame->restoreSvg();
+                        else
+                            frame->restoreGraphic();
+                    } else {
+                        // Handle DO/REDO mode - remove the item
+                        if (type == TupLibraryObject::Svg) 
+                            frame->removeSvg(response->getItemIndex());
+                        else
+                            frame->removeGraphic(response->getItemIndex());
+                    }
 
                     emit responsed(response);
                     return true;

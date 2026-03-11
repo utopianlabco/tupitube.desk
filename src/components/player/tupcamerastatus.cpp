@@ -105,7 +105,22 @@ TupCameraStatus::TupCameraStatus(int scenesTotal, QWidget *parent) : QFrame(pare
     soundButton->setToolTip(tr("Mute"));
     connect(soundButton, SIGNAL(clicked()), this, SLOT(muteAction()));
     sceneInfoLayout->addWidget(soundButton, 1);
+    sceneInfoLayout->addSpacing(5);
+
+    volumeSlider = new QSlider(Qt::Horizontal);
+    volumeSlider->setRange(0, 150);
+    volumeSlider->setValue(60);
+    volumeSlider->setFixedWidth(80);
+    volumeSlider->setToolTip(tr("Volume"));
+    sceneInfoLayout->addWidget(volumeSlider, 1);
+
+    volumeLabel = new QLabel("60%");
+    volumeLabel->setFixedWidth(35);
+    sceneInfoLayout->addWidget(volumeLabel, 1);
     sceneInfoLayout->addSpacing(15);
+
+    // Connect after initial value is set to avoid triggering volumeChanged during construction
+    connect(volumeSlider, SIGNAL(valueChanged(int)), this, SLOT(updateVolumeLabel(int)));
 
     exportButton = new QPushButton(tr("Export"));
     exportButton->setIcon(QIcon(ICONS_DIR + "export.png"));
@@ -246,4 +261,34 @@ void TupCameraStatus::updateScenesComboStatus()
 
         emit playModeChanged(OneScene, sceneIndex);
     }
+}
+
+void TupCameraStatus::updateVolumeLabel(int value)
+{
+    volumeLabel->setText(QString::number(value) + "%");
+    emit volumeChanged(value);
+}
+
+void TupCameraStatus::setVolume(int volume)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupCameraStatus::setVolume()] - volume ->" << volume;
+    #endif
+
+    // Block signals to avoid infinite loop
+    volumeSlider->blockSignals(true);
+    volumeSlider->setValue(volume);
+    volumeSlider->blockSignals(false);
+    volumeLabel->setText(QString::number(volume) + "%");
+}
+
+void TupCameraStatus::enableAudioControls(bool enabled)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupCameraStatus::enableAudioControls()] - enabled ->" << enabled;
+    #endif
+
+    soundButton->setEnabled(enabled);
+    volumeSlider->setEnabled(enabled);
+    volumeLabel->setEnabled(enabled);
 }

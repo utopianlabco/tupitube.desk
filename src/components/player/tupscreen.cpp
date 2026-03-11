@@ -64,6 +64,7 @@ TupScreen::TupScreen(TupProject *work, const QSize viewSize, bool sizeChanged, Q
     playerIsActive = false;
     playDirection = Forward;
     mute = false;
+    volume = 60;
     renderOn = false;
 
     timer = new QTimer(this);
@@ -1440,13 +1441,26 @@ void TupScreen::playAudioFile(int index, QString audioPath, int position)
         qDebug() << "[TupScreen::playAudioFile()] - time position ->" << position;
     #endif
 
-    if (soundPlayer.at(index)->state() != QMediaPlayer::PlayingState) {
+    QMediaPlayer *player = soundPlayer.at(index);
+    if (player->state() != QMediaPlayer::PlayingState) {
         #ifdef TUP_DEBUG
             qWarning() << "[TupScreen::playAudioFile()] - Playing file ->" << audioPath;
         #endif
-        soundPlayer.at(index)->setMedia(QUrl::fromLocalFile(audioPath));
-        soundPlayer.at(index)->setPosition(position);
-        soundPlayer.at(index)->play();
+
+        QUrl mediaUrl = QUrl::fromLocalFile(audioPath);
+        // Reload media if URL changed OR if media is not in a loaded/ready state
+        QMediaPlayer::MediaStatus status = player->mediaStatus();
+        if (player->media().request().url() != mediaUrl ||
+            status == QMediaPlayer::NoMedia ||
+            status == QMediaPlayer::InvalidMedia ||
+            status == QMediaPlayer::UnknownMediaStatus) {
+            player->setMedia(mediaUrl);
+        }
+
+        // QMediaPlayer volume range is 0-100, clamp values above 100
+        player->setVolume(qMin(volume, 100));
+        player->setPosition(position);
+        player->play();
     } else {
         #ifdef TUP_DEBUG
             qWarning() << "[TupScreen::playAudioFile()] - Warning: Audio file is already being played ->" << audioPath;
@@ -1466,6 +1480,20 @@ void TupScreen::enableMute(bool flag)
            play();
        }
     }
+}
+
+void TupScreen::setVolume(int value)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupScreen::setVolume()] - value ->" << value;
+    #endif
+
+    volume = value;
+    // QMediaPlayer volume range is 0-100, clamp values above 100
+    int playerVolume = qMin(value, 100);
+    int size = soundPlayer.count();
+    for (int i = 0; i < size; i++)
+        soundPlayer.at(i)->setVolume(playerVolume);
 }
 
 void TupScreen::stopSounds()

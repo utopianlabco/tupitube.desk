@@ -914,6 +914,9 @@ int TupAudioTranscoder::processAudio()
         qDebug() << "[TupAudioTranscoder::processAudio()]";
     #endif
 
+    // Reset the global PTS counter for each new transcoding session
+    pts = 0;
+
     AVFormatContext *inputFormatContext = nullptr, *outputFormatContext = nullptr;
     AVCodecContext *inputCodecContext = nullptr, *outputCodecContext = nullptr;
     SwrContext *resampleContext = nullptr;

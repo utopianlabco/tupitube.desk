@@ -47,6 +47,7 @@ TupSoundObject::TupSoundObject(QObject *parent) : QObject(parent)
     soundType = NoSound;
     mute = false;
     backgroundTrack = false;
+    volume = 60;
 }
 
 TupSoundObject::~TupSoundObject()
@@ -101,6 +102,16 @@ void TupSoundObject::setDuration(const QString &time)
 QString TupSoundObject::getDuration() const
 {
     return duration;
+}
+
+void TupSoundObject::setVolume(int level)
+{
+    volume = level;
+}
+
+int TupSoundObject::getVolume() const
+{
+    return volume;
 }
 
 void TupSoundObject::setAudioScenes(QList<SoundScene> scenes)
@@ -238,6 +249,11 @@ void TupSoundObject::fromXml(const QString &xml)
         mute = root.attribute("mute", "true").toInt() ? true : false;
         backgroundTrack = root.attribute("backgroundTrack", "false").toInt() ? true : false;
         duration = root.attribute("duration");
+        volume = root.attribute("volume", "60").toInt();
+
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupSoundObject::fromXml()] - Loaded volume ->" << volume;
+        #endif
 
         QDomNode n = root.firstChild();
         while (!n.isNull()) {
@@ -296,6 +312,7 @@ QDomElement TupSoundObject::toXml(QDomDocument &doc) const
         qDebug() << "[TupSoundObject::toXml()] - mute ->" << mute;
         qDebug() << "[TupSoundObject::toXml()] - backgroundTrack ->" << backgroundTrack;
         qDebug() << "[TupSoundObject::toXml()] - duration ->" << duration;
+        qDebug() << "[TupSoundObject::toXml()] - volume ->" << volume;
     #endif
 
     QDomElement root = doc.createElement("sound");
@@ -303,6 +320,7 @@ QDomElement TupSoundObject::toXml(QDomDocument &doc) const
     root.setAttribute("mute", mute);
     root.setAttribute("backgroundTrack", backgroundTrack);
     root.setAttribute("duration", duration);
+    root.setAttribute("volume", volume);
 
     #ifdef TUP_DEBUG
         qDebug() << "[TupSoundObject::toXml()] - audioScenes.count() ->" << audioScenes.count();

@@ -48,6 +48,7 @@
 #include <QUrl>
 #include <QTime>
 #include <QCheckBox>
+#include <QSlider>
 
 /**
  * @author Gustav Gonzalez
@@ -77,15 +78,21 @@ class TUPITUBE_EXPORT TupSoundPlayer : public QFrame
     signals:
         void muteEnabled(bool mute);
         void soundResourceModified(SoundResource params);
+        void volumeUpdated(int volume);
+
+    public slots:
+        void setVolume(int volume);
 
     private slots:
         void playFile();
         void startPlayer();
         void durationChanged(qint64 value);
         void stateChanged(QMediaPlayer::State state);
+        void handleMediaError(QMediaPlayer::Error error);
         void updateSoundPos(int pos);
         void updateLoopState();
         void muteAction();
+        void volumeChanged(int value);
 
     private:
         QLabel *mainLabel;
@@ -104,6 +111,10 @@ class TUPITUBE_EXPORT TupSoundPlayer : public QFrame
         QString soundID;
         QString url;
 
+        QSlider *volumeSlider;
+        QLabel *volumeLabel;
+
+        SoundResource soundParams;
         TupSoundForm *soundForm;
 };
 

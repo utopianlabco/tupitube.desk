@@ -76,6 +76,10 @@ class TUPITUBE_EXPORT TupLibraryDisplay : public QWidget
     signals:
         void muteEnabled(bool mute);
         void soundResourceModified(SoundResource params);
+        void volumeUpdated(int volume);
+
+    public slots:
+        void setVolume(int volume);
 
     protected:
         void mousePressEvent(QMouseEvent *event);

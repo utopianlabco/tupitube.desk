@@ -42,6 +42,9 @@
 
 #include <QVariant>
 
+static int undoSequence = 0;
+static int redoSequence = 0;
+
 TupProjectCommand::TupProjectCommand(TupCommandExecutor *exec, const TupProjectRequest *request) : QUndoCommand()
 {
     #ifdef TUP_DEBUG
@@ -193,9 +196,11 @@ TupProjectCommand::~TupProjectCommand()
 
 void TupProjectCommand::redo()
 {
+    redoSequence++;
     #ifdef TUP_DEBUG
-        qDebug() << "[TupProjectCommand::redo()] - Executing REDO action...";
-        qDebug() << "[TupProjectCommand::redo()] - response->getPart(): " << response->getPart();
+        qDebug() << "[TupProjectCommand::redo()] - Seq:" << redoSequence
+                 << "action:" << response->getAction()
+                 << "part:" << response->getPart();
     #endif
 	
     if (executed) {
@@ -250,8 +255,11 @@ void TupProjectCommand::redo()
 
 void TupProjectCommand::undo()
 {
+    undoSequence++;
     #ifdef TUP_DEBUG
-        qDebug() << "[TupProjectCommand::undo()] - Executing UNDO action...";
+        qDebug() << "[TupProjectCommand::undo()] - Seq:" << undoSequence 
+                 << "action:" << response->getAction()
+                 << "part:" << response->getPart();
     #endif
 
     response->setMode(TupProjectResponse::Undo);
@@ -550,12 +558,19 @@ void TupProjectCommand::sceneCommand()
 void TupProjectCommand::itemCommand()
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupProjectCommand::itemCommand()]";
+        qDebug() << "[TupProjectCommand::itemCommand()] - action:" << response->originalAction() 
+                 << "mode:" << response->getMode();
     #endif
 
     TupItemResponse *res = static_cast<TupItemResponse *>(response);
+    
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupProjectCommand::itemCommand()] - itemIndex:" << res->getItemIndex();
+    #endif
 
-    switch (res->getAction()) {
+    // Use originalAction() to route to the correct executor method
+    // The executor methods handle Undo/Redo mode internally
+    switch (res->originalAction()) {
             case TupProjectRequest::Add:
             {
                  executor->createItem(res);

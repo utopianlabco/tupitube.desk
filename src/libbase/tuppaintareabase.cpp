@@ -132,10 +132,18 @@ void TupPaintAreaBase::setTool(TupToolPlugin *tool)
     if (tool) {
         disconnect(tool, SIGNAL(requested(const TupProjectRequest*)),
                    this, SIGNAL(requestTriggered(const TupProjectRequest*)));
+        disconnect(tool, SIGNAL(beginUndoMacro(const QString&)),
+                   this, SIGNAL(beginUndoMacroRequested(const QString&)));
+        disconnect(tool, SIGNAL(endUndoMacro()),
+                   this, SIGNAL(endUndoMacroRequested()));
 
         gScene->setTool(tool);
         connect(tool, SIGNAL(requested(const TupProjectRequest*)),
                 this, SIGNAL(requestTriggered(const TupProjectRequest*)));
+        connect(tool, SIGNAL(beginUndoMacro(const QString&)),
+                this, SIGNAL(beginUndoMacroRequested(const QString&)));
+        connect(tool, SIGNAL(endUndoMacro()),
+                this, SIGNAL(endUndoMacroRequested()));
     }
 }
 

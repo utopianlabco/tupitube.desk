@@ -77,6 +77,7 @@ TupLibraryWidget::TupLibraryWidget(QWidget *parent) : TupModuleWidgetBase(parent
     connect(display, SIGNAL(muteEnabled(bool)), this, SLOT(updateSoundMuteStatus(bool)));
     connect(display, SIGNAL(soundResourceModified(SoundResource)),
             this, SLOT(updateSoundResource(SoundResource)));
+    connect(display, SIGNAL(volumeUpdated(int)), this, SIGNAL(volumeUpdated(int)));
 
     libraryTree = new TupItemManager;
 
@@ -2027,6 +2028,9 @@ void TupLibraryWidget::libraryResponse(TupLibraryResponse *response)
                          libraryTree->setCurrentItem(item);
                          previewItem(item);
 
+                         // Enable audio controls in Player when first audio is added
+                         emit audioControlEnabled(true);
+
                          if (videoSoundImported && !videoSoundPath.isEmpty()) {
                              QFile *audioFile = new QFile(videoSoundPath);
                              if (audioFile->exists()) {
@@ -2114,6 +2118,9 @@ void TupLibraryWidget::libraryResponse(TupLibraryResponse *response)
                  if (response->symbolType() == TupLibraryObject::Audio) {
                      if (project->removeSoundResource(id)) {
                          resetSoundPlayer();
+                         // Disable audio controls in Player when last audio is removed
+                         if (project->soundsListSize() == 0)
+                             emit audioControlEnabled(false);
                      } else {
                          #ifdef TUP_DEBUG
                              qWarning() << "[TupLibraryWidget::libraryResponse()] - "
@@ -2665,6 +2672,24 @@ void TupLibraryWidget::updateSoundResource(SoundResource params)
         currentSound->updateSoundResourceParams(params);
         project->updateSoundResourcesItem(currentSound);
         emit soundUpdated();
+    }
+}
+
+void TupLibraryWidget::setVolume(int volume)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupLibraryWidget::setVolume()] - volume ->" << volume;
+    #endif
+
+    if (display)
+        display->setVolume(volume);
+
+    // Save volume to project directly without triggering soundUpdated/loadSoundRecords
+    if (currentSound) {
+        SoundResource params = currentSound->getSoundResourceParams();
+        params.volume = volume;
+        currentSound->updateSoundResourceParams(params);
+        project->updateSoundResourcesItem(currentSound);
     }
 }
 

@@ -123,6 +123,7 @@ struct ProjectSoundList {
 struct SoundMixerItem {
     int audioIndex;
     float playAt;
+    int volume;
 };
 
 struct SoundResource {
@@ -133,6 +134,7 @@ struct SoundResource {
     bool isBackgroundTrack;
     SoundType type;
     QString duration;
+    int volume;
 };
 
 enum PapagayoAppMode { Insert = 0, Update, VoiceRecorded, AudioFromLibrary };

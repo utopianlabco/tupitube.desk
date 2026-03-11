@@ -2939,9 +2939,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="6.8800004"
-     inkscape:cx="-412.718"
-     inkscape:cy="882.34006"
+     inkscape:zoom="1.2162237"
+     inkscape:cx="-412.753"
+     inkscape:cy="882.6501"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -3445,14 +3445,7 @@
     <path
        id="path5311-8-0"
        style="fill:#ffffff;fill-opacity:1;stroke:none"
-       d="m -399.80546,-90.258475 -29.52929,0.40234 0.40039,26.72266 c 0,0 30.1324,0.49767 31.49414,0.65234 -0.81372,-0.75249 -2.36523,-27.77729 -2.36524,-27.77734 z m 2.36524,27.77734 0.002,0.002 c 0.0129,0.0114 0.0265,0.01576 0.0391,0.01368 0.0277,-0.0046 0.008,-0.01009 -0.041,-0.01563 z m -21.58008,-18.68164 0.23242,3.06641 3.5918,0.01367 -0.21094,2.81445 -3.16992,0.05469 0.29883,3.6543 -4.0879,-0.01563 -0.0742,-3.5664 -3.40039,0.07226 -0.0996,-3.08594 3.41601,0.03125 -0.043,-2.73242 z m 13.59179,0 0.23047,3.06641 3.59375,0.01367 -0.21093,2.81445 -3.16993,0.05469 0.29688,3.6543 -4.08789,-0.01563 -0.0723,-3.5664 -3.40039,0.07226 -0.10156,-3.08594 3.41797,0.03125 -0.043,-2.73242 z"
-       inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/dark/icons/duplicate_layer.png"
-       inkscape:export-xdpi="66.110001"
-       inkscape:export-ydpi="66.110001" />
-    <path
-       id="path5311-8-0-3"
-       style="fill:#ff48ff;fill-opacity:1;stroke:none"
-       d="m -356.74685,-48.926597 -29.52929,0.40234 0.40039,26.72266 c 0,0 30.1324,0.49767 31.49414,0.65234 -0.81372,-0.75249 -2.36523,-27.77729 -2.36524,-27.77734 z m 2.36524,27.77734 0.002,0.002 c 0.0129,0.0114 0.0265,0.01576 0.0391,0.01368 0.0277,-0.0046 0.008,-0.01009 -0.041,-0.01563 z m -21.58008,-18.68164 0.23242,3.06641 3.5918,0.01367 -0.21094,2.81445 -3.16992,0.05469 0.29883,3.6543 -4.0879,-0.01563 -0.0742,-3.5664 -3.40039,0.07226 -0.0996,-3.08594 3.41601,0.03125 -0.043,-2.73242 z m 13.59179,0 0.23047,3.06641 3.59375,0.01367 -0.21093,2.81445 -3.16993,0.05469 0.29688,3.6543 -4.08789,-0.01563 -0.0723,-3.5664 -3.40039,0.07226 -0.10156,-3.08594 3.41797,0.03125 -0.043,-2.73242 z"
+       d="m -679.4049,-285.00781 -29.52929,0.40234 0.40039,26.72266 c 0,0 30.1324,0.49767 31.49414,0.65234 -0.81372,-0.75249 -2.36523,-27.77729 -2.36524,-27.77734 z m 2.36524,27.77734 0.002,0.002 c 0.0129,0.0114 0.0265,0.0158 0.0391,0.0137 0.0277,-0.005 0.008,-0.0101 -0.041,-0.0156 z m -21.58008,-18.68164 0.23242,3.06641 3.5918,0.0137 -0.21094,2.81445 -3.16992,0.0547 0.29883,3.6543 -4.0879,-0.0156 -0.0742,-3.5664 -3.40039,0.0723 -0.0996,-3.08594 3.41601,0.0312 -0.043,-2.73242 z m 13.59179,0 0.23047,3.06641 3.59375,0.0137 -0.21093,2.81445 -3.16993,0.0547 0.29688,3.6543 -4.08789,-0.0156 -0.0723,-3.5664 -3.40039,0.0723 -0.10156,-3.08594 3.41797,0.0312 -0.043,-2.73242 z"
        inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/dark/icons/duplicate_layer.png"
        inkscape:export-xdpi="66.110001"
        inkscape:export-ydpi="66.110001" />
@@ -24544,13 +24537,6 @@
        inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/dark/icons/duplicate_scene.png"
        inkscape:export-xdpi="53.419998"
        inkscape:export-ydpi="53.419998" />
-    <path
-       id="path5311-6-5-1-8-9-6"
-       style="fill:#ffffff;fill-opacity:1;stroke:none"
-       d="m -387.69744,-92.054092 -0.52929,30.4903 39.5332,0.0214 -0.46094,-24.7031 -21.17383,-0.9336 -5.94726,-4.7383 z m 38.54297,5.8086 0.25391,0.0117 -0.25781,-0.2578 z m -21.50195,8.7149 0.27539,3.5859 4.23242,0.0293 -0.26758,3.2969 -3.69922,0.0703 0.33008,4.2832 -4.80469,-0.0195 -0.084,-4.1758 -3.95898,0.0761 -0.13086,-3.6152 4.01757,0.0274 -0.0625,-3.1875 z m 14.58789,0 0.27734,3.5859 4.23047,0.0293 -0.26758,3.2969 -3.69922,0.0703 0.33204,4.2832 -4.80469,-0.0195 -0.0859,-4.1758 -3.95898,0.0761 -0.12891,-3.6152 4.01758,0.0274 -0.0645,-3.1875 z"
-       inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/dark/icons/duplicate_scene.png"
-       inkscape:export-xdpi="53.419998"
-       inkscape:export-ydpi="53.419998" />
     <g
        id="g75869"
        inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/dark/icons/align_left.png"
@@ -29477,36 +29463,5 @@
            sodipodi:nodetypes="ccccccccc" />
       </g>
     </g>
-    <path
-       style="fill:#ff34ff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m -378.77237,-73.997245 4.00682,0.03628 -0.05,-3.202838 4.16047,-0.361271 0.27123,3.595944 4.21308,0.01668 -0.24674,3.300649 -3.71809,0.06397 0.34971,4.286794 -4.79435,-0.01837 -0.0859,-4.182569 -3.98821,0.08418 z"
-       id="path9175"
-       sodipodi:nodetypes="ccccccccccccc" />
-    <g
-       id="g9222-6-3-4"
-       transform="translate(-792.56783,-772.48067)"
-       inkscape:export-xdpi="114.18"
-       inkscape:export-ydpi="114.18"
-       inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/dark/icons/hd/add_layer.png">
-      <path
-         sodipodi:nodetypes="cccccc"
-         inkscape:export-ydpi="279"
-         inkscape:export-xdpi="279"
-         inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/dark/icons/add_layer.png"
-         inkscape:connector-curvature="0"
-         id="path5311-8-0-0"
-         d="m 348.41952,679.69608 -29.53011,0.40086 0.40086,26.72407 c 0,0 32.33614,0.53448 31.5344,0.6681 -0.80172,0.13362 -2.40516,-27.79305 -2.40517,-27.7931 z"
-         style="fill:#ffffff;fill-opacity:1;stroke:none" />
-    </g>
-    <path
-       style="fill:#ff34ff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m -471.42616,-80.506909 4.00682,0.03628 -0.05,-3.202838 4.16047,-0.361272 0.27123,3.595945 4.21308,0.01668 -0.24674,3.300649 -3.7181,0.06397 0.34972,4.286794 -4.79435,-0.01837 -0.0859,-4.182569 -3.98821,0.08418 z"
-       id="path9175-5-0"
-       sodipodi:nodetypes="ccccccccccccc" />
-    <path
-       style="fill:#ff34ff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m -457.75566,-80.569638 4.00682,0.03628 -0.05,-3.202838 4.16047,-0.361271 0.27123,3.595944 4.21308,0.01668 -0.24674,3.300648 -3.71809,0.06397 0.34971,4.286794 -4.79435,-0.01837 -0.0859,-4.182569 -3.98821,0.08418 z"
-       id="path9175-2-6"
-       sodipodi:nodetypes="ccccccccccccc" />
   </g>
 </svg>

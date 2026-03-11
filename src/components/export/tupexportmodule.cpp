@@ -204,6 +204,13 @@ void TupExportModule::setScenesIndexes(const QList<int> &indexes)
 
 void TupExportModule::setCurrentExporter(TupExportInterface *currentExporter)
 {
+    // Disconnect from previous exporter to avoid multiple connections and crash on destruction
+    if (m_currentExporter) {
+        TupExportPluginObject *oldPlugin = (TupExportPluginObject *) m_currentExporter;
+        disconnect(oldPlugin, SIGNAL(messageChanged(const QString &)), this, SLOT(updateProgressMessage(const QString &)));
+        disconnect(oldPlugin, SIGNAL(progressChanged(int)), this, SLOT(updateProgressLabel(int)));
+    }
+
     m_currentExporter = currentExporter;
 
     TupExportPluginObject *plugin = (TupExportPluginObject *) currentExporter;

@@ -8,7 +8,6 @@ SUBDIRS += common \
            geometric \
            # shift \
            bucket \
-           # eraser \
            polyline \
            motion \
            rotation \

@@ -158,6 +158,8 @@ TupDocumentView::TupDocumentView(TupProject *work, TActionManager *actionMng, bo
     connect(paintArea, SIGNAL(changedZero(const QPointF&)), this, SLOT(changeRulerOrigin(const QPointF&)));
     connect(paintArea, SIGNAL(requestTriggered(const TupProjectRequest *)), this, SIGNAL(requestTriggered(const TupProjectRequest *)));
     connect(paintArea, SIGNAL(localRequestTriggered(const TupProjectRequest *)), this, SIGNAL(localRequestTriggered(const TupProjectRequest *)));
+    connect(paintArea, SIGNAL(beginUndoMacroRequested(const QString &)), this, SIGNAL(beginUndoMacroRequested(const QString &)));
+    connect(paintArea, SIGNAL(endUndoMacroRequested()), this, SIGNAL(endUndoMacroRequested()));
 
     /* SQA: This connections don't work on Windows
     connect(paintArea, &TupPaintArea::scaled, this, &TupDocumentView::updateZoomVars);

@@ -99,6 +99,8 @@ class TUPITUBE_EXPORT TupPaintAreaBase : public QGraphicsView
     signals:
         void cursorPosition(const QPointF &pos);
         void requestTriggered(const TupProjectRequest *event);
+        void beginUndoMacroRequested(const QString &text);
+        void endUndoMacroRequested();
         void changedZero(const QPointF &zero);
         void scaled(qreal scaleFactor);
         void rotated(int angle);

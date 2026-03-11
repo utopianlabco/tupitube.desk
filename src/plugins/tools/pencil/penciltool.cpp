@@ -504,9 +504,22 @@ void PencilTool::runEraser(const QPointF &point)
         qDebug() << "[PencilTool::runEraser()] - Evaluating point ->" << point;
     #endif
 
-    // Checking if the point matches any of the frame paths
-    for (int i=0; i<lineItems.size(); i++) {
-        TupPathItem *item = lineItems.at(i);
+    // Use spatial query to find candidate items near the eraser point (O(log n) vs O(n))
+    double radius = eraserSize / 2.0;
+    QRectF eraserRect(point.x() - radius, point.y() - radius, eraserSize, eraserSize);
+    QList<QGraphicsItem *> candidates = scene->items(eraserRect);
+
+    // Check candidates for path items that match
+    for (QGraphicsItem *candidate : candidates) {
+        TupPathItem *item = qgraphicsitem_cast<TupPathItem *>(candidate);
+        if (!item)
+            continue;
+
+        // Check z-value range (same filter as storePathItems)
+        int zVal = item->zValue();
+        if (zVal < baseZValue || zVal >= topZValue)
+            continue;
+
         if (item->isBlocked())
             continue;
 
@@ -565,37 +578,23 @@ void PencilTool::runEraser(const QPointF &point)
                                                                                    QPointF(), scene->getSpaceContext(), TupLibraryObject::Item,
                                                                                    TupProjectRequest::EditNodes, segment1);
                     emit requested(&event);
-
-                    /*
-                    // Temporary code for debugging purposes
-                    TupPathItem *debugPath = new TupPathItem;
-                    debugPath->setPathFromString(segment1);
-                    addCurvePoints(debugPath);
-                    addKeyPoints(debugPath);
-                    */
                 } else {
                     scene->removeItem(item);
-                    lineItems.removeAt(i);
-
-                    // Temporary code for debugging purposes
-                    // removeKeyPoints();
+                    lineItems.removeOne(item);
 
                     TupProjectRequest event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(),
                                                                                    currentLayer, currentFrame, itemIndex, QPointF(), scene->getSpaceContext(),
                                                                                    TupLibraryObject::Item, TupProjectRequest::Remove);
                     emit requested(&event);
                 }
+
+                // Only process one item per eraser point - exit after successful match
+                return;
             } else {
                 #ifdef TUP_DEBUG
                     qDebug() << "[PencilTool::runEraser()] - Warning: Eraser action FAILED!";
                 #endif
             }
-
-        } else {
-            #ifdef TUP_DEBUG
-                qDebug() << "---";
-                qDebug() << "[PencilTool::runEraser()] - NO match!!!";
-            #endif
         }
     }
 }

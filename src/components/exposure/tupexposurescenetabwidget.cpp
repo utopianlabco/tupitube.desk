@@ -371,10 +371,16 @@ void TupExposureSceneTabWidget::toggleAudioScrubbing(bool enabled)
 
     audioScrubbingEnabled = enabled;
 
-    // Sync all buttons state
+    // Update icon based on state
+    QString iconPath = enabled ? ICONS_DIR + "speaker_on.png" : ICONS_DIR + "speaker.png";
+    QPixmap speakerPix(iconPath);
+    QIcon speakerIcon(speakerPix.scaledToWidth(TResponsiveUI::fitSmallIconSize()));
+
+    // Sync all buttons state and icon
     for (QPushButton *button : audioScrubbingButtons) {
         button->blockSignals(true);
         button->setChecked(enabled);
+        button->setIcon(speakerIcon);
         button->blockSignals(false);
     }
 
@@ -394,6 +400,8 @@ void TupExposureSceneTabWidget::setSceneAudioEnabled(int sceneIndex, bool enable
         if (!enabled) {
             button->blockSignals(true);
             button->setChecked(false);
+            QPixmap speakerPix(ICONS_DIR + "speaker.png");
+            button->setIcon(speakerPix.scaledToWidth(TResponsiveUI::fitSmallIconSize()));
             button->blockSignals(false);
         }
     }

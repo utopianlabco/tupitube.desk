@@ -1397,6 +1397,11 @@ void TupTimeLine::toggleAudioScrubbing(bool enabled)
 
     audioScrubbingEnabled = enabled;
     scrubFrame = -1;
+
+    // Update icon based on state
+    QString iconPath = enabled ? ICONS_DIR + "speaker_on.png" : ICONS_DIR + "speaker.png";
+    QPixmap speakerPix(iconPath);
+    audioScrubbingButton->setIcon(speakerPix.scaledToWidth(TResponsiveUI::fitSmallIconSize()));
 }
 
 void TupTimeLine::updateSceneAudioButtons()
@@ -1412,6 +1417,8 @@ void TupTimeLine::updateSceneAudioButtons()
         if (!hasAudio) {
             audioScrubbingButton->blockSignals(true);
             audioScrubbingButton->setChecked(false);
+            QPixmap speakerPix(ICONS_DIR + "speaker.png");
+            audioScrubbingButton->setIcon(speakerPix.scaledToWidth(TResponsiveUI::fitSmallIconSize()));
             audioScrubbingButton->blockSignals(false);
             audioScrubbingEnabled = false;
         }

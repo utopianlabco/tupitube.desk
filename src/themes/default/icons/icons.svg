@@ -2931,9 +2931,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.5509154"
-     inkscape:cx="149.26668"
-     inkscape:cy="1575.5211"
+     inkscape:zoom="2.1933256"
+     inkscape:cx="320.28988"
+     inkscape:cy="1687.164"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -14146,6 +14146,14 @@
        inkscape:export-ydpi="155.07001"
        inkscape:connector-curvature="0"
        inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/default/icons/hd/speaker.png" />
+    <path
+       style="fill:#005a00;fill-opacity:1;stroke:none;stroke-width:3.33378;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 248.71438,637.1312 a 11.874259,11.322094 27.109079 0 0 -10.35937,6.0488 11.874259,11.322094 27.109079 0 0 5.42187,15.4668 l 3.52149,-6.8789 -0.45508,-0.3359 -2.9375,-0.0195 -0.82617,-0.4942 -0.52539,-0.9414 v -1.4355 l 0.002,-1.4356 0.52734,-0.8652 0.82617,-0.5684 2.93164,0.008 5.84961,-4.3066 0.008,14.3906 -5.37109,-3.9746 -3.45313,6.9063 a 11.874259,11.322094 27.109079 0 0 15.66797,-4.7852 11.874259,11.322094 27.109079 0 0 -5.49414,-15.4453 11.874259,11.322094 27.109079 0 0 -5.33398,-1.334 z"
+       id="path4227-3-80-6-3-2-9"
+       inkscape:export-xdpi="244.84"
+       inkscape:export-ydpi="244.84"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/default/icons/hd/speaker_on.png" />
     <path
        style="fill:#640000;fill-opacity:1;stroke:none;stroke-width:3.3337779;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 79.027344,467.92468 a 11.874259,11.322094 27.109079 0 0 -10.359375,6.0488 11.874259,11.322094 27.109079 0 0 2.644531,13.5137 l 5.355469,-5.2656 -2.449219,-0.0156 -0.826172,-0.4942 -0.52539,-0.9414 v -1.4355 l 0.002,-1.4356 0.527343,-0.8652 0.826172,-0.5684 2.931641,0.008 5.849609,-4.3066 0.002,3.8262 4.511719,-4.4336 a 11.874259,11.322094 27.109079 0 0 -3.15625,-2.3008 11.874259,11.322094 27.109079 0 0 -5.333984,-1.334 z m 10.162109,5.709 -6.181641,6.0762 0.0039,6.8476 -3.976563,-2.9433 -3.755859,3.6914 -1.091797,2.1836 a 11.874259,11.322094 27.109079 0 0 15.667969,-4.7852 11.874259,11.322094 27.109079 0 0 -0.666016,-11.0703 z m -14.105469,13.8633 -1.623046,1.5957 a 11.874259,11.322094 27.109079 0 0 0.628906,0.3476 z"

@@ -238,10 +238,24 @@ void SelectionTool::release(const TupInputDeviceInformation *input, TupBrushMana
             }
         }
 
+        // Count modified items to decide if we need macro grouping
+        int modifiedCount = 0;
+        foreach (NodeManager *manager, nodeManagers) {
+            if (manager->isModified())
+                modifiedCount++;
+        }
+
+        if (modifiedCount > 1)
+            emit beginUndoMacro(tr("Move Selection"));
+
         foreach (NodeManager *manager, nodeManagers) {
             if (manager->isModified())
                 requestTransformation(manager->parentItem(), frame);
         }
+
+        if (modifiedCount > 1)
+            emit endUndoMacro();
+
         updateItemPosition();
         updateItemRotation();
         updateItemScale();
@@ -607,6 +621,9 @@ void SelectionTool::keyPressEvent(QKeyEvent *event)
             selectedObjects = scene->selectedItems();
             TupFrame *frame = getCurrentFrame();
 
+            if (selectedObjects.count() > 1)
+                emit beginUndoMacro(tr("Move Selection"));
+
             foreach (QGraphicsItem *item, selectedObjects) {
                 if (event->key() == Qt::Key_Left)
                     item->moveBy(-delta, 0);
@@ -623,6 +640,9 @@ void SelectionTool::keyPressEvent(QKeyEvent *event)
                 QTimer::singleShot(0, this, SLOT(syncNodes()));
                 requestTransformation(item, frame);
             }
+
+            if (selectedObjects.count() > 1)
+                emit endUndoMacro();
 
             updateItemPosition();
         }
@@ -1059,12 +1079,17 @@ void SelectionTool::setItemPosition(int x, int y)
         requestTransformation(manager->parentItem(), frame);
     } else {
         if (nodeManagers.count() > 1) {
+            emit beginUndoMacro(tr("Move Selection"));
+
             foreach (NodeManager *manager, nodeManagers) {
                 QGraphicsItem *item = manager->parentItem();
                 item->moveBy(x, y);
                 manager->syncNodesFromParent();
                 requestTransformation(manager->parentItem(), frame);
             }
+
+            emit endUndoMacro();
+
             targetCenter->moveBy(x, y);
             target1->moveBy(x, y);
             target2->moveBy(x, y);
@@ -1094,11 +1119,15 @@ void SelectionTool::setItemRotation(int angle)
             requestTransformation(manager->parentItem(), frame);
     } else {
         if (nodeManagers.count() > 1) {
+            emit beginUndoMacro(tr("Rotate Selection"));
+
             foreach (NodeManager *manager, nodeManagers) {
                 manager->rotate(angle);
                 if (manager->isModified())
                     requestTransformation(manager->parentItem(), frame);
             }
+
+            emit endUndoMacro();
         }
     }
 }
@@ -1116,11 +1145,15 @@ void SelectionTool::setItemScale(double xFactor, double yFactor)
             requestTransformation(manager->parentItem(), frame);
     } else {
         if (nodeManagers.count() > 1) {
+            emit beginUndoMacro(tr("Scale Selection"));
+
             foreach (NodeManager *manager, nodeManagers) {
                 manager->scale(xFactor, yFactor);
                 if (manager->isModified())
                     requestTransformation(manager->parentItem(), frame);
             }
+
+            emit endUndoMacro();
         }
     }
 }

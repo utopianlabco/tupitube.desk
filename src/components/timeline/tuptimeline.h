@@ -43,6 +43,7 @@
 #include "tuprequestbuilder.h"
 
 #include <QDoubleSpinBox>
+#include <QPushButton>
 
 class TUPITUBE_EXPORT TupTimeLine : public TupModuleWidgetBase
 {
@@ -55,6 +56,7 @@ class TUPITUBE_EXPORT TupTimeLine : public TupModuleWidgetBase
         void initLayerVisibility();
         void closeAllScenes();
         void updateFramesState();
+        void updateSceneAudioButtons();
 
     private:
         TupTimeLineTable *framesTable(int sceneIndex);
@@ -70,6 +72,7 @@ class TUPITUBE_EXPORT TupTimeLine : public TupModuleWidgetBase
     signals:
         void newPerspective(UIView tabType);
         void sceneChanged(int sceneIndex);
+        void playSoundAt(int sceneIndex, int frameIndex);
 
     public slots:
         void addScene(int sceneIndex, const QString &name, bool preserveSelection = false);
@@ -98,7 +101,9 @@ class TUPITUBE_EXPORT TupTimeLine : public TupModuleWidgetBase
         void requestSceneMove(int from, int to);
 
         void requestUpdateLayerOpacity(double opacity);
-        void showRenameSceneDialog(int sceneIndex);        
+        void showRenameSceneDialog(int sceneIndex);
+        void setAudioScrubbing(bool enabled);
+        void toggleAudioScrubbing(bool enabled);
 
     private:
         void requestReverseFrameSelection();
@@ -115,8 +120,11 @@ class TUPITUBE_EXPORT TupTimeLine : public TupModuleWidgetBase
         QString frameSelection;
         bool doSelection;
         QDoubleSpinBox *opacitySpinBox;
+        QPushButton *audioScrubbingButton;
 
         bool localSceneMove;
+        bool audioScrubbingEnabled;
+        int scrubFrame;
 };
 
 #endif

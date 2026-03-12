@@ -75,6 +75,8 @@ class TUPITUBE_EXPORT TupScreen : public QFrame, public TupAbstractProjectRespon
         void setPlayMode(PlayMode mode, int sceneIndex);
         PlayDirection getPlayDirection();
         bool removeSoundTrack(const QString &soundKey);
+        void playSoundsAt(int frame);
+        void scrubSoundsAt(int frame);
 
     public slots:
         void play();
@@ -91,6 +93,7 @@ class TUPITUBE_EXPORT TupScreen : public QFrame, public TupAbstractProjectRespon
         void advance();
         void back();
         void enableMute(bool flag);
+        void stopScrubAudio();
 
     protected:
         void frameResponse(TupFrameResponse *response);
@@ -124,7 +127,6 @@ class TUPITUBE_EXPORT TupScreen : public QFrame, public TupAbstractProjectRespon
         void calculateFramesTotal();
         void calculateSceneTimes();
 
-        void playSoundsAt(int frame);
         void playAudioFile(int index, QString audioPath, int position = 0);
         void stopSounds();
         bool currentSceneGotSounds();
@@ -143,6 +145,7 @@ class TUPITUBE_EXPORT TupScreen : public QFrame, public TupAbstractProjectRespon
 
         QTimer *timer;
         QTimer *playBackTimer;
+        QTimer *scrubTimer;
 
         TupAnimationRenderer *renderer;
         QList<QImage> photograms;

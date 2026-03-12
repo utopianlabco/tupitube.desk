@@ -29,8 +29,7 @@ win32 {
     LIBS += -L$$STORE_DIR -ltupistore
 }
 
-HEADERS +=  tupaudioextractor.h \
-            tuplipsyncdoc.h \
+HEADERS +=  tuplipsyncdoc.h \
             tupbreakdowndialog.h \
             tupwaveformview.h \
             tupmouthview.h \
@@ -39,8 +38,7 @@ HEADERS +=  tupaudioextractor.h \
             tuppapagayoimporter.h \
             tuppapagayoapp.h
 		   
-SOURCES += tupaudioextractor.cpp \
-           tuplipsyncdoc.cpp \
+SOURCES += tuplipsyncdoc.cpp \
            tupbreakdowndialog.cpp \
            tupwaveformview.cpp \
            tupmouthview.cpp \

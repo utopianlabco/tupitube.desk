@@ -12,6 +12,9 @@ unix {
     !include(../tupconfig.pri) {
         error("Run ./configure first!")
     }
+    # Include libsndfile paths from system
+    INCLUDEPATH += /usr/local/libsndfile/include /usr/include
+    LIBS += -L/usr/local/libsndfile/lib
 }
 
 win32 {
@@ -34,11 +37,17 @@ HEADERS += talgorithm.h \
            tuivalues.h \
            # tipdatabase.h \
            tcachehandler.h \
-           tapptheme.h
+           tapptheme.h \
+           taudiosampler.h
 
 SOURCES += talgorithm.cpp \
            tapplicationproperties.cpp \
            tconfig.cpp \
            # tipdatabase.cpp \
            tcachehandler.cpp \
-           tapptheme.cpp
+           tapptheme.cpp \
+           taudiosampler.cpp
+
+unix {
+    LIBS += -lsndfile
+}

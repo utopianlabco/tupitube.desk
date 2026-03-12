@@ -35,12 +35,15 @@
 #include "tupexposurescenetabwidget.h"
 #include "timagebutton.h"
 #include "tresponsiveui.h"
+#include "tseparator.h"
 
 TupExposureSceneTabWidget::TupExposureSceneTabWidget(QWidget *parent) : QFrame(parent)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupExposureSceneTabWidget()]";
     #endif
+
+    audioScrubbingEnabled = false;
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setMargin(1);
@@ -68,6 +71,8 @@ TupExposureSceneTabWidget::~TupExposureSceneTabWidget()
     opacityControl.clear();
     undoOpacities.clear();
 
+    audioScrubbingButtons.clear();
+
     delete scenesTabber;
 }
 
@@ -89,6 +94,8 @@ void TupExposureSceneTabWidget::removeAllTabs()
 
     opacityControl.clear();
     undoOpacities.clear();
+
+    audioScrubbingButtons.clear();
 }
 
 void TupExposureSceneTabWidget::addScene(int index, const QString &sceneName,
@@ -125,8 +132,20 @@ void TupExposureSceneTabWidget::addScene(int index, const QString &sceneName,
 
     opacityControl << opacitySpinBox;
 
+    QPushButton *audioScrubbingButton = new QPushButton(this);
+    QPixmap speakerPix(ICONS_DIR + "speaker.png");
+    audioScrubbingButton->setIcon(speakerPix.scaledToWidth(TResponsiveUI::fitSmallIconSize()));
+    audioScrubbingButton->setCheckable(true);
+    audioScrubbingButton->setChecked(false);
+    audioScrubbingButton->setEnabled(false);
+    audioScrubbingButton->setToolTip(tr("Audio Scrubbing"));
+    connect(audioScrubbingButton, SIGNAL(toggled(bool)), this, SLOT(toggleAudioScrubbing(bool)));
+    audioScrubbingButtons << audioScrubbingButton;
+
     toolsLayout->addWidget(containerHeader);
     toolsLayout->addWidget(opacitySpinBox);
+    toolsLayout->addWidget(new TSeparator(Qt::Vertical));
+    toolsLayout->addWidget(audioScrubbingButton);
 
     tableLayout->addLayout(toolsLayout);
     tableLayout->addWidget(exposureTable);
@@ -341,5 +360,41 @@ void TupExposureSceneTabWidget::setLayerVisibility(int sceneIndex, int layerInde
                           "Fatal Error: Invalid scene index ->"
                        << sceneIndex;
         #endif
+    }
+}
+
+void TupExposureSceneTabWidget::toggleAudioScrubbing(bool enabled)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupExposureSceneTabWidget::toggleAudioScrubbing()] - enabled ->" << enabled;
+    #endif
+
+    audioScrubbingEnabled = enabled;
+
+    // Sync all buttons state
+    for (QPushButton *button : audioScrubbingButtons) {
+        button->blockSignals(true);
+        button->setChecked(enabled);
+        button->blockSignals(false);
+    }
+
+    emit audioScrubbingToggled(enabled);
+}
+
+bool TupExposureSceneTabWidget::isAudioScrubbingEnabled() const
+{
+    return audioScrubbingEnabled;
+}
+
+void TupExposureSceneTabWidget::setSceneAudioEnabled(int sceneIndex, bool enabled)
+{
+    if (sceneIndex >= 0 && sceneIndex < audioScrubbingButtons.size()) {
+        QPushButton *button = audioScrubbingButtons.at(sceneIndex);
+        button->setEnabled(enabled);
+        if (!enabled) {
+            button->blockSignals(true);
+            button->setChecked(false);
+            button->blockSignals(false);
+        }
     }
 }

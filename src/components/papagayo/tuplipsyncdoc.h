@@ -19,7 +19,8 @@
 
 #include "tglobal.h"
 #include "tapplicationproperties.h"
-#include "tupaudioextractor.h"
+#include "tuppg_config.h"
+#include "taudiosampler.h"
 
 #include <QMediaPlayer>
 #include <QFile>
@@ -220,7 +221,7 @@ class TupLipsyncDoc : public QObject
         void setPlayerNotifyInterval(int value);
 
         QMediaPlayer::State getAudioPlayerState();
-        TupAudioExtractor * getAudioExtractor();
+        TAudioSampler * getAudioSampler();
 
         int32 getDuration() { return audioDuration; }
         QString getVolumePhonemeAtFrame(int32 frame);
@@ -265,7 +266,7 @@ class TupLipsyncDoc : public QObject
         QString audioPath;
         QList<QMediaPlayer *> audioPlayer;
 
-        TupAudioExtractor *audioExtractor;
+        TAudioSampler *audioSampler;
         real maxAmplitude;
 
         QString pgoFilePath;

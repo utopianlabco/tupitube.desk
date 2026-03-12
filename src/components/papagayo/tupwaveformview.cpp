@@ -120,16 +120,16 @@ void TupWaveFormView::setDocument(TupLipsyncDoc *doc)
         amp = nullptr;
     }
 
-    TupAudioExtractor *extractor = document->getAudioExtractor();
-    if (document && extractor) {
+    TAudioSampler *sampler = document->getAudioSampler();
+    if (document && sampler && sampler->isLoaded()) {
         #ifdef TUP_DEBUG
             qDebug() << "[TupWaveFormView::setDocument()] - Processing audio...";
         #endif
         frameWidth = sampleWidth * samplesPerFrame;
-        real duration = extractor->duration();
-        real time = 0.0f;
-        real sampleDur = 1.0f / samplesPerSec;
-        real maxAmp = 0.0f;
+        double duration = sampler->duration();
+        double time = 0.0;
+        double sampleDur = 1.0 / samplesPerSec;
+        double maxAmp = 0.0;
         while (time < duration) {
             numSamples++;
             time += sampleDur;
@@ -138,23 +138,23 @@ void TupWaveFormView::setDocument(TupLipsyncDoc *doc)
         if (numSamples < 1)
             numSamples = 1;
         amp = new real[numSamples];
-        time = 0.0f;
+        time = 0.0;
         int32 i = 0;
 
         onlySilent = true;
         while (time < duration) {
-            amp[i] = extractor->getRMSAmplitude(time, sampleDur);
+            amp[i] = static_cast<real>(sampler->getRMSAmplitude(time, time + sampleDur));
             if (amp[i] > 0)
                 onlySilent = false;
 
             if (amp[i] > maxAmp)
                 maxAmp = amp[i];
-			time += sampleDur;
-			i++;
-		}
+            time += sampleDur;
+            i++;
+        }
 
-		// normalize amplitudes
-		maxAmp = 0.95f / maxAmp;
+        // normalize amplitudes
+        maxAmp = 0.95 / maxAmp;
         for (i = 0; i < numSamples; i++)
             amp[i] *= maxAmp;
 

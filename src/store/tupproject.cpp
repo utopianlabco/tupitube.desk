@@ -1371,6 +1371,19 @@ QList<SoundResource> TupProject::getSoundResourcesList() const
     return soundRecords;
 }
 
+bool TupProject::sceneHasAudio(int sceneIndex) const
+{
+    foreach(SoundResource resource, soundRecords) {
+        if (resource.isBackgroundTrack && !resource.muted)
+            return true;
+        foreach(SoundScene scene, resource.scenes) {
+            if (scene.sceneIndex == sceneIndex && !scene.frames.isEmpty() && !resource.muted)
+                return true;
+        }
+    }
+    return false;
+}
+
 void TupProject::swapSoundScenes(int sceneIndex, int newSceneIndex)
 {
     for(int i=0; i<soundRecords.size(); i++) {

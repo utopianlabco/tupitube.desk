@@ -122,6 +122,8 @@ class TupMainWindow : public TabbedMainWindow
 
         void connectWidgetToManager(QWidget *widget);
         void disconnectWidgetToManager(QWidget *widget);
+        void connectUndoMacroSignals(QWidget *widget);
+        void disconnectUndoMacroSignals(QWidget *widget);
         void connectWidgetToPaintArea(QWidget *widget);
         void connectWidgetToLocalManager(QWidget *widget);
 

@@ -322,6 +322,8 @@ void TupMainWindow::createNewNetProject(const QString &title, const QStringList 
     enableToolViews(true);
     setMenuItemsContext(true);
     m_exposureSheet->updateFramesState();
+    m_exposureSheet->updateSceneAudioButtons();
+    m_timeLine->updateSceneAudioButtons();
     m_projectManager->setOpen(true);
 
     setWorkSpace(users);
@@ -393,6 +395,7 @@ void TupMainWindow::setWorkSpace(const QStringList &users)
         addTabComponent(animationWidget);
 
         connectWidgetToManager(animationTab);
+        connectUndoMacroSignals(animationTab);
         connectWidgetToLocalManager(animationTab);
         connectWidgetToPaintArea(animationTab);
         connect(animationTab, SIGNAL(modeHasChanged(TupProject::Mode)), this, SLOT(restoreFramesMode(TupProject::Mode)));
@@ -487,6 +490,12 @@ void TupMainWindow::setWorkSpace(const QStringList &users)
         // Save event
         connect(animationTab, SIGNAL(saveRequested()), this, SLOT(callSaveProcedure()));
 
+        // Audio scrubbing in Exposure Sheet panel
+        connect(m_exposureSheet, SIGNAL(playSoundAt(int, int)), cameraWidget, SLOT(playSoundAtFrame(int, int)));
+
+        // Audio scrubbing in Timeline panel
+        connect(m_timeLine, SIGNAL(playSoundAt(int, int)), cameraWidget, SLOT(playSoundAtFrame(int, int)));
+
         if (isNetworked) {
             connect(cameraWidget, SIGNAL(requestForExportVideoToServer(const QString &, const QString &, const QString &, int, const QList<int>)), 
                     netProjectManager, SLOT(sendVideoRequest(const QString &, const QString &, const QString &, int, const QList<int>)));
@@ -541,6 +550,8 @@ void TupMainWindow::enableVisibilityControls()
 void TupMainWindow::updateSoundItems()
 {
     cameraWidget->updateSoundItems();
+    m_exposureSheet->updateSceneAudioButtons();
+    m_timeLine->updateSceneAudioButtons();
     m_projectManager->setModificationStatus(true);
 }
 
@@ -949,6 +960,8 @@ void TupMainWindow::openProject(const QString &path)
 
             m_exposureSheet->updateFramesState();
             m_timeLine->updateFramesState();
+            m_exposureSheet->updateSceneAudioButtons();
+            m_timeLine->updateSceneAudioButtons();
 
             m_exposureSheet->updateLayerOpacity(0, 0);
             m_exposureSheet->initLayerVisibility();
@@ -1116,13 +1129,16 @@ void TupMainWindow::connectWidgetToManager(QWidget *widget)
     connect(widget, SIGNAL(requestTriggered(const TupProjectRequest*)), m_projectManager,
             SLOT(handleProjectRequest(const TupProjectRequest*)));
 
+    connect(m_projectManager, SIGNAL(responsed(TupProjectResponse*)), widget, 
+            SLOT(handleProjectResponse(TupProjectResponse*)));
+}
+
+void TupMainWindow::connectUndoMacroSignals(QWidget *widget)
+{
     connect(widget, SIGNAL(beginUndoMacroRequested(const QString&)), m_projectManager,
             SLOT(beginUndoMacro(const QString&)));
     connect(widget, SIGNAL(endUndoMacroRequested()), m_projectManager,
             SLOT(endUndoMacro()));
-
-    connect(m_projectManager, SIGNAL(responsed(TupProjectResponse*)), widget, 
-            SLOT(handleProjectResponse(TupProjectResponse*)));
 }
 
 void TupMainWindow::connectWidgetToLocalManager(QWidget *widget)
@@ -1136,13 +1152,16 @@ void TupMainWindow::disconnectWidgetToManager(QWidget *widget)
     disconnect(widget, SIGNAL(requestTriggered(const TupProjectRequest*)), m_projectManager,
             SLOT(handleProjectRequest(const TupProjectRequest*)));
 
+    disconnect(m_projectManager, SIGNAL(responsed(TupProjectResponse*)), widget,
+            SLOT(handleProjectResponse(TupProjectResponse*)));
+}
+
+void TupMainWindow::disconnectUndoMacroSignals(QWidget *widget)
+{
     disconnect(widget, SIGNAL(beginUndoMacroRequested(const QString&)), m_projectManager,
             SLOT(beginUndoMacro(const QString&)));
     disconnect(widget, SIGNAL(endUndoMacroRequested()), m_projectManager,
             SLOT(endUndoMacro()));
-
-    disconnect(m_projectManager, SIGNAL(responsed(TupProjectResponse*)), widget,
-            SLOT(handleProjectResponse(TupProjectResponse*)));
 }
 
 void TupMainWindow::connectWidgetToPaintArea(QWidget *widget)

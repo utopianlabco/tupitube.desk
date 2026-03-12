@@ -827,3 +827,19 @@ void TupCameraWidget::enableAudioControls(bool enabled)
 
     cameraStatus->enableAudioControls(enabled);
 }
+
+void TupCameraWidget::playSoundAtFrame(int sceneIndex, int frameIndex)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupCameraWidget::playSoundAtFrame()] - sceneIndex, frameIndex ->" 
+                 << sceneIndex << "," << frameIndex;
+    #endif
+
+    // Update scene index in the screen to ensure correct sound context
+    if (currentSceneIndex != sceneIndex) {
+        currentSceneIndex = sceneIndex;
+        previewScreen->updateSceneIndex(sceneIndex);
+    }
+
+    previewScreen->scrubSoundsAt(frameIndex);
+}

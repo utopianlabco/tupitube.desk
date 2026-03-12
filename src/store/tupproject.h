@@ -159,6 +159,7 @@ class TUPITUBE_EXPORT TupProject : public QObject, public TupAbstractSerializabl
         bool removeSoundResource(const QString &key);
         QList<SoundResource> getSoundResourcesList() const;
         int soundsListSize();
+        bool sceneHasAudio(int sceneIndex) const;
         bool updateSoundResourcesItem(TupLibraryObject *item);
         bool updateSoundType(const QString audioId, SoundType type);
         bool updateSoundFramesToPlay(const QString audioId, int sceneIndex, QList<int> frames);

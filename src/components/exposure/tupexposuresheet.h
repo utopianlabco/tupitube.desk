@@ -84,6 +84,7 @@ class TUPITUBE_EXPORT TupExposureSheet : public TupModuleWidgetBase
     signals:
         void newPerspective(UIView tabType);
         void sceneChanged(int sceneIndex);
+        void playSoundAt(int sceneIndex, int frameIndex);
 
     public slots:
         void updateSceneFramesState(int sceneIndex);
@@ -94,6 +95,7 @@ class TUPITUBE_EXPORT TupExposureSheet : public TupModuleWidgetBase
         void setCurrentScene(int sceneIndex);
         void changeLayerVisibility(int, bool);
         void updateFPS(int fps);
+        void updateSceneAudioButtons();
 
     private slots: 
         void requestChangeScene(int index);
@@ -101,6 +103,7 @@ class TUPITUBE_EXPORT TupExposureSheet : public TupModuleWidgetBase
         void requestCopyFrameSelection();
         void requestPasteSelectionInCurrentFrame();
         void requestUpdateLayerOpacity(double opacity);
+        void setAudioScrubbing(bool enabled);
 
         void insertFramesFromMenu(QAction *action);
         void clearFrame();
@@ -133,6 +136,8 @@ class TUPITUBE_EXPORT TupExposureSheet : public TupModuleWidgetBase
         QList<TupExposureTable::FrameType> statesList;
 
         bool localSceneMove;
+        bool audioScrubbingEnabled;
+        int scrubFrame;
 };
 
 #endif

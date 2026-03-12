@@ -975,8 +975,9 @@ void TupPapagayoApp::onVoiceTextChanged()
 int32 TupPapagayoApp::calculateDuration()
 {
     int32 duration = document->getFps() * MOUTHS_PACKAGE_SIZE;
-    if (document->getAudioExtractor()) {
-        real time = document->getAudioExtractor()->duration();
+    TAudioSampler *sampler = document->getAudioSampler();
+    if (sampler && sampler->isLoaded()) {
+        double time = sampler->duration();
         time *= document->getFps();
         duration = PG_ROUND(time);
     }

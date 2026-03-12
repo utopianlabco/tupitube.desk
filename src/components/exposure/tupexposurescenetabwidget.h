@@ -47,6 +47,7 @@
 #include <QTabBar>
 #include <QVBoxLayout>
 #include <QDoubleSpinBox>
+#include <QPushButton>
 
 /**
  * @author Gustav Gonzalez 
@@ -76,15 +77,21 @@ class T_GUI_EXPORT TupExposureSceneTabWidget : public QFrame
         int count();
         void setLayerOpacity(int sceneIndex, double opacity);
         void setLayerVisibility(int sceneIndex, int layerIndex, bool visibility);
+        bool isAudioScrubbingEnabled() const;
+        void setSceneAudioEnabled(int sceneIndex, bool enabled);
 
     public slots:
         void removeAllTabs();
+
+    private slots:
+        void toggleAudioScrubbing(bool enabled);
 
     signals:
         void currentChanged(int index);
         void layerOpacityChanged(double opacity);
         void sceneRenameRequested(int index);
         void sceneMoved(int from, int to);
+        void audioScrubbingToggled(bool enabled);
 
     private:
         QTabWidget *scenesTabber;
@@ -97,6 +104,9 @@ class T_GUI_EXPORT TupExposureSceneTabWidget : public QFrame
 
         QList<QDoubleSpinBox *> opacityControl;
         QList<QDoubleSpinBox *> undoOpacities;
+
+        QList<QPushButton *> audioScrubbingButtons;
+        bool audioScrubbingEnabled;
 };
 
 #endif

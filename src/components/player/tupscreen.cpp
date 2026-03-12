@@ -69,9 +69,12 @@ TupScreen::TupScreen(TupProject *work, const QSize viewSize, bool sizeChanged, Q
 
     timer = new QTimer(this);
     playBackTimer = new QTimer(this);
+    scrubTimer = new QTimer(this);
+    scrubTimer->setSingleShot(true);
 
     connect(timer, SIGNAL(timeout()), this, SLOT(advance()));
     connect(playBackTimer, SIGNAL(timeout()), this, SLOT(back()));
+    connect(scrubTimer, SIGNAL(timeout()), this, SLOT(stopScrubAudio()));
 
     initAllPhotograms();
 
@@ -88,6 +91,7 @@ TupScreen::~TupScreen()
 
     timer->stop();
     playBackTimer->stop();
+    scrubTimer->stop();
 
     blankImagesList.clear();
 
@@ -100,6 +104,8 @@ TupScreen::~TupScreen()
     timer = nullptr;
     delete playBackTimer;
     playBackTimer = nullptr;
+    delete scrubTimer;
+    scrubTimer = nullptr;
     delete renderer;
     renderer = nullptr;
 }
@@ -1054,6 +1060,10 @@ void TupScreen::updateSceneIndex(int index)
     #endif
 
     sceneIndex = index;
+    // Clear sound indexes so they get repopulated for the new scene
+    soundIndexesForScene.clear();
+    soundFramesForScene.clear();
+
     if (sceneIndex > -1 && sceneIndex < animationList.count()) {
         currentFramePosition = 0;
         clearPhotograms();
@@ -1370,6 +1380,10 @@ void TupScreen::playSoundsAt(int frameIndex)
         qDebug() << "[TupScreen::playSoundsAt()] - current frame ->" << frameIndex;
     #endif
 
+    // Ensure sound indexes are populated for audio scrubbing
+    if (soundIndexesForScene.isEmpty() && !soundRecords.isEmpty())
+        getSoundsForCurrentScene();
+
     if (playMode == OneScene) {
         for(int i=0; i< soundIndexesForScene.size(); i++) {
             int soundIndex = soundIndexesForScene.at(i);
@@ -1501,6 +1515,67 @@ void TupScreen::stopSounds()
     int size = soundRecords.count();
     for (int i=0; i<size; i++)
         soundPlayer.at(i)->stop();
+}
+
+void TupScreen::scrubSoundsAt(int frameIndex)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupScreen::scrubSoundsAt()] - frame ->" << frameIndex;
+    #endif
+
+    // Ensure sound indexes are populated
+    if (soundIndexesForScene.isEmpty() && !soundRecords.isEmpty())
+        getSoundsForCurrentScene();
+
+    if (soundIndexesForScene.isEmpty())
+        return;
+
+    // Stop any currently playing scrub audio
+    scrubTimer->stop();
+    stopSounds();
+
+    // Calculate position in milliseconds based on frame and fps
+    int positionMs = static_cast<int>((static_cast<double>(frameIndex) / static_cast<double>(fps)) * 1000.0);
+
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupScreen::scrubSoundsAt()] - position ms ->" << positionMs;
+    #endif
+
+    // Play all sounds that apply to this scene
+    for (int i = 0; i < soundIndexesForScene.size(); i++) {
+        int soundIndex = soundIndexesForScene.at(i);
+        if (soundIndex < soundRecords.size() && soundIndex < soundPlayer.size()) {
+            SoundResource soundRecord = soundRecords.at(soundIndex);
+            QMediaPlayer *player = soundPlayer.at(soundIndex);
+
+            QUrl mediaUrl = QUrl::fromLocalFile(soundRecord.path);
+            QMediaPlayer::MediaStatus status = player->mediaStatus();
+
+            if (player->media().request().url() != mediaUrl ||
+                status == QMediaPlayer::NoMedia ||
+                status == QMediaPlayer::InvalidMedia ||
+                status == QMediaPlayer::UnknownMediaStatus) {
+                player->setMedia(mediaUrl);
+            }
+
+            player->setVolume(qMin(volume, 100));
+            player->setPosition(positionMs);
+            player->play();
+        }
+    }
+
+    // Stop audio after a short duration (2 frames worth for smoother scrubbing)
+    int scrubDuration = (2000 / fps);  // 2 frames in ms
+    scrubTimer->start(scrubDuration);
+}
+
+void TupScreen::stopScrubAudio()
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupScreen::stopScrubAudio()]";
+    #endif
+
+    stopSounds();
 }
 
 void TupScreen::mousePressEvent(QMouseEvent *event)

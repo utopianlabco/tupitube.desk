@@ -56,6 +56,8 @@ TupExposureSheet::TupExposureSheet(QWidget *parent, TupProject *work) : TupModul
     previousScene = 0;
     previousLayer = 0;
     localSceneMove = false;
+    audioScrubbingEnabled = false;
+    scrubFrame = -1;
 
     setWindowTitle(tr("Exposure Sheet"));
     setWindowIcon(QPixmap(ICONS_DIR + "exposure_sheet.png"));
@@ -100,6 +102,7 @@ TupExposureSheet::TupExposureSheet(QWidget *parent, TupProject *work) : TupModul
     connect(scenesContainer, SIGNAL(layerOpacityChanged(double)), this, SLOT(requestUpdateLayerOpacity(double)));
     connect(scenesContainer, SIGNAL(sceneRenameRequested(int)), this, SLOT(showRenameSceneDialog(int)));
     connect(scenesContainer, SIGNAL(sceneMoved(int,int)), this, SLOT(requestSceneMove(int,int)));
+    connect(scenesContainer, SIGNAL(audioScrubbingToggled(bool)), this, SLOT(setAudioScrubbing(bool)));
 
     addChild(scenesContainer);
     createMenuForAFrame();
@@ -667,6 +670,13 @@ void TupExposureSheet::selectFrame(int layerIndex, int frameIndex)
                                                    layerIndex, frameIndex, TupProjectRequest::Select,
                                                    selection);
     emit localRequestTriggered(&request);
+
+    // Audio scrubbing: play sound at frame when enabled
+    if (audioScrubbingEnabled && frameIndex != scrubFrame) {
+        scrubFrame = frameIndex;
+        int sceneIndex = scenesContainer->currentSceneIndex();
+        emit playSoundAt(sceneIndex, frameIndex);
+    }
 }
 
 void TupExposureSheet::removeFrame()
@@ -1765,4 +1775,26 @@ void TupExposureSheet::showRenameSceneDialog(int sceneIndex)
     TupSceneNameDialog *dialog = new TupSceneNameDialog(TupSceneNameDialog::Rename, name);
     if (dialog->exec() == QDialog::Accepted)
         requestSceneRename(dialog->getSceneName());
+}
+
+void TupExposureSheet::setAudioScrubbing(bool enabled)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupExposureSheet::setAudioScrubbing()] - enabled ->" << enabled;
+    #endif
+
+    audioScrubbingEnabled = enabled;
+    scrubFrame = -1;
+}
+
+void TupExposureSheet::updateSceneAudioButtons()
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupExposureSheet::updateSceneAudioButtons()]";
+    #endif
+
+    for (int i = 0; i < project->scenesCount(); i++) {
+        bool hasAudio = project->sceneHasAudio(i);
+        scenesContainer->setSceneAudioEnabled(i, hasAudio);
+    }
 }

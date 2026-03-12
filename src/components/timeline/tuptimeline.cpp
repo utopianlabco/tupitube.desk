@@ -41,6 +41,9 @@
 #include "tuplibrary.h"
 #include "tupscenenamedialog.h"
 #include "talgorithm.h"
+#include "tseparator.h"
+#include "tresponsiveui.h"
+#include "tapplicationproperties.h"
 
 #include <QList>
 
@@ -60,6 +63,8 @@ TupTimeLine::TupTimeLine(TupProject *projectData, QWidget *parent) : TupModuleWi
     currentTable = nullptr;
     doSelection = false;
     localSceneMove = false;
+    audioScrubbingEnabled = false;
+    scrubFrame = -1;
 
     // SQA: Pending to add the feature "Layer Opacity" as part of this action bar
 
@@ -103,8 +108,20 @@ TupTimeLine::TupTimeLine(TupProject *projectData, QWidget *parent) : TupModuleWi
     opacitySpinBox->setToolTip(tr("Current Layer Opacity"));
     connect(opacitySpinBox, SIGNAL(valueChanged(double)), this, SLOT(requestUpdateLayerOpacity(double)));
 
+    // Audio Scrubbing Button
+    audioScrubbingButton = new QPushButton(this);
+    QPixmap speakerPix(ICONS_DIR + "speaker.png");
+    audioScrubbingButton->setIcon(speakerPix.scaledToWidth(TResponsiveUI::fitSmallIconSize()));
+    audioScrubbingButton->setCheckable(true);
+    audioScrubbingButton->setChecked(false);
+    audioScrubbingButton->setEnabled(false);
+    audioScrubbingButton->setToolTip(tr("Audio Scrubbing"));
+    connect(audioScrubbingButton, SIGNAL(toggled(bool)), this, SLOT(toggleAudioScrubbing(bool)));
+
     toolsLayout->addWidget(header);
     toolsLayout->addWidget(opacitySpinBox);
+    toolsLayout->addWidget(new TSeparator(Qt::Vertical));
+    toolsLayout->addWidget(audioScrubbingButton);
 
     // ---
 
@@ -1060,6 +1077,12 @@ void TupTimeLine::requestFrameSelection(int layerIndex, int frameIndex)
         TupProjectRequest request = TupRequestBuilder::createFrameRequest(sceneIndex, layerIndex,
                                                        frameIndex, TupProjectRequest::Select, selection);
         emit requestTriggered(&request);
+
+        // Audio scrubbing
+        if (audioScrubbingEnabled && frameIndex != scrubFrame) {
+            scrubFrame = frameIndex;
+            emit playSoundAt(sceneIndex, frameIndex);
+        }
     }
 }
 
@@ -1146,6 +1169,9 @@ void TupTimeLine::requestSceneSelection(int sceneIndex)
         emit localRequestTriggered(&request);
         emit sceneChanged(previewSceneIndex);
     }
+
+    // Update audio scrubbing button state for new scene
+    updateSceneAudioButtons();
 }
 
 void TupTimeLine::requestSceneMove(int from, int to)
@@ -1313,14 +1339,16 @@ void TupTimeLine::updateFramesState()
     for (int i=0; i < project->scenesCount(); i++) {
          TupScene *scene = project->sceneAt(i);
          TupTimeLineTable *table = scenesContainer->getTable(i);
+         int tableColumns = table->columnCount();
          for (int j=0; j < scene->layersCount(); j++) {
               TupLayer *layer = scene->layerAt(j);
-              for (int k=0; k < layer->framesCount(); k++) {
+              int framesCount = qMin(layer->framesCount(), tableColumns);
+              for (int k=0; k < framesCount; k++) {
                    TupFrame *frame = layer->frameAt(k);
                    bool isEmpty = false;
                    if (frame->isEmpty())
                        isEmpty = true;
-                   table->updateFrameState(k, j, isEmpty);
+                   table->updateFrameState(j, k, isEmpty);
               }
          }
     }
@@ -1349,4 +1377,43 @@ void TupTimeLine::showRenameSceneDialog(int sceneIndex)
     TupSceneNameDialog *dialog = new TupSceneNameDialog(TupSceneNameDialog::Rename, name);
     if (dialog->exec() == QDialog::Accepted)
         requestSceneRename(dialog->getSceneName());
+}
+
+void TupTimeLine::setAudioScrubbing(bool enabled)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupTimeLine::setAudioScrubbing()] - enabled ->" << enabled;
+    #endif
+
+    audioScrubbingEnabled = enabled;
+    scrubFrame = -1;
+}
+
+void TupTimeLine::toggleAudioScrubbing(bool enabled)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupTimeLine::toggleAudioScrubbing()] - enabled ->" << enabled;
+    #endif
+
+    audioScrubbingEnabled = enabled;
+    scrubFrame = -1;
+}
+
+void TupTimeLine::updateSceneAudioButtons()
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupTimeLine::updateSceneAudioButtons()]";
+    #endif
+
+    int currentScene = scenesContainer->currentIndex();
+    if (currentScene >= 0 && currentScene < project->scenesCount()) {
+        bool hasAudio = project->sceneHasAudio(currentScene);
+        audioScrubbingButton->setEnabled(hasAudio);
+        if (!hasAudio) {
+            audioScrubbingButton->blockSignals(true);
+            audioScrubbingButton->setChecked(false);
+            audioScrubbingButton->blockSignals(false);
+            audioScrubbingEnabled = false;
+        }
+    }
 }

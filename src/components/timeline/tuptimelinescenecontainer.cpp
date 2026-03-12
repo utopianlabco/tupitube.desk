@@ -43,6 +43,8 @@ TupTimelineSceneContainer::TupTimelineSceneContainer(QWidget *parent) : QTabWidg
 
 TupTimelineSceneContainer::~TupTimelineSceneContainer()
 {
+    scenes.clear();
+    undoScenes.clear();
 }
 
 void TupTimelineSceneContainer::addScene(int sceneIndex, TupTimeLineTable *framesTable, const QString &sceneName, bool preserveSelection)
@@ -56,7 +58,7 @@ void TupTimelineSceneContainer::addScene(int sceneIndex, TupTimeLineTable *frame
     if (preserveSelection)
         previousIndex = currentIndex();
 
-    scenes << framesTable;
+    scenes.insert(sceneIndex, framesTable);
 
     blockSignals(true);
     QTabWidget::insertTab(sceneIndex, framesTable, sceneName);
@@ -76,9 +78,8 @@ void TupTimelineSceneContainer::restoreScene(int sceneIndex, const QString &scen
     #endif
 
     TupTimeLineTable *framesTable = undoScenes.takeLast();
-    scenes << framesTable;
+    scenes.insert(sceneIndex, framesTable);
     QTabWidget::insertTab(sceneIndex, framesTable, sceneName);
-    // connect(tabBar(), SIGNAL(tabBarDoubleClicked(int)), this, SLOT(editSceneLabel(int)));
 }
 
 void TupTimelineSceneContainer::moveScene(int sceneIndex, int newIndex)
@@ -112,10 +113,11 @@ void TupTimelineSceneContainer::removeScene(int sceneIndex, bool withBackup)
         qDebug() << "[TupTimelineSceneContainer::removeScene()]";
     #endif
 
-    if (withBackup)
+    if (withBackup) {
         undoScenes << scenes.takeAt(sceneIndex);
-    else
+    } else {
         scenes.takeAt(sceneIndex);
+    }
 
     QTabWidget::removeTab(sceneIndex);
 }

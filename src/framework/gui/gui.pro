@@ -12,6 +12,8 @@ unix {
     !include(../tupconfig.pri) {
         error("Run ./configure first!")
     }
+    # Include libsndfile path for taudiosampler.h
+    INCLUDEPATH += /usr/local/libsndfile/include /usr/include
 }
 
 win32 {
@@ -76,7 +78,8 @@ HEADERS += taction.h \
            tslider.h \
            tcolorarrow.xpm \
            tcolorreset.xpm \
-           timagedialog.h
+           timagedialog.h \
+           twaveformwidget.h
 
 SOURCES += taction.cpp \
            tactionmanager.cpp \
@@ -123,7 +126,8 @@ SOURCES += taction.cpp \
            txyspinbox.cpp \
            tcolorcell.cpp \
            tslider.cpp \
-           timagedialog.cpp
+           timagedialog.cpp \
+           twaveformwidget.cpp
 
 INCLUDEPATH += ../core ../ ../../libbase
 

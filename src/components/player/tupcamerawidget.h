@@ -110,6 +110,7 @@ class TUPITUBE_EXPORT TupCameraWidget : public QFrame
         void updateSoundItems();
         void setVolume(int volume);
         void enableAudioControls(bool enabled);
+        void playSoundAtFrame(int sceneIndex, int frameIndex);
 
     private:
         void addVideoHeader();

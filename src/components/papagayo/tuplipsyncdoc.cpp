@@ -1019,7 +1019,7 @@ TupLipsyncDoc::TupLipsyncDoc()
     projectHasChanged = false;
     fps = 24;
     audioDuration = 0;
-    audioExtractor = nullptr;
+    audioSampler = nullptr;
     maxAmplitude = 1.0f;
     voice = nullptr;
 
@@ -1059,9 +1059,9 @@ void TupLipsyncDoc::resetDocument()
 
     releaseAudio();
 
-    if (audioExtractor) {
-        delete audioExtractor;
-        audioExtractor = nullptr;
+    if (audioSampler) {
+        delete audioSampler;
+        audioSampler = nullptr;
     }
 
     if (voice) {
@@ -1155,27 +1155,28 @@ void TupLipsyncDoc::openAudioFile(const QString &path)
             qDebug() << "[TupLipsyncDoc::openAudioFile()] - Audio file loaded successful!";
         #endif
         fps = 24;
-        audioExtractor = new TupAudioExtractor(path.toUtf8().data());
-        if (audioExtractor->isValid()) {
-            real frames = audioExtractor->duration() * fps;
+        audioSampler = new TAudioSampler();
+        audioSampler->loadSoundFile(path);
+        if (audioSampler->isLoaded()) {
+            double frames = audioSampler->duration() * fps;
             audioDuration = PG_ROUND(frames);
             maxAmplitude = 0.001f;
-			real time = 0.0f, sampleDur = 1.0f / 24.0f;
-            while (time < audioExtractor->duration()) {
-                real amp = audioExtractor->getRMSAmplitude(time, sampleDur);
+            double time = 0.0, sampleDur = 1.0 / 24.0;
+            while (time < audioSampler->duration()) {
+                double amp = audioSampler->getRMSAmplitude(time, time + sampleDur);
                 if (amp > maxAmplitude)
                     maxAmplitude = amp;
-				time += sampleDur;
-			}
+                time += sampleDur;
+            }
         } else {
             #ifdef TUP_DEBUG
                 qDebug() << "[TupLipsyncDoc::openAudioFile()] - "
                             "Fatal Error: Audio extractor failed!";
             #endif
-            delete audioExtractor;
-            audioExtractor = nullptr;
-		}
-	}
+            delete audioSampler;
+            audioSampler = nullptr;
+        }
+    }
 
     if (!voice)
         voice = new LipsyncVoice(tr("Voice 1"));
@@ -1208,10 +1209,10 @@ bool TupLipsyncDoc::save()
         return false;
 	}
 
-    if (audioExtractor && audioExtractor->isValid()) {
-        real frames = audioExtractor->duration() * fps;
+    if (audioSampler && audioSampler->isLoaded()) {
+        double frames = audioSampler->duration() * fps;
         audioDuration = PG_ROUND(frames);
-	}
+    }
 
     QTextStream out(file);
 	out << "lipsync version 1" << Qt::endl;
@@ -1236,10 +1237,10 @@ void TupLipsyncDoc::setFps(int32 fps)
     this->fps = fps;
     projectHasChanged = true;
 
-    if (audioExtractor && audioExtractor->isValid()) {
-        real duration = audioExtractor->duration() * fps;
+    if (audioSampler && audioSampler->isLoaded()) {
+        double duration = audioSampler->duration() * fps;
         audioDuration = PG_ROUND(duration);
-	}
+    }
 }
 
 QMediaPlayer *TupLipsyncDoc::getAudioPlayer()
@@ -1280,21 +1281,23 @@ void TupLipsyncDoc::setPlayerNotifyInterval(int value)
     audioPlayer.at(0)->setNotifyInterval(value);
 }
 
-TupAudioExtractor* TupLipsyncDoc::getAudioExtractor()
+TAudioSampler* TupLipsyncDoc::getAudioSampler()
 {
-    return audioExtractor;
+    return audioSampler;
 }
 
 QString TupLipsyncDoc::getVolumePhonemeAtFrame(int32 frame)
 {
-    if (!audioExtractor)
-		return "rest";
+    if (!audioSampler)
+        return "rest";
 
-    real amp = audioExtractor->getRMSAmplitude((real)frame / (real)fps, 1.0f / (real)fps);
+    double startTime = static_cast<double>(frame) / static_cast<double>(fps);
+    double endTime = startTime + (1.0 / static_cast<double>(fps));
+    double amp = audioSampler->getRMSAmplitude(startTime, endTime);
     amp /= maxAmplitude;
-	amp *= 4.0f;
-	int32 volID = PG_ROUND(amp);
-	volID = PG_CLAMP(volID, 0, 4);
+    amp *= 4.0;
+    int32 volID = PG_ROUND(amp);
+    volID = PG_CLAMP(volID, 0, 4);
 
 	// new method - use a fixed set of phonemes for this method:
 	// rest, etc, E, L, AI

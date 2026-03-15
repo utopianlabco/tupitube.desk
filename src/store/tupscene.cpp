@@ -84,9 +84,6 @@ int TupScene::getFPS()
 
 void TupScene::setBgColor(const QColor color)
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "[TupScene::setBgColor()] - color -> " << color.name();
-    #endif
 
     bgColor = color;
 }

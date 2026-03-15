@@ -152,5 +152,5 @@ bool TColorCell::isChecked()
 void TColorCell::setBrush(const QBrush &b) 
 {
     cellBrush = b;
-    update();
+    repaint();
 }

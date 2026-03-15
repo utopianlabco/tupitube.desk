@@ -69,6 +69,8 @@ TupPaintAreaBase::TupPaintAreaBase(QWidget *parent, QSize dimension, TupLibrary 
 
     blackPen = QPen(QColor(0, 0, 0, 180), 2);
 
+    bgcolor = Qt::white; // Default bgcolor, will be updated by setBgColor()
+
     gridEnabled = false;
     safeAreaEnabled = false;
     angle = 0;
@@ -99,6 +101,10 @@ TupPaintAreaBase::~TupPaintAreaBase()
 void TupPaintAreaBase::setBgColor(const QColor color)
 {
     bgcolor = color;
+    // Reset cache and force repaint
+    resetCachedContent();
+    if (scene())
+        scene()->invalidate(sceneRect(), QGraphicsScene::BackgroundLayer);
     viewport()->update();
 }
 

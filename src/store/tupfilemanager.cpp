@@ -525,6 +525,13 @@ bool TupFileManager::load(const QString &fileName, TupProject *project)
                     return false;
                 }
             }
+
+            // Update project's current bgcolor from first scene
+            if (project->scenesCount() > 0) {
+                QColor sceneBgColor = project->sceneAt(0)->getBgColor();
+                project->setCurrentBgColor(sceneBgColor);
+            }
+
             project->setOpen(true);
 
             return true;

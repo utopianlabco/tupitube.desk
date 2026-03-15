@@ -627,12 +627,10 @@ void TupColorPaletteWidget::init()
 
 void TupColorPaletteWidget::setBgColor(const QColor &color)
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "[TupColorPaletteWidget::setBgColor()] - color ->" << color;
-    #endif
 
     QBrush brush(color);
     bgColor->setBrush(brush);
+    bgHtmlField->setText(color.name());
 }
 
 void TupColorPaletteWidget::initBg()

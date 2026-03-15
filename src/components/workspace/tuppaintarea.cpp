@@ -54,6 +54,15 @@ TupPaintArea::TupPaintArea(TupProject *work, QWidget *parent): TupPaintAreaBase(
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupPaintArea()]";
+        qDebug() << "[TupPaintArea()] - project scenesCount ->" << work->scenesCount();
+        qDebug() << "[TupPaintArea()] - project getCurrentBgColor ->" << work->getCurrentBgColor().name();
+        if (work->scenesCount() > 0) {
+            TupScene *scene0 = work->sceneAt(0);
+            if (scene0)
+                qDebug() << "[TupPaintArea()] - scene0 getBgColor ->" << scene0->getBgColor().name();
+            else
+                qDebug() << "[TupPaintArea()] - scene0 is NULL!";
+        }
     #endif
 
     setAccessibleName("WORKSPACE");
@@ -99,6 +108,9 @@ void TupPaintArea::setCurrentScene(int index)
         if (scene) {
             globalSceneIndex = index;
             graphicsScene()->setCurrentScene(scene);
+            #ifdef TUP_DEBUG
+                qDebug() << "[TupPaintArea::setCurrentScene()] - scene->getBgColor() ->" << scene->getBgColor().name();
+            #endif
             setBgColor(scene->getBgColor());
         } else {
             if (project->scenesCount() == 1) {

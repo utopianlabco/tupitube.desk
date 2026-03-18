@@ -52,7 +52,7 @@ class TUPITUBE_EXPORT TupExportWidget : public TupExportWizard
 
     public:
         enum ExportType { Local, Scene, Frame };
-        TupExportWidget(TupProject *project, QWidget *parent = nullptr, ExportType type = Local);
+        TupExportWidget(TupProject *project, QWidget *parent = nullptr, ExportType type = Local, const QString &username = QString(), const QString &password = QString());
         ~TupExportWidget();
 
         void setProjectParams(const QString &username, const QString &secret, const QString &path);

@@ -193,7 +193,7 @@ void TupNetProjectManagerHandler::initialize(TupProjectManagerParams *parameters
     bool connected = socket->waitForConnected(1000);
 
     if (connected) {
-        TupConnectPackage connectPackage(netParams->server(), netParams->login(), netParams->password());
+        TupConnectPackage connectPackage(netParams->server(), netParams->login(), netParams->windowRecordID());
         socket->send(connectPackage);
         username = netParams->login();
     } else {

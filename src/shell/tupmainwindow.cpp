@@ -43,6 +43,7 @@
 #include "tuppaintareaevent.h"
 #include "tuppaintareacommand.h"
 #include "tupfilemanager.h"
+#include "tupgeneralpreferences.h"
 
 // TupiTube Framework
 #include "timagedialog.h"
@@ -377,7 +378,7 @@ void TupMainWindow::setWorkSpace(const QStringList &users)
         // animationTab = new TupDocumentView(m_projectManager->getProject(), isNetworked, users, this);
         animationTab = new TupDocumentView(m_projectManager->getProject(), m_actionManager, isNetworked, users, this);
 
-        TCONFIG->beginGroup("Network");
+        TCONFIG->beginGroup("CollabServer");
         QString server = TCONFIG->value("Server").toString();
         if (isNetworked && server.compare("tupitu.be") == 0) {
             connect(animationTab, SIGNAL(requestExportImageToServer(int, int, const QString &, const QString &, const QString &)),                         
@@ -597,7 +598,7 @@ void TupMainWindow::newProject()
     if (wizard->exec() != QDialog::Rejected) {
         if (wizard->useNetwork()) {
             TupMainWindow::requestType = NewNetProject;
-            setupNetworkProject(wizard->parameters());
+            setupCollaborativeProject(wizard->parameters());
             netUser = wizard->login();
         } else {
             setupLocalProject(wizard->parameters());
@@ -650,6 +651,13 @@ void TupMainWindow::closeInterface()
         return;
 
     closeProject();
+}
+
+void TupMainWindow::closeCollaborativeProjectIfOpen()
+{
+    if (isNetworked) {
+        closeProject();
+    }
 }
 
 bool TupMainWindow::closeProject()
@@ -727,7 +735,7 @@ void TupMainWindow::resetUI()
     // m_scenes->closeAllScenes();
     m_libraryWidget->resetGUI();
 
-    m_fileName = QString();
+    m_filename = QString();
 
     enableToolViews(false);
     setUpdatesEnabled(true);
@@ -771,30 +779,32 @@ void TupMainWindow::resetUI()
     #endif
 }
 
-void TupMainWindow::setupNetworkProject()
+void TupMainWindow::setupCollaborativeProject()
 {
     // Check if all connection credentials are already stored
-    TCONFIG->beginGroup("Network");
+    TCONFIG->beginGroup("CollabServer");
     QString server = TCONFIG->value("Server", "").toString();
     int port = TCONFIG->value("Port", 8080).toInt();
     QString login = TCONFIG->value("Login", "").toString();
     QString password = TCONFIG->value("Password", "").toString();
-    bool storePassword = TCONFIG->value("StorePassword", false).toBool();
+    bool storePassword = TCONFIG->value("StorePassword", "false").toBool();
+    QString windowRecordID = TAlgorithm::windowRecordID();
 
     // If all credentials are available and password is stored, connect directly
     if (!server.isEmpty() && !login.isEmpty() && !password.isEmpty() && storePassword) {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupMainWindow::setupNetworkProject()] - Using stored credentials for server:" << server;
+            qDebug() << "[TupMainWindow::setupCollaborativeProject()] - Using stored credentials for server:" << server;
         #endif
 
         TupNetProjectManagerParams *params = new TupNetProjectManagerParams();
-        params->setServer(server);
-        params->setPort(port);
         netUser = login;
         params->setLogin(netUser);
         params->setPassword(password);
+        params->setServer(server);
+        params->setPort(port);
+        params->setWindowRecordID(windowRecordID);
 
-        setupNetworkProject(params);
+        setupCollaborativeProject(params);
         return;
     }
 
@@ -808,25 +818,26 @@ void TupMainWindow::setupNetworkProject()
     TupNetProjectManagerParams *params = new TupNetProjectManagerParams();
 
     if (netDialog->exec() == QDialog::Accepted) {
-        params->setServer(netDialog->server());
-        params->setPort(netDialog->port());
         netUser = netDialog->login();
         params->setLogin(netUser);
         params->setPassword(netDialog->password());
+        params->setServer(netDialog->server());
+        params->setPort(netDialog->port());
+        params->setWindowRecordID(netDialog->windowRecordID());
 
         delete netDialog;
-        setupNetworkProject(params);
+        setupCollaborativeProject(params);
     } else {
         delete netDialog;
     }
 }
 
-void TupMainWindow::setupNetworkProject(TupProjectManagerParams *params)
+void TupMainWindow::setupCollaborativeProject(TupProjectManagerParams *params)
 {
     if (closeProject()) {
         netProjectManager =  new TupNetProjectManagerHandler;
         connect(netProjectManager, SIGNAL(authenticationSuccessful()), this, SLOT(requestProject()));
-        connect(netProjectManager, SIGNAL(authenticationFailed()), this, SLOT(handleAuthenticationFailed()));
+        connect(netProjectManager, SIGNAL(authenticationFailed()), this, SLOT(handleCollaborativeAuthenticationFailure()));
         connect(netProjectManager, SIGNAL(openNewArea(const QString &, const QStringList &)), 
                 this, SLOT(createNewNetProject(const QString &, const QStringList &)));
         connect(netProjectManager, SIGNAL(updateUsersList(const QString &, int)),
@@ -904,7 +915,7 @@ void TupMainWindow::openExample()
     */
 
     if (QFile::exists(examplePath)) {
-        if (m_fileName.compare(examplePath) != 0)
+        if (m_filename.compare(examplePath) != 0)
             openProject(examplePath);
     } else {
         #ifdef TUP_DEBUG
@@ -940,9 +951,9 @@ void TupMainWindow::openProject(const QString &path)
 
         if (m_projectManager->loadProject(path)) {
             if (QDir::isRelativePath(path))
-                m_fileName = QDir::currentPath() + "/" + path;
+                m_filename = QDir::currentPath() + "/" + path;
             else
-                m_fileName = path;
+                m_filename = path;
 
             requestType = OpenLocalProject;
             projectName = m_projectManager->getProject()->getName();
@@ -989,9 +1000,9 @@ void TupMainWindow::openProject(const QString &path)
 
 void TupMainWindow::updateRecentProjectList()
 {
-    int pos = m_recentProjects.indexOf(m_fileName);
+    int pos = m_recentProjects.indexOf(m_filename);
     if (pos == -1) {
-        m_recentProjects.push_front(m_fileName);
+        m_recentProjects.push_front(m_filename);
         if (m_recentProjects.count() > 5)
             m_recentProjects.removeLast();
     } else {
@@ -1038,13 +1049,13 @@ void TupMainWindow::importProject()
 void TupMainWindow::openProjectFromServer()
 {
     TupMainWindow::requestType = OpenNetProject;
-    setupNetworkProject();
+    setupCollaborativeProject();
 }
 
 void TupMainWindow::uploadProjectToServer()
 {
     TupMainWindow::requestType = UploadLocalProjectToNet;
-    setupNetworkProject();
+    setupCollaborativeProject();
 }
 
 void TupMainWindow::preferences()
@@ -1222,7 +1233,7 @@ bool TupMainWindow::saveAs()
     int dotIndex = name.lastIndexOf(".tup");
     projectName = name.left(dotIndex);
 
-    m_fileName = fileName;
+    m_filename = fileName;
 
     if (isNetworked) {
         isNetworked = false;
@@ -1237,17 +1248,17 @@ bool TupMainWindow::saveProject()
 {
     #ifdef TUP_DEBUG
         qDebug() << "---";
-        qDebug() << "[TupMainWindow::saveProject()] - file path -> " << m_fileName;
+        qDebug() << "[TupMainWindow::saveProject()] - file path -> " << m_filename;
     #endif
 
     if (!isNetworked) {
         if (isSaveDialogOpen)
             return false;
 
-        if (m_fileName.isEmpty())
+        if (m_filename.isEmpty())
             return saveAs();
 
-        if (m_fileName.contains(SHARE_DIR)) {
+        if (m_filename.contains(SHARE_DIR)) {
             TCONFIG->beginGroup("General");
             TCONFIG->setValue("DefaultPath", QDir::homePath());
             return saveAs();
@@ -1274,7 +1285,7 @@ bool TupMainWindow::saveProject()
 bool TupMainWindow::storeProcedure()
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupMainWindow::storeProcedure()] - m_fileName ->" << m_fileName;
+        qDebug() << "[TupMainWindow::storeProcedure()] - m_filename ->" << m_filename;
     #endif
 
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -1290,20 +1301,20 @@ bool TupMainWindow::storeProcedure()
     connect(m_projectManager, SIGNAL(soundPathsChanged()),
             m_libraryWidget, SLOT(updateCurrentSoundPath()));
 
-    if (m_projectManager->saveProject(m_fileName)) {
+    if (m_projectManager->saveProject(m_filename)) {
         updateRecentProjectList();
 
         TOsd::self()->display(TOsd::Info, tr("Project <b>%1</b> saved").arg(projectName));
-        int indexPath = m_fileName.lastIndexOf("/");
-        int indexFile = m_fileName.length() - indexPath;
-        QString name = m_fileName.right(indexFile - 1);
+        int indexPath = m_filename.lastIndexOf("/");
+        int indexFile = m_filename.length() - indexPath;
+        QString name = m_filename.right(indexFile - 1);
         int indexDot = name.lastIndexOf(".");
         name = name.left(indexDot);
 
         setWindowTitle(appTitle + " - " + name + " [ " + tr("by") +  " " +  author + " ]");
 
-        int last = m_fileName.lastIndexOf("/");
-        QString dir = m_fileName.left(last);
+        int last = m_filename.lastIndexOf("/");
+        QString dir = m_filename.left(last);
         saveDefaultPath(dir);
 
         disconnect(m_projectManager, SIGNAL(projectPathChanged()),
@@ -1315,7 +1326,7 @@ bool TupMainWindow::storeProcedure()
                    m_libraryWidget, SLOT(updateCurrentSoundPath()));
     } else {
         #ifdef TUP_DEBUG
-            qWarning() << "TupMainWindow::saveProject() - Error: Can't save project -> " << m_fileName;
+            qWarning() << "TupMainWindow::saveProject() - Error: Can't save project -> " << m_filename;
         #endif
         disconnect(m_projectManager, SIGNAL(projectPathChanged()),
                    this, SLOT(updateSoundsPath()));
@@ -1386,7 +1397,7 @@ void TupMainWindow::openRecentProject()
         #ifdef TUP_DEBUG
             qDebug() << "[TupMainWindow::openRecentProject()] - recent project path ->" << recentProjectPath;
         #endif
-        if (recentProjectPath.compare(m_fileName) != 0)
+        if (recentProjectPath.compare(m_filename) != 0)
             openProject(recentProjectPath);
         else
             TOsd::self()->display(TOsd::Warning, tr("Project is already opened!"));
@@ -1628,41 +1639,40 @@ void TupMainWindow::postProject()
     }
 
     if (callSaveProcedure()) {
-        QFile file(m_fileName);
+        QFile file(m_filename);
         double fileSize = static_cast<double>(file.size()) / static_cast<double>(1000000);
         if (fileSize < 10) {
-            TCONFIG->beginGroup("Network");
-            QString username = TCONFIG->value("Username").toString();
-            QString password = TCONFIG->value("Password").toString();
-            bool storePasswd = TCONFIG->value("StorePassword").toBool();
-            bool anonymous = TCONFIG->value("Anonymous").toBool();
+            TCONFIG->beginGroup("Website");
+            QString username = TCONFIG->value("Username", "").toString();
+            QString password = TCONFIG->value("Password", "").toString();
+            bool storePasswd = TCONFIG->value("StorePassword", "false").toBool();
 
-            if (!anonymous) {
-                if (username.isEmpty() || password.isEmpty() || !storePasswd) {
-                    TupSignDialog *dialog = new TupSignDialog(this);
-                    dialog->show();
-                    dialog->move(static_cast<int> ((screenWidth - dialog->width()) / 2),
-                                 static_cast<int> ((screenHeight - dialog->height()) / 2));
+            if (username.isEmpty() || password.isEmpty() || !storePasswd) {
+                TupSignDialog *dialog = new TupSignDialog(this);
+                dialog->show();
+                dialog->move(static_cast<int> ((screenWidth - dialog->width()) / 2),
+                                static_cast<int> ((screenHeight - dialog->height()) / 2));
 
-                    if (dialog->exec() != QDialog::Rejected) {
+                if (dialog->exec() != QDialog::Rejected) {
+                    if (dialog->isAnonymous()) {
+                        username = "tupitube";
+                        password = "tupitube";
+                    } else {
                         username = dialog->getUsername();
                         password = dialog->getMetadata();
-                    } else {
-                        // User cancelled action
-                        #ifdef TUP_DEBUG
-                            qDebug() << "[TupMainWindow::postProject()] - Action canceled by user!";
-                        #endif
-                        TOsd::self()->display(TOsd::Info, tr("Post canceled by user!"));
-                        return;
                     }
+                } else {
+                    // User cancelled action
+                    #ifdef TUP_DEBUG
+                        qDebug() << "[TupMainWindow::postProject()] - Action canceled by user!";
+                    #endif
+                    TOsd::self()->display(TOsd::Info, tr("Post canceled by user!"));
+                    return;
                 }
-            } else { // Anonymous Post
-                username = "tupitube";
-                password = "tupitube";
             }
 
-            exportWidget = new TupExportWidget(m_projectManager->getProject(), this, TupExportWidget::Scene);
-            exportWidget->setProjectParams(username, password, m_fileName);
+            exportWidget = new TupExportWidget(m_projectManager->getProject(), this, TupExportWidget::Scene, username, password);
+            exportWidget->setProjectParams(username, password, m_filename);
             connect(exportWidget, SIGNAL(isDone()), animationTab, SLOT(updatePaintArea()));
             exportWidget->show();
 
@@ -1683,10 +1693,10 @@ void TupMainWindow::postFrame(const QString &imagePath)
     #endif
 
     if (callSaveProcedure()) {
-        TCONFIG->beginGroup("Network");
+        TCONFIG->beginGroup("Website");
         QString username = TCONFIG->value("Username").toString();
         QString password = TCONFIG->value("Password").toString();
-        bool storePasswd = TCONFIG->value("StorePassword").toBool();
+        bool storePasswd = (TCONFIG->value("StorePassword", "false").toString() == "true");
         bool anonymous = TCONFIG->value("Anonymous").toBool();
 
         if (!anonymous) {
@@ -1750,7 +1760,7 @@ bool TupMainWindow::callSaveProcedure()
         qDebug() << "[TupMainWindow::callSaveProcedure()]";
     #endif
 
-    if (m_fileName.compare(examplePath) != 0) {
+    if (m_filename.compare(examplePath) != 0) {
         if (m_projectManager->projectWasModified()) {
             return saveProject();
         } else {
@@ -1853,13 +1863,13 @@ void TupMainWindow::unexpectedClose()
     msgBox.exec();
 }
 
-void TupMainWindow::handleAuthenticationFailed()
+void TupMainWindow::handleCollaborativeAuthenticationFailure()
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupMainWindow::handleAuthenticationFailed()] - Authentication failed, showing dialog...";
+        qDebug() << "[TupMainWindow::handleCollaborativeAuthenticationFailure()] - Authentication failed, showing connect dialog...";
     #endif
 
-    // Show the connection dialog so user can correct credentials
+    // Show the connection dialog again so user can fix credentials
     TupConnectDialog *netDialog = new TupConnectDialog(this);
     netDialog->show();
 
@@ -1869,14 +1879,15 @@ void TupMainWindow::handleAuthenticationFailed()
     TupNetProjectManagerParams *params = new TupNetProjectManagerParams();
 
     if (netDialog->exec() == QDialog::Accepted) {
-        params->setServer(netDialog->server());
-        params->setPort(netDialog->port());
-        netUser = netDialog->login();
+        netUser = netDialog->login();        
         params->setLogin(netUser);
         params->setPassword(netDialog->password());
+        params->setServer(netDialog->server());
+        params->setPort(netDialog->port());
+        params->setWindowRecordID(netDialog->windowRecordID());
 
         delete netDialog;
-        setupNetworkProject(params);
+        setupCollaborativeProject(params);
     } else {
         delete netDialog;
     }

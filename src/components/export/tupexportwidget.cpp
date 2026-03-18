@@ -35,7 +35,7 @@
 #include "tupexportwidget.h"
 #include "tconfig.h"
 
-TupExportWidget::TupExportWidget(TupProject *work, QWidget *parent, ExportType type) : TupExportWizard(parent)
+TupExportWidget::TupExportWidget(TupProject *work, QWidget *parent, ExportType type, const QString &username, const QString &password) : TupExportWizard(parent)
 {
     #ifdef TUP_DEBUG
         qDebug() << "---";
@@ -104,9 +104,10 @@ TupExportWidget::TupExportWidget(TupProject *work, QWidget *parent, ExportType t
         break;
         case Scene:
         {
-            TCONFIG->beginGroup("Network");
-            QString username = TCONFIG->value("Username").toString();
-            bool anonymous = TCONFIG->value("Anonymous").toBool();
+            bool anonymous = false;
+            TCONFIG->beginGroup("Website");
+            anonymous = TCONFIG->value("Anonymous").toBool();
+            TCONFIG->endGroup();
             QString label = "";
             if (anonymous)
                 label = tr("Post Animation") + " (" + tr("as Anonymous") + ")";
@@ -131,9 +132,10 @@ TupExportWidget::TupExportWidget(TupProject *work, QWidget *parent, ExportType t
         break;
         case Frame:
         {
-            TCONFIG->beginGroup("Network");
-            QString username = TCONFIG->value("Username").toString();
-            bool anonymous = TCONFIG->value("Anonymous").toBool();
+            bool anonymous = false;
+            TCONFIG->beginGroup("Website");
+            anonymous = TCONFIG->value("Anonymous").toBool();
+            TCONFIG->endGroup();
             QString label = "";
             if (anonymous)
                 label = tr("Post Image") + " (" + tr("as Anonymous") + ")";

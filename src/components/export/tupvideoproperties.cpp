@@ -37,6 +37,7 @@
 #include "talgorithm.h"
 #include "tosd.h"
 #include "tapptheme.h"
+#include "tupsecurity.h"
 
 #include <QNetworkAccessManager>
 #include <QUrlQuery>
@@ -202,6 +203,12 @@ QList<int> TupVideoProperties::scenesList() const
 
 void TupVideoProperties::setProjectParams(const QString &login, const QString &secret, const QString &path)
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupVideoProperties::setProjectParams()] - login ->" << login;
+        qDebug() << "[TupVideoProperties::setProjectParams()] - secret ->" << secret;
+        qDebug() << "[TupVideoProperties::setProjectParams()] - path ->" << path;
+    #endif
+
      username = login;
      password = secret;
      filePath = path;
@@ -652,9 +659,11 @@ void TupVideoProperties::closeRequest(QNetworkReply *reply)
                             qDebug() << "[TupVideoProperties::closeRequest()] - Error: Invalid credentials!";
                         #endif
 
-                        TCONFIG->beginGroup("Network");
+                        TCONFIG->beginGroup("Website");
                         TCONFIG->setValue("Password", "");
                         TCONFIG->setValue("StorePassword", "false");
+                        TCONFIG->endGroup();
+                        TCONFIG->sync();
 
                         TOsd::self()->display(TOsd::Error, tr("Access denied. Invalid password!"));
                     }

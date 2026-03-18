@@ -60,6 +60,9 @@ class TUPITUBE_EXPORT TupGeneralPreferences : public QWidget
         bool saveValues();
         bool showWarning();
 
+signals:
+    void requestCloseCollaborativeProject();
+
     private slots:
         void updateAppLang(int index);
         void chooseDirectory();
@@ -69,6 +72,8 @@ class TUPITUBE_EXPORT TupGeneralPreferences : public QWidget
         void registerAnswer(QNetworkReply *reply);
         void slotError(QNetworkReply::NetworkError);
         void updateTimeFlag(int status);
+        void resetSocialCredentials();
+        void resetClassroomCredentials();
 
     private:
         int getLangIndex();

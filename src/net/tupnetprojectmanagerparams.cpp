@@ -34,8 +34,7 @@
 
 #include "tupnetprojectmanagerparams.h"
 
-TupNetProjectManagerParams::TupNetProjectManagerParams()
-           : TupProjectManagerParams(), serverStr("localhost"), portValue(6502)
+TupNetProjectManagerParams::TupNetProjectManagerParams() : loginStr(""), passwdStr(""), serverStr("localhost"), portValue(8080)
 {
 }
 
@@ -53,14 +52,24 @@ QString TupNetProjectManagerParams::login() const
     return loginStr;
 }
 
-void TupNetProjectManagerParams::setPassword(const QString &passwd)
+void  TupNetProjectManagerParams::setPassword(const QString &secret) 
 {
-    passwdStr = passwd;
+    passwdStr = secret;
 }
 
 QString TupNetProjectManagerParams::password() const
 {
     return passwdStr;
+}
+
+void TupNetProjectManagerParams::setWindowRecordID(const QString &windowRecordID)
+{
+    cacheStr = windowRecordID;
+}
+
+QString TupNetProjectManagerParams::windowRecordID() const
+{
+    return cacheStr;
 }
 
 void TupNetProjectManagerParams::setServer(const QString &server)

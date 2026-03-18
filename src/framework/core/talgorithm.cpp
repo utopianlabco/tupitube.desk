@@ -147,7 +147,7 @@ bool TAlgorithm::cacheIDChanged(const QString &data)
 
 void TAlgorithm::resetCacheID()
 {
-    TCONFIG->beginGroup("Network");
+    TCONFIG->beginGroup("Website");
     TCONFIG->setValue("Password", "");
     TCONFIG->setValue("StorePassword", false);
     TCONFIG->sync();
@@ -162,6 +162,55 @@ QString TAlgorithm::windowCacheID()
     QString reference = settings.value("cache").toString();
     TCONFIG->beginGroup("General");
     int id = TCONFIG->value("ClientID").toInt();
+    TCacheHandler handler(id);
+
+    return handler.setRecord(reference);
+}
+
+/***/
+
+void TAlgorithm::storeRecord(const QString &data)
+{
+    TCONFIG->beginGroup("General");
+    int id = TCONFIG->value("StudentID").toInt();
+    TCacheHandler handler(id);
+    QSettings settings(COMPANY, CACHE_DB);
+    settings.setValue("schoolCache", handler.getRecord(data));
+}
+
+bool TAlgorithm::cacheRecordChanged(const QString &data)
+{
+    TCONFIG->beginGroup("General");
+    int id = TCONFIG->value("StudentID").toInt();
+    TCacheHandler handler(id);
+    QString output = handler.getRecord(data);
+
+    QSettings settings(COMPANY, CACHE_DB);
+    QString reference = settings.value("schoolCache").toString();
+    if (reference.compare(output) == 0)
+        return false;
+
+    return true;
+}
+
+void TAlgorithm::resetCacheRecord()
+{
+    TCONFIG->beginGroup("CollabServer");
+    TCONFIG->setValue("Password", "");
+    TCONFIG->setValue("StorePassword", false);
+    TCONFIG->endGroup();
+    TCONFIG->sync();
+
+    QSettings settings(COMPANY, CACHE_DB);
+    settings.setValue("schoolCache", "");
+}
+
+QString TAlgorithm::windowRecordID()
+{
+    QSettings settings(COMPANY, CACHE_DB);
+    QString reference = settings.value("schoolCache").toString();
+    TCONFIG->beginGroup("General");
+    int id = TCONFIG->value("StudentID").toInt();
     TCacheHandler handler(id);
 
     return handler.setRecord(reference);

@@ -246,7 +246,7 @@ QWidget * TupGeneralPreferences::socialTab()
     QWidget *widget = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout(widget);
 
-    TCONFIG->beginGroup("Network");
+    TCONFIG->beginGroup("Website");
     username = TCONFIG->value("Username").toString();
     passwd = TCONFIG->value("Password").toString();
     bool anonymous = TCONFIG->value("Anonymous", false).toBool();
@@ -279,6 +279,14 @@ QWidget * TupGeneralPreferences::socialTab()
     anonymousBox = new QCheckBox(tr("Enable anonymous mode"));
     anonymousBox->setChecked(anonymous);
 
+    // Add Reset Credentials button for Social tab
+    QPushButton *resetSocialButton = new QPushButton(tr("Reset Credentials"));
+    connect(resetSocialButton, SIGNAL(clicked()), this, SLOT(resetSocialCredentials()));
+    QWidget *resetSocialWidget = new QWidget;
+    QHBoxLayout *resetSocialLayout = new QHBoxLayout(resetSocialWidget);
+    resetSocialLayout->addWidget(resetSocialButton);
+    resetSocialLayout->addStretch();
+
     font.setPointSize(font.pointSize() - 3);
     font.setBold(true);
 
@@ -300,10 +308,6 @@ QWidget * TupGeneralPreferences::socialTab()
     registerButton = new QPushButton(tr("Register"));
     connect(registerButton, SIGNAL(clicked()), this, SLOT(sendRegisterRequest()));
 
-    /* SQA: This connection doesn't work on Windows
-    connect(registerButton, &QPushButton::clicked, this, &TupGeneralPreferences::sendRegisterRequest);
-    */
-
     QWidget *registerWidget = new QWidget;
     QHBoxLayout *registerLayout = new QHBoxLayout(registerWidget);
     registerLayout->addWidget(registerButton);
@@ -314,6 +318,7 @@ QWidget * TupGeneralPreferences::socialTab()
     layout->addLayout(usernameLayout);
     layout->addLayout(passwdLayout);
     layout->addWidget(anonymousBox);
+    layout->addWidget(resetSocialWidget);
     layout->addSpacing(10);
     layout->addWidget(new TSeparator);
     layout->addWidget(registerLabel);
@@ -329,12 +334,12 @@ QWidget * TupGeneralPreferences::classroomTab()
     QWidget *widget = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout(widget);
 
-    TCONFIG->beginGroup("Network");
+    TCONFIG->beginGroup("CollabServer");
     QString server = TCONFIG->value("Server", "").toString();
     int port = TCONFIG->value("Port", 8080).toInt();
     QString login = TCONFIG->value("Login", "").toString();
     QString password = TCONFIG->value("Password", "").toString();
-    bool storePassword = TCONFIG->value("StorePassword", false).toBool();
+    bool storePassword = TCONFIG->value("StorePassword", "false").toBool();
 
     QLabel *classroomLabel = new QLabel(tr("Collaborative Credentials"));
     QFont font = this->font();
@@ -358,7 +363,7 @@ QWidget * TupGeneralPreferences::classroomTab()
     QLabel *passwordLabel = new QLabel(tr("Password:"));
     classPasswordEdit = new QLineEdit;
     classPasswordEdit->setEchoMode(QLineEdit::Password);
-    classPasswordEdit->setText(password);
+    // classPasswordEdit->setText(password);
 
     storePasswordCheck = new QCheckBox(tr("Remember password"));
     storePasswordCheck->setChecked(storePassword);
@@ -369,13 +374,51 @@ QWidget * TupGeneralPreferences::classroomTab()
     form->addRow(usernameLabel, classUsernameEdit);
     form->addRow(passwordLabel, classPasswordEdit);
 
+    // Add Reset Credentials button for Classroom tab
+    QPushButton *resetClassroomButton = new QPushButton(tr("Reset Credentials"));
+    connect(resetClassroomButton, SIGNAL(clicked()), this, SLOT(resetClassroomCredentials()));
+    QWidget *resetClassroomWidget = new QWidget;
+    QHBoxLayout *resetClassroomLayout = new QHBoxLayout(resetClassroomWidget);
+    resetClassroomLayout->addWidget(resetClassroomButton);
+    resetClassroomLayout->addStretch();
+
     layout->addWidget(classroomLabel);
     layout->addSpacing(15);
     layout->addLayout(form);
     layout->addWidget(storePasswordCheck);
+    layout->addWidget(resetClassroomWidget);
     layout->addStretch();
 
     return widget;
+}
+// --- Reset Credentials slots ---
+void TupGeneralPreferences::resetSocialCredentials()
+{
+    usernameEdit->clear();
+    cacheString->clear();
+    TCONFIG->beginGroup("Website");
+    TCONFIG->setValue("Username", "");
+    TCONFIG->setValue("Password", "");
+    TCONFIG->sync();
+
+    TAlgorithm::resetCacheID();
+}
+
+void TupGeneralPreferences::resetClassroomCredentials()
+{
+    classUsernameEdit->clear();
+    classPasswordEdit->clear();
+    storePasswordCheck->setChecked(false);
+    TCONFIG->beginGroup("CollabServer");
+    TCONFIG->setValue("Login", "");
+    TCONFIG->setValue("Password", "");
+    TCONFIG->setValue("StorePassword", false);
+    TCONFIG->sync();
+
+    TAlgorithm::resetCacheRecord();
+
+    // Request to close collaborative project if open
+    emit requestCloseCollaborativeProject();
 }
 
 void TupGeneralPreferences::formatEmail()
@@ -579,7 +622,7 @@ bool TupGeneralPreferences::saveValues()
     }
 
     // Social Network Credentials
-    TCONFIG->beginGroup("Network");
+    TCONFIG->beginGroup("Website");
     QString login = usernameEdit->text();
     if (!login.isEmpty()) {
         if (login.compare(username) != 0)
@@ -603,18 +646,19 @@ bool TupGeneralPreferences::saveValues()
          TCONFIG->setValue(player.at(i), playerList.at(i)->isChecked());
 
     // Classroom Credentials
-    TCONFIG->beginGroup("Network");
+    TCONFIG->beginGroup("CollabServer");
     TCONFIG->setValue("Server", serverEdit->text());
     TCONFIG->setValue("Port", portSpin->value());
     TCONFIG->setValue("Login", classUsernameEdit->text());
-    if (storePasswordCheck->isChecked()) {
-        TCONFIG->setValue("Password", classPasswordEdit->text());
-        TCONFIG->setValue("StorePassword", true);
-    } else {
-        TCONFIG->setValue("Password", "");
-        TCONFIG->setValue("StorePassword", false);
-    }
 
+    QString recordId = classPasswordEdit->text();
+    if (storePasswordCheck->isChecked() && !recordId.isEmpty()) {
+        TCONFIG->setValue("Password", TupSecurity::encryptPassword(SECRET_KEY));
+        TCONFIG->setValue("StorePassword", true);
+        TAlgorithm::storeRecord(recordId);
+    } 
+
+    TCONFIG->endGroup();
     TCONFIG->sync();
 
     return true;

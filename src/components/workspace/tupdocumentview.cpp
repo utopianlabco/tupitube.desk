@@ -1770,7 +1770,7 @@ void TupDocumentView::callAutoSave()
 void TupDocumentView::saveTimer()
 {
     TCONFIG->beginGroup("General");
-    bool autoSave = TCONFIG->value("AutoSave", true).toBool();
+    bool autoSave = TCONFIG->value("AutoSave", "true").toBool();
 
     if (autoSave) {
         QString min = TCONFIG->value("AutoSaveTime", "5").toString();

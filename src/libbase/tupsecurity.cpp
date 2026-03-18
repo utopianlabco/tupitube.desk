@@ -36,10 +36,13 @@
 #include "talgorithm.h"
 
 #include <QCryptographicHash>
+#include <QDateTime>
 
 QString TupSecurity::encryptPassword(const QString &key)
 {
-    QByteArray hash = QCryptographicHash::hash(QString(key + TAlgorithm::randomString(20)).toUtf8(),
+    QDateTime current = QDateTime::currentDateTime();
+    QString currentDate = current.toString("yyyy-MM-dd hh:mm:ss");
+    QByteArray hash = QCryptographicHash::hash(QString(currentDate + key + TAlgorithm::randomString(20)).toUtf8(),
                                                QCryptographicHash::Sha512);
 
     return QString(hash);

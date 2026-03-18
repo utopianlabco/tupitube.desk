@@ -37,12 +37,10 @@
 
 #include "tglobal.h"
 
-#include <QColor>
-
 class T_CORE_EXPORT TupSecurity
 {
     public:
-        static QString encryptPassword(const QString &key = QString());
+        static QString encryptPassword(const QString &key);
 };
 
 #endif

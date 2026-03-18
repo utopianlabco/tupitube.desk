@@ -36,6 +36,10 @@
 
 TupConnectDialog::TupConnectDialog(QWidget *parent): QDialog(parent)
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupConnectDialog::TupConnectDialog()]";
+    #endif
+
     setWindowTitle(tr("Connection Parameters"));
     setMinimumWidth(320);
 
@@ -43,9 +47,9 @@ TupConnectDialog::TupConnectDialog(QWidget *parent): QDialog(parent)
     loginLine = new QLineEdit;
     loginLine->setMinimumWidth(200);
 
-    passwdLine = new QLineEdit;
-    passwdLine->setEchoMode(QLineEdit::Password);
-    passwdLine->setMinimumWidth(200);
+    cacheLine = new QLineEdit;
+    cacheLine->setEchoMode(QLineEdit::Password);
+    cacheLine->setMinimumWidth(200);
 
     storePasswdBox = new QCheckBox(tr("Store password"));
 
@@ -54,7 +58,7 @@ TupConnectDialog::TupConnectDialog(QWidget *parent): QDialog(parent)
     credentialsLayout->setLabelAlignment(Qt::AlignRight);
     credentialsLayout->setSpacing(10);
     credentialsLayout->addRow(tr("Username:"), loginLine);
-    credentialsLayout->addRow(tr("Password:"), passwdLine);
+    credentialsLayout->addRow(tr("Password:"), cacheLine);
     credentialsLayout->addRow("", storePasswdBox);
 
     QGroupBox *credentialsGroup = new QGroupBox(tr("Credentials"));
@@ -81,10 +85,19 @@ TupConnectDialog::TupConnectDialog(QWidget *parent): QDialog(parent)
 
     // Buttons
     QDialogButtonBox *buttonBox = new QDialogButtonBox;
-    QPushButton *okButton = buttonBox->addButton(QDialogButtonBox::Ok);
+    QPushButton *okButton = new QPushButton;
+    okButton->setMinimumWidth(60);
+    okButton->setIcon(QIcon(THEME_DIR + "icons/apply.png"));
+    okButton->setToolTip(tr("Accept"));
     connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
-    QPushButton *cancelButton = buttonBox->addButton(QDialogButtonBox::Cancel);
+    buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
+
+    QPushButton *cancelButton = new QPushButton;
+    cancelButton->setMinimumWidth(60);
+    cancelButton->setIcon(QIcon(THEME_DIR + "icons/close.png"));
+    cancelButton->setToolTip(tr("Cancel"));
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
+    buttonBox->addButton(cancelButton, QDialogButtonBox::RejectRole);
 
     // Main layout
     QVBoxLayout *mainLayout = new QVBoxLayout;
@@ -123,7 +136,13 @@ QString TupConnectDialog::login() const
 
 QString TupConnectDialog::password() const
 {
-    return passwdLine->text();
+    QString secret = TupSecurity::encryptPassword(SECRET_KEY);
+    
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupConnectDialog::password()] - secrect ->" << secret;
+    #endif
+
+    return secret;
 }
 
 QString TupConnectDialog::server() const
@@ -136,40 +155,60 @@ int TupConnectDialog::port() const
     return portBox->value();
 }
 
+QString TupConnectDialog::windowRecordID() const
+{
+    return cacheLine->text();
+}
+
 void TupConnectDialog::loadSettings()
 {
-    TCONFIG->beginGroup("Network");
+    QString username = TCONFIG->value("Login", "").toString();
+
+    TCONFIG->beginGroup("CollabServer");
     serverLine->setText(TCONFIG->value("Server", "").toString());
     portBox->setValue(TCONFIG->value("Port", 8080).toInt());
-    loginLine->setText(TCONFIG->value("Login", "").toString());
-    passwdLine->setText(TCONFIG->value("Password", "").toString());
-    storePasswdBox->setChecked(TCONFIG->value("StorePassword").toInt());
+    loginLine->setText(username);
+    storePasswdBox->setChecked(TCONFIG->value("StorePassword", "false").toBool());
     TCONFIG->endGroup();
+
+    if (username.isEmpty() || !storePasswdBox->isChecked()) {
+        cacheLine->setText("");
+        TAlgorithm::resetCacheRecord();
+    } else {
+        cacheLine->setText(TAlgorithm::windowRecordID());    
+    }
 }
 
 void TupConnectDialog::saveSettings()
 {
-    TCONFIG->beginGroup("Network");
+    TCONFIG->beginGroup("CollabServer");
     TCONFIG->setValue("Server", serverLine->text());
     TCONFIG->setValue("Port", portBox->value());
     TCONFIG->setValue("Login", loginLine->text());
     
     if (storePasswdBox->isChecked())
-        TCONFIG->setValue("Password", passwdLine->text());
+        TCONFIG->setValue("Password", TupSecurity::encryptPassword(SECRET_KEY));
     else 
         TCONFIG->setValue("Password", "");
     
-    TCONFIG->setValue("StorePassword", storePasswdBox->isChecked() ? 1 : 0);
+    TCONFIG->setValue("StorePassword", storePasswdBox->isChecked());
     TCONFIG->endGroup();
     TCONFIG->sync();
+
+    TAlgorithm::storeRecord(cacheData());
 }
 
 void TupConnectDialog::accept()
 {
-    if (passwdLine->text().isEmpty()) {
+    if (cacheLine->text().isEmpty()) {
         TOsd::self()->display(TOsd::Error, tr("Please, fill in your password"));
         return;
     }
 
     QDialog::accept();    
+}
+
+QString TupConnectDialog::cacheData() const   
+{
+    return cacheLine->text();
 }

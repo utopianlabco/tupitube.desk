@@ -50,6 +50,10 @@ class T_CORE_EXPORT TAlgorithm
         static bool cacheIDChanged(const QString &data);
         static void resetCacheID();
         static QString windowCacheID();
+        static void storeRecord(const QString &data);
+        static bool cacheRecordChanged(const QString &data);
+        static void resetCacheRecord();
+        static QString windowRecordID();
         static QStringList header(const QString &input);
         static bool isKeyRandomic(const QString &id);
         static bool copyFolder(const QString &src, const QString &dst);

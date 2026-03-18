@@ -63,6 +63,7 @@ void TupSignDialog::setForm()
 
     username = new QLineEdit;
     username->setMinimumWidth(200);
+    TCONFIG->beginGroup("Website");
     username->setText(TCONFIG->value("Username", "").toString());
 
     metadata = new QLineEdit;
@@ -75,8 +76,26 @@ void TupSignDialog::setForm()
                           QWidgetList() << username << metadata), Qt::AlignHCenter);
 
     storeMetadata = new QCheckBox(tr("Store password"));
-    storeMetadata->setChecked(TCONFIG->value("StorePassword").toInt());
+    storeMetadata->setChecked(TCONFIG->value("StorePassword").toBool());
     formLayout->addWidget(storeMetadata);
+
+    // Add 'Post as anonymous' checkbox
+    anonymousBox = new QCheckBox(tr("Post as anonymous"));
+    anonymousBox->setChecked(TCONFIG->value("Anonymous", false).toBool());
+    formLayout->addWidget(anonymousBox);
+
+    // Connect to slot to enable/disable fields
+    connect(anonymousBox, &QCheckBox::toggled, this, [=](bool checked) {
+        username->setDisabled(checked);
+        metadata->setDisabled(checked);
+        storeMetadata->setDisabled(checked);
+    });
+
+    // Set initial state
+    bool anonChecked = anonymousBox->isChecked();
+    username->setDisabled(anonChecked);
+    metadata->setDisabled(anonChecked);
+    storeMetadata->setDisabled(anonChecked);
 
     QHBoxLayout *buttonLayout = new QHBoxLayout;
 
@@ -84,12 +103,18 @@ void TupSignDialog::setForm()
     connect(signUpButton, SIGNAL(clicked()), this, SLOT(signUp()));
     buttonLayout->addWidget(signUpButton);
 
-    QPushButton *applyButton = new QPushButton(tr("Accept"));
-    connect(applyButton, SIGNAL(clicked()), this, SLOT(apply()));
-    buttonLayout->addWidget(applyButton);
+    QPushButton *acceptButton = new QPushButton;
+    acceptButton->setMinimumWidth(60);
+    acceptButton->setIcon(QIcon(THEME_DIR + "icons/apply.png"));
+    acceptButton->setToolTip(tr("Accept"));
+    connect(acceptButton, SIGNAL(clicked()), this, SLOT(apply()));
+    buttonLayout->addWidget(acceptButton);
 
-    QPushButton *cancelButton = new QPushButton(tr("Cancel"));
-    connect(cancelButton, SIGNAL(clicked()), this, SLOT(close()));
+    QPushButton *cancelButton = new QPushButton;
+    cancelButton->setMinimumWidth(60);
+    cancelButton->setIcon(QIcon(THEME_DIR + "icons/close.png"));
+    cancelButton->setToolTip(tr("Cancel"));
+    connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
     buttonLayout->addWidget(cancelButton);
 
     layout->addWidget(form, Qt::AlignHCenter);
@@ -109,32 +134,51 @@ void TupSignDialog::apply()
         qDebug() << "[TupSignDialog::apply()]";
     #endif
 
-    if (username->text().isEmpty()) {
-        TOsd::self()->display(TOsd::Error, tr("Please, fill in your username"));
-        return;
-    }
-    if (metadata->text().isEmpty()) {
-        TOsd::self()->display(TOsd::Error, tr("Please, fill in your password"));
-        return;
-    }
+    bool isAnonymous = anonymousBox->isChecked();
+    if (!isAnonymous) {
+        if (username->text().isEmpty()) {
+            TOsd::self()->display(TOsd::Error, tr("Please, fill in your username"));
+            return;
+        }
+        if (metadata->text().isEmpty()) {
+            TOsd::self()->display(TOsd::Error, tr("Please, fill in your password"));
+            return;
+        }
 
-    // Saving credentials
-    TCONFIG->beginGroup("Network");
-    TCONFIG->setValue("Username", username->text());
-    if (storeMetadata->isChecked()) {
-        TCONFIG->setValue("Password", TupSecurity::encryptPassword(SECRET_KEY));
-        TCONFIG->setValue("StorePassword", "1");
+        // Saving credentials
+        TCONFIG->beginGroup("Website");
+        TCONFIG->setValue("Username", username->text());
+        if (storeMetadata->isChecked()) {
+            TCONFIG->setValue("Password", TupSecurity::encryptPassword(SECRET_KEY));
+            TCONFIG->setValue("StorePassword", "true");
+        } else {
+            TCONFIG->setValue("Password", "");
+            TCONFIG->setValue("StorePassword", "false");
+        }
+
+        TCONFIG->setValue("Anonymous", "false");
+        TCONFIG->endGroup();
+        TCONFIG->sync();
+
+        // Storing cache settings
+        QString data = metadata->text();
+        TAlgorithm::storeData(data);
     } else {
+        TCONFIG->beginGroup("Website");
+        TCONFIG->setValue("Username", "");
         TCONFIG->setValue("Password", "");
-        TCONFIG->setValue("StorePassword", "0");
+        TCONFIG->setValue("Anonymous", "true");
+        TCONFIG->setValue("StorePassword", "true");
+        TCONFIG->endGroup();
+        TCONFIG->sync();
     }
-    TCONFIG->sync();
-
-    // Storing cache settings
-    QString data = metadata->text();
-    TAlgorithm::storeData(data);
 
     accept();
+}
+
+bool TupSignDialog::isAnonymous() const
+{
+    return anonymousBox ? anonymousBox->isChecked() : false;
 }
 
 QString TupSignDialog::getUsername() const

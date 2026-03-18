@@ -127,8 +127,8 @@ class TupMainWindow : public TabbedMainWindow
         void connectWidgetToPaintArea(QWidget *widget);
         void connectWidgetToLocalManager(QWidget *widget);
 
-        void setupNetworkProject();
-        void setupNetworkProject(TupProjectManagerParams *params);
+        void setupCollaborativeProject();
+        void setupCollaborativeProject(TupProjectManagerParams *params);
         void setupLocalProject(TupProjectManagerParams *params);
         void setUndoRedoActions();
         void resetUI();
@@ -161,6 +161,7 @@ class TupMainWindow : public TabbedMainWindow
         void enableVisibilityControls();
 
     private slots:
+        void closeCollaborativeProjectIfOpen();
         void enableUpdatesDialog();
         void setWorkSpace(const QStringList &users = QStringList());
         void createNewLocalProject();
@@ -220,7 +221,7 @@ class TupMainWindow : public TabbedMainWindow
         void checkExposureVisibility(bool visible);
         void updateBucketTool(TColorCell::FillType type);
         void openTupiTubeNetwork();
-        void handleAuthenticationFailed();
+        void handleCollaborativeAuthenticationFailure();
         void updateColorPanelStatus(bool flag);
         void updatePenPanelStatus(bool flag);
         void updateLibraryPanelStatus(bool flag);
@@ -234,7 +235,7 @@ class TupMainWindow : public TabbedMainWindow
     private:
         QString appTitle;
         TupProjectManager *m_projectManager;
-        QString m_fileName;
+        QString m_filename;
         bool lastSave;
 
     private:

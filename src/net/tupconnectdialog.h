@@ -40,6 +40,8 @@
 #include "tconfig.h"
 #include "tformfactory.h"
 #include "tosd.h"
+#include "talgorithm.h"
+#include "tupsecurity.h"
 
 #include <QDialog>
 #include <QLineEdit>
@@ -69,6 +71,7 @@ class TUPITUBE_EXPORT TupConnectDialog : public QDialog
         QString password() const;
         QString server() const;
         int port() const;
+        QString windowRecordID() const;
 
     private slots:
         void accept();
@@ -78,11 +81,14 @@ class TUPITUBE_EXPORT TupConnectDialog : public QDialog
         void saveSettings();
         
     private:
+        QString cacheData() const;
+
         QLineEdit *loginLine;
         QLineEdit *passwdLine;
         QLineEdit *serverLine;
         QSpinBox *portBox;
         QCheckBox *storePasswdBox;
+        QLineEdit *cacheLine;
 };
 
 #endif

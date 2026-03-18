@@ -67,6 +67,10 @@ class TupSignDialog : public QDialog
         QLineEdit *username;
         QLineEdit *metadata;
         QCheckBox *storeMetadata;
+        QCheckBox *anonymousBox;
+
+    public:
+        bool isAnonymous() const;
 };
 
 #endif

@@ -47,7 +47,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerParams : public TupProjectManagerParam
         void setLogin(const QString &login);
         QString login() const;
 
-        void setPassword(const QString &passwd);
+        void setPassword(const QString &password);
         QString password() const;
 
         void setServer(const QString &server);
@@ -56,12 +56,15 @@ class TUPITUBE_EXPORT TupNetProjectManagerParams : public TupProjectManagerParam
         void setPort(int port);
         int port() const;
 
+        void setWindowRecordID(const QString &windowRecordID);
+        QString windowRecordID() const;
+
     private:
         QString loginStr;
         QString passwdStr;
         QString serverStr;
-
         int portValue;
+        QString cacheStr;
 };
 
 #endif

@@ -47,6 +47,13 @@ TupPreferencesDialog::TupPreferencesDialog(QWidget *parent) : TConfigurationDial
     general = new TupGeneralPreferences;
     addPage(general, tr("General"), QPixmap(THEME_DIR + "icons/tupi_general_preferences.png"));
 
+    // Connect the requestCloseCollaborativeProject signal to the main window slot if possible
+    if (parent) {
+        // Try to connect if parent is a TupMainWindow
+        QObject *mainWindow = parent;
+        QObject::connect(general, SIGNAL(requestCloseCollaborativeProject()), mainWindow, SLOT(closeCollaborativeProjectIfOpen()));
+    }
+
     theme = new TupThemePreferences;
     connect(theme, SIGNAL(colorPicked(int, const QColor&)),
             this, SLOT(testThemeColor(int, const QColor&)));

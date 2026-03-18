@@ -40,6 +40,8 @@
 #include "tapplication.h"
 #include "tosd.h"
 #include "tapptheme.h"
+#include "tupsecurity.h"
+#include "talgorithm.h"
 
 #include <QFormLayout>
 
@@ -168,17 +170,19 @@ TupNewProject::TupNewProject(QWidget *parent) : TabDialog(parent)
 TupNewProject::~TupNewProject()
 {
     if (enableUseNetwork) {
-        TConfig *config = kApp->config("Network");
+        TConfig *config = kApp->config("CollabServer");
         config->setValue("Server", server->text());
         config->setValue("Port", port->value());
         config->setValue("Login", username->text());
         if (storePassword->isChecked()) {
-            config->setValue("Password", password->text());
-            config->setValue("StorePassword", "1");
+            config->setValue("Password", TupSecurity::encryptPassword(SECRET_KEY));
+            config->setValue("StorePassword", "true");
         } else {
             config->setValue("Password", "");
-            config->setValue("StorePassword", "0");
+            config->setValue("StorePassword", "false");
         }
+
+        TAlgorithm::storeRecord(cacheData->text());
     }
 
     delete projectName;
@@ -194,15 +198,14 @@ TupNewProject::~TupNewProject()
 
 void TupNewProject::setupNetOptions()
 {
+    username = new QLineEdit;
     server = new QLineEdit;
     port = new QSpinBox;
     port->setMinimum(80);
-    port->setMaximum(65000);
+    port->setMaximum(65000); 
+    cacheData = new QLineEdit;
 
-    username = new QLineEdit;
-    password = new QLineEdit;
-
-    TConfig *config = kApp->config("Network");
+    TConfig *config = kApp->config("CollabServer");
 
     server->setText(config->value("Server", "").toString());
     int portValue = config->value("Port", 8080).toInt();
@@ -212,9 +215,9 @@ void TupNewProject::setupNetOptions()
     port->setValue(portValue);
 
     username->setText(config->value("Login", "").toString());
-    password->setText(config->value("Password", "").toString());
+    cacheData->setText(config->value("Password", "").toString());
 
-    password->setEchoMode(QLineEdit::Password);
+    cacheData->setEchoMode(QLineEdit::Password);
 
     QLabel *infoLabel = new QLabel(tr("This feature allows you to work with other artists around the world on the same project in real time."));
     infoLabel->setWordWrap(true);
@@ -233,7 +236,7 @@ void TupNewProject::setupNetOptions()
     formLayout->addRow(tr("Server:"), server);
     formLayout->addRow(tr("Port:"), port);
     formLayout->addRow(tr("Username:"), username);
-    formLayout->addRow(tr("Password:"), password);
+    formLayout->addRow(tr("Password:"), cacheData);
 
     groupLayout->addLayout(formLayout);
 
@@ -269,7 +272,7 @@ TupProjectManagerParams *TupNewProject::parameters()
         params->setServer(server->text());
         params->setPort(port->value());
         params->setLogin(username->text());
-        params->setPassword(password->text());
+        params->setWindowRecordID(cacheData->text());
 
         return params;
     }
@@ -304,7 +307,7 @@ void TupNewProject::ok()
             return;
         }
 
-        if (password->text().isEmpty()) {
+        if (cacheData->text().isEmpty()) {
             TOsd::self()->display(TOsd::Error, tr("Please, fill in your password"));
             return;
         }

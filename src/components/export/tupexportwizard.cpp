@@ -38,12 +38,22 @@ TupExportWizard::TupExportWizard(QWidget *parent) : QDialog(parent)
 {
     setModal(true);
 
-    cancelButton = new QPushButton(tr("Cancel"));
-    backButton = new QPushButton(tr("Back"));
-    nextButton = new QPushButton(tr("Next"));
-
+    cancelButton = new QPushButton;
+    cancelButton->setMinimumWidth(60);
+    cancelButton->setIcon(QIcon(THEME_DIR + "icons/close.png"));
+    cancelButton->setToolTip(tr("Cancel"));
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(cancel()));
+
+    backButton = new QPushButton;
+    backButton->setMinimumWidth(60);
+    backButton->setIcon(QIcon(THEME_DIR + "icons/previous.png"));
+    backButton->setToolTip(tr("Back"));
     connect(backButton, SIGNAL(clicked()), this, SLOT(back()));
+
+    nextButton = new QPushButton;
+    nextButton->setMinimumWidth(60);
+    nextButton->setIcon(QIcon(THEME_DIR + "icons/next.png"));
+    nextButton->setToolTip(tr("Next"));
     connect(nextButton, SIGNAL(clicked()), this, SLOT(next()));
 
     buttonLayout = new QHBoxLayout;
@@ -100,7 +110,8 @@ TupExportWizardPage *TupExportWizard::addPage(TupExportWizardPage *newPage)
 
 void TupExportWizard::setButtonLabel(const QString &label)
 {
-    nextButton->setText(label);
+    // Remove text label, keep icon and tooltip only
+    Q_UNUSED(label)
 }
 
 void TupExportWizard::showPage(TupExportWizardPage *page)
@@ -189,7 +200,9 @@ void TupExportWizard::next()
         }
 
         if (tag.compare("SCENE") == 0)  {
-            nextButton->setText(tr("Export"));
+            nextButton->setIcon(QIcon(THEME_DIR + "icons/apply.png"));
+            nextButton->setToolTip(tr("Export"));
+            nextButton->setText("");
             backButton->setEnabled(true);
 
             if (formatCode == TupExportInterface::APNG) { // ANIMATED PNG
@@ -221,10 +234,16 @@ void TupExportWizard::pageCompleted()
         nextButton->setEnabled(current->isComplete());
     } else {
         if (tag.compare("IMAGES_ARRAY") == 0 || tag.compare("ANIMATION") == 0
-            || tag.compare("ANIMATED_IMAGE") == 0)
-            nextButton->setText(tr("Export"));
-        if (tag.compare("PROPERTIES") == 0)
-            nextButton->setText(tr("Post"));
+            || tag.compare("ANIMATED_IMAGE") == 0) {
+            nextButton->setIcon(QIcon(THEME_DIR + "icons/apply.png"));
+            nextButton->setToolTip(tr("Export"));
+            nextButton->setText("");
+        }
+        if (tag.compare("PROPERTIES") == 0) {
+            nextButton->setIcon(QIcon(THEME_DIR + "icons/apply.png"));
+            nextButton->setToolTip(tr("Post"));
+            nextButton->setText("");
+        }
         nextButton->setEnabled(true);
     }
 

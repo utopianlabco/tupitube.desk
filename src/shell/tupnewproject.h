@@ -100,7 +100,7 @@ class TupNewProject : public TabDialog
         QColor color;
         QPushButton *colorButton;
         QSpinBox *fps;
-
+    
         QComboBox *presets;
         TXYSpinBox *size;
         bool enableUseNetwork;
@@ -111,7 +111,7 @@ class TupNewProject : public TabDialog
         QLineEdit *server;
         QSpinBox *port;
         QLineEdit *username;
-        QLineEdit *password;
+        QLineEdit *cacheData;
 
         QCheckBox *storePassword;
 };

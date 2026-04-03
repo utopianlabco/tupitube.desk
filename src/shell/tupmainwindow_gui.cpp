@@ -448,7 +448,7 @@ void TupMainWindow::setupHelpActions()
     updatesAction = new TAction(QPixmap(THEME_DIR + "icons/updates.png"), tr("Check for Updates"), QKeySequence(),
                                 this, SLOT(checkTupiTubeUpdates()), m_actionManager, "check_updates");
     updatesAction->setEnabled(false);
-    new TAction(QPixmap(THEME_DIR + "icons/about.png"), tr("About TupiTube Desk"), QKeySequence(tr("Ctrl+K")), 
+    new TAction(QPixmap(THEME_DIR + "icons/tupitube.png"), tr("About TupiTube Desk"), QKeySequence(tr("Ctrl+K")), 
                         this, SLOT(aboutTupiTube()), m_actionManager, "about_tupitube");
 }
 

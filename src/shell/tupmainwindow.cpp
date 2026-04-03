@@ -94,7 +94,7 @@ TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
     // Naming the main window
     appTitle = "TupiTube Desk";
     setWindowTitle(appTitle);
-    setWindowIcon(QIcon(THEME_DIR + "icons/about.png"));
+    setWindowIcon(QIcon(THEME_DIR + "icons/tupitube.png"));
     setObjectName("TupMainWindow_");
     setAcceptDrops(true);
     setContextMenuPolicy(Qt::NoContextMenu);

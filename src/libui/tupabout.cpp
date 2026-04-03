@@ -48,7 +48,7 @@
 TupAbout::TupAbout(QWidget *parent) : TabDialog(Close, parent)
 {
     // SQA: Check if these instructions are doing something for real
-    setWindowIcon(QIcon(THEME_DIR + "icons/about.png"));
+    setWindowIcon(QIcon(THEME_DIR + "icons/tupitube.png"));
     setWindowTitle(tr("About TupiTube Desk"));
     setStyleSheet(TAppTheme::themeStyles());
     setFixedSize(525, 458);

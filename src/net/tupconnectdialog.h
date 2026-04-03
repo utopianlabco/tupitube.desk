@@ -54,8 +54,6 @@
 #include <QSpinBox>
 #include <QDialogButtonBox>
 
-// class TupNetProjectManagerParams;
-
 class TUPITUBE_EXPORT TupConnectDialog : public QDialog
 {
     Q_OBJECT

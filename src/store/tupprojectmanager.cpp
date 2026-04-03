@@ -47,6 +47,7 @@
 #include "tuprequestbuilder.h"
 #include "tuprequestparser.h"
 #include "talgorithm.h"
+#include "tosd.h"
 
 // This class handles the current animation project 
 
@@ -94,12 +95,18 @@ TupProjectManagerParams *TupProjectManager::getParams() const
 void TupProjectManager::setHandler(TupAbstractProjectHandler *pHandler, bool networked)
 {
     if (handler) {
-        disconnect(handler, SIGNAL(sendCommand(const TupProjectRequest *, bool)),
-                   this, SLOT(createCommand(const TupProjectRequest *, bool)));
-        disconnect(handler, SIGNAL(sendLocalCommand(const TupProjectRequest *)),
-                   this, SLOT(handleLocalRequest(const TupProjectRequest *)));
-        disconnect(handler, SIGNAL(projectPathChanged()), this, SIGNAL(projectPathChanged()));
-        disconnect(handler, SIGNAL(soundPathsChanged()), this, SIGNAL(soundPathsChanged()));
+        try {
+            disconnect(handler, SIGNAL(sendCommand(const TupProjectRequest *, bool)),
+                    this, SLOT(createCommand(const TupProjectRequest *, bool)));
+            disconnect(handler, SIGNAL(sendLocalCommand(const TupProjectRequest *)),
+                    this, SLOT(handleLocalRequest(const TupProjectRequest *)));
+            disconnect(handler, SIGNAL(projectPathChanged()), this, SIGNAL(projectPathChanged()));
+            disconnect(handler, SIGNAL(soundPathsChanged()), this, SIGNAL(soundPathsChanged()));
+        } catch(...) {
+            #ifdef TUP_DEBUG
+                qWarning() << "[TupProjectManager::setHandler] - Error: Exception during handler disconnect/delete";
+            #endif            
+        }
 
         delete handler;
         handler = nullptr;
@@ -132,7 +139,7 @@ void TupProjectManager::setupNewProject()
 
     if (!handler || !params) {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupProjectManager::setupNewProject()] - Error: No handler available or no params!";
+            qWarning() << "[TupProjectManager::setupNewProject()] - Error: No handler available or no params!";
         #endif
         return;
     }
@@ -148,7 +155,7 @@ void TupProjectManager::setupNewProject()
 
     if (!handler->setupNewProject(params)) {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupProjectManager::setupNewProject()] - Error: Project params misconfiguration";
+            qWarning() << "[TupProjectManager::setupNewProject()] - Error: Project params misconfiguration";
         #endif
         return;
     }
@@ -159,7 +166,7 @@ void TupProjectManager::setupNewProject()
         if (projectDir.exists()) {
             if (!projectDir.removeRecursively()) {
                 #ifdef TUP_DEBUG
-                    qDebug() << "[TupProjectManager::setupNewProject()] - Error: Can't remove CACHE path -> " << projectPath;
+                    qWarning() << "[TupProjectManager::setupNewProject()] - Error: Can't remove CACHE path ->" << projectPath;
                 #endif
             }
         }
@@ -184,7 +191,7 @@ void TupProjectManager::closeProject()
 
     if (!handler) {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupProjectManager::closeProject()] - Fatal Error: Project handler is NULL!";
+            qWarning() << "[TupProjectManager::closeProject()] - Fatal Error: Project handler is NULL!";
         #endif
         return;
     }
@@ -192,7 +199,7 @@ void TupProjectManager::closeProject()
     if (project->isProjectOpen()) {
         if (!handler->closeProject()) {
             #ifdef TUP_DEBUG
-                qDebug() << "[TupProjectManager::closeProject()] - Fatal Error: Handler can't close project!";
+                qWarning() << "[TupProjectManager::closeProject()] - Fatal Error: Handler can't close project!";
             #endif
             return;
         }
@@ -224,7 +231,7 @@ bool TupProjectManager::loadProject(const QString &fileName)
 
     if (!handler) {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupProjectManager::loadProject()] - Fatal Error: No project handler available!";
+            qWarning() << "[TupProjectManager::loadProject()] - Fatal Error: No project handler available!";
         #endif
         return false;
     }
@@ -236,7 +243,7 @@ bool TupProjectManager::loadProject(const QString &fileName)
         modified = false;
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupProjectManager::loadProject()] - Fatal Error: Can't load project ->" << fileName;
+            qWarning() << "[TupProjectManager::loadProject()] - Fatal Error: Can't load project ->" << fileName;
         #endif
     }
 
@@ -266,8 +273,12 @@ void TupProjectManager::setModificationStatus(bool changed)
 
 bool TupProjectManager::isValid() const
 {
-    if (!handler)
+    if (!handler) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupProjectManager::isValid()] - Error: No project handler available!";
+        #endif
         return false;
+    }
 
     return handler->isValid();
 }
@@ -282,18 +293,20 @@ bool TupProjectManager::isValid() const
 void TupProjectManager::handleProjectRequest(const TupProjectRequest *request)
 {	
     #ifdef TUP_DEBUG
-        qWarning() << "[TupProjectManager::handleProjectRequest()] - Package:";
-        // qWarning() << request->getXml();
+        qDebug() << "[TupProjectManager::handleProjectRequest()]";
+        // qDebug() << "[TupProjectManager::handleProjectRequest()] - Package:";
+        // qDebug() << request->getXml();
     #endif
 
-    // SQA: the handler must advise when to build the command
-    
+    // SQA: the handler must advise when to build the command    
     if (handler) {
         handler->handleProjectRequest(request);
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupProjectManager::handleProjectRequest()] - Error: No handler available";
+            qWarning() << "[TupProjectManager::handleProjectRequest()] - Error: Project handler is NULL! Cannot process request.";
         #endif
+        TOsd::self()->display(TOsd::Error, tr("Fatal error. Project must be closed."));
+        closeProject();
     }
 }
 
@@ -310,50 +323,6 @@ void TupProjectManager::handleLocalRequest(const TupProjectRequest *request)
             sceneIndex = response->getSceneIndex();
             layerIndex = response->getLayerIndex();
             frameIndex = response->getFrameIndex();
-
-            /*
-            if (response->action() == TupProjectRequest::Copy) {
-                TupScene *scene = project->sceneAt(sceneIndex);
-                if (scene) {
-                    TupLayer *layer = scene->layerAt(layerIndex);
-                    if (layer) {
-                        TupFrame *frame = layer->frameAt(frameIndex);
-                        if (frame) {
-                            QDomDocument doc;
-                            doc.appendChild(frame->toXml(doc));
-                            k->frameSelection = doc.toString(0);
-                            response->setArg(k->frameSelection);
-                        }
-                    }
-                }
-            if (response->action() == TupProjectRequest::CopySelection) {
-                k->frameSelection = response->arg().toString();
-            } else if (response->action() == TupProjectRequest::PasteSelection) {
-                response->setArg(k->frameSelection);
-                TupProjectRequest request = TupRequestBuilder::fromResponse(response);
-                handleProjectRequest(&request);
-                return;
-            } else if (response->action() == TupProjectRequest::UpdateOpacity) {
-            */
-
-            /*
-            if (response->getAction() == TupProjectRequest::UpdateOpacity) {
-                double opacity = response->getArg().toReal();
-                TupScene *scene = project->sceneAt(sceneIndex);
-                if (scene) {
-                    TupLayer *layer = scene->layerAt(layerIndex);
-                    if (layer) {
-                        layer->setOpacity(opacity);
-                    } else {
-                        #ifdef TUP_DEBUG
-                            QString msg = "[TupProjectManager::handleLocalRequest()] - Fatal Error: "
-                                          " Layer pointer is NULL [index = " +  QString::number(layerIndex) + "]";
-                            qDebug() << msg;
-                        #endif
-                    }
-                }
-            }
-            */
         }
 
         parser.getResponse()->setExternal(request->isRequestExternal());
@@ -392,9 +361,9 @@ void TupProjectManager::createCommand(const TupProjectRequest *request, bool add
                 command->redo();
             }
         } else {
-        #ifdef TUP_DEBUG
-            qWarning() << "[TupProjectManager::createCommand()] - Invalid command";
-        #endif
+            #ifdef TUP_DEBUG
+                qWarning() << "[TupProjectManager::createCommand()] - Invalid command";
+            #endif
         }
     } else {
         #ifdef TUP_DEBUG
@@ -408,7 +377,7 @@ void TupProjectManager::createCommand(TupProjectCommand *command)
     undoStack->push(command);
     /*
     #ifdef TUP_DEBUG
-        qWarning() << "TupProjectManager::createCommand() - command counter: " + QString::number(undoStack->count());
+        qWarning() << "TupProjectManager::createCommand() - command counter ->" << QString::number(undoStack->count());
     #endif
     */
 }
@@ -421,7 +390,7 @@ TupProject *TupProjectManager::getProject()
 void TupProjectManager::beginUndoMacro(const QString &text)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupProjectManager::beginUndoMacro()] - text:" << text;
+        qDebug() << "[TupProjectManager::beginUndoMacro()] - text ->" << text;
     #endif
     if (macroInProgress) {
         #ifdef TUP_DEBUG
@@ -438,6 +407,7 @@ void TupProjectManager::endUndoMacro()
     #ifdef TUP_DEBUG
         qDebug() << "[TupProjectManager::endUndoMacro()]";
     #endif
+
     if (!macroInProgress) {
         #ifdef TUP_DEBUG
             qWarning() << "[TupProjectManager::endUndoMacro()] - No macro in progress, ignoring!";
@@ -494,20 +464,25 @@ void TupProjectManager::clearUndoStack()
 void TupProjectManager::emitResponse(TupProjectResponse *response)
 {	
     #ifdef TUP_DEBUG
-        qDebug() << "[TupProjectManager::emitResponse()] - response->action() -> " << response->getAction();
+        qDebug() << "[TupProjectManager::emitResponse()] - response->action() ->" << response->getAction();
     #endif
 
     if (response->getAction() != TupProjectRequest::Select)
         modified = true;
 
-    if (!handler) {
-        // SQA: Check if this is the right way to handle this condition 
-        emit responsed(response);
-    } else if (isNetworked) {
-        if (handler->commandExecuted(response))
+   if (handler) {
+        if (isNetworked) {
+            if (handler->commandExecuted(response))
+                emit responsed(response);
+        } else { // Local request
             emit responsed(response);
-    } else { // Local request
-        emit responsed(response);
+        }
+    } else {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupProjectManager::emitResponse()] - Error: Project handler is NULL! Cannot process response.";
+        #endif
+        TOsd::self()->display(TOsd::Error, tr("Fatal error. Project must be closed."));
+        closeProject();
     }
 }
 

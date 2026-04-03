@@ -40,7 +40,7 @@ TupConnectDialog::TupConnectDialog(QWidget *parent): QDialog(parent)
         qDebug() << "[TupConnectDialog::TupConnectDialog()]";
     #endif
 
-    setWindowTitle(tr("Connection Parameters"));
+    setWindowTitle(tr("Connection Settings"));
     setMinimumWidth(320);
 
     // Credentials section
@@ -135,14 +135,8 @@ QString TupConnectDialog::login() const
 }
 
 QString TupConnectDialog::password() const
-{
-    QString secret = TupSecurity::encryptPassword(SECRET_KEY);
-    
-    #ifdef TUP_DEBUG
-        qDebug() << "[TupConnectDialog::password()] - secrect ->" << secret;
-    #endif
-
-    return secret;
+{   
+    return TupSecurity::encryptPassword(SECRET_KEY);
 }
 
 QString TupConnectDialog::server() const
@@ -162,9 +156,12 @@ QString TupConnectDialog::windowRecordID() const
 
 void TupConnectDialog::loadSettings()
 {
-    QString username = TCONFIG->value("Login", "").toString();
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupConnectDialog::loadSettings()]";
+    #endif
 
     TCONFIG->beginGroup("CollabServer");
+    QString username = TCONFIG->value("Login", "").toString();  
     serverLine->setText(TCONFIG->value("Server", "").toString());
     portBox->setValue(TCONFIG->value("Port", 8080).toInt());
     loginLine->setText(username);
@@ -181,6 +178,10 @@ void TupConnectDialog::loadSettings()
 
 void TupConnectDialog::saveSettings()
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupConnectDialog::saveSettings()]";
+    #endif
+
     TCONFIG->beginGroup("CollabServer");
     TCONFIG->setValue("Server", serverLine->text());
     TCONFIG->setValue("Port", portBox->value());
@@ -200,6 +201,11 @@ void TupConnectDialog::saveSettings()
 
 void TupConnectDialog::accept()
 {
+    if (serverLine->text().isEmpty()) {
+        TOsd::self()->display(TOsd::Error, tr("Please, fill in the server address"));
+        return;
+    }
+
     if (cacheLine->text().isEmpty()) {
         TOsd::self()->display(TOsd::Error, tr("Please, fill in your password"));
         return;

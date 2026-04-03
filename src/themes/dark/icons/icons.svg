@@ -2931,6 +2931,36 @@
        x2="0.9100455"
        y2="15.422908"
        gradientTransform="matrix(7.6089407,0,0,6.3972057,237.4603,901.78828)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient8166"
+       id="linearGradient22369"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(2.3693932,-1.2860965,1.2860965,2.3693932,-1052.2363,-80.33388)"
+       x1="40.328125"
+       y1="20.75281"
+       x2="40.211685"
+       y2="16.28406" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient6089"
+       id="linearGradient22371"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(-2.4762246,-1.0660113,1.0660113,-2.4762246,-865.49332,8.4565)"
+       x1="40.328125"
+       y1="20.75281"
+       x2="40.211685"
+       y2="16.28406" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient6089"
+       id="linearGradient22373"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.65473229,2.6152235,-2.6152235,0.65473229,-908.37012,-190.51636)"
+       x1="40.328125"
+       y1="20.75281"
+       x2="40.211685"
+       y2="16.28406" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -2939,9 +2969,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.86000003"
-     inkscape:cx="-461.0465"
-     inkscape:cy="829.65114"
+     inkscape:zoom="3.4400001"
+     inkscape:cx="-989.3895"
+     inkscape:cy="759.73835"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -2955,7 +2985,7 @@
      inkscape:snap-global="false"
      inkscape:document-rotation="0"
      inkscape:pagecheckerboard="0"
-     inkscape:lockguides="true" />
+     inkscape:lockguides="false" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -29469,6 +29499,124 @@
            inkscape:export-xdpi="478"
            inkscape:export-ydpi="478"
            sodipodi:nodetypes="ccccccccc" />
+      </g>
+    </g>
+    <g
+       id="g23265"
+       transform="translate(26.570554,-214.10302)">
+      <g
+         id="g23252"
+         transform="translate(-11.736954,63.107972)"
+         inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/dark/icons/hd/net_document.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96">
+        <g
+           id="g23240">
+          <path
+             style="fill:url(#linearGradient22369);fill-opacity:1;stroke:#ffffff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m -932.40817,-97.10254 c 2.80465,4.01911 0.9974,6.98353 -1.43574,8.30422 -2.43314,1.3207 -5.45823,0.45204 -6.75673,-1.94021 -1.29851,-2.39225 -0.3787,-5.40219 2.05446,-6.72288 1.76168,-0.9562 3.91398,-0.78871 5.47261,0.42592"
+             id="path4545-6-3-9-2-1-2-48-5"
+             inkscape:connector-curvature="0"
+             sodipodi:nodetypes="csssc"
+             inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/default/icons/rotation.png"
+             inkscape:export-xdpi="865.95496"
+             inkscape:export-ydpi="865.95496" />
+          <path
+             sodipodi:type="arc"
+             style="fill:none;stroke:#ffffff;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+             id="path4556-7-3-7-6-2-3-5-2"
+             sodipodi:cx="-774.71185"
+             sodipodi:cy="-531.97156"
+             sodipodi:rx="0.13204217"
+             sodipodi:ry="0.17416616"
+             sodipodi:start="0"
+             sodipodi:end="5.8778476"
+             sodipodi:open="true"
+             transform="rotate(-28.492919)"
+             inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/default/icons/rotation.png"
+             inkscape:export-xdpi="865.95496"
+             inkscape:export-ydpi="865.95496"
+             sodipodi:arc-type="arc"
+             d="m -774.57981,-531.97156 a 0.13204217,0.17416616 0 0 1 -0.11869,0.17328 0.13204217,0.17416616 0 0 1 -0.14269,-0.13822 0.13204217,0.17416616 0 0 1 0.0898,-0.20124 0.13204217,0.17416616 0 0 1 0.16087,0.0975" />
+          <path
+             style="fill:url(#linearGradient22371);fill-opacity:1;stroke:#ffffff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m -952.7961,-75.31808 c 1.42279,-4.68989 4.8699,-5.10379 7.41274,-4.00909 2.54285,1.09468 3.73172,4.00885 2.65542,6.50895 -1.07629,2.50012 -4.01019,3.63943 -6.55304,2.54473 -1.84108,-0.79262 -3.04094,-2.58728 -3.05081,-4.56328"
+             id="path4545-6-3-9-2-1-2-4-2-0"
+             inkscape:connector-curvature="0"
+             sodipodi:nodetypes="csssc"
+             inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/default/icons/rotation.png"
+             inkscape:export-xdpi="865.95496"
+             inkscape:export-ydpi="865.95496" />
+          <path
+             sodipodi:type="arc"
+             style="fill:none;stroke:#ffffff;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+             id="path4556-7-3-7-6-2-3-2-2-0"
+             sodipodi:cx="903.36444"
+             sodipodi:cy="-309.39429"
+             sodipodi:rx="0.13204217"
+             sodipodi:ry="0.17416616"
+             sodipodi:start="0"
+             sodipodi:end="5.8778476"
+             sodipodi:open="true"
+             transform="rotate(-156.70818)"
+             inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/default/icons/rotation.png"
+             inkscape:export-xdpi="865.95496"
+             inkscape:export-ydpi="865.95496"
+             sodipodi:arc-type="arc"
+             d="m 903.49648,-309.39429 a 0.13204217,0.17416616 0 0 1 -0.11868,0.17328 0.13204217,0.17416616 0 0 1 -0.1427,-0.13822 0.13204217,0.17416616 0 0 1 0.0898,-0.20124 0.13204217,0.17416616 0 0 1 0.16086,0.0975" />
+          <path
+             style="fill:url(#linearGradient22373);fill-opacity:1;stroke:#ffffff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m -922.00716,-70.29162 c -4.59146,1.71401 -7.01167,-0.77526 -7.68401,-3.46085 -0.67235,-2.68558 0.92311,-5.39857 3.56356,-6.05961 2.64046,-0.66105 5.32601,0.98017 5.99834,3.66576 0.48677,1.94445 -0.21205,3.98703 -1.77693,5.1936"
+             id="path4545-6-3-9-2-1-2-3-6-8"
+             inkscape:connector-curvature="0"
+             sodipodi:nodetypes="csssc"
+             inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/default/icons/rotation.png"
+             inkscape:export-xdpi="865.95496"
+             inkscape:export-ydpi="865.95496" />
+          <path
+             sodipodi:type="arc"
+             style="fill:none;stroke:#ffffff;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+             id="path4556-7-3-7-6-2-3-7-3-5"
+             sodipodi:cx="-293.6683"
+             sodipodi:cy="875.50781"
+             sodipodi:rx="0.13204217"
+             sodipodi:ry="0.17416616"
+             sodipodi:start="0"
+             sodipodi:end="5.8778476"
+             sodipodi:open="true"
+             transform="rotate(75.944659)"
+             inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/default/icons/rotation.png"
+             inkscape:export-xdpi="865.95496"
+             inkscape:export-ydpi="865.95496"
+             sodipodi:arc-type="arc"
+             d="m -293.53626,875.50781 a 0.13204217,0.17416616 0 0 1 -0.11869,0.17328 0.13204217,0.17416616 0 0 1 -0.14269,-0.13822 0.13204217,0.17416616 0 0 1 0.0898,-0.20124 0.13204217,0.17416616 0 0 1 0.16087,0.0975" />
+          <path
+             style="fill:none;stroke:#ffffff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m -941.21444,-74.85488 10.2511,0.0148"
+             id="path15586-1-5-9"
+             sodipodi:nodetypes="cc"
+             inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/default/icons/net_document.png"
+             inkscape:export-xdpi="118.74"
+             inkscape:export-ydpi="118.74" />
+          <path
+             style="fill:none;stroke:#ffffff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+             d="m -936.09629,-75.2939 0.0148,-12.17598"
+             id="path15586-1-5-9-2"
+             sodipodi:nodetypes="cc"
+             inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/default/icons/net_document.png"
+             inkscape:export-xdpi="118.74"
+             inkscape:export-ydpi="118.74" />
+          <rect
+             style="fill:#ffffff;fill-opacity:0.022994;stroke:none;stroke-width:1.58093;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+             id="rect21649-7-4"
+             width="40"
+             height="40"
+             x="-956.38647"
+             y="-103.90742"
+             inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/dark/icons/net_document.png"
+             inkscape:export-xdpi="96"
+             inkscape:export-ydpi="96" />
+        </g>
       </g>
     </g>
   </g>

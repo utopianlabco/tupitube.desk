@@ -127,6 +127,7 @@ class TupMainWindow : public TabbedMainWindow
         void connectWidgetToPaintArea(QWidget *widget);
         void connectWidgetToLocalManager(QWidget *widget);
 
+        void showCollaborativeConnectionDialog();
         void setupCollaborativeProject();
         void setupCollaborativeProject(TupProjectManagerParams *params);
         void setupLocalProject(TupProjectManagerParams *params);
@@ -202,7 +203,7 @@ class TupMainWindow : public TabbedMainWindow
 
     private slots:
         void preferences();
-        void showHelp();
+        // void showHelp();
         void checkTupiTubeUpdates();
         void aboutTupiTube();
         void openYouTubeChannel();
@@ -261,7 +262,7 @@ class TupMainWindow : public TabbedMainWindow
 
     // Network variables
     private:
-        TupNetProjectManagerHandler *netProjectManager;
+        QPointer<TupNetProjectManagerHandler> netProjectManager;
         bool isNetworked;
         ToolView *m_viewChat;
         QTabWidget *m_chatTabWidget;

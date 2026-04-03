@@ -108,11 +108,11 @@ TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
     uiStyleSheet = TAppTheme::themeStyles();
     setStyleSheet(uiStyleSheet);
 
-#ifdef Q_OS_WIN
-    examplePath = SHARE_DIR + "html/examples/example.tup";
-#else
-    examplePath = SHARE_DIR + "data/html/examples/example.tup";
-#endif
+    #ifdef Q_OS_WIN
+        examplePath = SHARE_DIR + "html/examples/example.tup";
+    #else
+        examplePath = SHARE_DIR + "data/html/examples/example.tup";
+    #endif
 
     // Calling out the project manager
     m_projectManager = new TupProjectManager(this);
@@ -136,12 +136,12 @@ TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
                 fileContent += in.readLine();
         } else {
             #ifdef TUP_DEBUG
-                qDebug() << "[TupMainWindow()] - Fatal Error: Can't read news msg file ->" << webMsgPath;
+                qWarning() << "[TupMainWindow()] - Fatal Error: Can't read news msg file ->" << webMsgPath;
             #endif
         }
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupMainWindow()] - Warning: News msg file doesn't exist ->" << webMsgPath;
+            qWarning() << "[TupMainWindow()] - Warning: News msg file doesn't exist ->" << webMsgPath;
         #endif
     }
 
@@ -534,6 +534,8 @@ void TupMainWindow::setWorkSpace(const QStringList &users)
         connect(this, SIGNAL(tabHasChanged(UIView)), this, SLOT(updateCurrentTab(UIView)));
 
         m_projectManager->clearUndoStack();
+
+        QApplication::restoreOverrideCursor();
     }
 }
 
@@ -670,7 +672,12 @@ bool TupMainWindow::closeProject()
         #ifdef TUP_DEBUG
             qDebug() << "[TupMainWindow::closeProject()] - No project is open!";
         #endif
-
+        // Defensive: always cleanup netProjectManager
+        if (netProjectManager) {
+            netProjectManager->disconnect();
+            netProjectManager->deleteLater();
+            netProjectManager = nullptr;
+        }
         return true;
     }
 
@@ -678,6 +685,13 @@ bool TupMainWindow::closeProject()
         hideTopPanels();
 
     resetUI();
+
+    // Defensive: always cleanup netProjectManager
+    if (netProjectManager) {
+        netProjectManager->disconnect();
+        netProjectManager->deleteLater();
+        netProjectManager = nullptr;
+    }
 
     return true;
 }
@@ -700,7 +714,6 @@ void TupMainWindow::resetUI()
     colorView->expandDock(false);
     penView->expandDock(false);
     libraryView->expandDock(false);
-    // scenesView->expandDock(false);
     exposureView->expandDock(false);
     timeView->expandDock(false);
 
@@ -732,7 +745,6 @@ void TupMainWindow::resetUI()
 
     m_exposureSheet->closeAllScenes();
     m_timeLine->closeAllScenes();
-    // m_scenes->closeAllScenes();
     m_libraryWidget->resetGUI();
 
     m_filename = QString();
@@ -742,8 +754,14 @@ void TupMainWindow::resetUI()
     setWindowTitle(appTitle);
 
     if (isNetworked) {
-        m_viewChat->expandDock(false);
-        netProjectManager->closeProject();
+        if (m_viewChat)
+            m_viewChat->expandDock(false);
+        if (netProjectManager) {
+            netProjectManager->closeProject();
+            netProjectManager->disconnect();
+            netProjectManager->deleteLater();
+            netProjectManager = nullptr;
+        }
     }
 
     m_projectManager->closeProject();
@@ -773,14 +791,41 @@ void TupMainWindow::resetUI()
     }
 
     resetMousePointer();
+}
 
+void TupMainWindow::showCollaborativeConnectionDialog()
+{
     #ifdef TUP_DEBUG
-        qDebug() << "";
+        qDebug() << "[TupMainWindow::showCollaborativeConnectionDialog()]";
     #endif
+
+    TupConnectDialog *netDialog = new TupConnectDialog(this);
+    netDialog->show();
+
+    netDialog->move(static_cast<int> ((screenWidth - netDialog->width()) / 2),
+                    static_cast<int> ((screenHeight - netDialog->height()) / 2));
+
+    if (netDialog->exec() == QDialog::Accepted) {
+        TupNetProjectManagerParams *params = new TupNetProjectManagerParams();
+        params->setLogin(netDialog->login());
+        params->setPassword(netDialog->password());
+        params->setServer(netDialog->server());
+        params->setPort(netDialog->port());
+        params->setWindowRecordID(netDialog->windowRecordID());
+
+        delete netDialog;
+        setupCollaborativeProject(params);
+    } else {
+        delete netDialog;
+    }
 }
 
 void TupMainWindow::setupCollaborativeProject()
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupMainWindow::setupCollaborativeProject()]";
+    #endif
+
     // Check if all connection credentials are already stored
     TCONFIG->beginGroup("CollabServer");
     QString server = TCONFIG->value("Server", "").toString();
@@ -793,7 +838,7 @@ void TupMainWindow::setupCollaborativeProject()
     // If all credentials are available and password is stored, connect directly
     if (!server.isEmpty() && !login.isEmpty() && !password.isEmpty() && storePassword) {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupMainWindow::setupCollaborativeProject()] - Using stored credentials for server:" << server;
+            qDebug() << "[TupMainWindow::setupCollaborativeProject()] - Using stored credentials for server ->" << server;
         #endif
 
         TupNetProjectManagerParams *params = new TupNetProjectManagerParams();
@@ -809,33 +854,42 @@ void TupMainWindow::setupCollaborativeProject()
     }
 
     // Otherwise, show the dialog to get/confirm credentials
-    TupConnectDialog *netDialog = new TupConnectDialog(this);
-    netDialog->show();
-
-    netDialog->move(static_cast<int> ((screenWidth - netDialog->width()) / 2),
-                    static_cast<int> ((screenHeight - netDialog->height()) / 2));
-
-    TupNetProjectManagerParams *params = new TupNetProjectManagerParams();
-
-    if (netDialog->exec() == QDialog::Accepted) {
-        netUser = netDialog->login();
-        params->setLogin(netUser);
-        params->setPassword(netDialog->password());
-        params->setServer(netDialog->server());
-        params->setPort(netDialog->port());
-        params->setWindowRecordID(netDialog->windowRecordID());
-
-        delete netDialog;
-        setupCollaborativeProject(params);
-    } else {
-        delete netDialog;
-    }
+    showCollaborativeConnectionDialog();
 }
 
 void TupMainWindow::setupCollaborativeProject(TupProjectManagerParams *params)
 {
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupMainWindow::setupCollaborativeProject(TupProjectManagerParams *)]";
+    #endif
+
     if (closeProject()) {
-        netProjectManager =  new TupNetProjectManagerHandler;
+        // Clean up previous netProjectManager if it exists
+        if (netProjectManager) {
+            // Disconnect all signals from netProjectManager
+            netProjectManager->disconnect();
+            // If netProjectManager has a socket() method, disconnect its signals too
+            QObject *socketObj = nullptr;
+            int methodIndex = netProjectManager->metaObject()->indexOfMethod("socket()");
+            if (methodIndex != -1) {
+                QVariant returnedValue;
+                QMetaObject::invokeMethod(netProjectManager, "socket", Q_RETURN_ARG(QVariant, returnedValue));
+                socketObj = returnedValue.value<QObject*>();
+            } else {
+                QVariant socketVar = netProjectManager->property("socket");
+                if (socketVar.isValid() && socketVar.canConvert<QObject*>()) {
+                    socketObj = socketVar.value<QObject*>();
+                }
+            }
+
+            if (socketObj)
+                socketObj->disconnect();
+
+            delete netProjectManager;
+            netProjectManager = nullptr;
+        }
+
+        netProjectManager = new TupNetProjectManagerHandler;
         connect(netProjectManager, SIGNAL(authenticationSuccessful()), this, SLOT(requestProject()));
         connect(netProjectManager, SIGNAL(authenticationFailed()), this, SLOT(handleCollaborativeAuthenticationFailure()));
         connect(netProjectManager, SIGNAL(openNewArea(const QString &, const QStringList &)), 
@@ -906,21 +960,13 @@ void TupMainWindow::openExample()
     if (cancelChanges())
         return;
 
-    /*
-    #ifdef Q_OS_WIN
-        QString examplePath = SHARE_DIR + "html/examples/example.tup";
-    #else
-        QString examplePath = SHARE_DIR + "data/html/examples/example.tup";
-    #endif
-    */
-
     if (QFile::exists(examplePath)) {
         if (m_filename.compare(examplePath) != 0)
             openProject(examplePath);
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupMainWindow::openExample()] - "
-                        "Fatal Error: Couldn't open example file -> " << QString(examplePath);
+            qWarning() << "[TupMainWindow::openExample()] - "
+                          "Fatal Error: Couldn't open example file ->" << examplePath;
         #endif
         TOsd::self()->display(TOsd::Error, tr("Cannot open project!"));
     }
@@ -929,8 +975,8 @@ void TupMainWindow::openExample()
 void TupMainWindow::openProject(const QString &path)
 {
     #ifdef TUP_DEBUG
-        qWarning() << "---";
-        qWarning() << "[TupMainWindow::openProject()] - Opening project ->" << path;
+        qDebug() << "---";
+        qDebug() << "[TupMainWindow::openProject()] - Opening project ->" << path;
     #endif
 
     if (path.isEmpty() || !path.endsWith(".tup")) {
@@ -1072,10 +1118,12 @@ void TupMainWindow::preferences()
     }
 }
 
+/*
 void TupMainWindow::showHelp()
 {
     QDesktopServices::openUrl(QString("https://tupitube.com/wiki"));
 }
+*/
 
 void TupMainWindow::aboutTupiTube()
 {
@@ -1248,7 +1296,7 @@ bool TupMainWindow::saveProject()
 {
     #ifdef TUP_DEBUG
         qDebug() << "---";
-        qDebug() << "[TupMainWindow::saveProject()] - file path -> " << m_filename;
+        qDebug() << "[TupMainWindow::saveProject()] - file path ->" << m_filename;
     #endif
 
     if (!isNetworked) {
@@ -1352,9 +1400,6 @@ void TupMainWindow::updateSoundsPath()
         qDebug() << "[TupMainWindow::updateSoundsPath()]";
     #endif
 
-    // if (m_libraryWidget)
-    //     m_libraryWidget->resetSoundPlayer();
-
     if (cameraWidget)
         cameraWidget->loadSoundRecords();
 }
@@ -1447,12 +1492,12 @@ void TupMainWindow::closeEvent(QCloseEvent *event)
         QString assetsPath = TCONFIG->value("AssetsPath", CACHE_DIR + "assets").toString();
         QDir assetsDir(assetsPath);
         #ifdef TUP_DEBUG
-            qDebug() << "[TupMainWindow::closeEvent()] - Removing assets path -> " << assetsPath;
+            qDebug() << "[TupMainWindow::closeEvent()] - Removing assets path ->" << assetsPath;
         #endif
         if (assetsDir.exists()) {
             if (!assetsDir.removeRecursively()) {
                 #ifdef TUP_DEBUG
-                    qWarning() << "[TupMainWindow::closeEvent()] - Error: Can't remove assets path -> " << assetsPath;
+                    qWarning() << "[TupMainWindow::closeEvent()] - Error: Can't remove assets path ->" << assetsPath;
                 #endif
             }
         }
@@ -1473,7 +1518,7 @@ void TupMainWindow::createPaintCommand(const TupPaintAreaEvent *event)
 
     if (!animationTab) {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupMainWindow::createPaintCommand()] - No animation tab... aborting!";
+            qWarning() << "[TupMainWindow::createPaintCommand()] - No animation tab... aborting!";
         #endif
         return;
     }
@@ -1589,12 +1634,6 @@ void TupMainWindow::updateCurrentTab(UIView tabType)
             animationTab->updatePaintArea();
             lastTab = AnimationView;
         }
-        /* else {
-            cameraWidget->setVisible(false);
-            if (index == 3)
-                lastTab = 3;
-        }
-        */
     }
 }
 
@@ -1615,7 +1654,7 @@ void TupMainWindow::exportProject()
         exportWidget->exec();
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupMainWindow::exportProject()] - Warning: callSaveProcedure() couldn't be called!";
+            qWarning() << "[TupMainWindow::exportProject()] - Warning: callSaveProcedure() couldn't be called!";
         #endif
     }
 }
@@ -1632,7 +1671,7 @@ void TupMainWindow::postProject()
         if (framesCount < 2) {
             TOsd::self()->display(TOsd::Error, tr("To post video add more frames!"));
             #ifdef TUP_DEBUG
-                qDebug() << "[TupMainWindow::postProject()] - Error: Too few frames!";
+                qWarning() << "[TupMainWindow::postProject()] - Error: Too few frames!";
             #endif
             return;
         }
@@ -1645,6 +1684,7 @@ void TupMainWindow::postProject()
             TCONFIG->beginGroup("Website");
             QString username = TCONFIG->value("Username", "").toString();
             QString password = TCONFIG->value("Password", "").toString();
+            bool isAnonymous = TCONFIG->value("Anonymous", false).toBool();
             bool storePasswd = TCONFIG->value("StorePassword", "false").toBool();
 
             if (username.isEmpty() || password.isEmpty() || !storePasswd) {
@@ -1664,11 +1704,16 @@ void TupMainWindow::postProject()
                 } else {
                     // User cancelled action
                     #ifdef TUP_DEBUG
-                        qDebug() << "[TupMainWindow::postProject()] - Action canceled by user!";
+                        qWarning() << "[TupMainWindow::postProject()] - Action canceled by user!";
                     #endif
                     TOsd::self()->display(TOsd::Info, tr("Post canceled by user!"));
                     return;
                 }
+            } else {
+                if (isAnonymous) {
+                    username = "tupitube";
+                    password = "tupitube";
+                }        
             }
 
             exportWidget = new TupExportWidget(m_projectManager->getProject(), this, TupExportWidget::Scene, username, password);
@@ -1689,7 +1734,7 @@ void TupMainWindow::postProject()
 void TupMainWindow::postFrame(const QString &imagePath)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupMainWindow::postFrame()] - imagePath -> " << imagePath;
+        qDebug() << "[TupMainWindow::postFrame()] - imagePath ->" << imagePath;
     #endif
 
     if (callSaveProcedure()) {
@@ -1712,7 +1757,7 @@ void TupMainWindow::postFrame(const QString &imagePath)
                 } else {
                     // User cancelled action
                     #ifdef TUP_DEBUG
-                        qDebug() << "[TupMainWindow::postProject()] - Action canceled by user!";
+                        qWarning() << "[TupMainWindow::postProject()] - Action canceled by user!";
                     #endif
                     TOsd::self()->display(TOsd::Info, tr("Post canceled by user!"));
                     return;
@@ -1748,7 +1793,7 @@ void TupMainWindow::postFrame(const QString &imagePath)
         QFile imgFile(imagePath);
         if (!imgFile.remove()) {
             #ifdef TUP_DEBUG
-                qDebug() << "[TupMainWindow::postFrame()] - Error: Can't remove image file -> " << imagePath;
+                qWarning() << "[TupMainWindow::postFrame()] - Error: Can't remove image file ->" << imagePath;
             #endif
         }
     }
@@ -1767,7 +1812,6 @@ bool TupMainWindow::callSaveProcedure()
             #ifdef TUP_DEBUG
                 qDebug() << "[TupMainWindow::callSaveProcedure()] - Warning: No changes to save!";
             #endif
-            // TOsd::self()->display(TOsd::Warning, tr("Warning: No changes to save!"));
         }
     }
 
@@ -1789,7 +1833,6 @@ void TupMainWindow::restoreFramesMode(TupProject::Mode mode)
         }
         exposureView->enableButton(true);
         timeView->enableButton(true);
-        // scenesView->enableButton(true);
     } else { // BG / FG modes
         if (exposureView->isExpanded()) {
             currentDock = TupDocumentView::ExposureSheet;
@@ -1799,14 +1842,8 @@ void TupMainWindow::restoreFramesMode(TupProject::Mode mode)
             timeView->expandDock(false);
         }
 
-        /*
-        if (scenesView->isExpanded()) {
-            scenesView->expandDock(false);
-        }
-        */
         exposureView->enableButton(false);
         timeView->enableButton(false);
-        // scenesView->enableButton(false);
     }
 
     if (m_libraryWidget)
@@ -1823,7 +1860,7 @@ void TupMainWindow::requestProject()
     } else if (TupMainWindow::requestType == UploadLocalProjectToNet) {
         const char *home = getenv("HOME");
         QString file = QFileDialog::getOpenFileName(this, tr("Upload project package"),
-                                                   home, tr("TupiTube Project Package (*.tup)"));
+                                                    home, tr("TupiTube Project Package (*.tup)"));
         if (file.length() > 0) {
             QFile project(file);
             if (project.exists()) {
@@ -1866,31 +1903,13 @@ void TupMainWindow::unexpectedClose()
 void TupMainWindow::handleCollaborativeAuthenticationFailure()
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupMainWindow::handleCollaborativeAuthenticationFailure()] - Authentication failed, showing connect dialog...";
+        qDebug() << "[TupMainWindow::handleCollaborativeAuthenticationFailure()]";
     #endif
 
+    TOsd::self()->display(TOsd::Error, tr("Authentication failed! Please, try again."));
+
     // Show the connection dialog again so user can fix credentials
-    TupConnectDialog *netDialog = new TupConnectDialog(this);
-    netDialog->show();
-
-    netDialog->move(static_cast<int> ((screenWidth - netDialog->width()) / 2),
-                    static_cast<int> ((screenHeight - netDialog->height()) / 2));
-
-    TupNetProjectManagerParams *params = new TupNetProjectManagerParams();
-
-    if (netDialog->exec() == QDialog::Accepted) {
-        netUser = netDialog->login();        
-        params->setLogin(netUser);
-        params->setPassword(netDialog->password());
-        params->setServer(netDialog->server());
-        params->setPort(netDialog->port());
-        params->setWindowRecordID(netDialog->windowRecordID());
-
-        delete netDialog;
-        setupCollaborativeProject(params);
-    } else {
-        delete netDialog;
-    }
+    showCollaborativeConnectionDialog();
 }
 
 void TupMainWindow::netProjectSaved()
@@ -1998,7 +2017,7 @@ void TupMainWindow::handleChatTabChanged(int index)
 void TupMainWindow::updatePlayer(bool removeAction)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupMainWindow::updatePlayer()] - removeAction -> " << removeAction;
+        qDebug() << "[TupMainWindow::updatePlayer()] - removeAction ->" << removeAction;
     #endif
 
     if (!removeAction)
@@ -2010,7 +2029,7 @@ void TupMainWindow::updatePlayer()
     if (animationTab) {
         int sceneIndex = animationTab->currentSceneIndex();
         #ifdef TUP_DEBUG
-            qDebug() << "[TupMainWindow::updatePlayer()] - sceneIndex -> " << sceneIndex;
+            qDebug() << "[TupMainWindow::updatePlayer()] - sceneIndex ->" << sceneIndex;
         #endif
 
         cameraWidget->updateScenes(sceneIndex);
@@ -2067,7 +2086,7 @@ void TupMainWindow::saveDefaultPath(const QString &dir)
 void TupMainWindow::setUpdateFlag(bool update)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[TupMainWindow::setUpdateFlag()] - update -> " << update;
+        qDebug() << "[TupMainWindow::setUpdateFlag()] - update ->" << update;
     #endif
 
     TCONFIG->beginGroup("General");
@@ -2085,7 +2104,7 @@ void TupMainWindow::dragEnterEvent(QDragEnterEvent *e)
         e->acceptProposedAction();
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupMainWindow::dragEnterEvent()] - Warning: Mime data has no URL!";
+            qWarning() << "[TupMainWindow::dragEnterEvent()] - Warning: Mime data has no URL!";
         #endif
     }
 }
@@ -2096,8 +2115,8 @@ void TupMainWindow::dropEvent(QDropEvent *e)
     QString assetPath = list.at(0).toLocalFile();
 
     #ifdef TUP_DEBUG
-        qDebug() << "[TupMainWindow::dropEvent()] - Assets list size -> " << list.size();
-        qDebug() << "[TupMainWindow::dropEvent()] - Object dropped -> " << assetPath;
+        qDebug() << "[TupMainWindow::dropEvent()] - Assets list size ->" << list.size();
+        qDebug() << "[TupMainWindow::dropEvent()] - Object dropped ->" << assetPath;
     #endif
 
     if (!assetPath.isEmpty()) {

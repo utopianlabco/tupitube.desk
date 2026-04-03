@@ -37,6 +37,7 @@
 
 #include "tglobal.h"
 
+#include <QLabel>
 #include <QLineEdit>
 #include <QGridLayout>
 #include <QComboBox>
@@ -60,8 +61,8 @@ class TUPITUBE_EXPORT TupGeneralPreferences : public QWidget
         bool saveValues();
         bool showWarning();
 
-signals:
-    void requestCloseCollaborativeProject();
+    signals:
+        void requestCloseCollaborativeProject();
 
     private slots:
         void updateAppLang(int index);
@@ -89,7 +90,6 @@ signals:
 
         QTabWidget *tabWidget;
         QString cacheID;
-        QLineEdit *cacheString;
 
         QStringList interfaceOptions;
         QStringList confirmation;
@@ -109,24 +109,30 @@ signals:
 
         QString cachePath;
         QLineEdit *cacheLine;
+        QLineEdit *storageCacheEdit;
+        QLineEdit *storageCacheBackupEdit;
         bool langChanged;
-
+  
+        // Multiuse variables for social network and classroom settings
         QString username;
-        QString passwd;
-        QCheckBox *anonymousBox;
-        QLineEdit *usernameEdit;
-        QLineEdit *passwdEdit;
-        QLineEdit *emailEdit;
-        QPushButton *registerButton;
-
-        QNetworkAccessManager *manager;
+        QString password;
 
         // Classroom settings
-        QLineEdit *serverEdit;
-        QSpinBox *portSpin;
-        QLineEdit *classUsernameEdit;
-        QLineEdit *classPasswordEdit;
-        QCheckBox *storePasswordCheck;
+        QLineEdit *classroomServerEdit;
+        QSpinBox *classroomPortSpin;
+        QLineEdit *classroomUsernameEdit;                
+        QLabel *classroomPasswordMismatchLabel;
+
+        // Social Network settings
+        QCheckBox *socialNetAnonymousCheckbox;
+        QLineEdit *socialNetUsernameEdit;
+        QLineEdit *socialNetPasswordEdit;
+        QLineEdit *socialNetConfirmPasswordEdit;
+        QLabel *socialNetPasswordMismatchLabel;
+        QLineEdit *socialNetEmailEdit;
+        QPushButton *socialNetRegisterButton;
+
+        QNetworkAccessManager *netAccessManager;
 };
 
 #endif

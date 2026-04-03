@@ -42,6 +42,7 @@
 #include <QFileInfo>
 #include <QObject>
 #include <QSize>
+#include <QPointer>
 
 class TupProject;
 class TupProjectRequest;
@@ -118,7 +119,7 @@ class TUPITUBE_EXPORT TupProjectManager : public QObject
 
         TupProject *project;
         QUndoStack *undoStack;
-        TupAbstractProjectHandler *handler;
+        QPointer<TupAbstractProjectHandler> handler; 
         TupProjectManagerParams *params;
         TupCommandExecutor *commandExecutor;
 };

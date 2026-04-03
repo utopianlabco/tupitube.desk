@@ -79,12 +79,6 @@
 
 class TupNetSocket;
 
-/*
-class TupChat;
-class TupProjectCommand;
-class TupNetProjectManagerParams;
-*/
-
 class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHandler
 {
     Q_OBJECT
@@ -154,7 +148,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
 
         bool projectIsOpen;
         bool dialogIsOpen;
-        TupProjectListDialog *dialog;
+        TupProjectListDialog *dialog;        
 };
 
 #endif

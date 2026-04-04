@@ -248,7 +248,7 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
         QMessageBox msgBox;
         msgBox.setWindowTitle(tr("Fatal Error"));
         msgBox.setIcon(QMessageBox::Critical);
-        msgBox.setText(tr("User \"%1\" is disabled.\nPlease, contact the animation server admin to get access.").arg(params->login()));
+        msgBox.setText(tr("User \"%1\" is disabled.\nPlease, contact the TupiTube server admin to get access.").arg(params->login()));
         msgBox.exec();
     } else if (root == "project_request") {
                TupRequestParser parser;

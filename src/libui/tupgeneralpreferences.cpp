@@ -52,6 +52,7 @@ TupGeneralPreferences::TupGeneralPreferences()
 
     tabWidget = new QTabWidget;
     tabWidget->addTab(generalTab(), tr("General"));
+    setCachePatterns();
     tabWidget->addTab(cacheTab(), tr("Cache"));
     tabWidget->addTab(classroomTab(), tr("Classroom"));
     tabWidget->addTab(socialTab(), tr("Social Network"));
@@ -252,10 +253,26 @@ QWidget * TupGeneralPreferences::classroomTab()
     QString password = TCONFIG->value("Password", "").toString();
 
     storageCacheEdit = new QLineEdit;
-    storageCacheEdit->setEchoMode(QLineEdit::Password);
+    storageCacheEdit->setEchoMode(cacheMode);
+    storageCacheEdit->setPlaceholderText(patternText1);
 
     storageCacheBackupEdit = new QLineEdit;
-    storageCacheBackupEdit->setEchoMode(QLineEdit::Password);
+    storageCacheBackupEdit->setEchoMode(cacheMode);
+    storageCacheBackupEdit->setPlaceholderText(patternText2);
+
+    storageCacheMismatchLabel = new QLabel(patternText3);
+    QPalette palette = storageCacheMismatchLabel->palette();
+    palette.setColor(QPalette::WindowText, Qt::red);
+    storageCacheMismatchLabel->setPalette(palette);
+    storageCacheMismatchLabel->setVisible(false);
+
+    auto compareCacheValues = [this]() {
+        bool mismatch = storageCacheEdit->text() != storageCacheBackupEdit->text();
+        bool show = !storageCacheEdit->text().isEmpty() || !storageCacheBackupEdit->text().isEmpty();
+        storageCacheMismatchLabel->setVisible(mismatch && show);
+    };
+    connect(storageCacheEdit, &QLineEdit::textChanged, this, compareCacheValues);
+    connect(storageCacheBackupEdit, &QLineEdit::textChanged, this, compareCacheValues);
 
     QLabel *classroomLabel = new QLabel(tr("Collaborative Credentials"));
     QFont font = this->font();
@@ -279,35 +296,16 @@ QWidget * TupGeneralPreferences::classroomTab()
     QLabel *passwordLabel = new QLabel(tr("Password:"));
     QLabel *confirmPasswordLabel = new QLabel(tr("Confirm Password:"));
 
-    // Add password mismatch label (hidden by default)
-    classroomPasswordMismatchLabel = new QLabel(tr("Passwords do not match"));
-    QPalette palette = classroomPasswordMismatchLabel->palette();
-    palette.setColor(QPalette::WindowText, Qt::red);
-    classroomPasswordMismatchLabel->setPalette(palette);
-    classroomPasswordMismatchLabel->setVisible(false);
-
-    // Connect both password fields to check for match
-    auto compareCacheValues = [this]() {
-        bool mismatch = storageCacheEdit->text() != storageCacheBackupEdit->text();
-        bool show = !storageCacheEdit->text().isEmpty() || !storageCacheBackupEdit->text().isEmpty();
-        classroomPasswordMismatchLabel->setVisible(mismatch && show);
-    };
-    connect(storageCacheEdit, &QLineEdit::textChanged, this, compareCacheValues);
-    connect(storageCacheBackupEdit, &QLineEdit::textChanged, this, compareCacheValues);
-
     QFormLayout *form = new QFormLayout;
     form->addRow(serverLabel, classroomServerEdit);
     form->addRow(portLabel, classroomPortSpin);
     form->addRow(usernameLabel, classroomUsernameEdit);
     form->addRow(passwordLabel, storageCacheEdit);
     form->addRow(confirmPasswordLabel, storageCacheBackupEdit);
-    form->addRow(new QLabel(""), classroomPasswordMismatchLabel); // empty label for alignment
+    form->addRow(new QLabel(""), storageCacheMismatchLabel); // empty label for alignment
 
-    // Add Reset Credentials button for Classroom tab, aligned with form
     QPushButton *resetClassroomButton = new QPushButton(tr("Reset Credentials"));
     connect(resetClassroomButton, SIGNAL(clicked()), this, SLOT(resetClassroomCredentials()));
-    // Left-align the button in the form row
-    // Align button to the label column (left, like labels)
     QWidget *buttonContainer = new QWidget;
     QHBoxLayout *buttonLayout = new QHBoxLayout(buttonContainer);
     buttonLayout->addWidget(resetClassroomButton, 0, Qt::AlignLeft);
@@ -330,6 +328,28 @@ QWidget * TupGeneralPreferences::socialTab()
     QWidget *widget = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout(widget);
 
+    storageLevelIDEdit = new QLineEdit();
+    storageLevelIDEdit->setEchoMode(cacheMode);
+    storageLevelIDEdit->setPlaceholderText(patternText1);
+
+    storageLevelIDBackupEdit = new QLineEdit();
+    storageLevelIDBackupEdit->setEchoMode(cacheMode);
+    storageLevelIDBackupEdit->setPlaceholderText(patternText2);
+
+    storageLevelIDMismatchLabel = new QLabel(patternText3);
+    QPalette palette = storageLevelIDMismatchLabel->palette();
+    palette.setColor(QPalette::WindowText, Qt::red);
+    storageLevelIDMismatchLabel->setPalette(palette);
+    storageLevelIDMismatchLabel->setVisible(false);
+
+    auto compareCacheValuesSocial = [this]() {
+        bool mismatch = storageLevelIDEdit->text() != storageLevelIDBackupEdit->text();
+        bool show = !storageLevelIDEdit->text().isEmpty() || !storageLevelIDBackupEdit->text().isEmpty();
+        storageLevelIDMismatchLabel->setVisible(mismatch && show);
+    };
+    connect(storageLevelIDEdit, &QLineEdit::textChanged, this, compareCacheValuesSocial);
+    connect(storageLevelIDBackupEdit, &QLineEdit::textChanged, this, compareCacheValuesSocial);
+
     TCONFIG->beginGroup("Website");
     username = TCONFIG->value("Username").toString();
     password = TCONFIG->value("Password").toString();
@@ -344,41 +364,17 @@ QWidget * TupGeneralPreferences::socialTab()
 
     QLabel *usernameLabel = new QLabel(tr("Username / Email:"));
     socialNetUsernameEdit = new QLineEdit();
-
     QLabel *passwdLabel = new QLabel(tr("Password:"));
-    socialNetPasswordEdit = new QLineEdit();
-    socialNetPasswordEdit->setEchoMode(QLineEdit::Password);
-
     QLabel *confirmPasswordLabel = new QLabel(tr("Confirm Password:"));
-    socialNetConfirmPasswordEdit = new QLineEdit();
-    socialNetConfirmPasswordEdit->setEchoMode(QLineEdit::Password);
-
-    // Add password mismatch label (hidden by default)
-    socialNetPasswordMismatchLabel = new QLabel(tr("Passwords do not match"));
-    QPalette palette = socialNetPasswordMismatchLabel->palette();
-    palette.setColor(QPalette::WindowText, Qt::red);
-    socialNetPasswordMismatchLabel->setPalette(palette);
-    socialNetPasswordMismatchLabel->setVisible(false);
-
-    // Connect both password fields to check for match
-    auto compareCacheValuesSocial = [this]() {
-        bool mismatch = socialNetPasswordEdit->text() != socialNetConfirmPasswordEdit->text();
-        bool show = !socialNetPasswordEdit->text().isEmpty() || !socialNetConfirmPasswordEdit->text().isEmpty();
-        socialNetPasswordMismatchLabel->setVisible(mismatch && show);
-    };
-    connect(socialNetPasswordEdit, &QLineEdit::textChanged, this, compareCacheValuesSocial);
-    connect(socialNetConfirmPasswordEdit, &QLineEdit::textChanged, this, compareCacheValuesSocial);
 
     socialNetUsernameEdit->setText(username);
 
-    // Use QFormLayout for Username/Password fields (like Classroom tab)
     QFormLayout *form = new QFormLayout;
     form->addRow(usernameLabel, socialNetUsernameEdit);
-    form->addRow(passwdLabel, socialNetPasswordEdit);
-    form->addRow(confirmPasswordLabel, socialNetConfirmPasswordEdit);
-    form->addRow(new QLabel(""), socialNetPasswordMismatchLabel); // empty label for alignment
+    form->addRow(passwdLabel, storageLevelIDEdit);
+    form->addRow(confirmPasswordLabel, storageLevelIDBackupEdit);
+    form->addRow(new QLabel(""), storageLevelIDMismatchLabel); // empty label for alignment
 
-    // Add Reset Credentials button for Social tab
     QPushButton *resetSocialButton = new QPushButton(tr("Reset Credentials"));
     connect(resetSocialButton, SIGNAL(clicked()), this, SLOT(resetSocialCredentials()));
     QWidget *resetSocialWidget = new QWidget;
@@ -386,7 +382,6 @@ QWidget * TupGeneralPreferences::socialTab()
     resetSocialLayout->addWidget(resetSocialButton);
     resetSocialLayout->addStretch();
 
-    // Align Reset Credentials button in the form (left-aligned, normal size)
     QWidget *buttonContainer = new QWidget;
     QHBoxLayout *buttonLayout = new QHBoxLayout(buttonContainer);
     buttonLayout->addWidget(resetSocialButton, 0, Qt::AlignLeft);
@@ -394,7 +389,7 @@ QWidget * TupGeneralPreferences::socialTab()
     buttonLayout->setContentsMargins(0, 0, 0, 0);
     buttonLayout->setSpacing(0);
     buttonContainer->setLayout(buttonLayout);
-    // Reduce vertical space above the button
+
     form->addRow(buttonContainer, new QLabel(""));
     socialNetAnonymousCheckbox = new QCheckBox(tr("Enable anonymous mode"));
     socialNetAnonymousCheckbox->setChecked(socialNetAnonymous);
@@ -420,7 +415,6 @@ QWidget * TupGeneralPreferences::socialTab()
     socialNetRegisterButton = new QPushButton(tr("Register"));
     connect(socialNetRegisterButton, SIGNAL(clicked()), this, SLOT(sendRegisterRequest()));
 
-    // Align Register button in the form (left-aligned, label column)
     QWidget *registerWidget = new QWidget;
     QHBoxLayout *registerLayout = new QHBoxLayout(registerWidget);
     registerLayout->addWidget(socialNetRegisterButton, 0, Qt::AlignLeft);
@@ -437,7 +431,7 @@ QWidget * TupGeneralPreferences::socialTab()
     layout->addWidget(new TSeparator);
     layout->addWidget(registerLabel);
     layout->addLayout(emailLayout);
-    // Add Register button aligned to label column
+
     QFormLayout *registerForm = new QFormLayout;
     registerForm->addRow(registerWidget, new QLabel(""));
     layout->addLayout(registerForm);
@@ -446,12 +440,11 @@ QWidget * TupGeneralPreferences::socialTab()
     return widget;
 }
 
-// --- Reset Credentials slots ---
 void TupGeneralPreferences::resetSocialCredentials()
 {
     socialNetUsernameEdit->clear();
-    socialNetPasswordEdit->clear();
-    socialNetConfirmPasswordEdit->clear();
+    storageLevelIDEdit->clear();
+    storageLevelIDBackupEdit->clear();
 
     TCONFIG->beginGroup("Website");
     TCONFIG->setValue("Username", "");
@@ -475,7 +468,6 @@ void TupGeneralPreferences::resetClassroomCredentials()
 
     TAlgorithm::resetCacheRecord();
 
-    // Request to close collaborative project if open
     emit requestCloseCollaborativeProject();
 }
 
@@ -515,14 +507,14 @@ void TupGeneralPreferences::sendRegisterRequest()
             connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)));
         } else {
             #ifdef TUP_DEBUG
-                qDebug() << "TupGeneralPreferences::sendRequest() - Error: Invalid email syntax! -> " << email;
+                qDebug() << "[TupGeneralPreferences::sendRegisterRequest()] - Error: Invalid email syntax! -> " << email;
             #endif
             socialNetEmailEdit->setText(" " + tr("Email is invalid. Please, fix it!"));
             QTimer::singleShot(2000, this, SLOT(cleanMessage()));
         }
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "TupGeneralPreferences::sendRequest() - Invalid email: field is empty!";
+            qDebug() << "[TupGeneralPreferences::sendRegisterRequest()] - Invalid email: field is empty!";
         #endif
         socialNetEmailEdit->setText(" " + tr("Email field is empty. Type one!"));
         QTimer::singleShot(2000, this, SLOT(cleanMessage()));
@@ -540,19 +532,19 @@ void TupGeneralPreferences::registerAnswer(QNetworkReply *reply)
     if (!answer.isEmpty()) {
         if (answer.compare("FALSE") == 0) {
             #ifdef TUP_DEBUG
-                qDebug() << "TupGeneralPreferences::registerAnswer() - Error: e-mail already registered! :(";
+                qDebug() << "[TupGeneralPreferences::registerAnswer()] - Error: e-mail already registered! :(";
             #endif
             socialNetEmailEdit->setText(" " + tr("Error: Email already registered!"));
             QTimer::singleShot(2000, this, SLOT(cleanMessage()));
         } else {
             #ifdef TUP_DEBUG
-                qDebug() << "TupGeneralPreferences::registerAnswer() - URL: " << answer;
+                qDebug() << "[TupGeneralPreferences::registerAnswer()] - URL: " << answer;
             #endif
             if (answer.startsWith("http")) {
                 QDesktopServices::openUrl(answer);
             } else {
                 #ifdef TUP_DEBUG
-                    qDebug() << "TupGeneralPreferences::registerAnswer() - Error: Invalid register URL! :(";
+                    qDebug() << "[TupGeneralPreferences::registerAnswer()] - Error: Invalid register URL! :(";
                 #endif
                 socialNetEmailEdit->setText(" " + tr("Please contact us at info@tupitube.com"));
                 QTimer::singleShot(3000, this, SLOT(cleanMessage()));
@@ -560,7 +552,7 @@ void TupGeneralPreferences::registerAnswer(QNetworkReply *reply)
         }
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "TupGeneralPreferences::registerAnswer() - Error: No data from server! :(";
+            qDebug() << "[TupGeneralPreferences::registerAnswer()] - Error: No data from server! :(";
         #endif
         socialNetEmailEdit->setText(" " + tr("Please contact us at info@tupitube.com"));
         QTimer::singleShot(3000, this, SLOT(cleanMessage()));
@@ -577,28 +569,28 @@ void TupGeneralPreferences::slotError(QNetworkReply::NetworkError error)
         case QNetworkReply::HostNotFoundError:
              {
              #ifdef TUP_DEBUG
-                 qDebug() << "TupGeneralPreferences::slotError() - Network Error: Host not found";
+                 qDebug() << "[TupGeneralPreferences::slotError()] - Network Error: Host not found";
              #endif
              }
         break;
         case QNetworkReply::TimeoutError:
              {
              #ifdef TUP_DEBUG
-                 qDebug() << "TupGeneralPreferences::slotError() - Network Error: Time out!";
+                 qDebug() << "[TupGeneralPreferences::slotError()] - Network Error: Time out!";
              #endif
              }
         break;
         case QNetworkReply::ConnectionRefusedError:
              {
              #ifdef TUP_DEBUG
-                 qDebug() << "TupGeneralPreferences::slotError() - Network Error: Connection Refused!";
+                 qDebug() << "[TupGeneralPreferences::slotError()] - Network Error: Connection Refused!";
              #endif
              }
         break;
         case QNetworkReply::ContentNotFoundError:
              {
              #ifdef TUP_DEBUG
-                 qDebug() << "TupGeneralPreferences::slotError() - Network Error: Content not found!";
+                 qDebug() << "[TupGeneralPreferences::slotError()] - Network Error: Content not found!";
              #endif
              }
         break;
@@ -606,7 +598,7 @@ void TupGeneralPreferences::slotError(QNetworkReply::NetworkError error)
         default:
              {
              #ifdef TUP_DEBUG
-                 qDebug() << "TupGeneralPreferences::slotError() - Network Error: Unknown Network error!";
+                 qDebug() << "[TupGeneralPreferences::slotError()] - Network Error: Unknown Network error!";
              #endif
              }
         break;
@@ -640,8 +632,6 @@ bool TupGeneralPreferences::saveValues()
 
     TCONFIG->beginGroup("General");
 
-    // General Preferences
-
     int total = interfaceOptions.count();
     for (int i=0; i<total; i++)
          TCONFIG->setValue(interfaceOptions.at(i), interfaceList.at(i)->isChecked());
@@ -657,7 +647,7 @@ bool TupGeneralPreferences::saveValues()
     TCONFIG->setValue("AutoSaveTime", saveCombo->currentText());
 
     bool changed = false;
-    QString data = socialNetPasswordEdit->text();
+    QString data = storageLevelIDEdit->text();
     if (!data.isEmpty()) {
         if (TAlgorithm::cacheIDChanged(data)) {
             changed = true;
@@ -683,7 +673,6 @@ bool TupGeneralPreferences::saveValues()
         }
     }
 
-    // Social Network Credentials
     TCONFIG->beginGroup("Website");
     QString login = socialNetUsernameEdit->text();
     if (!login.isEmpty()) {
@@ -707,7 +696,6 @@ bool TupGeneralPreferences::saveValues()
     for (int i=0; i<total; i++)
          TCONFIG->setValue(player.at(i), playerList.at(i)->isChecked());
 
-    // Classroom Credentials
     QString recordId = storageCacheEdit->text();
     TCONFIG->beginGroup("CollabServer");
     TCONFIG->setValue("Server", classroomServerEdit->text());
@@ -772,4 +760,12 @@ void TupGeneralPreferences::updateTimeFlag(int status)
         flag = true;
 
     saveCombo->setEnabled(flag);
+}
+
+void TupGeneralPreferences::setCachePatterns()
+{
+    patternText1 = tr("Leave empty to keep current");
+    patternText2 = tr("Confirm new password");
+    patternText3 = tr("Passwords do not match");
+    cacheMode = QLineEdit::Password;
 }

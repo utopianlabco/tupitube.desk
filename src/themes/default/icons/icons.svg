@@ -2961,14 +2961,14 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="4.3866512"
-     inkscape:cx="370.55602"
-     inkscape:cy="1602.7032"
+     inkscape:zoom="0.7754577"
+     inkscape:cx="658.32088"
+     inkscape:cy="619.63405"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1920"
-     inkscape:window-height="1017"
+     inkscape:window-height="1005"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -6360,7 +6360,10 @@
     </g>
     <g
        id="g9305"
-       transform="translate(327.76828,-752.08543)">
+       transform="translate(327.76828,-752.08543)"
+       inkscape:export-filename="/home/xtingray/tupitube/sources/tupitube.desk/src/themes/default/icons/app.png"
+       inkscape:export-xdpi="207.55"
+       inkscape:export-ydpi="207.55">
       <g
          id="g9300">
         <g

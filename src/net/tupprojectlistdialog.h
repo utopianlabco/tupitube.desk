@@ -76,6 +76,7 @@ class TUPITUBE_EXPORT TupProjectListDialog : public QDialog
 
         QTreeWidget *works;
         QTreeWidget *contributions;
+        QPushButton *okButton; // Store OK button for enabling/disabling
         QList<QString> workList;
         QList<QString> contribList;
         QList<QString> authors;

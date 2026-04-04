@@ -42,6 +42,8 @@ TupExportWidget::TupExportWidget(TupProject *work, QWidget *parent, ExportType t
         qDebug() << "[TupExportWidget()]";
     #endif
 
+    Q_UNUSED(password)
+
     project = work;
     exportFlag = type;
 

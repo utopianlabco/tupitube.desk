@@ -77,6 +77,12 @@ class TUPITUBE_EXPORT TupGeneralPreferences : public QWidget
         void resetClassroomCredentials();
 
     private:
+        QString patternText1;
+        QString patternText2;
+        QString patternText3;
+        QLineEdit::EchoMode cacheMode;
+        void setCachePatterns();
+
         int getLangIndex();
         bool getAutoSaveFlag();
         int getAutoSaveTime();
@@ -90,6 +96,14 @@ class TUPITUBE_EXPORT TupGeneralPreferences : public QWidget
 
         QTabWidget *tabWidget;
         QString cacheID;
+        QString cachePath;
+        QLineEdit *cacheLine;
+        QLineEdit *storageCacheEdit;
+        QLineEdit *storageCacheBackupEdit;
+        QLabel *storageCacheMismatchLabel;
+        QLineEdit *storageLevelIDEdit;
+        QLineEdit *storageLevelIDBackupEdit;
+        QLabel *storageLevelIDMismatchLabel;
 
         QStringList interfaceOptions;
         QStringList confirmation;
@@ -107,10 +121,6 @@ class TUPITUBE_EXPORT TupGeneralPreferences : public QWidget
         QList<QCheckBox *> confirmList;
         QList<QCheckBox *> playerList;
 
-        QString cachePath;
-        QLineEdit *cacheLine;
-        QLineEdit *storageCacheEdit;
-        QLineEdit *storageCacheBackupEdit;
         bool langChanged;
   
         // Multiuse variables for social network and classroom settings
@@ -121,14 +131,10 @@ class TUPITUBE_EXPORT TupGeneralPreferences : public QWidget
         QLineEdit *classroomServerEdit;
         QSpinBox *classroomPortSpin;
         QLineEdit *classroomUsernameEdit;                
-        QLabel *classroomPasswordMismatchLabel;
 
         // Social Network settings
         QCheckBox *socialNetAnonymousCheckbox;
         QLineEdit *socialNetUsernameEdit;
-        QLineEdit *socialNetPasswordEdit;
-        QLineEdit *socialNetConfirmPasswordEdit;
-        QLabel *socialNetPasswordMismatchLabel;
         QLineEdit *socialNetEmailEdit;
         QPushButton *socialNetRegisterButton;
 

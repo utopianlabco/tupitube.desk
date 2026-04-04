@@ -109,12 +109,13 @@ TupProjectListDialog::TupProjectListDialog(int projects, int collabs, const QStr
     cancelButton->setMinimumWidth(60);
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 
-    QPushButton *okButton = new QPushButton;
+    okButton = new QPushButton;
     okButton->setIcon(QIcon(THEME_DIR + "icons/apply.png"));
     okButton->setToolTip(tr("OK"));
     okButton->setMinimumWidth(60);
     okButton->setDefault(true);
     connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
+    okButton->setEnabled(false); // Initially disabled
 
     buttons->addWidget(cancelButton);
     buttons->addWidget(okButton);
@@ -207,8 +208,13 @@ void TupProjectListDialog::updateWorkTree()
         if (contribList.size() > 0)
             contributions->clearSelection();
         int index = works->currentIndex().row();
-        filename = workList.at(index);
-        isMine = true;
+        if (index >= 0 && index < workList.size()) {
+            filename = workList.at(index);
+            isMine = true;
+            okButton->setEnabled(true);
+        } else {
+            okButton->setEnabled(false);
+        }
     }
 }
 
@@ -218,9 +224,14 @@ void TupProjectListDialog::updateContribTree()
         if (workList.size() > 0)
             works->clearSelection();
         int index = contributions->currentIndex().row();
-        isMine = false;
-        filename = contribList.at(index);
-        user = authors.at(index);
+        if (index >= 0 && index < contribList.size()) {
+            isMine = false;
+            filename = contribList.at(index);
+            user = authors.at(index);
+            okButton->setEnabled(true);
+        } else {
+            okButton->setEnabled(false);
+        }
     }
 }
 

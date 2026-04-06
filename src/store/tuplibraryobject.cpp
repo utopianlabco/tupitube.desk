@@ -968,11 +968,13 @@ TupLibraryObject * TupLibraryObject::clone()
     copy->setDataPath(getDataPath());
     copy->setData(getData());
 
-    SoundType soundType = soundObject->getSoundType();
-    if (soundType == Effect) {
-        copy->setSoundType(soundType);
-        copy->enableMute(isMuted());
-        copy->setAudioScenes(getAudioScenes());
+    if (getObjectType() == TupLibraryObject::Audio && soundObject) {
+        SoundType soundType = soundObject->getSoundType();
+        if (soundType == Effect) {
+            copy->setSoundType(soundType);
+            copy->enableMute(isMuted());
+            copy->setAudioScenes(getAudioScenes());
+        }
     }
 
     return copy;

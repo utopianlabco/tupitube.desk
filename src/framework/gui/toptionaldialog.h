@@ -51,8 +51,8 @@ class T_GUI_EXPORT TOptionalDialog : public QDialog
     public:
         enum Result {Accepted = 0, Cancelled, Discarded};
         TOptionalDialog(const QString &text, const QString &title = QString(),
-                        bool showAgainBox = true, bool showDiscardButton = false,
-                        bool showPolicyButton = true, QWidget *parent = nullptr);
+                bool showAgainBox = true, bool showDiscardButton = false,
+                bool showPolicyButton = false, QWidget *parent = nullptr);
         ~TOptionalDialog();
 
         bool shownAgain();

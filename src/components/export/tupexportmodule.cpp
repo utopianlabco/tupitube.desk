@@ -429,14 +429,14 @@ void TupExportModule::exportIt()
     if (outputFormat == ImagesArray) {
         QFileInfo dir(path);
         if (!dir.isReadable() || !dir.isWritable()) {
-            TOsd::self()->display(TOsd::Error, tr("Insufficient permissions. Please, choose another directory."));
+            TOsd::self()->display(TOsd::Error, tr("Insufficient permissions. Please, choose another directory"));
             return;
         }
     } else {
         QFile file(filename);
         if (!file.open(QIODevice::ReadWrite)) {
             file.remove();
-            TOsd::self()->display(TOsd::Error, tr("Insufficient permissions. Please, choose another path."));
+            TOsd::self()->display(TOsd::Error, tr("Insufficient permissions. Please, choose another path"));
             return;
         }
         file.remove();
@@ -487,7 +487,7 @@ void TupExportModule::exportIt()
                                       m_project);
         }
     } else {
-        TOsd::self()->display(TOsd::Error, tr("Format problem. TupiTube Internal error."));
+        TOsd::self()->display(TOsd::Error, tr("Format problem. TupiTube internal error"));
     }
 
     QApplication::restoreOverrideCursor();

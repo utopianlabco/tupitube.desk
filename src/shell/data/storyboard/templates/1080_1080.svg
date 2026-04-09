@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="1080" height="1080" viewBox="0 0 1080 1080" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <!-- Visual Area -->
+  <rect x="60" y="40" width="960" height="740" style="fill:none;stroke:#000000;stroke-width:2" />
+  <text x="540" y="410" style="font-family:sans-serif;font-size:30px;text-anchor:middle;fill:#cccccc">Visual Area</text>
+  
+  <!-- Table Container -->
+  <rect x="60" y="840" width="960" height="200" style="fill:none;stroke:#000000;stroke-width:2" />
+  
+  <!-- Grid Lines -->
+  <path d="M 60,910 L 1020,910" style="fill:none;stroke:#000000;stroke-width:2" />
+  <path d="M 780,840 L 780,910" style="fill:none;stroke:#000000;stroke-width:2" />
+  
+  <!-- Metadata Text -->
+  <text x="80" y="885" style="font-family:sans-serif;font-weight:bold;font-size:24px;fill:#000000">Scene Title:</text>
+  <text x="800" y="885" style="font-family:sans-serif;font-weight:bold;font-size:24px;fill:#000000">Duration:</text>
+  <text x="80" y="955" style="font-family:sans-serif;font-weight:bold;font-size:24px;fill:#000000">Description:</text>
+</svg>
+

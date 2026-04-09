@@ -19,6 +19,42 @@
         <source>Paint Bucket</source>
         <translation>油漆桶</translation>
     </message>
+    <message>
+        <source>Fill removed</source>
+        <translation>填充物已移除</translation>
+    </message>
+    <message>
+        <source>Fill cleared</source>
+        <translation>填充已清除</translation>
+    </message>
+    <message>
+        <source>No fill item found to remove</source>
+        <translation>未找到要移除的填充物</translation>
+    </message>
+    <message>
+        <source>Click position is outside the canvas</source>
+        <translation>点击位置在画布之外。</translation>
+    </message>
+    <message>
+        <source>Click inside an enclosed area, not on a line</source>
+        <translation>点击封闭区域内部，不要点击线条。</translation>
+    </message>
+    <message>
+        <source>Region is not enclosed - lines must form a closed shape</source>
+        <translation>该区域未封闭——线条必须构成闭合形状</translation>
+    </message>
+    <message>
+        <source>No fillable region found</source>
+        <translation>未找到可填充区域</translation>
+    </message>
+    <message>
+        <source>Could not create fill path</source>
+        <translation>无法创建填充路径</translation>
+    </message>
+    <message>
+        <source>Region filled successfully</source>
+        <translation>区域已成功填充</translation>
+    </message>
 </context>
 <context>
     <name>ButtonsPanel</name>
@@ -915,7 +951,7 @@
         <translation>使用Muvizu.cn创建的动画</translation>
     </message>
     <message>
-        <source>Wall from</source>
+        <source>Message from</source>
         <translation>来自</translation>
     </message>
 </context>
@@ -1753,6 +1789,13 @@
     </message>
 </context>
 <context>
+    <name>TWaveformWidget</name>
+    <message>
+        <source>No audio loaded</source>
+        <translation>未加载音频</translation>
+    </message>
+</context>
+<context>
     <name>TXYSpinBox</name>
     <message>
         <source>Rectangle Dimension</source>
@@ -2200,6 +2243,10 @@
         <source>Play All</source>
         <translation>播放所有场景</translation>
     </message>
+    <message>
+        <source>Volume</source>
+        <translation>体积</translation>
+    </message>
 </context>
 <context>
     <name>TupCameraWidget</name>
@@ -2366,6 +2413,13 @@
     </message>
 </context>
 <context>
+    <name>TupCollaboratorsList</name>
+    <message>
+        <source>Team</source>
+        <translation>团队</translation>
+    </message>
+</context>
+<context>
     <name>TupColorButtonPanel</name>
     <message>
         <source>Red</source>
@@ -2468,10 +2522,6 @@
 <context>
     <name>TupConnectDialog</name>
     <message>
-        <source>Connection Parameters</source>
-        <translation>连接参数</translation>
-    </message>
-    <message>
         <source>Store password</source>
         <translation>储存密码</translation>
     </message>
@@ -2502,6 +2552,22 @@
     <message>
         <source>Please, fill in your password</source>
         <translation>请填写您的密码</translation>
+    </message>
+    <message>
+        <source>Connection Settings</source>
+        <translation>连接设置</translation>
+    </message>
+    <message>
+        <source>Accept</source>
+        <translation>接受</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <source>Please, fill in the server address</source>
+        <translation>请填写服务器地址</translation>
     </message>
 </context>
 <context>
@@ -2752,10 +2818,6 @@
         <translation>视频输出为</translation>
     </message>
     <message>
-        <source>Format problem. TupiTube Internal error.</source>
-        <translation>格式问题。绘幻想内部错误。</translation>
-    </message>
-    <message>
         <source>Fatal Error: Can&apos;t export video</source>
         <translation>致命错误：无法导出视频</translation>
     </message>
@@ -2808,16 +2870,8 @@
         <translation>图像名称前缀:</translation>
     </message>
     <message>
-        <source>Insufficient permissions. Please, choose another directory.</source>
-        <translation>权限不足。请选择其他目录。</translation>
-    </message>
-    <message>
         <source>Enable Background Transparency</source>
         <translation>启用背景透明度</translation>
-    </message>
-    <message>
-        <source>Insufficient permissions. Please, choose another path.</source>
-        <translation>权限不足。请选择其他路径.</translation>
     </message>
     <message>
         <source>Animation path is unset! Please, choose one.</source>
@@ -2856,6 +2910,18 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Target folder already contains images. Continue?</source>
         <translation>目标文件夹已包含图像。是否继续？</translation>
+    </message>
+    <message>
+        <source>Insufficient permissions. Please, choose another directory</source>
+        <translation>权限不足。请选择其他目录。</translation>
+    </message>
+    <message>
+        <source>Insufficient permissions. Please, choose another path</source>
+        <translation>权限不足。请选择其他路径。</translation>
+    </message>
+    <message>
+        <source>Format problem. TupiTube internal error</source>
+        <translation>格式问题。TupiTube 内部错误</translation>
     </message>
 </context>
 <context>
@@ -2933,6 +2999,10 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Current Layer Opacity</source>
         <translation>当前图层不透明度</translation>
+    </message>
+    <message>
+        <source>Audio Scrubbing</source>
+        <translation>音频擦洗</translation>
     </message>
 </context>
 <context>
@@ -3060,6 +3130,14 @@ until reaches at least 3 seconds.</source>
         <source>Can&apos;t read scene config file!</source>
         <translation>无法读取场景配置文件！</translation>
     </message>
+    <message>
+        <source>Can&apos;t find library file!</source>
+        <translation>找不到库文件！</translation>
+    </message>
+    <message>
+        <source>Library file is corrupted!</source>
+        <translation>库文件已损坏！</translation>
+    </message>
 </context>
 <context>
     <name>TupFrame</name>
@@ -3155,10 +3233,6 @@ until reaches at least 3 seconds.</source>
         <translation>绘幻想证书</translation>
     </message>
     <message>
-        <source>Password: </source>
-        <translation>密码: </translation>
-    </message>
-    <message>
         <source>Don&apos;t have a TupiTube account?</source>
         <translation>没有绘幻想帐户？</translation>
     </message>
@@ -3187,10 +3261,6 @@ until reaches at least 3 seconds.</source>
         <translation>请通过info@tupitube.com与我们联系。</translation>
     </message>
     <message>
-        <source>Username / Email: </source>
-        <translation>用户名 / 电子邮箱： </translation>
-    </message>
-    <message>
         <source>Enable anonymous mode</source>
         <translation>启用匿名模式</translation>
     </message>
@@ -3213,6 +3283,54 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Allow TupiTube to collect app usage statistics (Anonymous data)</source>
         <translation>允许 TupiTube 收集应用程序使用情况统计信息（匿名数据）</translation>
+    </message>
+    <message>
+        <source>Classroom</source>
+        <translation>课堂</translation>
+    </message>
+    <message>
+        <source>Collaborative Credentials</source>
+        <translation>协作证书</translation>
+    </message>
+    <message>
+        <source>Server Address:</source>
+        <translation>服务器地址：</translation>
+    </message>
+    <message>
+        <source>Port:</source>
+        <translation>端口：</translation>
+    </message>
+    <message>
+        <source>Username:</source>
+        <translation>用户名：</translation>
+    </message>
+    <message>
+        <source>Password:</source>
+        <translation>密码：</translation>
+    </message>
+    <message>
+        <source>Confirm Password:</source>
+        <translation>确认密码：</translation>
+    </message>
+    <message>
+        <source>Reset Credentials</source>
+        <translation>重置凭据</translation>
+    </message>
+    <message>
+        <source>Username / Email:</source>
+        <translation>用户名/邮箱：</translation>
+    </message>
+    <message>
+        <source>Leave empty to keep current</source>
+        <translation>留空以保持当前状态</translation>
+    </message>
+    <message>
+        <source>Confirm new password</source>
+        <translation>确认新密码</translation>
+    </message>
+    <message>
+        <source>Passwords do not match</source>
+        <translation>密码不匹配</translation>
     </message>
 </context>
 <context>
@@ -3591,10 +3709,6 @@ until reaches at least 3 seconds.</source>
         <translation>栅格对象</translation>
     </message>
     <message>
-        <source>Search for Assets</source>
-        <translation>搜索资产</translation>
-    </message>
-    <message>
         <source>Audio File</source>
         <translation>音频文件</translation>
     </message>
@@ -3652,41 +3766,6 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Voice 1</source>
         <translation>语音 1</translation>
-    </message>
-</context>
-<context>
-    <name>TupListProjectDialog</name>
-    <message>
-        <source>Projects List from Server</source>
-        <translation>服务器项目列表</translation>
-    </message>
-    <message>
-        <source>My works:</source>
-        <translation>我的作品：</translation>
-    </message>
-    <message>
-        <source>My contributions:</source>
-        <translation>我的贡献：</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>确定</translation>
-    </message>
-    <message>
-        <source>Name</source>
-        <translation>名字</translation>
-    </message>
-    <message>
-        <source>Description</source>
-        <translation>描述</translation>
-    </message>
-    <message>
-        <source>Date</source>
-        <translation>日期</translation>
-    </message>
-    <message>
-        <source>Author</source>
-        <translation>作者</translation>
     </message>
 </context>
 <context>
@@ -3898,10 +3977,6 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>New Project</source>
         <translation>新建项目</translation>
-    </message>
-    <message>
-        <source>Insufficient permissions. Please, pick another path.</source>
-        <translation>权限不足。请选择其他路径.</translation>
     </message>
     <message>
         <source>Open new project</source>
@@ -4203,6 +4278,14 @@ until reaches at least 3 seconds.</source>
         <source>Upload Project To Server...</source>
         <translation>上传项目到服务器...</translation>
     </message>
+    <message>
+        <source>Authentication failed! Please, try again.</source>
+        <translation>身份验证失败！请重试。</translation>
+    </message>
+    <message>
+        <source>Insufficient permissions. Please, pick another path</source>
+        <translation>权限不足。请选择其他路径。</translation>
+    </message>
 </context>
 <context>
     <name>TupMicManager</name>
@@ -4384,14 +4467,18 @@ until reaches at least 3 seconds.</source>
         <translation>致命错误</translation>
     </message>
     <message>
-        <source>User &quot;%1&quot; is disabled.
-Please, contact the animation server admin to get access.</source>
-        <translation>用户"%1"已被禁用。
-请联系动画服务器管理员以获取访问权限。</translation>
-    </message>
-    <message>
         <source>User has no available projects in the server</source>
         <translation>用户在服务器上没有可用的项目</translation>
+    </message>
+    <message>
+        <source>User &quot;%1&quot; is disabled.
+Please, contact the TupiTube server admin to get access.</source>
+        <translation>用户“%1”已被禁用。
+请联系 TupiTube 服务器管理员以获取访问权限。</translation>
+    </message>
+    <message>
+        <source>The project may be corrupt or incomplete.</source>
+        <translation>该项目可能存在问题或未完成。</translation>
     </message>
 </context>
 <context>
@@ -4580,10 +4667,6 @@ Please, contact the animation server admin to get access.</source>
         <translation>网络</translation>
     </message>
     <message>
-        <source>This feature allows you to work with other artists around the world on the same project in real time.</source>
-        <translation>此功能允许您与世界各地的其他艺术家实时共同创作同一项目。</translation>
-    </message>
-    <message>
         <source>Server:</source>
         <translation>服务器：</translation>
     </message>
@@ -4598,6 +4681,10 @@ Please, contact the animation server admin to get access.</source>
     <message>
         <source>Password:</source>
         <translation>密码：</translation>
+    </message>
+    <message>
+        <source>This feature allows you to work with other students in your class using the TupiTube server app.</source>
+        <translation>此功能允许您使用 TupiTube 服务器应用程序与班上的其他学生合作。</translation>
     </message>
 </context>
 <context>
@@ -5248,8 +5335,16 @@ Please, contact the animation server admin to get access.</source>
         <translation>偏好设置已成功保存</translation>
     </message>
     <message>
-        <source>Please restart TupiTube</source>
-        <translation>请重新启动绘幻想</translation>
+        <source>Preferences Saved</source>
+        <translation>已保存偏好设置</translation>
+    </message>
+    <message>
+        <source>Please restart TupiTube to apply the changes.</source>
+        <translation>请重启 TupiTube 以应用更改。</translation>
+    </message>
+    <message>
+        <source>OK</source>
+        <translation>确定</translation>
     </message>
 </context>
 <context>
@@ -5338,6 +5433,42 @@ Please, contact the animation server admin to get access.</source>
         <source>Duplicate scene</source>
         <translation>复制场景</translation>
     </message>
+    <message>
+        <source>Duplicate layer</source>
+        <translation>重复层</translation>
+    </message>
+    <message>
+        <source>Move layer left</source>
+        <translation>向左移动图层</translation>
+    </message>
+    <message>
+        <source>Move layer right</source>
+        <translation>向右移动图层</translation>
+    </message>
+    <message>
+        <source>Move layer up</source>
+        <translation>向上移动图层</translation>
+    </message>
+    <message>
+        <source>Move layer down</source>
+        <translation>向下移动图层</translation>
+    </message>
+    <message>
+        <source>Move scene up</source>
+        <translation>向上移动场景</translation>
+    </message>
+    <message>
+        <source>Move scene down</source>
+        <translation>将场景向下移动</translation>
+    </message>
+    <message>
+        <source>Move scene left</source>
+        <translation>将场景移至左侧</translation>
+    </message>
+    <message>
+        <source>Move scene right</source>
+        <translation>将场景移至右侧</translation>
+    </message>
 </context>
 <context>
     <name>TupProjectImporterDialog</name>
@@ -5363,6 +5494,45 @@ Please, contact the animation server admin to get access.</source>
     </message>
 </context>
 <context>
+    <name>TupProjectListDialog</name>
+    <message>
+        <source>Project List from Server</source>
+        <translation>服务器端项目列表</translation>
+    </message>
+    <message>
+        <source>My works:</source>
+        <translation>我的作品：</translation>
+    </message>
+    <message>
+        <source>My contributions:</source>
+        <translation>我的贡献：</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <source>OK</source>
+        <translation>确定</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation>名字</translation>
+    </message>
+    <message>
+        <source>Description</source>
+        <translation>描述</translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation>日期</translation>
+    </message>
+    <message>
+        <source>Author</source>
+        <translation>作者</translation>
+    </message>
+</context>
+<context>
     <name>TupProjectManager</name>
     <message>
         <source>Frame</source>
@@ -5375,6 +5545,10 @@ Please, contact the animation server admin to get access.</source>
     <message>
         <source>Scene %1</source>
         <translation>场景</translation>
+    </message>
+    <message>
+        <source>Project must be closed</source>
+        <translation>项目必须关闭</translation>
     </message>
 </context>
 <context>
@@ -5540,6 +5714,10 @@ Please, contact the animation server admin to get access.</source>
     <message>
         <source>Sound layer %1</source>
         <translation>音频图层</translation>
+    </message>
+    <message>
+        <source>(copy)</source>
+        <translation>（复制）</translation>
     </message>
 </context>
 <context>
@@ -5729,6 +5907,10 @@ Please, contact the animation server admin to get access.</source>
         <source>Sign Up</source>
         <translation>注册</translation>
     </message>
+    <message>
+        <source>Post as anonymous</source>
+        <translation>匿名发帖</translation>
+    </message>
 </context>
 <context>
     <name>TupSoundDialog</name>
@@ -5853,6 +6035,10 @@ Please, contact the animation server admin to get access.</source>
     <message>
         <source>Lipsync Audio</source>
         <translation>口型同步音频</translation>
+    </message>
+    <message>
+        <source>Volume</source>
+        <translation>体积</translation>
     </message>
 </context>
 <context>
@@ -6071,6 +6257,10 @@ Cover</source>
     <message>
         <source>Current Layer Opacity</source>
         <translation>当前图层不透明度</translation>
+    </message>
+    <message>
+        <source>Audio Scrubbing</source>
+        <translation>音频擦洗</translation>
     </message>
 </context>
 <context>

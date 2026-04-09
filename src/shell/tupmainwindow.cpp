@@ -1272,7 +1272,7 @@ bool TupMainWindow::saveAs()
         QFile file(directory.filePath(name));
         if (!file.open(QIODevice::ReadWrite)) {
             file.remove();
-            TOsd::self()->display(TOsd::Error, tr("Insufficient permissions. Please, pick another path."));
+            TOsd::self()->display(TOsd::Error, tr("Insufficient permissions. Please, pick another path"));
             return false;
         }
         file.remove();

@@ -186,10 +186,10 @@ TupLibraryWidget::TupLibraryWidget(QWidget *parent) : TupModuleWidgetBase(parent
     buttonLayout->setMargin(0);
     buttonLayout->setSpacing(0);
 
-    TImageButton *searchButton = new TImageButton(QPixmap(THEME_DIR + "icons/search.png"), 22, buttons);
-    connect(searchButton, SIGNAL(clicked()), this, SLOT(openSearchDialog()));
-    searchButton->setToolTip(tr("Search for Assets"));
-    buttonLayout->addWidget(searchButton);
+    // TImageButton *searchButton = new TImageButton(QPixmap(THEME_DIR + "icons/search.png"), 22, buttons);
+    // connect(searchButton, SIGNAL(clicked()), this, SLOT(openSearchDialog()));
+    // searchButton->setToolTip(tr("Search for Assets"));
+    // buttonLayout->addWidget(searchButton);
 
     QHBoxLayout *comboLayout = new QHBoxLayout;
     comboLayout->setMargin(0);

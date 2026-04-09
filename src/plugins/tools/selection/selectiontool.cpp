@@ -246,7 +246,7 @@ void SelectionTool::release(const TupInputDeviceInformation *input, TupBrushMana
         }
 
         if (modifiedCount > 1)
-            emit beginUndoMacro(tr("Move Selection"));
+            emit beginUndoMacro("Move Selection");
 
         foreach (NodeManager *manager, nodeManagers) {
             if (manager->isModified())
@@ -622,7 +622,7 @@ void SelectionTool::keyPressEvent(QKeyEvent *event)
             TupFrame *frame = getCurrentFrame();
 
             if (selectedObjects.count() > 1)
-                emit beginUndoMacro(tr("Move Selection"));
+                emit beginUndoMacro("Move Selection");
 
             foreach (QGraphicsItem *item, selectedObjects) {
                 if (event->key() == Qt::Key_Left)
@@ -1079,7 +1079,7 @@ void SelectionTool::setItemPosition(int x, int y)
         requestTransformation(manager->parentItem(), frame);
     } else {
         if (nodeManagers.count() > 1) {
-            emit beginUndoMacro(tr("Move Selection"));
+            emit beginUndoMacro("Move Selection");
 
             foreach (NodeManager *manager, nodeManagers) {
                 QGraphicsItem *item = manager->parentItem();
@@ -1119,7 +1119,7 @@ void SelectionTool::setItemRotation(int angle)
             requestTransformation(manager->parentItem(), frame);
     } else {
         if (nodeManagers.count() > 1) {
-            emit beginUndoMacro(tr("Rotate Selection"));
+            emit beginUndoMacro("Rotate Selection");
 
             foreach (NodeManager *manager, nodeManagers) {
                 manager->rotate(angle);
@@ -1145,7 +1145,7 @@ void SelectionTool::setItemScale(double xFactor, double yFactor)
             requestTransformation(manager->parentItem(), frame);
     } else {
         if (nodeManagers.count() > 1) {
-            emit beginUndoMacro(tr("Scale Selection"));
+            emit beginUndoMacro("Scale Selection");
 
             foreach (NodeManager *manager, nodeManagers) {
                 manager->scale(xFactor, yFactor);

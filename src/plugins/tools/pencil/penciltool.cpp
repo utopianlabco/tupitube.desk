@@ -148,7 +148,7 @@ void PencilTool::press(const TupInputDeviceInformation *input, TupBrushManager *
         eraserCircle->setPos(firstPoint - eraserDistance);
         gScene->includeObject(eraserCircle);
         if (!lineItems.isEmpty()) {
-            emit beginUndoMacro(tr("Erase Stroke"));
+            emit beginUndoMacro("Erase Stroke");
             eraserMacroActive = true;
             runEraser(firstPoint);
         }

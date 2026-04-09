@@ -219,7 +219,7 @@ void TupNewProject::setupNetOptions()
 
     cacheData->setEchoMode(QLineEdit::Password);
 
-    QLabel *infoLabel = new QLabel(tr("This feature allows you to work with other artists around the world on the same project in real time."));
+    QLabel *infoLabel = new QLabel(tr("This feature allows you to work with other students in your class using the TupiTube server app."));
     infoLabel->setWordWrap(true);
     infoLabel->setAlignment(Qt::AlignCenter);
     infoLabel->setStyleSheet("QLabel { padding: 10px; }");

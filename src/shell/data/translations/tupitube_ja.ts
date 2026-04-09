@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="jp">
+<TS version="2.1" language="ja_JP">
 <context>
     <name>BucketTool</name>
     <message>
@@ -18,6 +18,42 @@
     <message>
         <source>Paint Bucket</source>
         <translation>塗りつぶし</translation>
+    </message>
+    <message>
+        <source>Fill removed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fill cleared</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No fill item found to remove</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click position is outside the canvas</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click inside an enclosed area, not on a line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Region is not enclosed - lines must form a closed shape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No fillable region found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not create fill path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Region filled successfully</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -488,7 +524,7 @@
     </message>
     <message>
         <source>Select objects for Tweening first!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">最初にトゥイーン用のオブジェクトを選択してください！</translation>
     </message>
     <message>
         <source>You must select at least one object!</source>
@@ -728,7 +764,7 @@
     </message>
     <message>
         <source>Select objects for Tweening first!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">最初にトゥイーン用のオブジェクトを選択してください！</translation>
     </message>
 </context>
 <context>
@@ -915,8 +951,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Wall from</source>
-        <translation>ウォール（投稿者：</translation>
+        <source>Message from</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1199,7 +1235,7 @@
     </message>
     <message>
         <source>Select objects for Tweening first!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">最初にトゥイーン用のオブジェクトを選択してください！</translation>
     </message>
     <message>
         <source>Basic</source>
@@ -1294,11 +1330,11 @@
     </message>
     <message>
         <source>You must set Tween properties first!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">最初にトゥイーンプロパティを定義してください！</translation>
     </message>
     <message>
         <source>Select objects for Tweening first!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">最初にトゥイーン用のオブジェクトを選択してください！</translation>
     </message>
 </context>
 <context>
@@ -1559,7 +1595,7 @@
     </message>
     <message>
         <source>Select objects for Tweening first!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">最初にトゥイーン用のオブジェクトを選択してください！</translation>
     </message>
     <message>
         <source>Shear Factor</source>
@@ -1749,6 +1785,13 @@
     </message>
     <message>
         <source>Fatal</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TWaveformWidget</name>
+    <message>
+        <source>No audio loaded</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2200,6 +2243,10 @@
         <source>Play All</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Volume</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>TupCameraWidget</name>
@@ -2366,6 +2413,13 @@
     </message>
 </context>
 <context>
+    <name>TupCollaboratorsList</name>
+    <message>
+        <source>Team</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>TupColorButtonPanel</name>
     <message>
         <source>Red</source>
@@ -2468,10 +2522,6 @@
 <context>
     <name>TupConnectDialog</name>
     <message>
-        <source>Connection Parameters</source>
-        <translation>接続パラメータ</translation>
-    </message>
-    <message>
         <source>Store password</source>
         <translation>パスワードを保存</translation>
     </message>
@@ -2502,6 +2552,22 @@
     <message>
         <source>Please, fill in your password</source>
         <translation>パスワードを入力してください</translation>
+    </message>
+    <message>
+        <source>Connection Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Accept</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished">キャンセル</translation>
+    </message>
+    <message>
+        <source>Please, fill in the server address</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2752,10 +2818,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Format problem. TupiTube Internal error.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Fatal Error: Can&apos;t export video</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2808,16 +2870,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Insufficient permissions. Please, choose another directory.</source>
-        <translation>アクセス権限が不足しています。別のディレクトリを選択してください。</translation>
-    </message>
-    <message>
         <source>Enable Background Transparency</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Insufficient permissions. Please, choose another path.</source>
-        <translation>アクセス権限が不足しています。別のパスを選択してください。</translation>
     </message>
     <message>
         <source>Animation path is unset! Please, choose one.</source>
@@ -2855,6 +2909,18 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <source>Target folder already contains images. Continue?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Insufficient permissions. Please, choose another directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Insufficient permissions. Please, choose another path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Format problem. TupiTube internal error</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2934,6 +3000,10 @@ until reaches at least 3 seconds.</source>
         <source>Current Layer Opacity</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Audio Scrubbing</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>TupExposureSheet</name>
@@ -2995,7 +3065,7 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <source>Layer %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">レイヤー</translation>
     </message>
     <message>
         <source>Scene 1</source>
@@ -3003,7 +3073,7 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <source>Scene %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">シーン</translation>
     </message>
     <message>
         <source>Copy frame</source>
@@ -3030,11 +3100,11 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <source>Scene %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">シーン</translation>
     </message>
     <message>
         <source>Layer %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">レイヤー</translation>
     </message>
     <message>
         <source>Frame %1</source>
@@ -3058,6 +3128,14 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <source>Can&apos;t read scene config file!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t find library file!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Library file is corrupted!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3155,10 +3233,6 @@ until reaches at least 3 seconds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Password: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Don&apos;t have a TupiTube account?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3187,10 +3261,6 @@ until reaches at least 3 seconds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Username / Email: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enable anonymous mode</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3212,6 +3282,54 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <source>Allow TupiTube to collect app usage statistics (Anonymous data)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Classroom</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Collaborative Credentials</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Server Address:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Port:</source>
+        <translation type="unfinished">ポート：</translation>
+    </message>
+    <message>
+        <source>Username:</source>
+        <translation type="unfinished">ユーザー名：</translation>
+    </message>
+    <message>
+        <source>Password:</source>
+        <translation type="unfinished">パスワード：</translation>
+    </message>
+    <message>
+        <source>Confirm Password:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset Credentials</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Username / Email:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Leave empty to keep current</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm new password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Passwords do not match</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3591,10 +3709,6 @@ until reaches at least 3 seconds.</source>
         <translation>ラスターオブジェクト</translation>
     </message>
     <message>
-        <source>Search for Assets</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Audio File</source>
         <translation>オーディオファイル</translation>
     </message>
@@ -3651,41 +3765,6 @@ until reaches at least 3 seconds.</source>
     <name>TupLipsyncDoc</name>
     <message>
         <source>Voice 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>TupListProjectDialog</name>
-    <message>
-        <source>Projects List from Server</source>
-        <translation>サーバーのプロジェクト一覧</translation>
-    </message>
-    <message>
-        <source>My works:</source>
-        <translation>自分の作品：</translation>
-    </message>
-    <message>
-        <source>My contributions:</source>
-        <translation>自分の貢献：</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>OK</translation>
-    </message>
-    <message>
-        <source>Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Description</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Author</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3898,10 +3977,6 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>New Project</source>
         <translation>新規プロジェクト</translation>
-    </message>
-    <message>
-        <source>Insufficient permissions. Please, pick another path.</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Open new project</source>
@@ -4203,6 +4278,14 @@ until reaches at least 3 seconds.</source>
         <source>Upload Project To Server...</source>
         <translation>プロジェクトをサーバーにアップロード...</translation>
     </message>
+    <message>
+        <source>Authentication failed! Please, try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Insufficient permissions. Please, pick another path</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>TupMicManager</name>
@@ -4384,13 +4467,17 @@ until reaches at least 3 seconds.</source>
         <translation>致命的なエラー</translation>
     </message>
     <message>
+        <source>User has no available projects in the server</source>
+        <translation>ユーザーにはサーバー上のプロジェクトがありません</translation>
+    </message>
+    <message>
         <source>User &quot;%1&quot; is disabled.
-Please, contact the animation server admin to get access.</source>
+Please, contact the TupiTube server admin to get access.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>User has no available projects in the server</source>
-        <translation>ユーザーにはサーバー上のプロジェクトがありません</translation>
+        <source>The project may be corrupt or incomplete.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4579,10 +4666,6 @@ Please, contact the animation server admin to get access.</source>
         <translation>ネットワーク</translation>
     </message>
     <message>
-        <source>This feature allows you to work with other artists around the world on the same project in real time.</source>
-        <translation>この機能により、世界中の他のアーティストと同じプロジェクトでリアルタイムに共同作業できます。</translation>
-    </message>
-    <message>
         <source>Server:</source>
         <translation>サーバー：</translation>
     </message>
@@ -4597,6 +4680,10 @@ Please, contact the animation server admin to get access.</source>
     <message>
         <source>Password:</source>
         <translation>パスワード：</translation>
+    </message>
+    <message>
+        <source>This feature allows you to work with other students in your class using the TupiTube server app.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -5247,8 +5334,16 @@ Please, contact the animation server admin to get access.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Please restart TupiTube</source>
+        <source>Preferences Saved</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please restart TupiTube to apply the changes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OK</source>
+        <translation type="unfinished">OK</translation>
     </message>
 </context>
 <context>
@@ -5337,6 +5432,42 @@ Please, contact the animation server admin to get access.</source>
         <source>Duplicate scene</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Duplicate layer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move layer left</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move layer right</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move layer up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move layer down</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move scene up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move scene down</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move scene left</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move scene right</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>TupProjectImporterDialog</name>
@@ -5362,6 +5493,45 @@ Please, contact the animation server admin to get access.</source>
     </message>
 </context>
 <context>
+    <name>TupProjectListDialog</name>
+    <message>
+        <source>Project List from Server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>My works:</source>
+        <translation type="unfinished">自分の作品：</translation>
+    </message>
+    <message>
+        <source>My contributions:</source>
+        <translation type="unfinished">自分の貢献：</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished">キャンセル</translation>
+    </message>
+    <message>
+        <source>OK</source>
+        <translation type="unfinished">OK</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Description</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Author</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>TupProjectManager</name>
     <message>
         <source>Frame</source>
@@ -5374,6 +5544,10 @@ Please, contact the animation server admin to get access.</source>
     <message>
         <source>Scene %1</source>
         <translation>シーン</translation>
+    </message>
+    <message>
+        <source>Project must be closed</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -5538,6 +5712,10 @@ Please, contact the animation server admin to get access.</source>
     </message>
     <message>
         <source>Sound layer %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(copy)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -5728,6 +5906,10 @@ Please, contact the animation server admin to get access.</source>
         <source>Sign Up</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Post as anonymous</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>TupSoundDialog</name>
@@ -5851,6 +6033,10 @@ Please, contact the animation server admin to get access.</source>
     </message>
     <message>
         <source>Lipsync Audio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -6056,7 +6242,7 @@ Cover</source>
     </message>
     <message>
         <source>Layer %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">レイヤー</translation>
     </message>
     <message>
         <source>Scene 1</source>
@@ -6064,10 +6250,14 @@ Cover</source>
     </message>
     <message>
         <source>Scene %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">シーン</translation>
     </message>
     <message>
         <source>Current Layer Opacity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio Scrubbing</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

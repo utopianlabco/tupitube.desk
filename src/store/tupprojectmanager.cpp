@@ -305,7 +305,7 @@ void TupProjectManager::handleProjectRequest(const TupProjectRequest *request)
         #ifdef TUP_DEBUG
             qWarning() << "[TupProjectManager::handleProjectRequest()] - Error: Project handler is NULL! Cannot process request.";
         #endif
-        TOsd::self()->display(TOsd::Error, tr("Fatal error. Project must be closed."));
+        TOsd::self()->display(TOsd::Error, tr("Project must be closed"));
         closeProject();
     }
 }
@@ -481,7 +481,7 @@ void TupProjectManager::emitResponse(TupProjectResponse *response)
         #ifdef TUP_DEBUG
             qWarning() << "[TupProjectManager::emitResponse()] - Error: Project handler is NULL! Cannot process response.";
         #endif
-        TOsd::self()->display(TOsd::Error, tr("Fatal error. Project must be closed."));
+        TOsd::self()->display(TOsd::Error, tr("Project must be closed"));
         closeProject();
     }
 }

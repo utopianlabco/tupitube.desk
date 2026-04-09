@@ -4255,10 +4255,6 @@ until reaches at least 3 seconds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>[ by %1 | net mode ]</source>
-        <translation>[ 作成者: %1 | ネットワークモード ]</translation>
-    </message>
-    <message>
         <source>Upload project package</source>
         <translation>プロジェクトパッケージをアップロード</translation>
     </message>
@@ -4284,6 +4280,10 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <source>Insufficient permissions. Please, pick another path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>[ by %1 | collaboration mode ]</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4618,10 +4618,6 @@ Please, contact the TupiTube server admin to get access.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>720 (HD) - 24</source>
         <translation>720 (HD) - 24</translation>
     </message>
@@ -4662,10 +4658,6 @@ Please, contact the TupiTube server admin to get access.</source>
         <translation>コラボレーションプロジェクト</translation>
     </message>
     <message>
-        <source>Network</source>
-        <translation>ネットワーク</translation>
-    </message>
-    <message>
         <source>Server:</source>
         <translation>サーバー：</translation>
     </message>
@@ -4683,6 +4675,14 @@ Please, contact the TupiTube server admin to get access.</source>
     </message>
     <message>
         <source>This feature allows you to work with other students in your class using the TupiTube server app.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Classroom</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connection Settings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

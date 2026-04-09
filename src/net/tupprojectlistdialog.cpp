@@ -167,6 +167,8 @@ void TupProjectListDialog::addWork(const QString &project, const QString &name, 
         isMine = true;
         works->setCurrentItem(item);
         filename = project;
+        // Ensure OK button is enabled when the first item is added
+        if (okButton) okButton->setEnabled(true);
     }
 
     index++;
@@ -182,6 +184,15 @@ void TupProjectListDialog::addContribution(const QString &filename, const QStrin
     item->setText(1, author);
     item->setText(2, description);
     item->setText(3, date);
+
+    // If this is the first contribution and there are no works, select it and enable OK
+    if (contribList.size() == 1 && (!works || works->topLevelItemCount() == 0)) {
+        isMine = false;
+        contributions->setCurrentItem(item);
+        this->filename = filename;
+        this->user = author;
+        if (okButton) okButton->setEnabled(true);
+    }
 }
 
 QString TupProjectListDialog::projectID() const

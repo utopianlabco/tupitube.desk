@@ -4926,8 +4926,8 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <location filename="../../tupmainwindow.cpp" line="307"/>
-        <source>[ by %1 | net mode ]</source>
-        <translation>[ par %1 | mode réseau ]</translation>
+        <source>[ by %1 | collaboration mode ]</source>
+        <translation>[ par %1 | mode de collaboration ]</translation>
     </message>
     <message>
         <location filename="../../tupmainwindow.cpp" line="619"/>
@@ -5911,9 +5911,19 @@ Veuillez contacter l&apos;administrateur du serveur TupiTube pour obtenir l&apos
         <translation>Projet collaboratif</translation>
     </message>
     <message>
+        <location filename="../../tupnewproject.cpp" line="163"/>
+        <source>Classroom</source>
+        <translation>Classe</translation>
+    </message>
+    <message>
         <location filename="../../tupnewproject.cpp" line="222"/>
         <source>This feature allows you to work with other students in your class using the TupiTube server app.</source>
         <translation>Cette fonctionnalité vous permet de collaborer avec d&apos;autres étudiants de votre classe grâce à l&apos;application serveur TupiTube.</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="228"/>
+        <source>Connection Settings</source>
+        <translation>Paramètres de Connexion</translation>
     </message>
     <message>
         <location filename="../../tupnewproject.cpp" line="236"/>
@@ -5939,16 +5949,6 @@ Veuillez contacter l&apos;administrateur du serveur TupiTube pour obtenir l&apos
         <location filename="../../tupnewproject.cpp" line="155"/>
         <source>Project Info</source>
         <translation>Information du projet</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="163"/>
-        <source>Network</source>
-        <translation>Réseau</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="228"/>
-        <source>Settings</source>
-        <translation>Paramètres</translation>
     </message>
     <message>
         <location filename="../../tupnewproject.cpp" line="243"/>

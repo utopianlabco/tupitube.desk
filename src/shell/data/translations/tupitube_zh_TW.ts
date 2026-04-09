@@ -4255,10 +4255,6 @@ until reaches at least 3 seconds.</source>
         <translation>幫助我們改進 TupiTube！</translation>
     </message>
     <message>
-        <source>[ by %1 | net mode ]</source>
-        <translation>[ 作者：%1 | 網路模式 ]</translation>
-    </message>
-    <message>
         <source>Upload project package</source>
         <translation>上傳專案套件</translation>
     </message>
@@ -4285,6 +4281,10 @@ until reaches at least 3 seconds.</source>
     <message>
         <source>Insufficient permissions. Please, pick another path</source>
         <translation>權限不足。請選擇其他路徑。</translation>
+    </message>
+    <message>
+        <source>[ by %1 | collaboration mode ]</source>
+        <translation>[ 由 %1 | 協作模式 ]</translation>
     </message>
 </context>
 <context>
@@ -4619,10 +4619,6 @@ Please, contact the TupiTube server admin to get access.</source>
         <translation>請填寫您的用戶名</translation>
     </message>
     <message>
-        <source>Settings</source>
-        <translation>設定</translation>
-    </message>
-    <message>
         <source>720 (HD) - 24</source>
         <translation>720 (HD) - 24</translation>
     </message>
@@ -4663,10 +4659,6 @@ Please, contact the TupiTube server admin to get access.</source>
         <translation>協作專案</translation>
     </message>
     <message>
-        <source>Network</source>
-        <translation>網路</translation>
-    </message>
-    <message>
         <source>Server:</source>
         <translation>伺服器：</translation>
     </message>
@@ -4685,6 +4677,14 @@ Please, contact the TupiTube server admin to get access.</source>
     <message>
         <source>This feature allows you to work with other students in your class using the TupiTube server app.</source>
         <translation>此功能可讓您使用 TupiTube 伺服器應用程式與班上的其他學生合作。</translation>
+    </message>
+    <message>
+        <source>Classroom</source>
+        <translation>課堂</translation>
+    </message>
+    <message>
+        <source>Connection Settings</source>
+        <translation>連接設定</translation>
     </message>
 </context>
 <context>

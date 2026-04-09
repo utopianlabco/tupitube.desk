@@ -4931,8 +4931,8 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <location filename="../../tupmainwindow.cpp" line="307"/>
-        <source>[ by %1 | net mode ]</source>
-        <translation>[ автор: %1 | сетевой режим ]</translation>
+        <source>[ by %1 | collaboration mode ]</source>
+        <translation>[ от %1 | режим совместной работы ]</translation>
     </message>
     <message>
         <location filename="../../tupmainwindow.cpp" line="619"/>
@@ -5911,9 +5911,19 @@ Please, contact the TupiTube server admin to get access.</source>
         <translation>Совместный проект</translation>
     </message>
     <message>
+        <location filename="../../tupnewproject.cpp" line="163"/>
+        <source>Classroom</source>
+        <translation>Класс</translation>
+    </message>
+    <message>
         <location filename="../../tupnewproject.cpp" line="222"/>
         <source>This feature allows you to work with other students in your class using the TupiTube server app.</source>
         <translation>Эта функция позволяет вам работать с другими студентами вашего класса, используя серверное приложение TupiTube.</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="228"/>
+        <source>Connection Settings</source>
+        <translation>Настройки подключения</translation>
     </message>
     <message>
         <location filename="../../tupnewproject.cpp" line="236"/>
@@ -5939,16 +5949,6 @@ Please, contact the TupiTube server admin to get access.</source>
         <location filename="../../tupnewproject.cpp" line="155"/>
         <source>Project Info</source>
         <translation>Сведения о проекте</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="163"/>
-        <source>Network</source>
-        <translation>Сеть</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="228"/>
-        <source>Settings</source>
-        <translation>Параметры</translation>
     </message>
     <message>
         <location filename="../../tupnewproject.cpp" line="243"/>

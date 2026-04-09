@@ -160,7 +160,7 @@ TupNewProject::TupNewProject(QWidget *parent) : TabDialog(parent)
 
     setupNetOptions();
 
-    addTab(netContainer, tr("Network"));
+    addTab(netContainer, tr("Classroom"));
     enableNetOptions(false);
 
     if (presetIndex >= 0)
@@ -225,7 +225,7 @@ void TupNewProject::setupNetOptions()
     infoLabel->setStyleSheet("QLabel { padding: 10px; }");
     netLayout->addWidget(infoLabel);
 
-    netOptions = new QGroupBox(tr("Settings"));
+    netOptions = new QGroupBox(tr("Connection Settings"));
     QVBoxLayout *groupLayout = new QVBoxLayout(netOptions);
     groupLayout->setSpacing(15);
     groupLayout->setContentsMargins(20, 20, 20, 20);

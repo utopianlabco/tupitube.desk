@@ -4933,8 +4933,8 @@ animację do co najmniej 3 sekund.</translation>
     </message>
     <message>
         <location filename="../../tupmainwindow.cpp" line="307"/>
-        <source>[ by %1 | net mode ]</source>
-        <translation>[ przez %1 | tryb sieciowy ]</translation>
+        <source>[ by %1 | collaboration mode ]</source>
+        <translation>[przez %1 | tryb współpracy]</translation>
     </message>
     <message>
         <location filename="../../tupmainwindow.cpp" line="619"/>
@@ -5913,9 +5913,19 @@ Skontaktuj się z administratorem serwera TupiTube, aby uzyskać dostęp.</trans
         <translation>Projekt współpracy</translation>
     </message>
     <message>
+        <location filename="../../tupnewproject.cpp" line="163"/>
+        <source>Classroom</source>
+        <translation>Klasa</translation>
+    </message>
+    <message>
         <location filename="../../tupnewproject.cpp" line="222"/>
         <source>This feature allows you to work with other students in your class using the TupiTube server app.</source>
         <translation>Ta funkcja umożliwia współpracę z innymi uczniami w klasie za pomocą aplikacji serwera TupiTube.</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="228"/>
+        <source>Connection Settings</source>
+        <translation>Ustawienia połączenia</translation>
     </message>
     <message>
         <location filename="../../tupnewproject.cpp" line="236"/>
@@ -5941,16 +5951,6 @@ Skontaktuj się z administratorem serwera TupiTube, aby uzyskać dostęp.</trans
         <location filename="../../tupnewproject.cpp" line="155"/>
         <source>Project Info</source>
         <translation>Informacje o projekcie</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="163"/>
-        <source>Network</source>
-        <translation>Sieć</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="228"/>
-        <source>Settings</source>
-        <translation>Ustawienia sieciowe</translation>
     </message>
     <message>
         <location filename="../../tupnewproject.cpp" line="243"/>

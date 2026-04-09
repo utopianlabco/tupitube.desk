@@ -4926,8 +4926,8 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <location filename="../../tupmainwindow.cpp" line="307"/>
-        <source>[ by %1 | net mode ]</source>
-        <translation>[ por %1 | modo red ]</translation>
+        <source>[ by %1 | collaboration mode ]</source>
+        <translation>[ por %1 | modo colaborativo ]</translation>
     </message>
     <message>
         <location filename="../../tupmainwindow.cpp" line="619"/>
@@ -5911,9 +5911,19 @@ Por favor, contacta con el administrador del servidor TupiTube para obtener acce
         <translation>Proyecto Colaborativo</translation>
     </message>
     <message>
+        <location filename="../../tupnewproject.cpp" line="163"/>
+        <source>Classroom</source>
+        <translation>Aula</translation>
+    </message>
+    <message>
         <location filename="../../tupnewproject.cpp" line="222"/>
         <source>This feature allows you to work with other students in your class using the TupiTube server app.</source>
         <translation>Esta función te permite trabajar con otros estudiantes de tu clase utilizando la aplicación de servidor TupiTube.</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="228"/>
+        <source>Connection Settings</source>
+        <translation>Configuración de Conexión</translation>
     </message>
     <message>
         <location filename="../../tupnewproject.cpp" line="236"/>
@@ -5939,16 +5949,6 @@ Por favor, contacta con el administrador del servidor TupiTube para obtener acce
         <location filename="../../tupnewproject.cpp" line="155"/>
         <source>Project Info</source>
         <translation>Información de Proyecto</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="163"/>
-        <source>Network</source>
-        <translation>Red</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="228"/>
-        <source>Settings</source>
-        <translation>Configuración de Red</translation>
     </message>
     <message>
         <location filename="../../tupnewproject.cpp" line="243"/>

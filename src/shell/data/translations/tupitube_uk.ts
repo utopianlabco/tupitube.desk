@@ -4024,8 +4024,7 @@ until reaches at least 3 seconds.</source>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="57"/>
         <source>Classroom</source>
-        <translation>лас
-</translation>
+        <translation>Клас</translation>
     </message>
     <message>
         <location filename="../../../libui/tupgeneralpreferences.cpp" line="58"/>
@@ -4927,8 +4926,8 @@ until reaches at least 3 seconds.</source>
     </message>
     <message>
         <location filename="../../tupmainwindow.cpp" line="307"/>
-        <source>[ by %1 | net mode ]</source>
-        <translation>[ автор: %1 | мережевий режим ]</translation>
+        <source>[ by %1 | collaboration mode ]</source>
+        <translation>[ від %1 | режим співпраці ]</translation>
     </message>
     <message>
         <location filename="../../tupmainwindow.cpp" line="619"/>
@@ -5912,9 +5911,20 @@ Please, contact the TupiTube server admin to get access.</source>
         <translation>Спільний проєкт</translation>
     </message>
     <message>
+        <location filename="../../tupnewproject.cpp" line="163"/>
+        <source>Classroom</source>
+        <translation>лас
+</translation>
+    </message>
+    <message>
         <location filename="../../tupnewproject.cpp" line="222"/>
         <source>This feature allows you to work with other students in your class using the TupiTube server app.</source>
         <translation>Ця функція дозволяє вам працювати з іншими студентами вашого класу за допомогою серверного застосунку TupiTube.</translation>
+    </message>
+    <message>
+        <location filename="../../tupnewproject.cpp" line="228"/>
+        <source>Connection Settings</source>
+        <translation>Налаштування підключення</translation>
     </message>
     <message>
         <location filename="../../tupnewproject.cpp" line="236"/>
@@ -5940,16 +5950,6 @@ Please, contact the TupiTube server admin to get access.</source>
         <location filename="../../tupnewproject.cpp" line="155"/>
         <source>Project Info</source>
         <translation>Відомості про проєкт</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="163"/>
-        <source>Network</source>
-        <translation>Мережа</translation>
-    </message>
-    <message>
-        <location filename="../../tupnewproject.cpp" line="228"/>
-        <source>Settings</source>
-        <translation>Параметри</translation>
     </message>
     <message>
         <location filename="../../tupnewproject.cpp" line="243"/>

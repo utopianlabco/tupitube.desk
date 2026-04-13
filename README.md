@@ -111,7 +111,15 @@ Incorporate text elements into your animations for titles, subtitles, and speech
 ### Customizing Workspace
 Tailor the TupiTube Desk workspace to your preferences by adjusting interface elements and toolbars.
 
+
 ## 7. Troubleshooting
+
+### Reporting Issues
+For bug reports, feature requests, or any issues related to TupiTube Desk, please use the official issue tracker:
+
+https://github.com/utopianlabco/tupitube.desk/issues
+
+This is the official place where users must report issues for TupiTube Desk.
 
 ### Learn More
 Visit our [TupiTube Desk Home Page](http://www.tupitube.com/) for additional information, tutorials, and community support.

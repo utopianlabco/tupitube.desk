@@ -59,6 +59,7 @@ class T_CORE_EXPORT TConfig : public QObject
         void initConfigFile();
         void beginGroup(const QString &prefix);
         void endGroup();
+        QString configPath() const;
 
         void setValue(const QString &key, const QVariant &value);
         QVariant value(const QString &key, const QVariant &defaultValue = QVariant()) const;

@@ -77,6 +77,11 @@ TConfig::~TConfig()
         delete m_instance;
 }
 
+QString TConfig::configPath() const 
+{ 
+    return path; 
+}
+
 TConfig *TConfig::instance()
 {
     if (!m_instance)

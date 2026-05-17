@@ -209,15 +209,15 @@ void TupNewProject::setupNetOptions()
 
     server->setText(config->value("Server", "").toString());
     int portValue = config->value("Port", 8080).toInt();
-    qDebug() << "TupNewProject::setupNetOptions() - portValue: " << portValue;
+    int storePasswordFlag = TCONFIG->value("StorePassword").toInt();
+    // qDebug() << "TupNewProject::setupNetOptions() - portValue: " << portValue;
     if (portValue == 0)
         portValue = 8080;
     port->setValue(portValue);
 
     username->setText(config->value("Login", "").toString());
-    cacheData->setText(config->value("Password", "").toString());
-
     cacheData->setEchoMode(QLineEdit::Password);
+    // cacheData->setText(config->value("Password", "").toString());   
 
     QLabel *infoLabel = new QLabel(tr("This feature allows you to work with other students in your class using the TupiTube server app."));
     infoLabel->setWordWrap(true);
@@ -229,6 +229,8 @@ void TupNewProject::setupNetOptions()
     QVBoxLayout *groupLayout = new QVBoxLayout(netOptions);
     groupLayout->setSpacing(15);
     groupLayout->setContentsMargins(20, 20, 20, 20);
+    if (storePasswordFlag)
+        cacheData->setText(TAlgorithm::windowRecordID());
 
     QFormLayout *formLayout = new QFormLayout;
     formLayout->setSpacing(10);
@@ -241,7 +243,7 @@ void TupNewProject::setupNetOptions()
     groupLayout->addLayout(formLayout);
 
     storePassword = new QCheckBox(tr("Store password"));
-    storePassword->setChecked(TCONFIG->value("StorePassword").toInt());
+    storePassword->setChecked(storePasswordFlag);
     groupLayout->addWidget(storePassword);
 
     groupLayout->addStretch();

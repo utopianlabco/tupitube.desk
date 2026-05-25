@@ -49,6 +49,12 @@ TupNetProjectManagerHandler::TupNetProjectManagerHandler(QObject *parent) : TupA
     doAction = true;
     projectIsOpen = false;
     dialogIsOpen = false;
+
+    // Send a lightweight ping every 45 seconds to prevent NAT/firewall
+    // idle-connection timeouts from silently killing the TCP session.
+    m_pingTimer = new QTimer(this);
+    m_pingTimer->setInterval(45000);
+    connect(m_pingTimer, &QTimer::timeout, this, &TupNetProjectManagerHandler::sendPing);
     
     communicationModule = new QTabWidget;
 
@@ -195,6 +201,7 @@ void TupNetProjectManagerHandler::initialize(TupProjectManagerParams *parameters
         TupConnectPackage connectPackage(netParams->server(), netParams->login(), netParams->windowRecordID());
         socket->send(connectPackage);
         username = netParams->login();
+        m_pingTimer->start();
     } else {
         TOsd::self()->display(TOsd::Error, tr("Unable to connect to server"));
         emit authenticationFailed();
@@ -226,6 +233,7 @@ bool TupNetProjectManagerHandler::setupNewProject(TupProjectManagerParams *param
 bool TupNetProjectManagerHandler::closeProject()
 {
     projectIsOpen = false;
+    m_pingTimer->stop();
     closeConnection();
 
     return TupAbstractProjectHandler::closeProject();
@@ -323,6 +331,9 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                        }
                    }
                }
+    } else if (root == "pong") {
+        // Keep-alive reply — nothing to do
+        return;
     } else if (root == "server_projectlist") {
                TupProjectListParser parser(package);
                if (parser.parse()) {
@@ -505,6 +516,8 @@ void TupNetProjectManagerHandler::connectionLost()
         qWarning() << "[TupNetProjectManagerHandler::connectionLost()] - The socket has been closed";
     #endif
 
+    m_pingTimer->stop();
+
     if (dialogIsOpen) {
         if (dialog) {
             if (dialog->isVisible())
@@ -563,4 +576,13 @@ void TupNetProjectManagerHandler::postStoryboardRequest(int sceneIndex)
 
     TupStoryboardExportPackage package(sceneIndex);
     sendPackage(package);
+}
+
+void TupNetProjectManagerHandler::sendPing()
+{
+    if (socket && socket->state() == QAbstractSocket::ConnectedState) {
+        QDomDocument doc;
+        doc.appendChild(doc.createElement("ping"));
+        socket->send(doc);
+    }
 }

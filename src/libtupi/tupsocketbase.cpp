@@ -39,6 +39,9 @@ TupSocketBase::TupSocketBase(QObject *parent) : QTcpSocket(parent)
     connect(this, SIGNAL(readyRead ()), this, SLOT(readFromServer()));
     connect(this, SIGNAL(connected()), this, SLOT(sendQueue()));
     connect(this, SIGNAL(disconnected()), this, SLOT(clearQueue()));
+
+    // Keep the TCP connection alive through router/firewall idle timeouts
+    setSocketOption(QAbstractSocket::KeepAliveOption, 1);
 }
 
 TupSocketBase::~TupSocketBase()

@@ -37,6 +37,9 @@
 
 TupProjectListDialog::TupProjectListDialog(int projects, int collabs, const QString &serverName) : QDialog()
 {
+    works = nullptr;
+    contributions = nullptr;
+
     setWindowIcon(QIcon(QPixmap(THEME_DIR + "icons/open.png")));
     setWindowTitle(tr("Project List from Server") + " - [ " + serverName  + " ]");
     setStyleSheet(TAppTheme::themeStyles());
@@ -216,7 +219,7 @@ void TupProjectListDialog::execAccept(QTreeWidgetItem *item, int index)
 void TupProjectListDialog::updateWorkTree()
 {
     if (works->hasFocus()) {
-        if (contribList.size() > 0)
+        if (contribList.size() > 0 && contributions)
             contributions->clearSelection();
         int index = works->currentIndex().row();
         if (index >= 0 && index < workList.size()) {
@@ -232,7 +235,7 @@ void TupProjectListDialog::updateWorkTree()
 void TupProjectListDialog::updateContribTree()
 {
     if (contributions->hasFocus()) {
-        if (workList.size() > 0)
+        if (workList.size() > 0 && works)
             works->clearSelection();
         int index = contributions->currentIndex().row();
         if (index >= 0 && index < contribList.size()) {

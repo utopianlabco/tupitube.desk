@@ -76,6 +76,7 @@
 #include <QDesktopWidget>
 #include <QMessageBox>
 #include <QSplitter>
+#include <QTimer>
 
 class TupNetSocket;
 
@@ -124,6 +125,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
     private slots:
         void sendChatMessage(const QString &message);
         void connectionLost();
+        void sendPing();
 
     private:
         void loadProjectFromServer(const QString &projectID, const QString &owner);
@@ -148,7 +150,8 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
 
         bool projectIsOpen;
         bool dialogIsOpen;
-        TupProjectListDialog *dialog;        
+        TupProjectListDialog *dialog;
+        QTimer *m_pingTimer;
 };
 
 #endif

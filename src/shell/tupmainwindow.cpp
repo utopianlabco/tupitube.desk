@@ -304,7 +304,7 @@ void TupMainWindow::createNewNetProject(const QString &title, const QStringList 
 {
     isNetworked = true;
     projectName = title;
-    setWindowTitle(appTitle + " - " + projectName + " " + tr("[ by %1 | collaboration mode ]").arg(netUser));
+    setWindowTitle(appTitle + " - " + projectName + " " + tr("[ connected as %1 | collaboration mode ]").arg(netUser));
 
     if (m_viewChat) {
         removeToolView(m_viewChat);

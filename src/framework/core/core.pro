@@ -8,17 +8,18 @@ macx {
     CONFIG += warn_on dll
 }
 
-unix {
+win32 {
+    include(../../../win.pri)
+
+    INCLUDEPATH += C:/devel/sources/libsndfile/include
+    LIBS += -LC:/devel/sources/libsndfile/bin -lsndfile
+} else { # unix
     !include(../tupconfig.pri) {
         error("Run ./configure first!")
     }
     # Include libsndfile paths from system
     INCLUDEPATH += /usr/local/libsndfile/include /usr/include
-    LIBS += -L/usr/local/libsndfile/lib
-}
-
-win32 {
-    include(../../../win.pri)
+    LIBS += -L/usr/local/libsndfile/lib -lsndfile
 }
 
 INSTALLS += target
@@ -47,7 +48,3 @@ SOURCES += talgorithm.cpp \
            tcachehandler.cpp \
            tapptheme.cpp \
            taudiosampler.cpp
-
-unix {
-    LIBS += -lsndfile
-}

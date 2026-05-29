@@ -8,16 +8,25 @@ macx {
     CONFIG += warn_on dll
 }
 
-unix {
+win32 {
+    include(../../../win.pri)
+
+    LIBS += -L../core/release/ -ltupifwcore
+    INCLUDEPATH += ../core
+
+    INCLUDEPATH += C:/devel/sources/libsndfile/include
+    LIBS += -LC:/devel/sources/libsndfile/bin -lsndfile
+} else { # unix
     !include(../tupconfig.pri) {
         error("Run ./configure first!")
     }
+	
+    LIBS += -L../core -ltupifwcore
+    # INCLUDEPATH += ../core ../ ../../libbase
+    INCLUDEPATH += ../core
+	
     # Include libsndfile path for taudiosampler.h
     INCLUDEPATH += /usr/local/libsndfile/include /usr/include
-}
-
-win32 {
-    include(../../../win.pri)
 }
 
 INSTALLS += target
@@ -133,15 +142,4 @@ INCLUDEPATH += ../core ../ ../../libbase
 
 linux-g {
     TARGETDEPS += ../core/libtupifwcore.so
-}
-
-unix {
-    LIBS += -L../core -ltupifwcore
-    # INCLUDEPATH += ../core ../ ../../libbase
-    INCLUDEPATH += ../core
-}
-
-win32 {
-    LIBS += -L../core/release/ -ltupifwcore
-    INCLUDEPATH += ../core
 }

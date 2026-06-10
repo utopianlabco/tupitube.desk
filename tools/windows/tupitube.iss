@@ -1,12 +1,12 @@
 [Setup]
 SetupIconFile=icon\tupitube.ico
 AppName=TupiTube Desk
-AppVersion=0.2.23
+AppVersion=0.2.24
 AppPublisher=Utopian Lab
 AppPublisherURL=https://www.tupitube.com/
 DefaultDirName={commonpf}\TupiTube
 DefaultGroupName=TupiTube
-OutputBaseFilename=tupitube_desk_0.2.23_64bit
+OutputBaseFilename=tupitube_desk_0.2.24_64bit
 OutputDir=c:\devel\installer
 ChangesEnvironment=yes
 ChangesAssociations=yes

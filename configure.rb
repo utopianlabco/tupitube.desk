@@ -72,8 +72,8 @@ _EOH_
 
     # Version values
     version = "0.2"
-    codeName = "Páy"
-    revision = "23"
+    codeName = "Avy"
+    revision = "24"
     configVersion = "5"
 
     if configurator.hasArgument?("with-ffmpeg") and configurator.hasArgument?("without-ffmpeg")

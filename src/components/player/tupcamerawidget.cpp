@@ -512,6 +512,20 @@ void TupCameraWidget::sceneResponse(TupSceneResponse *response)
              cameraStatus->setCurrentScene(newIndex);
         }
         break;
+        case TupProjectRequest::SetFps:
+        {
+             int fps = response->getArg().toInt();
+             fpsDelta = 1.0 / fps;
+
+             // Update UI safely without triggering fpsChanged signal again
+             cameraStatus->blockSignals(true);
+             cameraStatus->setFPS(fps);
+             cameraStatus->blockSignals(false);
+
+             previewScreen->setFPS(fps);
+             setDuration(fps);
+        }
+        break;
         default:
         {
              #ifdef TUP_DEBUG
@@ -568,8 +582,16 @@ void TupCameraWidget::updateFPS(int fps)
     emit projectHasChanged(true);
     emit fpsUpdated(fps);
 
-    setFPS(fps);
+    // Optimistic UI update
+    fpsDelta = 1.0 / fps;
+    previewScreen->setFPS(fps);
     setDuration(fps);
+
+    // Emit the request to the Project Manager (which will sync it over the network)
+    TupProjectRequest event = TupRequestBuilder::createSceneRequest(currentSceneIndex,
+                                                                    TupProjectRequest::SetFps,
+                                                                    QString::number(fps));
+    emit requestTriggered(&event);
 }
 
 void TupCameraWidget::setFpsStatus(int fps)
@@ -578,13 +600,19 @@ void TupCameraWidget::setFpsStatus(int fps)
         qDebug() << "[TupCameraWidget::setStatusFPS()] - fps ->" << fps;
     #endif
 
+    // Optimistic UI update
     cameraStatus->blockSignals(true);
     cameraStatus->setFPS(fps);
     cameraStatus->blockSignals(false);
 
-    project->setFPS(fps);
+    fpsDelta = 1.0 / fps;
     previewScreen->setFPS(fps);
     setDuration(fps);
+
+    TupProjectRequest event = TupRequestBuilder::createSceneRequest(currentSceneIndex,
+                                                                    TupProjectRequest::SetFps,
+                                                                    QString::number(fps));
+    emit requestTriggered(&event);
 }
 
 void TupCameraWidget::updateFramesTotal(int sceneIndex)

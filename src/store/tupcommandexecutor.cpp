@@ -332,3 +332,35 @@ void TupCommandExecutor::setBgColor(TupSceneResponse *response)
 
     emit responsed(response);
 }
+
+void TupCommandExecutor::setFps(TupSceneResponse *response)
+{
+    int index = response->getSceneIndex();
+
+    if (response->getMode() == TupProjectResponse::Undo) {
+            // Restore the old FPS stored in the state
+            int oldFps = response->getState().toInt();
+            project->setFPS(oldFps, index);
+
+            // Swap arg and state so the next Redo knows what the "new" FPS was
+            response->setState(response->getArg().toString());
+            response->setArg(QString::number(oldFps));
+    } else if (response->getMode() == TupProjectResponse::Redo) {
+            // Get the "new" FPS that we saved in state during the Undo step
+            int newFps = response->getState().toInt();
+            project->setFPS(newFps, index);
+
+            // Swap them back for the next Undo
+            response->setState(response->getArg().toString());
+            response->setArg(QString::number(newFps));
+    } else { // Do Mode (Initial execution or receiving from network)
+            int newFps = response->getArg().toInt();
+            int oldFps = project->getFPS(index);
+
+            // Save the current FPS into state before overwriting it
+            response->setState(QString::number(oldFps));
+            project->setFPS(newFps, index);
+    }
+
+    emit responsed(response);
+}

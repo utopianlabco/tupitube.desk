@@ -121,7 +121,10 @@ class TUPITUBE_EXPORT TupProjectRequest
             // Raster
             AddRasterItem = 34,
             RemoveRasterItem = -AddRasterItem,
-            ClearRasterCanvas = 35
+            ClearRasterCanvas = 35,
+
+            // Scene properties
+            SetFps = 36
         };
 
         enum Part

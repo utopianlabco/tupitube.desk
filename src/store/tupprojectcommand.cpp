@@ -544,6 +544,11 @@ void TupProjectCommand::sceneCommand()
              executor->setBgColor(sceneResponse);
         }
         break;
+        case TupProjectRequest::SetFps:
+        {
+             executor->setFps(sceneResponse);
+        }
+        break;
 
         default:
         {

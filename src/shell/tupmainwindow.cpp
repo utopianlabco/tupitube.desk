@@ -897,9 +897,8 @@ void TupMainWindow::setupCollaborativeProject(TupProjectManagerParams *params)
         connect(netProjectManager, SIGNAL(updateUsersList(const QString &, int)),
                 this, SLOT(updateUsersOnLine(const QString &, int)));
 
-        // connect(netProjectManager, SIGNAL(connectionHasBeenLost()), this, SLOT(unexpectedClose()));
-        connect(netProjectManager, &TupNetProjectManagerHandler::connectionHasBeenLost,
-                this, &TupMainWindow::unexpectedClose);
+        connect(netProjectManager, SIGNAL(connectionHasBeenLost(DisconnectReason)),
+                this, SLOT(unexpectedClose(DisconnectReason)));
 
         connect(netProjectManager, SIGNAL(savingSuccessful()), this, SLOT(netProjectSaved()));
         connect(netProjectManager, SIGNAL(postOperationDone()), this, SLOT(resetMousePointer()));

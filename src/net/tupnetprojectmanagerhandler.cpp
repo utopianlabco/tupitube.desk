@@ -41,6 +41,8 @@ TupNetProjectManagerHandler::TupNetProjectManagerHandler(QObject *parent) : TupA
     #endif
 
     socket = new TupNetSocket(this);
+    // Enable OS-level TCP Keep-Alive to prevent NAT/firewall from dropping idle sockets
+    socket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
     connect(socket, SIGNAL(disconnected()), this, SLOT(connectionLost()));
 
     project = nullptr;
@@ -49,12 +51,6 @@ TupNetProjectManagerHandler::TupNetProjectManagerHandler(QObject *parent) : TupA
     doAction = true;
     projectIsOpen = false;
     dialogIsOpen = false;
-
-    // Send a lightweight ping every 45 seconds to prevent NAT/firewall
-    // idle-connection timeouts from silently killing the TCP session.
-    m_pingTimer = new QTimer(this);
-    m_pingTimer->setInterval(45000);
-    connect(m_pingTimer, &QTimer::timeout, this, &TupNetProjectManagerHandler::sendPing);
     
     communicationModule = new QTabWidget;
 
@@ -201,7 +197,6 @@ void TupNetProjectManagerHandler::initialize(TupProjectManagerParams *parameters
         TupConnectPackage connectPackage(netParams->server(), netParams->login(), netParams->windowRecordID());
         socket->send(connectPackage);
         username = netParams->login();
-        m_pingTimer->start();
     } else {
         TOsd::self()->display(TOsd::Error, tr("Unable to connect to server"));
         emit authenticationFailed();
@@ -233,7 +228,6 @@ bool TupNetProjectManagerHandler::setupNewProject(TupProjectManagerParams *param
 bool TupNetProjectManagerHandler::closeProject()
 {
     projectIsOpen = false;
-    m_pingTimer->stop();
     closeConnection();
 
     return TupAbstractProjectHandler::closeProject();
@@ -331,9 +325,6 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                        }
                    }
                }
-    } else if (root == "pong") {
-        // Keep-alive reply — nothing to do
-        return;
     } else if (root == "server_projectlist") {
                TupProjectListParser parser(package);
                if (parser.parse()) {
@@ -456,7 +447,21 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
 
                }
     } else if (root == "storyboard_update") {
-               // SQA: storyboard package must be parsed and the related scene must be updated  
+               // SQA: storyboard package must be parsed and the related scene must be updated
+    } else if (root == "disconnect") {
+               // Server is gracefully telling us why it's disconnecting
+               QDomDocument doc;
+               if (doc.setContent(package)) {
+                       QString reason = doc.documentElement().attribute("reason");
+                       if (reason == "inactivity") {
+                           m_disconnectReason = DisconnectReason::Inactivity;
+                       }
+               }
+               // Initiate graceful socket closure
+               if (socket) {
+                       socket->disconnectFromHost();
+               }
+               return;
     } else {
       #ifdef TUP_DEBUG
           qWarning() << "[TupNetProjectManagerHandler::handlePackage()] - Error: Unknown package ->" << root;
@@ -516,17 +521,24 @@ void TupNetProjectManagerHandler::connectionLost()
         qWarning() << "[TupNetProjectManagerHandler::connectionLost()] - The socket has been closed";
     #endif
 
-    m_pingTimer->stop();
+    // If it wasn't explicitly set to "Inactivity" by the server,
+    // it means the connection dropped unexpectedly (Network Error).
+    if (m_disconnectReason == DisconnectReason::Unknown) {
+        m_disconnectReason = DisconnectReason::NetworkError;
+    }
 
     if (dialogIsOpen) {
         if (dialog) {
             if (dialog->isVisible())
                 dialog->close();
         }
-        emit connectionHasBeenLost();
+        emit connectionHasBeenLost(m_disconnectReason);
     } else if (projectIsOpen) {
-               emit connectionHasBeenLost();
+               emit connectionHasBeenLost(m_disconnectReason);
     }
+
+    // Reset for the next session
+    m_disconnectReason = DisconnectReason::Unknown;
 }
 
 void TupNetProjectManagerHandler::closeConnection()
@@ -576,13 +588,4 @@ void TupNetProjectManagerHandler::postStoryboardRequest(int sceneIndex)
 
     TupStoryboardExportPackage package(sceneIndex);
     sendPackage(package);
-}
-
-void TupNetProjectManagerHandler::sendPing()
-{
-    if (socket && socket->state() == QAbstractSocket::ConnectedState) {
-        QDomDocument doc;
-        doc.appendChild(doc.createElement("ping"));
-        socket->send(doc);
-    }
 }

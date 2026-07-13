@@ -178,4 +178,6 @@ enum NodeType { CurveNode = 0, LineNode };
 
 enum ExportOutputFormat { Animation = 0, ImageSequence, AnimatedImage };
 
+enum DisconnectReason { Unknown, Inactivity, NetworkError };
+
 #endif

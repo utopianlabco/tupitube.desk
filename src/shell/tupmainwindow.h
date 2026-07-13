@@ -169,7 +169,7 @@ class TupMainWindow : public TabbedMainWindow
         void newProject();
         void closeInterface();
         bool closeProject();
-        void unexpectedClose();
+        void unexpectedClose(DisconnectReason reason);
         void openProject();
         void openProjectFromServer();
         void uploadProjectToServer();

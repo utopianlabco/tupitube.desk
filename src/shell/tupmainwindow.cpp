@@ -896,7 +896,11 @@ void TupMainWindow::setupCollaborativeProject(TupProjectManagerParams *params)
                 this, SLOT(createNewNetProject(const QString &, const QStringList &)));
         connect(netProjectManager, SIGNAL(updateUsersList(const QString &, int)),
                 this, SLOT(updateUsersOnLine(const QString &, int)));
-        connect(netProjectManager, SIGNAL(connectionHasBeenLost()), this, SLOT(unexpectedClose()));
+
+        // connect(netProjectManager, SIGNAL(connectionHasBeenLost()), this, SLOT(unexpectedClose()));
+        connect(netProjectManager, &TupNetProjectManagerHandler::connectionHasBeenLost,
+                this, &TupMainWindow::unexpectedClose);
+
         connect(netProjectManager, SIGNAL(savingSuccessful()), this, SLOT(netProjectSaved()));
         connect(netProjectManager, SIGNAL(postOperationDone()), this, SLOT(resetMousePointer()));
         connect(netProjectManager, SIGNAL(newMessageReceived(int)), this, SLOT(notifyChatMessage(int)));
@@ -1881,21 +1885,34 @@ void TupMainWindow::requestProject()
     }
 }
 
-void TupMainWindow::unexpectedClose()
+void TupMainWindow::unexpectedClose(DisconnectReason reason)
 {
-    if (m_projectManager->isOpen())
+    if (m_projectManager->isOpen()) {
         resetUI();
+    }
 
     QMessageBox msgBox;
-    msgBox.setWindowTitle(tr("Fatal Error"));
-    msgBox.setIcon(QMessageBox::Critical);
-    msgBox.setText(tr("The connection to the server has been lost."));
-    msgBox.setInformativeText(tr("Please, try to connect again in a while"));
+
+    // Dynamically set the UI based on the disconnection reason
+    if (reason == DisconnectReason::Inactivity) {
+        msgBox.setWindowTitle(tr("Disconnected"));
+        msgBox.setIcon(QMessageBox::Warning); // Less alarming than Critical
+        msgBox.setText(tr("You have been disconnected due to inactivity."));
+        msgBox.setInformativeText(tr("Please save your work locally and reconnect when you are ready."));
+    } else {
+        // Default to Network Error / Unknown
+        msgBox.setWindowTitle(tr("Connection Lost"));
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.setText(tr("The connection to the server has been lost due to a network issue."));
+        msgBox.setInformativeText(tr("Please check your internet connection and try to connect again."));
+    }
+
     msgBox.addButton(QString(tr("Close")), QMessageBox::DestructiveRole);
 
+    // Keep your custom centering logic
     msgBox.show();
-    msgBox.move(static_cast<int> ((screenWidth - msgBox.width()) / 2),
-                 static_cast<int> ((screenHeight - msgBox.height()) / 2));
+    msgBox.move(static_cast<int>((screenWidth - msgBox.width()) / 2),
+                static_cast<int>((screenHeight - msgBox.height()) / 2));
 
     msgBox.exec();
 }

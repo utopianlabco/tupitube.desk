@@ -1893,7 +1893,7 @@ void TupMainWindow::unexpectedClose(DisconnectReason reason)
     QMessageBox msgBox;
 
     // Dynamically set the UI based on the disconnection reason
-    if (reason == DisconnectReason::Inactivity) {
+    if (reason == DisconnectReason::UserInactivity) {
         msgBox.setWindowTitle(tr("Disconnected"));
         msgBox.setIcon(QMessageBox::Warning); // Less alarming than Critical
         msgBox.setText(tr("You have been disconnected due to inactivity."));

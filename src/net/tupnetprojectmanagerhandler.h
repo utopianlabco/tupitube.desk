@@ -111,7 +111,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void soundPathsChanged();
         void savingSuccessful();
         void postOperationDone();
-        void connectionHasBeenLost(DisconnectReason reason = DisconnectReason::Unknown);
+        void connectionHasBeenLost(DisconnectReason reason = DisconnectReason::UnknownDisconnectReason);
         void authenticationFailed();
         void newMessageReceived(int messageType);
 
@@ -149,7 +149,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         bool projectIsOpen;
         bool dialogIsOpen;
         TupProjectListDialog *dialog;
-        DisconnectReason m_disconnectReason = DisconnectReason::Unknown;
+        DisconnectReason m_disconnectReason = DisconnectReason::UnknownDisconnectReason;
 };
 
 #endif

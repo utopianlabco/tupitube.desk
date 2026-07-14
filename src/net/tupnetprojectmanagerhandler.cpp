@@ -454,7 +454,7 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                if (doc.setContent(package)) {
                        QString reason = doc.documentElement().attribute("reason");
                        if (reason == "inactivity") {
-                           m_disconnectReason = DisconnectReason::Inactivity;
+                           m_disconnectReason = DisconnectReason::UserInactivity;
                        }
                }
                // Initiate graceful socket closure
@@ -523,7 +523,7 @@ void TupNetProjectManagerHandler::connectionLost()
 
     // If it wasn't explicitly set to "Inactivity" by the server,
     // it means the connection dropped unexpectedly (Network Error).
-    if (m_disconnectReason == DisconnectReason::Unknown) {
+    if (m_disconnectReason == DisconnectReason::UnknownDisconnectReason) {
         m_disconnectReason = DisconnectReason::NetworkError;
     }
 
@@ -538,7 +538,7 @@ void TupNetProjectManagerHandler::connectionLost()
     }
 
     // Reset for the next session
-    m_disconnectReason = DisconnectReason::Unknown;
+    m_disconnectReason = DisconnectReason::UnknownDisconnectReason;
 }
 
 void TupNetProjectManagerHandler::closeConnection()

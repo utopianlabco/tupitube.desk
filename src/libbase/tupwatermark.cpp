@@ -34,6 +34,8 @@
 
 #include "tupwatermark.h"
 #include <QFont>
+#include <QGraphicsTextItem>
+#include <QRectF>
 
 TupWaterMark::TupWaterMark(QObject *parent) : QObject(parent)
 {
@@ -47,37 +49,38 @@ QGraphicsTextItem * TupWaterMark::generateWaterMark(const QColor &bgColor, const
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupWaterMark::generateWaterMark()]";
-        qDebug() << "bgColor: " << bgColor;
-        qDebug() << "size: " << size;
     #endif
 
     int imgW = size.width();
     int imgH = size.height();
 
-    double wLimit;
-    if (imgW > imgH)
-        wLimit = imgW * (0.2);
-    else
-        wLimit = imgW * (0.3);
+    // Use 20% of width for landscape, 30% for portrait
+    double wLimit = (imgW > imgH) ? (imgW * 0.20) : (imgW * 0.30);
 
     QColor fgColor = waterMarkColor(bgColor);
-
     QGraphicsTextItem *watermark = new QGraphicsTextItem("@tupitube");
     watermark->setDefaultTextColor(fgColor);
-    QFont font("Paytone One");
 
-    int textWidth = 0;
-    int fontSize = 10;
-    while (textWidth < wLimit) {
+    // Robust font fallback
+    QFont font("Paytone One, Arial, Helvetica, sans-serif");
+    font.setBold(true);
+
+    // Estimate font size efficiently (e.g., ~5% of image height)
+    int fontSize = qMax(10, imgH / 20);
+    font.setPointSize(fontSize);
+    watermark->setFont(font);
+
+    // Refine size if it exceeds the limit
+    QRectF rect = watermark->boundingRect();
+    while (rect.width() > wLimit && fontSize > 10) {
+        fontSize--;
         font.setPointSize(fontSize);
         watermark->setFont(font);
-        QRectF rect = watermark->boundingRect();
-        textWidth = rect.width();
-        fontSize++;
+        rect = watermark->boundingRect();
     }
 
-    int x = (imgW - textWidth)/2;
-    watermark->setPos(x, -5);
+    int x = (imgW - rect.width()) / 2;
+    watermark->setPos(x, 0); // Safe Y position
     watermark->setZValue(zLevel);
 
     return watermark;
@@ -85,32 +88,9 @@ QGraphicsTextItem * TupWaterMark::generateWaterMark(const QColor &bgColor, const
 
 QColor TupWaterMark::waterMarkColor(const QColor &bgColor)
 {
-    QColor fgColor(120, 120, 120);
+    // Calculate perceived brightness (luminance)
+    int luminance = (bgColor.red() * 299 + bgColor.green() * 587 + bgColor.blue() * 114) / 1000;
 
-    if (bgColor == Qt::white) {
-        fgColor = QColor(180, 180, 180);
-    } else {
-        if (bgColor == Qt::black) {
-            fgColor = QColor(255, 255, 255);
-        } else {
-            if ((bgColor.green() <= 210) && (bgColor.red() <= 210) && (bgColor.blue() <= 210)) {
-                fgColor = QColor(255, 255, 255);
-            } else {
-                if (bgColor.red() > 210 && bgColor.green() > 210 && bgColor.blue() > 210)
-                    fgColor = QColor(180, 180, 180);
-                else if (bgColor.red() > 220 && bgColor.green() > 220 && bgColor.blue() < 220)
-                    fgColor = QColor(150, 150, 150);
-                else if (bgColor.green() > 200 && (bgColor.red() < 200 || bgColor.blue() < 200))
-                    fgColor = QColor(120, 120, 120);
-                else if (bgColor.red() > 200 && (bgColor.green() < 200 || bgColor.blue() < 200))
-                    fgColor = QColor(255, 255, 255);
-                else if (bgColor.blue() > 200 && (bgColor.red() < 200 || bgColor.green() < 200))
-                    fgColor = QColor(255, 255, 255);
-                else if (bgColor.red() < 150 && bgColor.green() < 150 && bgColor.blue() < 150)
-                    fgColor = QColor(230, 230, 230);
-            }
-        }
-    }
-
-    return fgColor;
+    // Return light gray for dark backgrounds, dark gray for light backgrounds
+    return (luminance < 128) ? QColor(255, 255, 255) : QColor(120, 120, 120);
 }

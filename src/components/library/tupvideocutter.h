@@ -46,7 +46,7 @@ extern "C" {
 #include "libavcodec/avcodec.h"
 #include "libavformat/avformat.h"
 #include "libswscale/swscale.h"
-
+#include "libavutil/pixdesc.h"
 // Required to create the PNG files
 #include "png.h"
 }
@@ -56,39 +56,43 @@ class TUPITUBE_EXPORT TupVideoCutter : public QObject
 {
     Q_OBJECT
 
-    public:
-        TupVideoCutter();
-        ~TupVideoCutter();
+public:
+    TupVideoCutter();
+    ~TupVideoCutter();
 
-        bool loadFile(const QString &videoFile, const QString &outputPath);
-        void setExtractionParams(int frames);
-        bool startExtraction();
-        QSize getVideoSize() const;
-        void releaseResources();
+    bool loadFile(const QString &videoFile, const QString &outputPath);
+    void setExtractionParams(int frames);
+    bool startExtraction();
+    QSize getVideoSize() const;
+    void releaseResources();
 
-    signals:
-        void imageExtracted(MediaType media, int index);
-        void imageExtractionIsDone();
+    // Getter for the estimated total frames (used for UI progress bars)
+    int totalFrames() const;
 
-    private:
-        // Decode video packets into frames
-        int decodeVideoPacket(AVPacket *packet, AVCodecContext *codecContext, AVFrame *frame);
-        // Save a frame into a .png file
-        int saveVideoFrameToPng(AVFrame *frame, const QString &filename);
+signals:
+    void imageExtracted(MediaType media, int index);
+    void imageExtractionIsDone();
 
-        QString filename;
-        QString outputFolder;
-        int imagesTotal;
+private:
+    // Decode video packets into frames
+    int decodeVideoPacket(AVPacket *packet, AVCodecContext *codecContext, AVFrame *frame);
+    // Save a frame into a .png file
+    int saveVideoFrameToPng(AVFrame *frame, const QString &filename);
 
-        AVFormatContext *formatContext;
-        AVCodecContext *inputVideoCodecContext;
+    QString filename;
+    QString outputFolder;
+    int imagesTotal;
+    int extractedCount;
+    int estimatedTotalFrames;
+    int videoStreamIndex;
 
-        int videoStreamIndex;
-        int audioStreamIndex;
-        AVFrame *inputFrame;
-        AVPacket *inputPacket;
+    AVFormatContext *formatContext;
+    AVCodecContext *inputVideoCodecContext;
 
-        QSize videoSize;
+    AVFrame *inputFrame;
+    AVPacket *inputPacket;
+
+    QSize videoSize;
 };
 
 #endif

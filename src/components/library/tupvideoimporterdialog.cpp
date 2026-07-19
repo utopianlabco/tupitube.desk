@@ -63,6 +63,7 @@ TupVideoImporterDialog::TupVideoImporterDialog(const QString &filename, const QS
     setWindowIcon(QIcon(QPixmap(THEME_DIR + "icons/scenes.png")));
     setStyleSheet(TAppTheme::themeStyles());
 
+    videoFramesTotal = cutter->totalFrames();
     videoCutter = cutter;
     connect(videoCutter, SIGNAL(imageExtracted(MediaType, int)), this, SLOT(updateMediaProgress(MediaType, int)));
     connect(videoCutter, SIGNAL(imageExtractionIsDone()), this, SLOT(startImageImportation()));
@@ -82,94 +83,78 @@ TupVideoImporterDialog::~TupVideoImporterDialog()
 
 void TupVideoImporterDialog::setDialogUI(bool fixSize)
 {
-    QLabel *importLabel = new QLabel(tr("Select the number of photograms to import:"));
-    imagesBox = new QSpinBox;
-    imagesBox->setMinimum(1);
-    imagesBox->setMaximum(100);
-    imagesBox->setValue(1);
+    // Video info section (always shown)
+    QGroupBox *videoInfoGroup = new QGroupBox(tr("Video Information"));
+    QVBoxLayout *videoLayout = new QVBoxLayout();
+    videoLayout->addWidget(new QLabel(tr("Source: %1").arg(videoPath)));
+    videoLayout->addWidget(new QLabel(tr("Resolution: %1x%2").arg(videoSize.width()).arg(videoSize.height())));
+    videoLayout->addWidget(new QLabel(tr("Duration: %1 frames").arg(videoFramesTotal)));
+    videoInfoGroup->setLayout(videoLayout);
+    layout->addWidget(videoInfoGroup);
 
-    QWidget *formWidget = new QWidget;
-    QHBoxLayout *formLayout = new QHBoxLayout(formWidget);
-    formLayout->addStretch();
-    formLayout->addWidget(importLabel);
-    formLayout->addWidget(imagesBox);
-    formLayout->addStretch();
+    // Frames extraction section (always shown)
+    QGroupBox *framesGroup = new QGroupBox(tr("Frames to Extract (100 max)"));
+    QVBoxLayout *framesLayout = new QVBoxLayout();
+    framesLayout->addWidget(new QLabel(tr("Number of frames:")));
+    imagesBox = new QSpinBox();
 
-    layout->addWidget(formWidget);
+    int maxFramesToExtract = qMin(100, videoFramesTotal);
+    imagesBox->setRange(1, maxFramesToExtract);
+    imagesBox->setValue(videoFramesTotal);
+    framesLayout->addWidget(imagesBox);
+    framesGroup->setLayout(framesLayout);
+    layout->addWidget(framesGroup);
 
+    // Resize options section (ONLY shown if dimensions differ)
     if (fixSize) {
-        QWidget *sizeWidget = new QWidget;
-        QVBoxLayout *sizeLayout = new QVBoxLayout(sizeWidget);
+        QGroupBox *resizeGroup = new QGroupBox(tr("Resize Options"));
+        QVBoxLayout *resizeLayout = new QVBoxLayout();
 
-        TSeparator *div = new TSeparator();
-
-        QLabel *sizeLabel = new QLabel("<b>" + tr("Project size and video size are different:") + "</b>");
-        sizeLabel->setAlignment(Qt::AlignHCenter);
-
-        QLabel *canvasLabel = new QLabel(tr("Project Size:") + " <b>" + QString::number(projectSize.width())
-                                         + "x" + QString::number(projectSize.height()) + "</b>");
-        canvasLabel->setAlignment(Qt::AlignHCenter);
-        QLabel *videoLabel = new QLabel(tr("Video Size:") + " <b>" + QString::number(videoSize.width())
-                                         + "x" + QString::number(videoSize.height()) + "</b>");
-        videoLabel->setAlignment(Qt::AlignHCenter);
-
-        groupBox = new QGroupBox(tr("What do you want to do?"));
-        checkButton1 = new QRadioButton(tr("Keep original project and video sizes"));
+        checkButton1 = new QRadioButton(tr("Keep original video size"));
         checkButton2 = new QRadioButton(tr("Adjust video size to project size"));
         checkButton3 = new QRadioButton(tr("Adjust project size to video size"));
-        checkButton1->setChecked(true);
 
-        QVBoxLayout *optionsBox = new QVBoxLayout;
-        optionsBox->addWidget(checkButton1);
-        optionsBox->addWidget(checkButton2);
-        optionsBox->addWidget(checkButton3);
-        optionsBox->addStretch(1);
+        checkButton1->setChecked(true); // Default option
 
-        groupBox->setLayout(optionsBox);
-
-        sizeLayout->addWidget(div);
-
-        sizeLayout->addWidget(sizeLabel);
-        sizeLayout->addWidget(canvasLabel);
-        sizeLayout->addWidget(videoLabel);
-        sizeLayout->addWidget(groupBox);
-
-        audioCheck = new QCheckBox(tr("Import audio if it's available"));
-        sizeLayout->addWidget(audioCheck);
-        sizeLayout->addWidget(div);
-
-        layout->addWidget(sizeWidget);
+        resizeLayout->addWidget(checkButton1);
+        resizeLayout->addWidget(checkButton2);
+        resizeLayout->addWidget(checkButton3);
+        resizeGroup->setLayout(resizeLayout);
+        layout->addWidget(resizeGroup);
     }
 
-    progressBar = new QProgressBar;
-    progressBar->setTextVisible(true);
-    progressBar->setRange(0, 100);
+    // Audio import section (ALWAYS shown - independent of dimensions)
+    QGroupBox *audioGroup = new QGroupBox(tr("Audio Import"));
+    QVBoxLayout *audioLayout = new QVBoxLayout();
+    audioCheck = new QCheckBox(tr("Import audio if it's available"));
+    audioCheck->setChecked(true); // Default to importing audio
+    audioLayout->addWidget(audioCheck);
+    audioGroup->setLayout(audioLayout);
+    layout->addWidget(audioGroup);
 
-    progressWidget = new QWidget;
-    progressLabel = new QLabel("");
-    progressLabel->setAlignment(Qt::AlignHCenter);
-
-    QVBoxLayout *progressLayout = new QVBoxLayout(progressWidget);
+    // Progress section (always shown)
+    progressWidget = new QWidget();
+    QVBoxLayout *progressLayout = new QVBoxLayout();
+    progressLabel = new QLabel();
+    progressBar = new QProgressBar();
     progressLayout->addWidget(progressLabel);
     progressLayout->addWidget(progressBar);
+    progressWidget->setLayout(progressLayout);
     progressWidget->setVisible(false);
-
     layout->addWidget(progressWidget);
 
-    QPushButton *okButton = new QPushButton(QIcon(QPixmap(THEME_DIR + "icons/apply.png")), "");
-    connect(okButton, SIGNAL(clicked()), this, SLOT(startMediaExtraction()));
+    // Buttons section (always shown)
+    buttonsWidget = new QWidget();
+    QHBoxLayout *buttonsLayout = new QHBoxLayout();
+    QPushButton *startButton = new QPushButton(tr("Start"));
+    QPushButton *cancelButton = new QPushButton(tr("Cancel"));
+    buttonsLayout->addWidget(startButton);
+    buttonsLayout->addWidget(cancelButton);
+    buttonsWidget->setLayout(buttonsLayout);
+    layout->addWidget(buttonsWidget);
 
-    QPushButton *closeButton = new QPushButton(QIcon(QPixmap(THEME_DIR + "icons/close.png")), "");
-    closeButton->setToolTip(tr("Close"));
-    connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
-
-    buttonsWidget = new QWidget;
-    QHBoxLayout *buttonLayout = new QHBoxLayout(buttonsWidget);
-    buttonLayout->addWidget(okButton);
-    buttonLayout->addWidget(closeButton);
-
-    layout->addWidget(buttonsWidget, 1, Qt::AlignRight);
-    layout->addStretch(1);
+    connect(startButton, SIGNAL(clicked()), this, SLOT(startMediaExtraction()));
+    connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 }
 
 void TupVideoImporterDialog::startMediaExtraction()
@@ -179,22 +164,20 @@ void TupVideoImporterDialog::startMediaExtraction()
     #endif
 
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-    framesTotal = imagesBox->value();
-    // framesCounter = 100/framesTotal;
+    framesTotal = imagesBox->value() - 1;
     framesCounter = 1;
 
     imagesBox->setEnabled(false);
     buttonsWidget->setVisible(false);
 
     if (fixSize) {
-        if (checkButton2->isChecked()) {
-            // Adjust photograms size
+        if (checkButton2 && checkButton2->isChecked()) {
             #ifdef TUP_DEBUG
                 qDebug() << "[TupVideoImporterDialog::startMediaExtraction()] - Resizing photograms...";
             #endif
             sizeFlag = true;
-        } if (checkButton3->isChecked()) {
-            // Adjust project size
+        }
+        if (checkButton3 && checkButton3->isChecked()) {
             #ifdef TUP_DEBUG
                 qDebug() << "[TupVideoImporterDialog::startMediaExtraction()] - Resizing project canvas...";
             #endif
@@ -205,30 +188,30 @@ void TupVideoImporterDialog::startMediaExtraction()
     progressWidget->setVisible(true);
     progressLabel->setText(tr("Starting procedure..."));
 
+    // Create assets directory if it doesn't exist
     if (!QFile::exists(assetsPath)) {
         QDir dir;
         if (!dir.mkpath(assetsPath)) {
             #ifdef TUP_DEBUG
-                qDebug() << "[TupVideoImporterDialog::startMediaExtraction()] - Fatal Error: Couldn't create images directory -> "
-                         << assetsPath;
+                qDebug() << "[TupVideoImporterDialog::startMediaExtraction()] - Fatal Error: Couldn't create images directory ->" << assetsPath;
             #endif
             TOsd::self()->display(TOsd::Error, tr("Couldn't create temporary directory!"));
-
+            QApplication::restoreOverrideCursor();
             return;
         }
     }
 
+    // Start video frame extraction
     videoCutter->setExtractionParams(framesTotal);
     if (!videoCutter->startExtraction()) {
         TOsd::self()->display(TOsd::Error, tr("Can't extract photograms!"));
         videoCutter->releaseResources();
-
+        QApplication::restoreOverrideCursor();
         return;
     }
     videoCutter->releaseResources();
 
-    // Audio extraction
-    if (audioCheck->isChecked()) {
+    if (audioCheck && audioCheck->isChecked()) {
         #ifdef TUP_DEBUG
             qDebug() << "[TupVideoImporterDialog::startMediaExtraction()] - Importing audio...";
         #endif
@@ -243,10 +226,11 @@ void TupVideoImporterDialog::startMediaExtraction()
         progressLabel->setText(tr("Importing audio track from video file..."));
 
         audioPath = QDir::tempPath() + "/" + audioName + ".mp3";
-        if (QFile::exists(audioPath))
+        if (QFile::exists(audioPath)) {
             audioPath = QDir::tempPath() + "/mp3_audio_" + TAlgorithm::randomString(12) + ".mp3";
+        }
 
-        TupAudioCutter *audioCutter = new TupAudioCutter(videoPath, audioPath);        
+        TupAudioCutter *audioCutter = new TupAudioCutter(videoPath, audioPath);
         connect(audioCutter, SIGNAL(audioExtracted(MediaType, int)),
                 this, SLOT(updateMediaProgress(MediaType, int)));
         connect(audioCutter, SIGNAL(extractionIsDone(const QString &)),
@@ -254,8 +238,7 @@ void TupVideoImporterDialog::startMediaExtraction()
 
         if (!audioCutter->generateMP3Audio()) {
             #ifdef TUP_DEBUG
-                qDebug() << "[TupVideoImporterDialog::startMediaExtraction()] - "
-                            "Error: Couldn't extract audio from video file ->" << videoPath;
+                qDebug() << "[TupVideoImporterDialog::startMediaExtraction()] - Error: Couldn't extract audio from video file ->" << videoPath;
             #endif
         }
     }
@@ -304,12 +287,12 @@ void TupVideoImporterDialog::endProcedure()
 {
     QDir imgDir(assetsPath);
     #ifdef TUP_DEBUG
-        qDebug() << "[TupVideoImporterDialog::removeTempFolder()] - Removing temporary (images) folder -> " << assetsPath;
+        qDebug() << "[TupVideoImporterDialog::removeTempFolder()] - Removing temporary (images) folder ->" << assetsPath;
     #endif
     if (imgDir.exists()) {
         if (!imgDir.removeRecursively()) {
             #ifdef TUP_DEBUG
-                qWarning() << "[TupVideoImporterDialog::removeTempFolder()] - Error: Can't remove temporary (images) folder -> "
+                qWarning() << "[TupVideoImporterDialog::removeTempFolder()] - Error: Can't remove temporary (images) folder ->"
                            << assetsPath;
             #endif
         }

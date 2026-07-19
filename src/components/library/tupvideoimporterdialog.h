@@ -90,6 +90,7 @@ class TUPITUBE_EXPORT TupVideoImporterDialog : public QDialog
         QString audioPath;
         int framesTotal;
         int framesCounter;
+        int videoFramesTotal;
         QSize projectSize;
         QSize videoSize;
 

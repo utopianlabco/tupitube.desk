@@ -63,7 +63,8 @@ class TUPITUBE_EXPORT TupVideoImporterDialog : public QDialog
         void imageExtractionIsDone(ImageImportAction action, const QString &imagesPath, bool sizeFlag);
         void audioExtractionIsDone(const QString &audioPath);
         void projectSizeHasChanged(const QSize dimension);
-
+        void requestAddImageToLibrary(const QString &name, const QString &extension, const QByteArray &data,
+                                      const QString &folder);
     public slots:
         void endProcedure();
 

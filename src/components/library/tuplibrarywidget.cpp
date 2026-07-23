@@ -1136,6 +1136,10 @@ void TupLibraryWidget::importImageFromByteArray(const QString &imageName, const 
                                                                             currentFrame.scene, currentFrame.layer, currentFrame.frame);
         localImportPendingInsert = true;
         emit requestTriggered(&request);
+    } else {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupLibraryWidget::importImageFromByteArray()] - Fatal Error: Can't load image from data ->" << imageName;
+        #endif
     }
 }
 
@@ -1807,8 +1811,9 @@ void TupLibraryWidget::importVideoFileFromFolder(const QString &videoPath)
             connect(this, SIGNAL(imagesImportationDone()), dialog, SLOT(endProcedure()));
             connect(this, SIGNAL(msgSentToImageImporter(const QString &)),
                     dialog, SLOT(updateStatusFromLibraryWidget(const QString &)));
-
-            dialog->show();                        
+            connect(dialog, SIGNAL(requestAddImageToLibrary(const QString &, const QString &, const QByteArray &, const QString &)),
+                    this, SLOT(importImageFromByteArray(const QString &, const QString &, const QByteArray &, const QString &)));
+            dialog->show();
         } else {
             TOsd::self()->display(TOsd::Error, tr("Can't load video file!"));
         }

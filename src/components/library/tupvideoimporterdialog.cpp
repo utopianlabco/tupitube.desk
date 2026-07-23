@@ -251,6 +251,45 @@ void TupVideoImporterDialog::updateMediaProgress(MediaType media, int index)
     #endif
 
     QString msg = tr("Extracting photogram %1 of %2").arg(index).arg(framesTotal);
+    if (media == Audio) {
+        msg = tr("Extracting audio frame %1 of %2").arg(index).arg(framesTotal);
+    }
+
+    progressLabel->setText(msg);
+    progressBar->setValue(framesCounter);
+    framesCounter += 1;
+
+    // ---------------------------------------------------------------
+    // NEW: Convert extracted video frame to QByteArray and send to library
+    // ---------------------------------------------------------------
+    if (media == Video) {
+        QString frameName = "frame" + QString::number(index);
+        QString filePath = assetsPath + frameName + ".png";
+
+        QFile file(filePath);
+        if (file.open(QIODevice::ReadOnly)) {
+            QByteArray data = file.readAll();
+            file.close();
+
+            // Emit the signal to trigger the standard library import workflow
+            emit requestAddImageToLibrary(frameName, "png", data, "video_frames/");
+        } else {
+            #ifdef TUP_DEBUG
+                qWarning() << "[TupVideoImporterDialog::updateMediaProgress()] - Failed to open frame file for byte array conversion:"
+                           << filePath;
+            #endif
+        }
+    }
+}
+
+/*
+void TupVideoImporterDialog::updateMediaProgress(MediaType media, int index)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupVideoImporterDialog::updateMediaProgress()] - index ->" << index;
+    #endif
+
+    QString msg = tr("Extracting photogram %1 of %2").arg(index).arg(framesTotal);
     if (media == Audio)
         msg = tr("Extracting audio frame %1 of %2").arg(index).arg(framesTotal);
 
@@ -258,6 +297,7 @@ void TupVideoImporterDialog::updateMediaProgress(MediaType media, int index)
     progressBar->setValue(framesCounter);
     framesCounter += 1;
 }
+*/
 
 void TupVideoImporterDialog::startImageImportation()
 {

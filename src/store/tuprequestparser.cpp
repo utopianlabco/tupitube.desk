@@ -33,7 +33,6 @@
  ***************************************************************************/
 
 #include "tuprequestparser.h"
-// #include "tupprojectrequest.h"
 #include "tuplibraryobject.h"
 #include "tuprequestparserhandler.h"
 
@@ -52,6 +51,7 @@ bool TupRequestParser::parse(const QString &xml)
     if (handler.parse()) {
         response = handler.getResponse();
         sign = handler.getSign();
+        commandId = handler.getCommandId();
 
         return true;
     }
@@ -67,4 +67,9 @@ TupProjectResponse *TupRequestParser::getResponse() const
 QString TupRequestParser::getSign() const
 {
     return sign;
+}
+
+QString TupRequestParser::getCommandId() const
+{
+    return commandId;
 }

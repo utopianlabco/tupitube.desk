@@ -54,6 +54,9 @@ class TUPITUBE_EXPORT TupProjectResponse
         TupProjectResponse(int part, int action);
         virtual ~TupProjectResponse();
 
+        void setCommandId(const QString &value);
+        QString getCommandId() const;
+
         int getPart() const;
         int getAction() const;
 
@@ -74,6 +77,7 @@ class TUPITUBE_EXPORT TupProjectResponse
         void toString();
 
     private:
+        QString commandId;
         int part;
         int action;
         TupProjectRequestArgument arg;

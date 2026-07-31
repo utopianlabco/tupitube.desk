@@ -96,31 +96,59 @@ TupNetProjectManagerHandler::~TupNetProjectManagerHandler()
     }
 }
 
-void TupNetProjectManagerHandler::handleProjectRequest(const TupProjectRequest* request)
+void TupNetProjectManagerHandler::handleProjectRequest(const TupProjectRequest *request)
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "[TupNetProjectManagerHandler::handleProjectRequest()]";
-    #endif
+#ifdef TUP_DEBUG
+    qDebug() << "[TupNetProjectManagerHandler::handleProjectRequest()]";
+#endif
 
-    // This comes from the project before the command execution
-    // SQA: Save a copy of the events or queued packages and resend to the GUI when the "Ok" package 
-    // comes from the server 
-
-    if (socket->state() == QAbstractSocket::ConnectedState) {
-        #ifdef TUP_DEBUG
-            qDebug() << "[TupNetProjectManagerHandler::handleProjectRequest()] - Sending Package:";
-            qDebug() << request->getXml();
-        #endif
-
-        if (request->isValid()) {
-            emit sendCommand(request, true);
-            socket->send(request->getXml());
-        } else {
-            #ifdef TUP_DEBUG
-                qWarning() << "[TupNetProjectManagerHandler::handleProjectRequest()] - Invalid Request - ID ->" << request->getId();
-            #endif
-        }
+    if (!request) {
+        qWarning()
+            << "[TupNetProjectManagerHandler::handleProjectRequest()]"
+            << "Null request.";
+        return;
     }
+
+    if (!request->isValid()) {
+#ifdef TUP_DEBUG
+        qWarning()
+            << "[TupNetProjectManagerHandler::handleProjectRequest()]"
+            << "Invalid request."
+            << "Action:" << request->getActionId();
+#endif
+        return;
+    }
+
+    if (request->getCommandId().isEmpty()) {
+        qWarning()
+            << "[TupNetProjectManagerHandler::handleProjectRequest()]"
+            << "Request has no command ID."
+            << "Action:" << request->getActionId();
+        return;
+    }
+
+    if (!socket || socket->state() != QAbstractSocket::ConnectedState) {
+#ifdef TUP_DEBUG
+        qWarning()
+            << "[TupNetProjectManagerHandler::handleProjectRequest()]"
+            << "Socket is not connected."
+            << "Command:" << request->getCommandId();
+#endif
+        return;
+    }
+
+#ifdef TUP_DEBUG
+    qDebug()
+        << "[TupNetProjectManagerHandler::handleProjectRequest()]"
+        << "Sending command:" << request->getCommandId()
+        << "Action:" << request->getActionId();
+
+    qDebug() << request->getXml();
+#endif
+
+    // Milestone 1 keeps the existing optimistic execution behavior.
+    emit sendCommand(request, true);
+    socket->send(request->getXml());
 }
 
 bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
@@ -134,7 +162,7 @@ bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
         return true;
     } 
 
-    TupProjectRequest request = TupRequestBuilder::fromResponse(response);
+    TupProjectRequest request = TupRequestBuilder::fromResponse(response, false);
     doAction = false;
 
     if (response->getMode() != TupProjectResponse::Undo && response->getMode() != TupProjectResponse::Redo) {
@@ -253,33 +281,73 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
         msgBox.setText(tr("User \"%1\" is disabled.\nPlease, contact the TupiTube server admin to get access.").arg(params->login()));
         msgBox.exec();
     } else if (root == "project_request") {
-               TupRequestParser parser;
+        TupRequestParser parser;
 
-               if (parser.parse(package)) {
-                   if (parser.getSign() == sign)
-                       ownPackage = true;
-                   else
-                       ownPackage = false;
+        if (!parser.parse(package)) {
+#ifdef TUP_DEBUG
+            qWarning()
+                << "[TupNetProjectManagerHandler::handlePackage()]"
+                << "Error parsing project request.";
+#endif
+            return;
+        }
 
-                   if (ownPackage && !doAction) {
-                       if (parser.getResponse()->getPart() == TupProjectRequest::Item) {
-                           TupItemResponse *response = static_cast<TupItemResponse *>(parser.getResponse());
-                           TupProjectRequest request = TupRequestBuilder::createFrameRequest(response->getSceneIndex(), 
-                                                      response->getLayerIndex(), response->getFrameIndex(), TupProjectRequest::Select);
-                           request.setExternal(!ownPackage);
-                           emit sendLocalCommand(&request);
-                       }
-                       return;
-                   } else {
-                       TupProjectRequest request = TupRequestBuilder::fromResponse(parser.getResponse());
-                       request.setExternal(!ownPackage);
-                       emitRequest(&request, doAction && ownPackage);
-                   }
-               } else { // SQA: show error 
-                   #ifdef TUP_DEBUG
-                       qDebug() << "TupNetProjectManagerHandler::handlePackage() - Error parsing net request";
-                   #endif
-               }
+        TupProjectResponse *response = parser.getResponse();
+
+        if (!response) {
+            qWarning()
+                << "[TupNetProjectManagerHandler::handlePackage()]"
+                << "No response was generated.";
+            return;
+        }
+
+        const QString commandId = response->getCommandId();
+
+        if (commandId.isEmpty()) {
+            qWarning()
+                << "[TupNetProjectManagerHandler::handlePackage()]"
+                << "Received command without an ID.";
+            return;
+        }
+
+#ifdef TUP_DEBUG
+        qDebug()
+            << "[TupNetProjectManagerHandler::handlePackage()]"
+            << "Received command:" << commandId
+            << "Action:" << response->getAction();
+#endif
+
+        ownPackage = (parser.getSign() == sign);
+
+        if (ownPackage && !doAction) {
+            if (response->getPart() == TupProjectRequest::Item) {
+                TupItemResponse *itemResponse =
+                    static_cast<TupItemResponse *>(response);
+
+                TupProjectRequest selectionRequest =
+                    TupRequestBuilder::createFrameRequest(
+                        itemResponse->getSceneIndex(),
+                        itemResponse->getLayerIndex(),
+                        itemResponse->getFrameIndex(),
+                        TupProjectRequest::Select,
+                        QVariant(),
+                        QByteArray(),
+                        QString());
+
+                selectionRequest.setExternal(false);
+                emit sendLocalCommand(&selectionRequest);
+            }
+
+            return;
+        }
+
+        // This is a replay of the command received from the server, so its
+        // original command ID must be preserved.
+        TupProjectRequest request =
+            TupRequestBuilder::fromResponse(response, true);
+
+        request.setExternal(!ownPackage);
+        emitRequest(&request, doAction && ownPackage);
     } else if (root == "server_ack") {
                // Checking the package
                TupAckParser parser(package);

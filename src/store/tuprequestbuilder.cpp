@@ -1,7 +1,7 @@
 /***************************************************************************
  *   Project TupiTube Desk                                                 *
  *   Project Contact: info@tupitube.com                                    *
- *   Project Website: http://www.tupitube.com                              * 
+ *   Project Website: http://www.tupitube.com                              *
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
@@ -36,6 +36,8 @@
 #include "tupprojectrequest.h"
 #include "tupprojectresponse.h"
 
+#include <QUuid>
+
 TupRequestBuilder::TupRequestBuilder()
 {
 }
@@ -44,12 +46,41 @@ TupRequestBuilder::~TupRequestBuilder()
 {
 }
 
-TupProjectRequest TupRequestBuilder::createItemRequest(int sceneIndex, int layerIndex, int frameIndex, int itemIndex, QPointF point, TupProject::Mode spaceMode, 
-                                                     TupLibraryObject::ObjectType type, int actionId, const QVariant &arg, const QByteArray &data)
+QString TupRequestBuilder::createCommandId()
+{
+    return QUuid::createUuid().toString(QUuid::WithoutBraces);
+}
+
+QString TupRequestBuilder::resolveCommandId(const QString &commandId)
+{
+    if (!commandId.isEmpty())
+        return commandId;
+
+    return createCommandId();
+}
+
+TupProjectRequest TupRequestBuilder::buildRequest(const QDomDocument &doc, int actionId,
+                                                  const QString &commandId)
+{
+    TupProjectRequest request(doc.toString(0));
+    request.setActionId(actionId);
+    request.setCommandId(commandId);
+    return request;
+}
+
+TupProjectRequest TupRequestBuilder::createItemRequest(int sceneIndex, int layerIndex, int frameIndex,
+                                                       int itemIndex, QPointF point,
+                                                       TupProject::Mode spaceMode,
+                                                       TupLibraryObject::ObjectType type,
+                                                       int actionId, const QVariant &arg,
+                                                       const QByteArray &data,
+                                                       const QString &commandId)
 {
     QDomDocument doc;
-
     QDomElement root = doc.createElement("project_request");
+
+    const QString resolvedCommandId = resolveCommandId(commandId);
+    root.setAttribute("command_id", resolvedCommandId);
 
     QDomElement scene = doc.createElement("scene");
     scene.setAttribute("index", sceneIndex);
@@ -67,10 +98,8 @@ TupProjectRequest TupRequestBuilder::createItemRequest(int sceneIndex, int layer
     objectType.setAttribute("id", type);
 
     QDomElement position = doc.createElement("position");
-    double px = point.x(); 
-    double py = point.y();
-    position.setAttribute("x", QString::number(px));
-    position.setAttribute("y", QString::number(py));
+    position.setAttribute("x", QString::number(point.x()));
+    position.setAttribute("y", QString::number(point.y()));
 
     QDomElement space = doc.createElement("spaceMode");
     space.setAttribute("current", spaceMode);
@@ -80,7 +109,7 @@ TupProjectRequest TupRequestBuilder::createItemRequest(int sceneIndex, int layer
     action.setAttribute("arg", arg.toString());
     action.setAttribute("part", TupProjectRequest::Item);
 
-    TupRequestBuilder::appendData(doc, action, data);
+    appendData(doc, action, data);
     root.appendChild(action);
     item.appendChild(objectType);
     item.appendChild(position);
@@ -89,18 +118,21 @@ TupProjectRequest TupRequestBuilder::createItemRequest(int sceneIndex, int layer
     layer.appendChild(frame);
     scene.appendChild(layer);
     root.appendChild(scene);
-
     doc.appendChild(root);
 
-    TupProjectRequest request(doc.toString(0));
-    return request;
+    return buildRequest(doc, actionId, resolvedCommandId);
 }
 
-TupProjectRequest TupRequestBuilder::createFrameRequest(int sceneIndex, int layerIndex, int frameIndex, int actionId, const QVariant &arg, const QByteArray &data)
+TupProjectRequest TupRequestBuilder::createFrameRequest(int sceneIndex, int layerIndex, int frameIndex,
+                                                        int actionId, const QVariant &arg,
+                                                        const QByteArray &data,
+                                                        const QString &commandId)
 {
     QDomDocument doc;
-
     QDomElement root = doc.createElement("project_request");
+
+    const QString resolvedCommandId = resolveCommandId(commandId);
+    root.setAttribute("command_id", resolvedCommandId);
 
     QDomElement scene = doc.createElement("scene");
     scene.setAttribute("index", sceneIndex);
@@ -116,23 +148,25 @@ TupProjectRequest TupRequestBuilder::createFrameRequest(int sceneIndex, int laye
     action.setAttribute("arg", arg.toString());
     action.setAttribute("part", TupProjectRequest::Frame);
 
-    TupRequestBuilder::appendData(doc, action, data);
-
+    appendData(doc, action, data);
     root.appendChild(action);
     layer.appendChild(frame);
     scene.appendChild(layer);
     root.appendChild(scene);
     doc.appendChild(root);
 
-    return TupProjectRequest(doc.toString(0));
+    return buildRequest(doc, actionId, resolvedCommandId);
 }
 
-
-TupProjectRequest TupRequestBuilder::createLayerRequest(int sceneIndex, int layerIndex, int actionId, const QVariant &arg, const QByteArray &data)
+TupProjectRequest TupRequestBuilder::createLayerRequest(int sceneIndex, int layerIndex, int actionId,
+                                                        const QVariant &arg, const QByteArray &data,
+                                                        const QString &commandId)
 {
     QDomDocument doc;
-
     QDomElement root = doc.createElement("project_request");
+
+    const QString resolvedCommandId = resolveCommandId(commandId);
+    root.setAttribute("command_id", resolvedCommandId);
 
     QDomElement scene = doc.createElement("scene");
     scene.setAttribute("index", sceneIndex);
@@ -145,21 +179,24 @@ TupProjectRequest TupRequestBuilder::createLayerRequest(int sceneIndex, int laye
     action.setAttribute("arg", arg.toString());
     action.setAttribute("part", TupProjectRequest::Layer);
 
-    TupRequestBuilder::appendData(doc, action, data);
-
+    appendData(doc, action, data);
     root.appendChild(action);
     scene.appendChild(layer);
     root.appendChild(scene);
-
     doc.appendChild(root);
 
-    return TupProjectRequest(doc.toString(0));
+    return buildRequest(doc, actionId, resolvedCommandId);
 }
 
-TupProjectRequest TupRequestBuilder::createSceneRequest(int sceneIndex, int actionId, const QVariant &arg, const QByteArray &data)
+TupProjectRequest TupRequestBuilder::createSceneRequest(int sceneIndex, int actionId,
+                                                        const QVariant &arg, const QByteArray &data,
+                                                        const QString &commandId)
 {
     QDomDocument doc;
     QDomElement root = doc.createElement("project_request");
+
+    const QString resolvedCommandId = resolveCommandId(commandId);
+    root.setAttribute("command_id", resolvedCommandId);
 
     QDomElement scene = doc.createElement("scene");
     scene.setAttribute("index", sceneIndex);
@@ -169,21 +206,28 @@ TupProjectRequest TupRequestBuilder::createSceneRequest(int sceneIndex, int acti
     action.setAttribute("arg", arg.toString());
     action.setAttribute("part", TupProjectRequest::Scene);
 
-    TupRequestBuilder::appendData(doc, action, data);
-
+    appendData(doc, action, data);
     root.appendChild(action);
     root.appendChild(scene);
-
     doc.appendChild(root);
 
-    return TupProjectRequest(doc.toString(0));
+    return buildRequest(doc, actionId, resolvedCommandId);
 }
 
-TupProjectRequest TupRequestBuilder::createLibraryRequest(int actionId, const QVariant &arg, TupLibraryObject::ObjectType type, TupProject::Mode spaceMode,
-                                                        const QByteArray &data, const QString &folder, int sceneIndex, int layerIndex, int frameIndex)
+TupProjectRequest TupRequestBuilder::createLibraryRequest(int actionId, const QVariant &arg,
+                                                          TupLibraryObject::ObjectType type,
+                                                          TupProject::Mode spaceMode,
+                                                          const QByteArray &data,
+                                                          const QString &folder,
+                                                          int sceneIndex, int layerIndex,
+                                                          int frameIndex,
+                                                          const QString &commandId)
 {
     QDomDocument doc;
     QDomElement root = doc.createElement("project_request");
+
+    const QString resolvedCommandId = resolveCommandId(commandId);
+    root.setAttribute("command_id", resolvedCommandId);
 
     QDomElement scene = doc.createElement("scene");
     scene.setAttribute("index", sceneIndex);
@@ -206,79 +250,101 @@ TupProjectRequest TupRequestBuilder::createLibraryRequest(int actionId, const QV
     action.setAttribute("arg", arg.toString());
     action.setAttribute("part", TupProjectRequest::Library);
 
-    TupRequestBuilder::appendData(doc, action, data);
-
+    appendData(doc, action, data);
     root.appendChild(action);
-
     library.appendChild(symbol);
-
     root.appendChild(library);
-
     root.appendChild(scene);
     scene.appendChild(layer);
     layer.appendChild(frame);
-
     doc.appendChild(root);
 
-    return TupProjectRequest(doc.toString(0));
+    return buildRequest(doc, actionId, resolvedCommandId);
 }
 
-void TupRequestBuilder::appendData(QDomDocument &doc, QDomElement &element, const QByteArray &data)
+void TupRequestBuilder::appendData(QDomDocument &doc, QDomElement &element,
+                                   const QByteArray &data)
 {
     if (!data.isNull() && !data.isEmpty()) {
-        QDomElement edata = doc.createElement("data");
-
+        QDomElement dataElement = doc.createElement("data");
         QDomCDATASection cdata = doc.createCDATASection(QString(data.toBase64()));
-
-        edata.appendChild(cdata);
-        element.appendChild(edata);
+        dataElement.appendChild(cdata);
+        element.appendChild(dataElement);
     }
 }
 
-TupProjectRequest TupRequestBuilder::fromResponse(TupProjectResponse *response)
+TupProjectRequest TupRequestBuilder::fromResponse(TupProjectResponse *response,
+                                                         bool preserveCommandId)
 {
-    TupProjectRequest request;
+    if (!response)
+        return TupProjectRequest();
+
+    const QString commandId = preserveCommandId
+        ? response->getCommandId()
+        : QString();
 
     switch (response->getPart()) {
-            case TupProjectRequest::Item:
-                 {
-                    request = TupRequestBuilder::createItemRequest(static_cast<TupItemResponse*> (response)->getSceneIndex(), static_cast<TupItemResponse*> (response)->getLayerIndex(), 
-                                                                  static_cast<TupItemResponse*> (response)->getFrameIndex(), static_cast<TupItemResponse*> (response)->getItemIndex(), 
-                                                                  static_cast<TupItemResponse*> (response)->position(), TupProject::Mode(static_cast<TupItemResponse*> (response)->spaceMode()), 
-                                                                  TupLibraryObject::ObjectType(static_cast<TupItemResponse*> (response)->getItemType()), response->getAction(), response->getArg().toString(),
-                                                                  response->getData());
-                 }
+        case TupProjectRequest::Item: {
+            TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+            return createItemRequest(itemResponse->getSceneIndex(),
+                                     itemResponse->getLayerIndex(),
+                                     itemResponse->getFrameIndex(),
+                                     itemResponse->getItemIndex(),
+                                     itemResponse->position(),
+                                     itemResponse->spaceMode(),
+                                     itemResponse->getItemType(),
+                                     response->getAction(),
+                                     response->getArg().toString(),
+                                     response->getData(),
+                                     commandId);
+        }
+        case TupProjectRequest::Frame: {
+            TupFrameResponse *frameResponse = static_cast<TupFrameResponse *>(response);
+            return createFrameRequest(frameResponse->getSceneIndex(),
+                                      frameResponse->getLayerIndex(),
+                                      frameResponse->getFrameIndex(),
+                                      response->getAction(),
+                                      response->getArg().toString(),
+                                      response->getData(),
+                                      commandId);
+        }
+        case TupProjectRequest::Layer: {
+            TupLayerResponse *layerResponse = static_cast<TupLayerResponse *>(response);
+            return createLayerRequest(layerResponse->getSceneIndex(),
+                                      layerResponse->getLayerIndex(),
+                                      response->getAction(),
+                                      response->getArg().toString(),
+                                      response->getData(),
+                                      commandId);
+        }
+        case TupProjectRequest::Scene: {
+            TupSceneResponse *sceneResponse = static_cast<TupSceneResponse *>(response);
+            return createSceneRequest(sceneResponse->getSceneIndex(),
+                                      response->getAction(),
+                                      response->getArg().toString(),
+                                      response->getData(),
+                                      commandId);
+        }
+        case TupProjectRequest::Library: {
+            TupLibraryResponse *libraryResponse = static_cast<TupLibraryResponse *>(response);
+            return createLibraryRequest(response->getAction(),
+                                        response->getArg().toString(),
+                                        libraryResponse->symbolType(),
+                                        libraryResponse->getSpaceMode(),
+                                        response->getData(),
+                                        libraryResponse->getParent(),
+                                        libraryResponse->getSceneIndex(),
+                                        libraryResponse->getLayerIndex(),
+                                        libraryResponse->getFrameIndex(),
+                                        commandId);
+        }
+        default:
+#ifdef TUP_DEBUG
+            qDebug() << "[TupRequestBuilder::fromResponse()] - Error: Unknown response part ->"
+                     << response->getPart();
+#endif
             break;
-            case TupProjectRequest::Frame:
-                 {
-                    request = TupRequestBuilder::createFrameRequest(static_cast<TupFrameResponse*> (response)->getSceneIndex(), static_cast<TupFrameResponse*> (response)->getLayerIndex(), static_cast<TupFrameResponse*> (response)->getFrameIndex(), response->getAction(), response->getArg().toString(), response->getData());
-                 }
-            break;
-            case TupProjectRequest::Layer:
-                 {
-                    request = TupRequestBuilder::createLayerRequest(static_cast<TupLayerResponse*> (response)->getSceneIndex(), static_cast<TupLayerResponse*> (response)->getLayerIndex(), response->getAction(), response->getArg().toString(), response->getData());
-                 }
-            break;
-            case TupProjectRequest::Scene:
-                 {
-                    request = TupRequestBuilder::createSceneRequest(static_cast<TupSceneResponse*> (response)->getSceneIndex(), response->getAction(), response->getArg().toString(), response->getData());
-                 }
-            break;
-            case TupProjectRequest::Library:
-                 {
-                    request = TupRequestBuilder::createLibraryRequest(response->getAction(), response->getArg().toString(), TupLibraryObject::ObjectType(static_cast<TupLibraryResponse*>(response)->symbolType()),
-                                                                     TupProject::Mode(static_cast<TupLibraryResponse*>(response)->getSpaceMode()), response->getData(), static_cast<TupLibraryResponse*>(response)->getParent(), 
-                                                                     static_cast<TupLibraryResponse*>(response)->getSceneIndex(), static_cast<TupLibraryResponse*>(response)->getLayerIndex(),  
-                                                                     static_cast<TupLibraryResponse*>(response)->getFrameIndex());
-                 }
-            break;
-            default:
-                 {
-                    #ifdef TUP_DEBUG
-                        qDebug() << "TupRequestBuilder::fromResponse() - Error: wOw! Unknown response! O_o";
-                    #endif
-                 }
     }
 
-    return request;
+    return TupProjectRequest();
 }

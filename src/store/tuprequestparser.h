@@ -49,9 +49,11 @@ class TUPITUBE_EXPORT TupRequestParser : public QObject
         bool parse(const QString &xml);
         TupProjectResponse *getResponse() const;
         QString getSign() const;
+        QString getCommandId() const;
         
     private:
         QString sign;
+        QString commandId;
         TupProjectResponse *response;
 };
 #endif

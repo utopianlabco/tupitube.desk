@@ -37,28 +37,22 @@
 
 #include "tupabstractprojectmanagerhandler.h"
 
-#include <QDomDocument>
-#include <QDomElement>
-
 class TupLocalProjectManagerHandler : public TupAbstractProjectHandler
 {
     Q_OBJECT
 
-    public:
-        TupLocalProjectManagerHandler(QObject *parent = nullptr);
-        ~TupLocalProjectManagerHandler();
+public:
+    explicit TupLocalProjectManagerHandler(QObject *parent = nullptr);
+    ~TupLocalProjectManagerHandler() override;
 
-        virtual void handleProjectRequest(const TupProjectRequest *request);
-        virtual bool saveProject(const QString &fileName, TupProject *project);
-        virtual bool loadProject(const QString &fileName, TupProject *project);
-        virtual void setProject(TupProject *project);
+    void handleProjectRequest(const TupProjectRequest *request) override;
+    bool saveProject(const QString &fileName, TupProject *project) override;
+    bool loadProject(const QString &fileName, TupProject *project) override;
+    void setProject(TupProject *project) override;
 
-    signals:
-        void projectPathChanged();
-        void soundPathsChanged();
-
-    private:
-        bool isUndoCommand(const QString &xml);
+signals:
+    void projectPathChanged();
+    void soundPathsChanged();
 };
 
 #endif

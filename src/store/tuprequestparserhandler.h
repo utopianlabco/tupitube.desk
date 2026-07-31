@@ -44,17 +44,22 @@ class TUPITUBE_EXPORT TupRequestParserHandler : public QXmlStreamReader
 {
     public:
         TupRequestParserHandler();
-        TupRequestParserHandler(const QString &xml);
+        explicit TupRequestParserHandler(const QString &xml);
         ~TupRequestParserHandler();
 
         bool parse();
-        TupProjectResponse* getResponse() const;
+
+        TupProjectResponse *getResponse() const;
         QString getSign() const;
+        QString getCommandId() const;
+
+    private:
+        bool ensureResponse(const QString &elementName);
 
     private:
         QString sign;
-        TupProjectResponse* response;
-        // bool readText;
+        QString commandId;
+        TupProjectResponse *response;
 };
 
 #endif

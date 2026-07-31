@@ -1449,7 +1449,7 @@ bool TupPapagayoApp::saveLipsyncRecord()
                                     imageFile.close();
 
                                     request = TupRequestBuilder::createLibraryRequest(TupProjectRequest::Add, key, type, TupProject::FRAMES_MODE, data, folderName,
-                                                                                      sceneIndex, layerIndex, frameIndex);
+                                                                                      sceneIndex, layerIndex, frameIndex, QString());
                                     emit requestTriggered(&request);
                                 } else {
                                     #ifdef TUP_DEBUG

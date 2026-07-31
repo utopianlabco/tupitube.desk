@@ -34,12 +34,26 @@
 
 #include "tupprojectresponse.h"
 
-TupProjectResponse::TupProjectResponse(int p, int a) : part(p), action(a), isExternal(false)
+TupProjectResponse::TupProjectResponse(int p, int a)
+    : part(p),
+      action(a),
+      mode(None),
+      isExternal(false)
 {
 }
 
 TupProjectResponse::~TupProjectResponse()
 {
+}
+
+void TupProjectResponse::setCommandId(const QString &value)
+{
+    commandId = value;
+}
+
+QString TupProjectResponse::getCommandId() const
+{
+    return commandId;
 }
 
 int TupProjectResponse::getPart() const
@@ -139,6 +153,7 @@ void TupProjectResponse::toString()
 #ifdef TUP_DEBUG
     qDebug() << "---";
     qDebug() << "  Project Response";
+    qDebug() << "  *** Command ID: " + getCommandId();
     qDebug() << "  *** Action: " + QString::number(getAction());
     qDebug() << "  *** Mode: " + QString::number(getMode());
     qDebug() << "  *** Args: " + getArg().toString();

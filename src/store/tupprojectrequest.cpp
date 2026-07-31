@@ -40,7 +40,7 @@ TupProjectRequestArgument::TupProjectRequestArgument()
 {
 }
 
-TupProjectRequestArgument::TupProjectRequestArgument(const QString &v) : m_value(v)
+TupProjectRequestArgument::TupProjectRequestArgument(const QString &value) : m_value(value)
 {
 }
 
@@ -81,7 +81,10 @@ QString TupProjectRequestArgument::toString()
     return m_value;
 }
 
-TupProjectRequest::TupProjectRequest(const QString &data) : xml(data), isExternal(false)
+TupProjectRequest::TupProjectRequest(const QString &data)
+    : xml(data),
+      actionId(TupProjectRequest::None),
+      isExternal(false)
 {
 }
 
@@ -94,14 +97,14 @@ TupProjectRequest::~TupProjectRequest()
 {
 }
 
-void TupProjectRequest::setId(int code)
+void TupProjectRequest::setActionId(int value)
 {
-    id = code;
+    actionId = value;
 }
 
-int TupProjectRequest::getId() const
+int TupProjectRequest::getActionId() const
 {
-    return id;
+    return actionId;
 }
 
 bool TupProjectRequest::isValid() const
@@ -124,11 +127,25 @@ bool TupProjectRequest::isRequestExternal() const
      return isExternal;
 }
 
+void TupProjectRequest::setCommandId(const QString &value)
+{
+     commandId = value;
+}
+
+QString TupProjectRequest::getCommandId() const
+{
+     return commandId;
+}
+
 TupProjectRequest &TupProjectRequest::operator=(const TupProjectRequest &other)
 {
+    if (this == &other)
+        return *this;
+
     xml = other.xml;
-    id = other.id;
+    actionId = other.actionId;
     isExternal = other.isExternal;
+    commandId = other.commandId;
 
     return *this;
 }

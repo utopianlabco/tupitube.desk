@@ -33,11 +33,14 @@
  ***************************************************************************/
 
 #include "tuplocalprojectmanagerhandler.h"
-#include "tupprojectrequest.h"
-#include "tupprojectcommand.h"
-#include "tupfilemanager.h"
 
-TupLocalProjectManagerHandler::TupLocalProjectManagerHandler(QObject *parent) : TupAbstractProjectHandler(parent)
+#include "tupfilemanager.h"
+#include "tupprojectrequest.h"
+
+#include <QDebug>
+
+TupLocalProjectManagerHandler::TupLocalProjectManagerHandler(QObject *parent)
+    : TupAbstractProjectHandler(parent)
 {
 }
 
@@ -45,130 +48,114 @@ TupLocalProjectManagerHandler::~TupLocalProjectManagerHandler()
 {
 }
 
-// SQA: Verify the way to enhance the undo/redo system
-//      These method is too heavy to do the job :/ 
-
-bool TupLocalProjectManagerHandler::isUndoCommand(const QString &xml)
+void TupLocalProjectManagerHandler::handleProjectRequest(
+    const TupProjectRequest *request)
 {
-    bool isAdd = false;
-    bool firstScene = false;
-    bool firstLayer = false;
+#ifdef TUP_DEBUG
+    qDebug() << "[TupLocalProjectManagerHandler::handleProjectRequest()]";
+#endif
 
-    QDomDocument doc;
-    doc.setContent(xml);
-    QDomElement root = doc.documentElement();
-
-    QDomNode n = root.firstChild();
-
-    while (!n.isNull()) {
-           QDomElement e = n.toElement();
-
-           if (!e.isNull()) {
-               if (e.tagName() == "action") {
-                   if (e.attribute("id").toInt() == 1)
-                       isAdd = true;
-                   else 
-                       return true;
-               } else if (e.tagName() == "scene") {
-                          if (e.attribute("index").toInt() == 0)
-                              firstScene = true;
-                          QDomNode n2 = e.firstChild();
-                          if (n2.isNull() && isAdd && firstScene)
-                              return false;
-                          while (!n2.isNull()) {
-                                 QDomElement e2 = n2.toElement();
-                                 if (!e2.isNull()) {
-                                     if (e2.tagName() == "layer") {
-                                         if (e2.attribute("index").toInt() == 0)
-                                             firstLayer = true;
-                                         QDomNode n3 = e2.firstChild();
-                                         if (n3.isNull() && isAdd && firstScene && firstLayer)
-                                             return false;
-                                         while (!n3.isNull()) {
-                                             QDomElement e3 = n3.toElement();
-                                             if (!e3.isNull()) {
-                                                 if (e3.tagName() == "frame") {
-                                                     QDomNode n4 = e3.firstChild();
-                                                     if (!n4.isNull()) {
-                                                         return true; 
-                                                     } else if ((e3.attribute("index").toInt() == 0) && isAdd
-                                                                && firstScene && firstLayer) {
-                                                         return false; 
-                                                     }
-                                                 }
-                                             } 
-                                             n3 = n3.nextSibling();
-                                         } 
-                                     } // end if e2 layer
-                                 } else if (isAdd && firstScene) {
-                                     return false;
-                                 }
-                                 n2 = n2.nextSibling();
-                          } // end while n2
-               } // end if scene
-           }
-           n = n.nextSibling();
+    if (!request) {
+        qWarning()
+            << "[TupLocalProjectManagerHandler::handleProjectRequest()]"
+            << "Null request.";
+        return;
     }
 
-    return true;
-}
-
-void TupLocalProjectManagerHandler::handleProjectRequest(const TupProjectRequest *request)
-{
-    #ifdef TUP_DEBUG
-        qDebug() << "[TupLocalProjectManagerHandler::handleProjectRequest()]";
-    #endif
-
-    if (request->isValid()) {
-        emit sendCommand(request, true);
-    } else {
-        #ifdef TUP_DEBUG
-            qDebug() << "[TupLocalProjectManagerHandler::handleProjectRequest()] - INVALID REQUEST! ID -> " << request->getId();
-        #endif
+    if (!request->isValid()) {
+#ifdef TUP_DEBUG
+        qWarning()
+            << "[TupLocalProjectManagerHandler::handleProjectRequest()]"
+            << "Invalid request."
+            << "Action:" << request->getActionId();
+#endif
+        return;
     }
+
+    if (request->getCommandId().isEmpty()) {
+        qWarning()
+            << "[TupLocalProjectManagerHandler::handleProjectRequest()]"
+            << "Request has no command ID."
+            << "Action:" << request->getActionId();
+        return;
+    }
+
+#ifdef TUP_DEBUG
+    qDebug()
+        << "[TupLocalProjectManagerHandler::handleProjectRequest()]"
+        << "Executing local command:" << request->getCommandId()
+        << "Action:" << request->getActionId();
+#endif
+
+    emit sendCommand(request, true);
 }
 
-bool TupLocalProjectManagerHandler::saveProject(const QString &fileName, TupProject *project)
+bool TupLocalProjectManagerHandler::saveProject(
+    const QString &fileName,
+    TupProject *project)
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "[TupLocalProjectManagerHandler::saveProject()] - fileName -> " << fileName;
-    #endif
+#ifdef TUP_DEBUG
+    qDebug()
+        << "[TupLocalProjectManagerHandler::saveProject()]"
+        << "fileName ->" << fileName;
+#endif
 
-    bool result = false;
     QString file = fileName;
 
-    if (!fileName.endsWith(".tup"))
-        file += ".tup";
+    if (!file.endsWith(QStringLiteral(".tup")))
+        file += QStringLiteral(".tup");
 
     TupFileManager *manager = new TupFileManager;
-    connect(manager, SIGNAL(projectPathChanged()), this, SIGNAL(projectPathChanged()));
-    connect(manager, SIGNAL(soundPathsChanged()), this, SIGNAL(soundPathsChanged()));
 
-    result = manager->save(file, project);
+    connect(
+        manager,
+        SIGNAL(projectPathChanged()),
+        this,
+        SIGNAL(projectPathChanged()));
 
-    disconnect(manager, SIGNAL(projectPathChanged()), this, SIGNAL(projectPathChanged()));
-    disconnect(manager, SIGNAL(soundPathsChanged()), this, SIGNAL(soundPathsChanged()));
+    connect(
+        manager,
+        SIGNAL(soundPathsChanged()),
+        this,
+        SIGNAL(soundPathsChanged()));
+
+    const bool result = manager->save(file, project);
+
+    disconnect(
+        manager,
+        SIGNAL(projectPathChanged()),
+        this,
+        SIGNAL(projectPathChanged()));
+
+    disconnect(
+        manager,
+        SIGNAL(soundPathsChanged()),
+        this,
+        SIGNAL(soundPathsChanged()));
 
     delete manager;
 
     return result;
 }
 
-bool TupLocalProjectManagerHandler::loadProject(const QString &fileName, TupProject *project)
+bool TupLocalProjectManagerHandler::loadProject(
+    const QString &fileName,
+    TupProject *project)
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "[TupLocalProjectManagerHandler::loadProject()] - fileName -> " << fileName;
-    #endif
-
-    bool result = false;
+#ifdef TUP_DEBUG
+    qDebug()
+        << "[TupLocalProjectManagerHandler::loadProject()]"
+        << "fileName ->" << fileName;
+#endif
 
     TupFileManager *manager = new TupFileManager;
-    result = manager->load(fileName, project);
+    const bool result = manager->load(fileName, project);
     delete manager;
 
     return result;
 }
 
-void TupLocalProjectManagerHandler::setProject(TupProject *)
+void TupLocalProjectManagerHandler::setProject(TupProject *project)
 {
+    Q_UNUSED(project)
 }

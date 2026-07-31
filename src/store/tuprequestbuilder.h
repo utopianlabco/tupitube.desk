@@ -1,7 +1,7 @@
 /***************************************************************************
  *   Project TupiTube Desk                                                 *
  *   Project Contact: info@tupitube.com                                    *
- *   Project Website: http://www.tupitube.com                              * 
+ *   Project Website: http://www.tupitube.com                              *
  *                                                                         *
  *   Developers:                                                           *
  *   2025:                                                                 *
@@ -44,38 +44,58 @@
 #include <QDomDocument>
 #include <QVariant>
 
-// class TupProjectRequest;
-// class TupProjectResponse;
-
 class TUPITUBE_EXPORT TupRequestBuilder
 {
     protected:
         TupRequestBuilder();
-        
+
     public:
-        enum ItemType 
+        enum ItemType
         {
             Graphic = 1000,
             Svg
         };
 
         ~TupRequestBuilder();
-        
-        static TupProjectRequest createItemRequest(int sceneIndex, int layerIndex, int frameIndex, int itemIndex, QPointF point, TupProject::Mode spaceMode, 
-                                                  TupLibraryObject::ObjectType type, int action, const QVariant &arg = QString(), const QByteArray &data = QByteArray());
-        
-        static TupProjectRequest createFrameRequest(int sceneIndex, int layerIndex, int frameIndex, int action, const QVariant &arg= QString(), const QByteArray &data = QByteArray());
-        
-        static TupProjectRequest createLayerRequest(int sceneIndex, int layerIndex, int action, const QVariant &arg= QString(), const QByteArray &data = QByteArray());
-        
-        static TupProjectRequest createSceneRequest(int sceneIndex, int action, const QVariant &arg= QString(), const QByteArray &data = QByteArray());
-        
-        static TupProjectRequest createLibraryRequest(int actionId, const QVariant &arg, TupLibraryObject::ObjectType type, TupProject::Mode spaceMode = TupProject::FRAMES_MODE,
-                                                      const QByteArray &data = QByteArray(), const QString &folder = QString(), int scene = -1, int layer = -1, int frame = -1);
-        
-        static TupProjectRequest fromResponse(TupProjectResponse *response);
-        
+
+        static TupProjectRequest createItemRequest(int sceneIndex, int layerIndex, int frameIndex, int itemIndex,
+                                                   QPointF point, TupProject::Mode spaceMode,
+                                                   TupLibraryObject::ObjectType type, int actionId,
+                                                   const QVariant &arg = QString(),
+                                                   const QByteArray &data = QByteArray(),
+                                                   const QString &commandId = QString());
+
+        static TupProjectRequest createFrameRequest(int sceneIndex, int layerIndex, int frameIndex, int actionId,
+                                                    const QVariant &arg = QString(),
+                                                    const QByteArray &data = QByteArray(),
+                                                    const QString &commandId = QString());
+
+        static TupProjectRequest createLayerRequest(int sceneIndex, int layerIndex, int actionId,
+                                                    const QVariant &arg = QString(),
+                                                    const QByteArray &data = QByteArray(),
+                                                    const QString &commandId = QString());
+
+        static TupProjectRequest createSceneRequest(int sceneIndex, int actionId,
+                                                    const QVariant &arg = QString(),
+                                                    const QByteArray &data = QByteArray(),
+                                                    const QString &commandId = QString());
+
+        static TupProjectRequest createLibraryRequest(int actionId, const QVariant &arg,
+                                                      TupLibraryObject::ObjectType type,
+                                                      TupProject::Mode spaceMode = TupProject::FRAMES_MODE,
+                                                      const QByteArray &data = QByteArray(),
+                                                      const QString &folder = QString(),
+                                                      int scene = -1, int layer = -1, int frame = -1,
+                                                      const QString &commandId = QString());
+
+        static TupProjectRequest fromResponse(TupProjectResponse *response,
+                                                     bool preserveCommandId = true);
+
     private:
+        static QString createCommandId();
+        static QString resolveCommandId(const QString &commandId);
+        static TupProjectRequest buildRequest(const QDomDocument &doc, int actionId,
+                                              const QString &commandId);
         static void appendData(QDomDocument &doc, QDomElement &element, const QByteArray &data);
 };
 

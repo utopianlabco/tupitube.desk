@@ -34,11 +34,17 @@
 
 #include "tuprequestparserhandler.h"
 
-TupRequestParserHandler::TupRequestParserHandler() : QXmlStreamReader()
+#include <QDebug>
+
+TupRequestParserHandler::TupRequestParserHandler()
+    : QXmlStreamReader(),
+      response(nullptr)
 {
 }
 
-TupRequestParserHandler::TupRequestParserHandler(const QString &xml) : QXmlStreamReader(xml)
+TupRequestParserHandler::TupRequestParserHandler(const QString &xml)
+    : QXmlStreamReader(xml),
+      response(nullptr)
 {
 }
 
@@ -46,55 +52,157 @@ TupRequestParserHandler::~TupRequestParserHandler()
 {
 }
 
+bool TupRequestParserHandler::ensureResponse(const QString &elementName)
+{
+    if (response)
+        return true;
+
+    raiseError(
+        QStringLiteral("Element \"%1\" found before the action element.")
+            .arg(elementName));
+
+    return false;
+}
+
 bool TupRequestParserHandler::parse()
 {
     while (!atEnd()) {
         readNext();
-        QString tag = name().toString();
-        if (isStartElement()) {
-            if (tag == "project_request") {
-                sign = attributes().value("sign").toString();
-            } else if (tag == "item") {
-                       static_cast<TupItemResponse *>(response)->setItemIndex(attributes().value("index").toInt());
-            } else if (tag == "objectType") {
-                       static_cast<TupItemResponse *>(response)->setItemType(TupLibraryObject::ObjectType(attributes().value("id").toInt()));
-            } else if (tag == "position") {
-                       static_cast<TupItemResponse *>(response)->setPosX(attributes().value("x").toDouble());
-                       static_cast<TupItemResponse *>(response)->setPosY(attributes().value("y").toDouble());
-            } else if (tag == "spaceMode") {
-                       static_cast<TupItemResponse *>(response)->setSpaceMode(TupProject::Mode(attributes().value("current").toInt()));
-            } else if (tag == "frame") {
-                       static_cast<TupFrameResponse *>(response)->setFrameIndex(attributes().value("index").toInt());
-            } else if (tag == "data") {
-                       static_cast<TupLibraryResponse*>(response)->setData(QByteArray::fromBase64(QByteArray(readElementText().toLocal8Bit())));
-            } else if (tag == "layer") {
-                       static_cast<TupLayerResponse *>(response)->setLayerIndex(attributes().value("index").toInt());
-            } else if (tag == "scene") {
-                       static_cast<TupSceneResponse *>(response)->setSceneIndex(attributes().value("index").toInt());
-            } else if (tag == "symbol") {
-                       static_cast<TupLibraryResponse*>(response)->setSymbolType(TupLibraryObject::ObjectType(attributes().value("type").toInt()));
-                       static_cast<TupLibraryResponse*>(response)->setParent(attributes().value("folder").toString());
-                       static_cast<TupLibraryResponse*>(response)->setSpaceMode(TupProject::Mode(attributes().value("spaceMode").toInt()));
-            } else if (tag == "action") {
-                       response = TupProjectResponseFactory::create(attributes().value("part").toInt(), attributes().value("id").toInt());
-                       response->setArg(attributes().value("arg").toString());
-            }
-        } /* else if (isEndElement()) { // Ending Tag
 
-        } */
+        if (!isStartElement())
+            continue;
+
+        const QString tag = name().toString();
+
+        if (tag == QStringLiteral("project_request")) {
+            sign = attributes().value(QStringLiteral("sign")).toString();
+            commandId =
+                attributes().value(QStringLiteral("command_id")).toString();
+
+        } else if (tag == QStringLiteral("action")) {
+            response = TupProjectResponseFactory::create(
+                attributes().value(QStringLiteral("part")).toInt(),
+                attributes().value(QStringLiteral("id")).toInt());
+
+            if (!response) {
+                raiseError(
+                    QStringLiteral("Unable to create a project response."));
+                continue;
+            }
+
+            response->setCommandId(commandId);
+            response->setArg(
+                attributes().value(QStringLiteral("arg")).toString());
+
+        } else if (tag == QStringLiteral("item")) {
+            if (!ensureResponse(tag))
+                continue;
+
+            static_cast<TupItemResponse *>(response)->setItemIndex(
+                attributes().value(QStringLiteral("index")).toInt());
+
+        } else if (tag == QStringLiteral("objectType")) {
+            if (!ensureResponse(tag))
+                continue;
+
+            static_cast<TupItemResponse *>(response)->setItemType(
+                TupLibraryObject::ObjectType(
+                    attributes().value(QStringLiteral("id")).toInt()));
+
+        } else if (tag == QStringLiteral("position")) {
+            if (!ensureResponse(tag))
+                continue;
+
+            TupItemResponse *itemResponse =
+                static_cast<TupItemResponse *>(response);
+
+            itemResponse->setPosX(
+                attributes().value(QStringLiteral("x")).toDouble());
+            itemResponse->setPosY(
+                attributes().value(QStringLiteral("y")).toDouble());
+
+        } else if (tag == QStringLiteral("spaceMode")) {
+            if (!ensureResponse(tag))
+                continue;
+
+            static_cast<TupItemResponse *>(response)->setSpaceMode(
+                TupProject::Mode(
+                    attributes().value(QStringLiteral("current")).toInt()));
+
+        } else if (tag == QStringLiteral("frame")) {
+            if (!ensureResponse(tag))
+                continue;
+
+            static_cast<TupFrameResponse *>(response)->setFrameIndex(
+                attributes().value(QStringLiteral("index")).toInt());
+
+        } else if (tag == QStringLiteral("data")) {
+            if (!ensureResponse(tag))
+                continue;
+
+            const QByteArray encodedData = readElementText().toLatin1();
+            response->setData(QByteArray::fromBase64(encodedData));
+
+        } else if (tag == QStringLiteral("layer")) {
+            if (!ensureResponse(tag))
+                continue;
+
+            static_cast<TupLayerResponse *>(response)->setLayerIndex(
+                attributes().value(QStringLiteral("index")).toInt());
+
+        } else if (tag == QStringLiteral("scene")) {
+            if (!ensureResponse(tag))
+                continue;
+
+            static_cast<TupSceneResponse *>(response)->setSceneIndex(
+                attributes().value(QStringLiteral("index")).toInt());
+
+        } else if (tag == QStringLiteral("symbol")) {
+            if (!ensureResponse(tag))
+                continue;
+
+            TupLibraryResponse *libraryResponse =
+                static_cast<TupLibraryResponse *>(response);
+
+            libraryResponse->setSymbolType(
+                TupLibraryObject::ObjectType(
+                    attributes().value(QStringLiteral("type")).toInt()));
+
+            libraryResponse->setParent(
+                attributes().value(QStringLiteral("folder")).toString());
+
+            libraryResponse->setSpaceMode(
+                TupProject::Mode(
+                    attributes()
+                        .value(QStringLiteral("spaceMode"))
+                        .toInt()));
+        }
     }
 
     if (hasError()) {
-        #ifdef TUP_DEBUG
-            qDebug() << "[TupRequestParserHandler::parse()] - Fatal Error: Can't process xml!";
-        #endif
+#ifdef TUP_DEBUG
+        qWarning()
+            << "[TupRequestParserHandler::parse()]"
+            << "XML error:" << errorString()
+            << "line:" << lineNumber()
+            << "column:" << columnNumber();
+#endif
+        return false;
+    }
+
+    if (!response) {
+#ifdef TUP_DEBUG
+        qWarning()
+            << "[TupRequestParserHandler::parse()]"
+            << "Missing action element.";
+#endif
         return false;
     }
 
     return true;
 }
 
-TupProjectResponse* TupRequestParserHandler::getResponse() const
+TupProjectResponse *TupRequestParserHandler::getResponse() const
 {
     return response;
 }
@@ -102,4 +210,9 @@ TupProjectResponse* TupRequestParserHandler::getResponse() const
 QString TupRequestParserHandler::getSign() const
 {
     return sign;
+}
+
+QString TupRequestParserHandler::getCommandId() const
+{
+    return commandId;
 }

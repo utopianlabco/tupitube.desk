@@ -40,6 +40,7 @@
 #include <QObject>
 #include <QString>
 #include <QVariant>
+#include <QUuid>
 
 class TupProjectRequest;
 class TupProjectResponse;
@@ -48,7 +49,7 @@ class TUPITUBE_EXPORT TupProjectRequestArgument
 {
     public:
         TupProjectRequestArgument();
-        TupProjectRequestArgument(const QString &v);
+        TupProjectRequestArgument(const QString &value);
         ~TupProjectRequestArgument();
         
         void operator = (const QString &value);
@@ -58,7 +59,7 @@ class TUPITUBE_EXPORT TupProjectRequestArgument
         int toInt();
         double toReal();
         QString toString();
-        
+
     private:
         QString m_value;
 };
@@ -141,8 +142,8 @@ class TUPITUBE_EXPORT TupProjectRequest
         TupProjectRequest(const TupProjectRequest &request);
         virtual ~TupProjectRequest();
         
-        void setId(int getId);
-        virtual int getId() const;
+        void setActionId(int actionId);
+        virtual int getActionId() const;
         virtual bool isValid() const;
         
         QString getXml() const;
@@ -150,12 +151,16 @@ class TUPITUBE_EXPORT TupProjectRequest
         void setExternal(bool b);
         bool isRequestExternal() const;
         
+        void setCommandId(const QString &commandId);
+        QString getCommandId() const;
+
         TupProjectRequest &operator = (const TupProjectRequest &other);
 
     private:
         QString xml;
-        int id;
+        int actionId;
         bool isExternal;
+        QString commandId;
 };
 
 #endif

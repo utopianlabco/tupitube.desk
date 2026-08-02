@@ -76,6 +76,7 @@
 class TupProjectManagerParams;
 class TupNetProjectManagerParams;
 class TupProjectResponse;
+class TupCommandCoordinator;
 
 class TupMainWindow : public TabbedMainWindow
 {
@@ -263,6 +264,7 @@ class TupMainWindow : public TabbedMainWindow
     // Network variables
     private:
         QPointer<TupNetProjectManagerHandler> netProjectManager;
+        TupCommandCoordinator *commandCoordinator;
         bool isNetworked;
         ToolView *m_viewChat;
         QTabWidget *m_chatTabWidget;

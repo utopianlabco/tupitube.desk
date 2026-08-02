@@ -52,6 +52,7 @@
 #include "tupapplication.h"
 #include "tuppluginmanager.h"
 #include "tupprojectcommand.h"
+#include "tupcommandcoordinator.h"
 #include "tuplocalprojectmanagerhandler.h"
 
 // Network support
@@ -83,7 +84,8 @@
 TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
                              TabbedMainWindow(winKey, AnimationView), m_projectManager(nullptr),
                              animationTab(nullptr), playerTab(nullptr),
-                             netProjectManager(nullptr), m_viewChat(nullptr), m_chatTabWidget(nullptr),
+                             netProjectManager(nullptr), commandCoordinator(nullptr),
+                             m_viewChat(nullptr), m_chatTabWidget(nullptr),
                              m_chatTabHighlighted(false), m_noticesTabHighlighted(false),
                              m_exposureSheet(nullptr), isSaveDialogOpen(false)
 {
@@ -117,11 +119,24 @@ TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
     // Calling out the project manager
     m_projectManager = new TupProjectManager(this);
 
+    // Generic dependency coordinator for collaborative commands.
+    commandCoordinator = new TupCommandCoordinator(this);
+    connect(commandCoordinator,
+            SIGNAL(commandReady(const TupProjectRequest*)),
+            m_projectManager,
+            SLOT(handleProjectRequest(const TupProjectRequest*)),
+            Qt::DirectConnection);
+
     // Calling out the events/actions manager
     m_actionManager = new TActionManager(this);
 
     // Setting up all the GUI...
     createGUI(); // This method is called from the tupmainwindow_gui class
+
+    // The library widget is created by createGUI(), so inject the coordinator
+    // only after the GUI components exist.
+    m_libraryWidget->setCommandCoordinator(commandCoordinator);
+
     setupMenu();
     setupToolBar();
 
@@ -747,6 +762,9 @@ void TupMainWindow::resetUI()
     m_timeLine->closeAllScenes();
     m_libraryWidget->resetGUI();
 
+    if (commandCoordinator)
+        commandCoordinator->clear();
+
     m_filename = QString();
 
     enableToolViews(false);
@@ -903,9 +921,11 @@ void TupMainWindow::setupCollaborativeProject(TupProjectManagerParams *params)
         connect(netProjectManager, SIGNAL(savingSuccessful()), this, SLOT(netProjectSaved()));
         connect(netProjectManager, SIGNAL(postOperationDone()), this, SLOT(resetMousePointer()));
         connect(netProjectManager, SIGNAL(newMessageReceived(int)), this, SLOT(notifyChatMessage(int)));
+        // Milestone 3: route every terminal server result through the generic
+        // command coordinator. It ignores results without registered dependents.
         connect(netProjectManager,
                 SIGNAL(commandResultReceived(QString, QString, QString, QString)),
-                m_libraryWidget,
+                commandCoordinator,
                 SLOT(handleCommandResult(QString, QString, QString, QString)),
                 Qt::UniqueConnection);
 

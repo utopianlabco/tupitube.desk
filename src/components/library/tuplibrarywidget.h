@@ -58,7 +58,6 @@
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QMap>
-#include <QHash>
 #include <QDir>
 #include <QMouseEvent>
 #include <QApplication>
@@ -86,20 +85,13 @@
 typedef QMap<QString, TupLibraryObject *> LibraryObjects;
 typedef QMap<QString, TupLibraryFolder *> Folders;
 
+class TupCommandCoordinator;
+
 class TUPITUBE_EXPORT TupLibraryWidget : public TupModuleWidgetBase
 {
     Q_OBJECT
 
     private:
-        struct PendingLibraryInsertion
-        {
-            QString objectKey;
-            TupLibraryObject::ObjectType objectType;
-            TupProject::Mode mode;
-            int sceneIndex;
-            int layerIndex;
-            int frameIndex;
-        };
 
     public:
         TupLibraryWidget(QWidget *parent = nullptr);
@@ -108,6 +100,7 @@ class TUPITUBE_EXPORT TupLibraryWidget : public TupModuleWidgetBase
         void resetGUI();
         void setLibrary(TupLibrary *assets);
         void setNetworking(bool isNetworked);
+        void setCommandCoordinator(TupCommandCoordinator *coordinator);
         void stopSoundPlayer();
         void updateSpaceContext(TupProject::Mode mode);
         void initCurrentFrame();
@@ -147,10 +140,6 @@ class TUPITUBE_EXPORT TupLibraryWidget : public TupModuleWidgetBase
         void callLipsyncEditor(QTreeWidgetItem* item);
 
     public slots:
-        void handleCommandResult(const QString &commandId,
-                                 const QString &status,
-                                 const QString &errorCode = QString(),
-                                 const QString &message = QString());
         void addFolder(const QString &folderName = QString());
         void importImageGroup();
         void importImage(const QString &image, const QString &folder = QString());
@@ -246,8 +235,8 @@ class TUPITUBE_EXPORT TupLibraryWidget : public TupModuleWidgetBase
         bool renaming;
         bool mkdir;
         bool isNetworked;
+        TupCommandCoordinator *commandCoordinator;
         bool localImportPendingInsert;
-        QHash<QString, PendingLibraryInsertion> pendingLibraryInsertions;
         bool nativeFromFileSystem;
         bool isExternalLibraryAsset;
 

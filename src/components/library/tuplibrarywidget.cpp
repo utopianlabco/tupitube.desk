@@ -43,6 +43,7 @@
 #include "tupsounddialog.h"
 #include "tupvideoimporterdialog.h"
 #include "tapptheme.h"
+#include "tupcommandcoordinator.h"
 
 #define RETURN_IF_NOT_LIBRARY if (!library) return;
 
@@ -62,6 +63,7 @@ TupLibraryWidget::TupLibraryWidget(QWidget *parent) : TupModuleWidgetBase(parent
     currentMode = TupProject::FRAMES_MODE;
     nativeFromFileSystem = false;
     localImportPendingInsert = false;
+    commandCoordinator = nullptr;
     isExternalLibraryAsset = false;
     removeTempVideo = false;
     removeTempVideo = "";
@@ -296,9 +298,12 @@ void TupLibraryWidget::updateSpaceContext(TupProject::Mode mode)
 void TupLibraryWidget::setNetworking(bool netOn)
 {
     isNetworked = netOn;
+}
 
-    if (!isNetworked)
-        pendingLibraryInsertions.clear();
+void TupLibraryWidget::setCommandCoordinator(
+    TupCommandCoordinator *coordinator)
+{
+    commandCoordinator = coordinator;
 }
 
 void TupLibraryWidget::registerPendingLibraryInsertion(
@@ -315,79 +320,55 @@ void TupLibraryWidget::registerPendingLibraryInsertion(
         return;
     }
 
-    PendingLibraryInsertion pending;
-    pending.objectKey = objectKey;
-    pending.objectType = objectType;
-    pending.mode = mode;
-    pending.sceneIndex = sceneIndex;
-    pending.layerIndex = layerIndex;
-    pending.frameIndex = frameIndex;
-
-    pendingLibraryInsertions.insert(addRequest.getCommandId(), pending);
-
-#ifdef TUP_DEBUG
-    qDebug()
-        << "[TupLibraryWidget::registerPendingLibraryInsertion()]"
-        << "Waiting for Add command:" << addRequest.getCommandId()
-        << "Object:" << objectKey;
-#endif
-}
-
-void TupLibraryWidget::handleCommandResult(
-    const QString &commandId,
-    const QString &status,
-    const QString &errorCode,
-    const QString &message)
-{
-    if (!pendingLibraryInsertions.contains(commandId))
-        return;
-
-    const PendingLibraryInsertion pending =
-        pendingLibraryInsertions.take(commandId);
-
-    if (status.compare(QStringLiteral("committed"), Qt::CaseInsensitive) != 0) {
-#ifdef TUP_DEBUG
+    if (!commandCoordinator) {
         qWarning()
-            << "[TupLibraryWidget::handleCommandResult()]"
-            << "Library Add command was not committed:" << commandId
-            << "Status:" << status
-            << "Error:" << errorCode
-            << "Message:" << message;
-#endif
-
-        const QString detail = message.isEmpty()
-            ? errorCode
-            : message;
+            << "[TupLibraryWidget::registerPendingLibraryInsertion()]"
+            << "Command coordinator is not configured."
+            << "Add command:" << addRequest.getCommandId()
+            << "Object:" << objectKey;
 
         TOsd::self()->display(
             TOsd::Error,
-            detail.isEmpty()
-                ? tr("The library object could not be synchronized with the server.")
-                : detail);
+            tr("The collaborative command coordinator is not available."));
+        return;
+    }
+
+    TupProjectRequest insertRequest =
+        TupRequestBuilder::createLibraryRequest(
+            TupProjectRequest::InsertSymbolIntoFrame,
+            objectKey,
+            objectType,
+            mode,
+            QByteArray(),
+            QString(),
+            sceneIndex,
+            layerIndex,
+            frameIndex);
+
+    if (!commandCoordinator->registerDependency(
+            addRequest.getCommandId(),
+            insertRequest)) {
+        qWarning()
+            << "[TupLibraryWidget::registerPendingLibraryInsertion()]"
+            << "Unable to register command dependency."
+            << "Prerequisite:" << addRequest.getCommandId()
+            << "Dependent:" << insertRequest.getCommandId()
+            << "Object:" << objectKey;
+
+        TOsd::self()->display(
+            TOsd::Error,
+            tr("The dependent library insertion could not be registered."));
         return;
     }
 
 #ifdef TUP_DEBUG
     qDebug()
-        << "[TupLibraryWidget::handleCommandResult()]"
-        << "Library Add committed. Sending dependent insertion:"
-        << commandId
-        << "Object:" << pending.objectKey;
+        << "[TupLibraryWidget::registerPendingLibraryInsertion()]"
+        << "Dependency registered."
+        << "Prerequisite:" << addRequest.getCommandId()
+        << "Dependent:" << insertRequest.getCommandId()
+        << "Object:" << objectKey;
 #endif
-
-    TupProjectRequest insertRequest =
-        TupRequestBuilder::createLibraryRequest(
-            TupProjectRequest::InsertSymbolIntoFrame,
-            pending.objectKey,
-            pending.objectType,
-            pending.mode,
-            QByteArray(),
-            QString(),
-            pending.sceneIndex,
-            pending.layerIndex,
-            pending.frameIndex);
-
-    emit requestTriggered(&insertRequest);
 }
 
 void TupLibraryWidget::addFolder(const QString &folderName)

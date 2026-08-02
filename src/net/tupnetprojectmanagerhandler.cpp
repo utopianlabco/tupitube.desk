@@ -530,6 +530,67 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                        socket->disconnectFromHost();
                }
                return;
+    } else if (root == QStringLiteral("command_result")) {
+        TupCommandResultParser parser;
+
+        if (!parser.parse(package)) {
+            qWarning()
+                << "[TupNetProjectManagerHandler::handlePackage()]"
+                << "Unable to parse command result:"
+                << parser.errorString();
+            return;
+        }
+
+        QString status;
+
+        switch (parser.status()) {
+            case TupCommandResultParser::Committed:
+                status = QStringLiteral("committed");
+#ifdef TUP_DEBUG
+                qDebug()
+                    << "[TupNetProjectManagerHandler::handlePackage()]"
+                    << "Command committed:"
+                    << parser.commandId();
+#endif
+                break;
+
+            case TupCommandResultParser::Rejected:
+                status = QStringLiteral("rejected");
+                qWarning()
+                    << "[TupNetProjectManagerHandler::handlePackage()]"
+                    << "Command rejected:"
+                    << parser.commandId()
+                    << "Error:"
+                    << parser.errorCode()
+                    << "Message:"
+                    << parser.message();
+                break;
+
+            case TupCommandResultParser::Failed:
+                status = QStringLiteral("failed");
+                qWarning()
+                    << "[TupNetProjectManagerHandler::handlePackage()]"
+                    << "Command failed:"
+                    << parser.commandId()
+                    << "Error:"
+                    << parser.errorCode()
+                    << "Message:"
+                    << parser.message();
+                break;
+
+            case TupCommandResultParser::Invalid:
+            default:
+                qWarning()
+                    << "[TupNetProjectManagerHandler::handlePackage()]"
+                    << "Invalid command result status.";
+                return;
+        }
+
+        emit commandResultReceived(
+            parser.commandId(),
+            status,
+            parser.errorCode(),
+            parser.message());
     } else {
       #ifdef TUP_DEBUG
           qWarning() << "[TupNetProjectManagerHandler::handlePackage()] - Error: Unknown package ->" << root;

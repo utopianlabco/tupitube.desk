@@ -58,6 +58,7 @@
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QMap>
+#include <QHash>
 #include <QDir>
 #include <QMouseEvent>
 #include <QApplication>
@@ -88,6 +89,17 @@ typedef QMap<QString, TupLibraryFolder *> Folders;
 class TUPITUBE_EXPORT TupLibraryWidget : public TupModuleWidgetBase
 {
     Q_OBJECT
+
+    private:
+        struct PendingLibraryInsertion
+        {
+            QString objectKey;
+            TupLibraryObject::ObjectType objectType;
+            TupProject::Mode mode;
+            int sceneIndex;
+            int layerIndex;
+            int frameIndex;
+        };
 
     public:
         TupLibraryWidget(QWidget *parent = nullptr);
@@ -135,6 +147,10 @@ class TUPITUBE_EXPORT TupLibraryWidget : public TupModuleWidgetBase
         void callLipsyncEditor(QTreeWidgetItem* item);
 
     public slots:
+        void handleCommandResult(const QString &commandId,
+                                 const QString &status,
+                                 const QString &errorCode = QString(),
+                                 const QString &message = QString());
         void addFolder(const QString &folderName = QString());
         void importImageGroup();
         void importImage(const QString &image, const QString &folder = QString());
@@ -181,6 +197,14 @@ class TUPITUBE_EXPORT TupLibraryWidget : public TupModuleWidgetBase
         void projectHasChanged(bool hasChanged);
 
     private:
+        void registerPendingLibraryInsertion(
+            const TupProjectRequest &addRequest,
+            const QString &objectKey,
+            TupLibraryObject::ObjectType objectType,
+            TupProject::Mode mode,
+            int sceneIndex,
+            int layerIndex,
+            int frameIndex);
         void callExternalEditor(QTreeWidgetItem *item, const QString &software);
         void executeSoftware(const QString &software, QString &path);
         void updateItem(const QString &name, const QString &extension, TupLibraryObject *object);
@@ -223,6 +247,7 @@ class TUPITUBE_EXPORT TupLibraryWidget : public TupModuleWidgetBase
         bool mkdir;
         bool isNetworked;
         bool localImportPendingInsert;
+        QHash<QString, PendingLibraryInsertion> pendingLibraryInsertions;
         bool nativeFromFileSystem;
         bool isExternalLibraryAsset;
 

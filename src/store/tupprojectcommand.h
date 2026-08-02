@@ -38,6 +38,8 @@
 #include "tglobal.h"
 
 #include <QUndoCommand>
+#include <type_traits>
+#include <utility>
 
 class TupProject;
 class TupProjectRequest;
@@ -50,27 +52,52 @@ class TUPITUBE_EXPORT TupProjectCommand : public QUndoCommand
     public:
         TupProjectCommand(TupCommandExecutor *executor, const TupProjectRequest *event);
         TupProjectCommand(TupCommandExecutor *executor, TupProjectResponse *response);
-        ~TupProjectCommand();
+        ~TupProjectCommand() override;
         
-        virtual void redo();
-        virtual void undo();
-        
-        void frameCommand();
-        void layerCommand();
-        void sceneCommand();
-        void itemCommand();
-        
-        void libraryCommand();
-        void paintAreaCommand();
+        void redo() override;
+        void undo() override;
+
+        bool succeeded() const;
+        QString errorCode() const;
+        QString commandId() const;
         
     private:
-        QString actionString(int action);
+        bool executeResponse();
+        bool frameCommand();
+        bool layerCommand();
+        bool sceneCommand();
+        bool itemCommand();
+        bool libraryCommand();
+        bool paintAreaCommand();
+
+        QString actionString(int action) const;
         void initText();
+        void resetExecutionResult();
+        bool fail(const QString &code);
+
+        template<typename Operation>
+        typename std::enable_if<
+            std::is_same<decltype(std::declval<Operation>()()), bool>::value,
+            bool>::type executeOperation(Operation operation)
+        {
+            return operation();
+        }
+
+        template<typename Operation>
+        typename std::enable_if<
+            std::is_void<decltype(std::declval<Operation>()())>::value,
+            bool>::type executeOperation(Operation operation)
+        {
+            operation();
+            return true;
+        }
         
     private:
         TupCommandExecutor *executor;
         TupProjectResponse *response;
         bool executed;
+        bool executionSucceeded;
+        QString executionErrorCode;
 };
 
 #endif

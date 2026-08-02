@@ -296,6 +296,98 @@ void TupLibraryWidget::updateSpaceContext(TupProject::Mode mode)
 void TupLibraryWidget::setNetworking(bool netOn)
 {
     isNetworked = netOn;
+
+    if (!isNetworked)
+        pendingLibraryInsertions.clear();
+}
+
+void TupLibraryWidget::registerPendingLibraryInsertion(
+    const TupProjectRequest &addRequest,
+    const QString &objectKey,
+    TupLibraryObject::ObjectType objectType,
+    TupProject::Mode mode,
+    int sceneIndex,
+    int layerIndex,
+    int frameIndex)
+{
+    if (!isNetworked) {
+        localImportPendingInsert = true;
+        return;
+    }
+
+    PendingLibraryInsertion pending;
+    pending.objectKey = objectKey;
+    pending.objectType = objectType;
+    pending.mode = mode;
+    pending.sceneIndex = sceneIndex;
+    pending.layerIndex = layerIndex;
+    pending.frameIndex = frameIndex;
+
+    pendingLibraryInsertions.insert(addRequest.getCommandId(), pending);
+
+#ifdef TUP_DEBUG
+    qDebug()
+        << "[TupLibraryWidget::registerPendingLibraryInsertion()]"
+        << "Waiting for Add command:" << addRequest.getCommandId()
+        << "Object:" << objectKey;
+#endif
+}
+
+void TupLibraryWidget::handleCommandResult(
+    const QString &commandId,
+    const QString &status,
+    const QString &errorCode,
+    const QString &message)
+{
+    if (!pendingLibraryInsertions.contains(commandId))
+        return;
+
+    const PendingLibraryInsertion pending =
+        pendingLibraryInsertions.take(commandId);
+
+    if (status.compare(QStringLiteral("committed"), Qt::CaseInsensitive) != 0) {
+#ifdef TUP_DEBUG
+        qWarning()
+            << "[TupLibraryWidget::handleCommandResult()]"
+            << "Library Add command was not committed:" << commandId
+            << "Status:" << status
+            << "Error:" << errorCode
+            << "Message:" << message;
+#endif
+
+        const QString detail = message.isEmpty()
+            ? errorCode
+            : message;
+
+        TOsd::self()->display(
+            TOsd::Error,
+            detail.isEmpty()
+                ? tr("The library object could not be synchronized with the server.")
+                : detail);
+        return;
+    }
+
+#ifdef TUP_DEBUG
+    qDebug()
+        << "[TupLibraryWidget::handleCommandResult()]"
+        << "Library Add committed. Sending dependent insertion:"
+        << commandId
+        << "Object:" << pending.objectKey;
+#endif
+
+    TupProjectRequest insertRequest =
+        TupRequestBuilder::createLibraryRequest(
+            TupProjectRequest::InsertSymbolIntoFrame,
+            pending.objectKey,
+            pending.objectType,
+            pending.mode,
+            QByteArray(),
+            QString(),
+            pending.sceneIndex,
+            pending.layerIndex,
+            pending.frameIndex);
+
+    emit requestTriggered(&insertRequest);
 }
 
 void TupLibraryWidget::addFolder(const QString &folderName)
@@ -1134,7 +1226,14 @@ void TupLibraryWidget::importImageFromByteArray(const QString &imageName, const 
         TupProjectRequest request = TupRequestBuilder::createLibraryRequest(TupProjectRequest::Add, key,
                                                                             TupLibraryObject::Image, project->spaceContext(), data, folder,
                                                                             currentFrame.scene, currentFrame.layer, currentFrame.frame);
-        localImportPendingInsert = true;
+        registerPendingLibraryInsertion(
+            request,
+            key,
+            TupLibraryObject::Image,
+            project->spaceContext(),
+            currentFrame.scene,
+            currentFrame.layer,
+            currentFrame.frame);
         emit requestTriggered(&request);
     } else {
         #ifdef TUP_DEBUG
@@ -1208,7 +1307,14 @@ void TupLibraryWidget::importSvgFromByteArray(const QString &filename, QByteArra
     TupProjectRequest request = TupRequestBuilder::createLibraryRequest(TupProjectRequest::Add, filename,
                                                    TupLibraryObject::Svg, project->spaceContext(), data, folder,
                                                    currentFrame.scene, currentFrame.layer, currentFrame.frame);
-    localImportPendingInsert = true;
+    registerPendingLibraryInsertion(
+        request,
+        filename,
+        TupLibraryObject::Svg,
+        project->spaceContext(),
+        currentFrame.scene,
+        currentFrame.layer,
+        currentFrame.frame);
     emit requestTriggered(&request);
 }
 
@@ -1266,7 +1372,14 @@ void TupLibraryWidget::importNativeObjectFromByteArray(const QString &filename, 
     TupProjectRequest request = TupRequestBuilder::createLibraryRequest(TupProjectRequest::Add, filename,
                                                    TupLibraryObject::Item, project->spaceContext(), data, folder,
                                                    currentFrame.scene, currentFrame.layer, currentFrame.frame);
-    localImportPendingInsert = true;
+    registerPendingLibraryInsertion(
+        request,
+        filename,
+        TupLibraryObject::Item,
+        project->spaceContext(),
+        currentFrame.scene,
+        currentFrame.layer,
+        currentFrame.frame);
     emit requestTriggered(&request);
 }
 
@@ -1971,7 +2084,7 @@ void TupLibraryWidget::libraryResponse(TupLibraryResponse *response)
                          if (nativeFromFileSystem) {
                              if (!folderName.endsWith(".pgo") && !library->isLoadingAssets()
                                  && !isExternalLibraryAsset) {
-                                 if (localImportPendingInsert || !isNetworked) {
+                                 if (!isNetworked && localImportPendingInsert) {
                                      insertObjectInWorkspace();
                                      localImportPendingInsert = false;
                                  }
@@ -1993,7 +2106,7 @@ void TupLibraryWidget::libraryResponse(TupLibraryResponse *response)
 
                          if (!folderName.endsWith(".pgo") && !library->isLoadingAssets()
                              && folderName.compare(tr("Raster Objects")) != 0 && !isExternalLibraryAsset) {
-                             if (localImportPendingInsert || !isNetworked) {
+                             if (!isNetworked && localImportPendingInsert) {
                                  insertObjectInWorkspace();
                                  localImportPendingInsert = false;
                              }
@@ -2006,7 +2119,7 @@ void TupLibraryWidget::libraryResponse(TupLibraryResponse *response)
                          libraryTree->setCurrentItem(item);
                          previewItem(item);
                          if (!library->isLoadingAssets() && !isExternalLibraryAsset) {
-                             if (localImportPendingInsert || !isNetworked) {
+                             if (!isNetworked && localImportPendingInsert) {
                                  insertObjectInWorkspace();
                                  localImportPendingInsert = false;
                              }
@@ -2769,7 +2882,14 @@ void TupLibraryWidget::importAsset(const QString &name, TupSearchDialog::AssetTy
     TupProjectRequest request = TupRequestBuilder::createLibraryRequest(TupProjectRequest::Add, key,
                                                    type, currentMode, data, QString(),
                                                    currentFrame.scene, currentFrame.layer, currentFrame.frame);
-    localImportPendingInsert = true;
+    registerPendingLibraryInsertion(
+        request,
+        key,
+        type,
+        currentMode,
+        currentFrame.scene,
+        currentFrame.layer,
+        currentFrame.frame);
     emit requestTriggered(&request);
     data.clear();
 }

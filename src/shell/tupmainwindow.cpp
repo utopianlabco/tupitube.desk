@@ -903,6 +903,11 @@ void TupMainWindow::setupCollaborativeProject(TupProjectManagerParams *params)
         connect(netProjectManager, SIGNAL(savingSuccessful()), this, SLOT(netProjectSaved()));
         connect(netProjectManager, SIGNAL(postOperationDone()), this, SLOT(resetMousePointer()));
         connect(netProjectManager, SIGNAL(newMessageReceived(int)), this, SLOT(notifyChatMessage(int)));
+        connect(netProjectManager,
+                SIGNAL(commandResultReceived(QString, QString, QString, QString)),
+                m_libraryWidget,
+                SLOT(handleCommandResult(QString, QString, QString, QString)),
+                Qt::UniqueConnection);
 
         m_projectManager->setHandler(netProjectManager, true);
         m_projectManager->setParams(params);

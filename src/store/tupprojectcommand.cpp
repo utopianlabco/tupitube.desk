@@ -41,53 +41,83 @@
 #include "tupsvg2qt.h"
 
 #include <QVariant>
+#include <QDebug>
 
 static int undoSequence = 0;
 static int redoSequence = 0;
 
-TupProjectCommand::TupProjectCommand(TupCommandExecutor *exec, const TupProjectRequest *request) : QUndoCommand()
+TupProjectCommand::TupProjectCommand(TupCommandExecutor *exec, const TupProjectRequest *request)
+    : QUndoCommand(),
+      executor(exec),
+      response(nullptr),
+      executed(false),
+      executionSucceeded(false)
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "[TupProjectCommand()]";
-    #endif
+#ifdef TUP_DEBUG
+    qDebug() << "[TupProjectCommand()]";
+#endif
 
-    TupRequestParser parser;
-    if (!parser.parse(request->getXml())) {
-        #ifdef TUP_DEBUG
-            qDebug() << "[TupProjectCommand::TupProjectCommand()] - Fatal Error: request xml can't be parsed!";
-        #endif
+    if (!executor) {
+        executionErrorCode = QStringLiteral("missing_executor");
         return;
     }
 
-    executor = exec;
-    executed = false;
-    response = parser.getResponse();
-    response->setExternal(request->isRequestExternal());
-
-    if (!response) {
-        #ifdef TUP_DEBUG
-            qDebug() << "[TupProjectCommand::TupProjectCommand()] - Unparsed response!";
-        #endif
+    if (!request) {
+        executionErrorCode = QStringLiteral("missing_request");
+        return;
     }
 
+    TupRequestParser parser;
+    if (!parser.parse(request->getXml())) {
+#ifdef TUP_DEBUG
+        qWarning() << "[TupProjectCommand::TupProjectCommand()] - Request XML cannot be parsed";
+#endif
+        executionErrorCode = QStringLiteral("invalid_request_xml");
+        return;
+    }
+
+    response = parser.getResponse();
+    if (!response) {
+#ifdef TUP_DEBUG
+        qWarning() << "[TupProjectCommand::TupProjectCommand()] - Parser returned no response";
+#endif
+        executionErrorCode = QStringLiteral("missing_response");
+        return;
+    }
+
+    response->setExternal(request->isRequestExternal());
     initText();
 }
 
-TupProjectCommand::TupProjectCommand(TupCommandExecutor *exec, TupProjectResponse *res) : QUndoCommand()
+TupProjectCommand::TupProjectCommand(TupCommandExecutor *exec, TupProjectResponse *res)
+    : QUndoCommand(),
+      executor(exec),
+      response(res),
+      executed(false),
+      executionSucceeded(false)
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "[TupProjectCommand()]";
-    #endif
-	
-    executor = exec;
-    response = res;
-    executed = false;
+#ifdef TUP_DEBUG
+    qDebug() << "[TupProjectCommand()]";
+#endif
+
+    if (!executor) {
+        executionErrorCode = QStringLiteral("missing_executor");
+        return;
+    }
+
+    if (!response) {
+        executionErrorCode = QStringLiteral("missing_response");
+        return;
+    }
 
     initText();
 }
 
 void TupProjectCommand::initText()
 {
+    if (!response)
+        return;
+
     switch (response->getPart()) {
         case TupProjectRequest::Frame:
         {
@@ -124,7 +154,7 @@ void TupProjectCommand::initText()
     }
 }
 
-QString TupProjectCommand::actionString(int action)
+QString TupProjectCommand::actionString(int action) const
 {
     switch(action)
     {
@@ -197,116 +227,110 @@ TupProjectCommand::~TupProjectCommand()
 void TupProjectCommand::redo()
 {
     redoSequence++;
-    #ifdef TUP_DEBUG
-        qDebug() << "[TupProjectCommand::redo()] - Seq:" << redoSequence
-                 << "action:" << response->getAction()
-                 << "part:" << response->getPart();
-    #endif
-	
-    if (executed) {
+    resetExecutionResult();
+#ifdef TUP_DEBUG
+    qDebug() << "[TupProjectCommand::redo()] - Seq:" << redoSequence
+             << "command:" << commandId()
+             << "action:" << (response ? response->getAction() : -1)
+             << "part:" << (response ? response->getPart() : -1);
+#endif
+
+    if (!response) {
+        fail(QStringLiteral("missing_response"));
+        return;
+    }
+    if (!executor) {
+        fail(QStringLiteral("missing_executor"));
+        return;
+    }
+
+    if (executed)
         response->setMode(TupProjectResponse::Redo);
-    } else {
+    else {
         response->setMode(TupProjectResponse::Do);
         executed = true;
     }
 
-    switch (response->getPart()) {
-            case TupProjectRequest::Project:
-            {
-                #ifdef TUP_DEBUG
-                     qWarning() << "[TupProjectCommand::redo()] - Error: Project response isn't implemented";
-                #endif
-            }
-            break;
-            case TupProjectRequest::Frame:
-            {
-                 frameCommand();
-            }
-            break;
-            case TupProjectRequest::Layer:
-            {
-                 layerCommand();
-            }
-            break;
-            case TupProjectRequest::Scene:
-            {
-                 sceneCommand();
-            }
-            break;
-            case TupProjectRequest::Item:
-            {
-                 itemCommand();
-            }
-            break;
-            case TupProjectRequest::Library:
-            {
-                 libraryCommand();
-            }
-            break;
-            default:
-            {
-                #ifdef TUP_DEBUG
-                     qDebug() << "[TupProjectCommand::redo()] - Error: Unknown project response";
-                #endif
-            }
-            break;
-    }
+    executionSucceeded = executeResponse();
+    if (!executionSucceeded && executionErrorCode.isEmpty())
+        executionErrorCode = QStringLiteral("execution_failed");
 }
 
 void TupProjectCommand::undo()
 {
     undoSequence++;
-    #ifdef TUP_DEBUG
-        qDebug() << "[TupProjectCommand::undo()] - Seq:" << undoSequence 
-                 << "action:" << response->getAction()
-                 << "part:" << response->getPart();
-    #endif
+    resetExecutionResult();
+#ifdef TUP_DEBUG
+    qDebug() << "[TupProjectCommand::undo()] - Seq:" << undoSequence
+             << "command:" << commandId()
+             << "action:" << (response ? response->getAction() : -1)
+             << "part:" << (response ? response->getPart() : -1);
+#endif
+
+    if (!response) {
+        fail(QStringLiteral("missing_response"));
+        return;
+    }
+    if (!executor) {
+        fail(QStringLiteral("missing_executor"));
+        return;
+    }
 
     response->setMode(TupProjectResponse::Undo);
+    executionSucceeded = executeResponse();
+    if (!executionSucceeded && executionErrorCode.isEmpty())
+        executionErrorCode = QStringLiteral("execution_failed");
+}
+
+void TupProjectCommand::resetExecutionResult()
+{
+    executionSucceeded = false;
+    executionErrorCode.clear();
+}
+
+bool TupProjectCommand::fail(const QString &code)
+{
+    executionSucceeded = false;
+    executionErrorCode = code;
+    return false;
+}
+
+bool TupProjectCommand::succeeded() const
+{
+    return executionSucceeded;
+}
+
+QString TupProjectCommand::errorCode() const
+{
+    return executionErrorCode;
+}
+
+QString TupProjectCommand::commandId() const
+{
+    return response ? response->getCommandId() : QString();
+}
+
+bool TupProjectCommand::executeResponse()
+{
     switch (response->getPart()) {
-            case TupProjectRequest::Project:
-            {
-                 #ifdef TUP_DEBUG
-                     qDebug() << "[TupProjectCommand::undo()] - Error: Project response isn't implemented";
-                 #endif
-            }
-            break;
-            case TupProjectRequest::Frame:
-            {
-                 frameCommand();
-            }
-            break;
-            case TupProjectRequest::Layer:
-            {
-                 layerCommand();
-            }
-            break;
-            case TupProjectRequest::Scene:
-            {
-                 sceneCommand();
-            }
-            break;
-            case TupProjectRequest::Item:
-            {
-                 itemCommand();
-            }
-            break;
-            case TupProjectRequest::Library:
-            {
-                 libraryCommand();
-            }
-            break;
-            default:
-            {
-                 #ifdef TUP_DEBUG
-                     qDebug() << "[TupProjectCommand::undo()] - Error: Unknown project response";
-                 #endif
-            }
-            break;
+        case TupProjectRequest::Project:
+            return fail(QStringLiteral("project_command_not_implemented"));
+        case TupProjectRequest::Frame:
+            return frameCommand();
+        case TupProjectRequest::Layer:
+            return layerCommand();
+        case TupProjectRequest::Scene:
+            return sceneCommand();
+        case TupProjectRequest::Item:
+            return itemCommand();
+        case TupProjectRequest::Library:
+            return libraryCommand();
+        default:
+            return fail(QStringLiteral("unknown_response_part"));
     }
 }
 
-void TupProjectCommand::frameCommand()
+bool TupProjectCommand::frameCommand()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupProjectCommand::frameCommand()]";
@@ -317,81 +341,81 @@ void TupProjectCommand::frameCommand()
     switch (frameResponse->getAction()) {
             case TupProjectRequest::Add:
             {
-                 executor->createFrame(frameResponse);
+                 return executeOperation([&]() { return executor->createFrame(frameResponse); });
             }
             break;
             case TupProjectRequest::Remove:
             {
-                 executor->removeFrame(frameResponse);
+                 return executeOperation([&]() { return executor->removeFrame(frameResponse); });
             }
             break;
             case TupProjectRequest::RemoveSelection:
             {
-                 executor->removeFrameSelection(frameResponse);
+                 return executeOperation([&]() { return executor->removeFrameSelection(frameResponse); });
             }
             break;
             case TupProjectRequest::Reset:
             {
-                 executor->resetFrame(frameResponse);
+                 return executeOperation([&]() { return executor->resetFrame(frameResponse); });
             }
             break;
             case TupProjectRequest::Exchange:
             {
-                 executor->exchangeFrame(frameResponse);
+                 return executeOperation([&]() { return executor->exchangeFrame(frameResponse); });
             }
             break;
             case TupProjectRequest::Move:
             {
-                 executor->moveFrame(frameResponse);
+                 return executeOperation([&]() { return executor->moveFrame(frameResponse); });
             }
             break;
             case TupProjectRequest::ReverseSelection:
             {
-                 executor->reverseFrameSelection(frameResponse);
+                 return executeOperation([&]() { return executor->reverseFrameSelection(frameResponse); });
             }
             break;
             /*
             case TupProjectRequest::Lock:
             {
-                 executor->lockFrame(res);
+                 return executeOperation([&]() { return executor->lockFrame(res); });
             }
             break;
             */
             case TupProjectRequest::Rename:
             {
-                 executor->renameFrame(frameResponse);
+                 return executeOperation([&]() { return executor->renameFrame(frameResponse); });
             }
             break;
             case TupProjectRequest::Select:
             {
-                 executor->selectFrame(frameResponse);
+                 return executeOperation([&]() { return executor->selectFrame(frameResponse); });
             }
             break;
             case TupProjectRequest::View:
             {
-                 executor->setFrameVisibility(frameResponse);
+                 return executeOperation([&]() { return executor->setFrameVisibility(frameResponse); });
             }
             break;
             case TupProjectRequest::Extend:
             {
-                 executor->extendFrame(frameResponse);
+                 return executeOperation([&]() { return executor->extendFrame(frameResponse); });
             }
             break;
             /*
             case TupProjectRequest::Paste:
             {
-                 executor->pasteFrame(res);
+                 return executeOperation([&]() { return executor->pasteFrame(res); });
             }
             break;
             */
             case TupProjectRequest::CopySelection:
             {
-                 executor->copyFrameSelection(frameResponse);
+                 return executeOperation([&]() { return executor->copyFrameSelection(frameResponse); });
             }
             break;
             case TupProjectRequest::PasteSelection:
             {
-                 executor->pasteFrameSelection(frameResponse);
+                 return executeOperation([&]() { return executor->pasteFrameSelection(frameResponse); });
             }
             break;
             default: 
@@ -400,73 +424,76 @@ void TupProjectCommand::frameCommand()
                      qDebug() << "[TupProjectCommand::frameCommand()] - Fatal Error: Unknown project request";
                  #endif
             }
-            break;
+            return fail(QStringLiteral("unsupported_frame_action"));
     }
+
+
+    return fail(QStringLiteral("unsupported_frame_action"));
 }
 
-void TupProjectCommand::layerCommand()
+bool TupProjectCommand::layerCommand()
 {
     TupLayerResponse *res = static_cast<TupLayerResponse *>(response);
 
     switch (res->getAction()) {
             case TupProjectRequest::Add:
             {
-                 executor->createLayer(res);
+                 return executeOperation([&]() { return executor->createLayer(res); });
             }
             break;
             case TupProjectRequest::Duplicate:
             {
-                 executor->duplicateLayer(res);
+                 return executeOperation([&]() { return executor->duplicateLayer(res); });
             }
             break;
             case TupProjectRequest::AddLipSync:
             {
-                 executor->addLipSync(res);
+                 return executeOperation([&]() { return executor->addLipSync(res); });
             }
             break;
             case TupProjectRequest::UpdateLipSync:
             {
-                 executor->updateLipSync(res);
+                 return executeOperation([&]() { return executor->updateLipSync(res); });
             }
             break;
             case TupProjectRequest::Remove:
             {
-                 executor->removeLayer(res);
+                 return executeOperation([&]() { return executor->removeLayer(res); });
             }
             break;
             case TupProjectRequest::RemoveLipSync:
             {
-                 executor->removeLipSync(res);
+                 return executeOperation([&]() { return executor->removeLipSync(res); });
             }
             break;
             case TupProjectRequest::Move:
             {
-                 executor->moveLayer(res);
+                 return executeOperation([&]() { return executor->moveLayer(res); });
             }
             break;
             case TupProjectRequest::Lock:
             {
-                 executor->lockLayer(res);
+                 return executeOperation([&]() { return executor->lockLayer(res); });
             }
             break;
             case TupProjectRequest::Rename:
             {
-                 executor->renameLayer(res);
+                 return executeOperation([&]() { return executor->renameLayer(res); });
             }
             break;
             case TupProjectRequest::Select:
             {
-                 executor->selectLayer(res);
+                 return executeOperation([&]() { return executor->selectLayer(res); });
             }
             break;
             case TupProjectRequest::View:
             {
-                 executor->setLayerVisibility(res);
+                 return executeOperation([&]() { return executor->setLayerVisibility(res); });
             }
             break;
             case TupProjectRequest::UpdateOpacity:
             {
-                 executor->setLayerOpacity(res);
+                 return executeOperation([&]() { return executor->setLayerOpacity(res); });
             }
             break;
             default: 
@@ -475,11 +502,14 @@ void TupProjectCommand::layerCommand()
                      qDebug() << "[TupProjectCommand::layerCommand()] - Error: Unknown project response";
                  #endif
             }
-            break;
+            return fail(QStringLiteral("unsupported_layer_action"));
     }
+
+
+    return fail(QStringLiteral("unsupported_layer_action"));
 }
 
-void TupProjectCommand::sceneCommand()
+bool TupProjectCommand::sceneCommand()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupProjectCommand::sceneCommand()]";
@@ -491,62 +521,62 @@ void TupProjectCommand::sceneCommand()
 	    // SQA: Check if this case is valid 
         case TupProjectRequest::GetInfo:
         {
-             executor->getScenes(sceneResponse);
+             return executeOperation([&]() { return executor->getScenes(sceneResponse); });
         }
         break;
         case TupProjectRequest::Add:
         {
-             executor->createScene(sceneResponse);
+             return executeOperation([&]() { return executor->createScene(sceneResponse); });
         }
         break;
         case TupProjectRequest::Duplicate:
         {
-             executor->duplicateScene(sceneResponse);
+             return executeOperation([&]() { return executor->duplicateScene(sceneResponse); });
         }
         break;
         case TupProjectRequest::Remove:
         {
-             executor->removeScene(sceneResponse);
+             return executeOperation([&]() { return executor->removeScene(sceneResponse); });
         }
         break;
         case TupProjectRequest::Reset:
         {
-             executor->resetScene(sceneResponse);
+             return executeOperation([&]() { return executor->resetScene(sceneResponse); });
         }
         break;
         case TupProjectRequest::Move:
         {
-             executor->moveScene(sceneResponse);
+             return executeOperation([&]() { return executor->moveScene(sceneResponse); });
         }
         break;
         case TupProjectRequest::Lock:
         {
-             executor->lockScene(sceneResponse);
+             return executeOperation([&]() { return executor->lockScene(sceneResponse); });
         }
         break;
         case TupProjectRequest::Rename:
         {
-             executor->renameScene(sceneResponse);
+             return executeOperation([&]() { return executor->renameScene(sceneResponse); });
         }
         break;
         case TupProjectRequest::Select:
         {
-             executor->selectScene(sceneResponse);
+             return executeOperation([&]() { return executor->selectScene(sceneResponse); });
         }
         break;
         case TupProjectRequest::View:
         {
-             executor->setSceneVisibility(sceneResponse);
+             return executeOperation([&]() { return executor->setSceneVisibility(sceneResponse); });
         }
         break;
         case TupProjectRequest::BgColor:
         {
-             executor->setBgColor(sceneResponse);
+             return executeOperation([&]() { return executor->setBgColor(sceneResponse); });
         }
         break;
         case TupProjectRequest::SetFps:
         {
-             executor->setFps(sceneResponse);
+             return executeOperation([&]() { return executor->setFps(sceneResponse); });
         }
         break;
 
@@ -558,9 +588,12 @@ void TupProjectCommand::sceneCommand()
         }
         break;
     }
+
+
+    return fail(QStringLiteral("unsupported_scene_action"));
 }
 
-void TupProjectCommand::itemCommand()
+bool TupProjectCommand::itemCommand()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupProjectCommand::itemCommand()] - action:" << response->originalAction() 
@@ -578,50 +611,46 @@ void TupProjectCommand::itemCommand()
     switch (res->originalAction()) {
             case TupProjectRequest::Add:
             {
-                 executor->createItem(res);
+                 return executeOperation([&]() { return executor->createItem(res); });
             }
             break;
             case TupProjectRequest::Remove:
             {
-                 executor->removeItem(res);
+                 return executeOperation([&]() { return executor->removeItem(res); });
             }
             break;
             case TupProjectRequest::Move:
             {
-                 executor->moveItem(res);
+                 return executeOperation([&]() { return executor->moveItem(res); });
             }
             break;
             case TupProjectRequest::Lock:
-            {
-            }
-            break;
+                return fail(QStringLiteral("item_lock_not_implemented"));
             case TupProjectRequest::Rename:
-            {
-            }
-            break;
+                return fail(QStringLiteral("item_rename_not_implemented"));
             case TupProjectRequest::Convert:
             {
-                 executor->convertItem(res);
+                 return executeOperation([&]() { return executor->convertItem(res); });
             }
             break;
             case TupProjectRequest::EditNodes:
             {
-                 executor->setPathItem(res);
+                 return executeOperation([&]() { return executor->setPathItem(res); });
             }
             break;
             case TupProjectRequest::Pen:
             {
-                 executor->setPen(res);
+                 return executeOperation([&]() { return executor->setPen(res); });
             }
             break;
             case TupProjectRequest::Brush:
             {
-                 executor->setBrush(res);
+                 return executeOperation([&]() { return executor->setBrush(res); });
             }
             break;
             case TupProjectRequest::TextColor:
             {
-                 executor->setTextColor(res);
+                 return executeOperation([&]() { return executor->setTextColor(res); });
             }
             break;
             /*
@@ -636,37 +665,37 @@ void TupProjectCommand::itemCommand()
             */
             case TupProjectRequest::Transform:
             {
-                 executor->transformItem(res);
+                 return executeOperation([&]() { return executor->transformItem(res); });
             }
             break;
             case TupProjectRequest::Group:
             {
-                 executor->groupItems(res);
+                 return executeOperation([&]() { return executor->groupItems(res); });
             }
             break;
             case TupProjectRequest::Ungroup:
             {
-                 executor->ungroupItems(res);
+                 return executeOperation([&]() { return executor->ungroupItems(res); });
             }
             break;
             case TupProjectRequest::SetTween:
             {
-                 executor->setTween(res);
+                 return executeOperation([&]() { return executor->setTween(res); });
             }
             break;
             case TupProjectRequest::UpdateTweenPath:
             {
-                 executor->updateTweenPath(res);
+                 return executeOperation([&]() { return executor->updateTweenPath(res); });
             }
             break;
             case TupProjectRequest::AddRasterItem:
             {
-                 executor->createRasterPath(res);
+                 return executeOperation([&]() { return executor->createRasterPath(res); });
             }
             break;
             case TupProjectRequest::ClearRasterCanvas:
             {
-                 executor->clearRasterCanvas(res);
+                 return executeOperation([&]() { return executor->clearRasterCanvas(res); });
             }
             break;
             default:
@@ -675,11 +704,14 @@ void TupProjectCommand::itemCommand()
                      qDebug() << "[TupProjectCommand::itemCommand()] - Error: Unknown project response";
                  #endif
             }
-            break;
+            return fail(QStringLiteral("unsupported_item_action"));
     }
+
+
+    return fail(QStringLiteral("unsupported_item_action"));
 }
 
-void TupProjectCommand::libraryCommand()
+bool TupProjectCommand::libraryCommand()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupProjectCommand::libraryCommand()]";
@@ -690,25 +722,25 @@ void TupProjectCommand::libraryCommand()
     switch (res->getAction()) {
             case TupProjectRequest::Add:
             {
-                 executor->createSymbol(res);
+                 return executeOperation([&]() { return executor->createSymbol(res); });
             }
             break;
 
             case TupProjectRequest::Remove:
             {
-                 executor->removeSymbol(res);
+                 return executeOperation([&]() { return executor->removeSymbol(res); });
             }
             break;
 
             case TupProjectRequest::InsertSymbolIntoFrame:
             {
-                 executor->insertSymbolIntoFrame(res);
+                 return executeOperation([&]() { return executor->insertSymbolIntoFrame(res); });
             }
             break;
 
             case TupProjectRequest::RemoveSymbolFromFrame:
             {
-                 executor->removeSymbolFromFrame(res);
+                 return executeOperation([&]() { return executor->removeSymbolFromFrame(res); });
             }
             break;
 
@@ -718,18 +750,14 @@ void TupProjectCommand::libraryCommand()
                      qDebug() << "[TupProjectCommand::libraryCommand()] - Error: Unknown project response";
                  #endif
             }
-            break;
+            return fail(QStringLiteral("unsupported_library_action"));
     }
+
+
+    return fail(QStringLiteral("unsupported_library_action"));
 }
 
-void TupProjectCommand::paintAreaCommand()
+bool TupProjectCommand::paintAreaCommand()
 {
-    // SQA: FIX ME in tupprojectcommand.cpp
-	
-    /*
-     if (redo)
-         executor->reemitEvent(response);
-     else
-         executor->reemitEvent(response);
-    */
+    return fail(QStringLiteral("paint_area_command_not_implemented"));
 }

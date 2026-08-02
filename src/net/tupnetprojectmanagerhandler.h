@@ -68,6 +68,7 @@
 #include "tupchat.h"
 #include "tupnotice.h"
 #include "tupcollaboratorslist.h"
+#include "tupcommandresultparser.h"
 
 #include <QDomDocument>
 #include <QTabWidget>
@@ -114,6 +115,10 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void connectionHasBeenLost(DisconnectReason reason = DisconnectReason::UnknownDisconnectReason);
         void authenticationFailed();
         void newMessageReceived(int messageType);
+        void commandResultReceived(const QString &commandId,
+                                   const QString &status,
+                                   const QString &errorCode,
+                                   const QString &message);
 
     public slots:
         void sendExportImageRequest(int frameIndex, int sceneIndex, const QString &title, const QString &topics, const QString &description);

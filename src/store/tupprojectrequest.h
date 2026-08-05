@@ -154,6 +154,10 @@ class TUPITUBE_EXPORT TupProjectRequest
         void setCommandId(const QString &commandId);
         QString getCommandId() const;
 
+        void setDependencyCommandId(const QString &commandId);
+        QString getDependencyCommandId() const;
+        bool hasDependency() const;
+
         TupProjectRequest &operator = (const TupProjectRequest &other);
 
     private:
@@ -161,6 +165,7 @@ class TUPITUBE_EXPORT TupProjectRequest
         int actionId;
         bool isExternal;
         QString commandId;
+        QString dependencyCommandId;
 };
 
 #endif

@@ -72,15 +72,33 @@ bool TupCommandCoordinator::registerDependency(
         }
     }
 
-    commands.append(dependentRequest);
+    TupProjectRequest storedRequest(dependentRequest);
+    storedRequest.setDependencyCommandId(prerequisiteId);
+
+    if (!storedRequest.hasDependency()) {
+        qWarning()
+            << "[TupCommandCoordinator::registerDependency()]"
+            << "Unable to assign dependency to command:"
+            << storedRequest.getCommandId()
+            << "Prerequisite:" << prerequisiteId
+            << "XML:" << storedRequest.getXml();
+        return false;
+    }
+
+    commands.append(storedRequest);
 
 #ifdef TUP_DEBUG
     qDebug()
         << "[TupCommandCoordinator::registerDependency()]"
         << "Registered dependent command:"
-        << dependentRequest.getCommandId()
+        << storedRequest.getCommandId()
         << "Prerequisite:" << prerequisiteId
+        << "Stored dependency:" << storedRequest.getDependencyCommandId()
         << "Pending for prerequisite:" << commands.count();
+
+    qDebug()
+        << "[TupCommandCoordinator::registerDependency()]"
+        << "Stored XML:" << storedRequest.getXml();
 #endif
 
     return true;
@@ -136,7 +154,7 @@ void TupCommandCoordinator::handleCommandResult(
 #ifdef TUP_DEBUG
         qDebug()
             << "[TupCommandCoordinator::handleCommandResult()]"
-            << "No dependent commands registered for:"
+            << "No pending dependency for command:"
             << prerequisiteId;
 #endif
         return;

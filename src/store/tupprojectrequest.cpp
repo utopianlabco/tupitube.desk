@@ -36,6 +36,8 @@
 #include "tupprojectresponse.h"
 #include "tuprequestbuilder.h"
 
+#include <QDomDocument>
+
 TupProjectRequestArgument::TupProjectRequestArgument()
 {
 }
@@ -86,6 +88,12 @@ TupProjectRequest::TupProjectRequest(const QString &data)
       actionId(TupProjectRequest::None),
       isExternal(false)
 {
+    QDomDocument doc;
+    if (doc.setContent(xml)) {
+        const QDomElement root = doc.documentElement();
+        commandId = root.attribute(QStringLiteral("command_id"));
+        dependencyCommandId = root.attribute(QStringLiteral("depends_on"));
+    }
 }
 
 TupProjectRequest::TupProjectRequest(const TupProjectRequest &request)
@@ -137,6 +145,41 @@ QString TupProjectRequest::getCommandId() const
      return commandId;
 }
 
+void TupProjectRequest::setDependencyCommandId(const QString &value)
+{
+    const QString normalized = value.trimmed();
+
+    QDomDocument doc;
+    if (!doc.setContent(xml)) {
+        dependencyCommandId.clear();
+        return;
+    }
+
+    QDomElement root = doc.documentElement();
+    if (root.isNull() || root.tagName() != QStringLiteral("project_request")) {
+        dependencyCommandId.clear();
+        return;
+    }
+
+    if (normalized.isEmpty())
+        root.removeAttribute(QStringLiteral("depends_on"));
+    else
+        root.setAttribute(QStringLiteral("depends_on"), normalized);
+
+    dependencyCommandId = normalized;
+    xml = doc.toString(0);
+}
+
+QString TupProjectRequest::getDependencyCommandId() const
+{
+    return dependencyCommandId;
+}
+
+bool TupProjectRequest::hasDependency() const
+{
+    return !dependencyCommandId.isEmpty();
+}
+
 TupProjectRequest &TupProjectRequest::operator=(const TupProjectRequest &other)
 {
     if (this == &other)
@@ -146,6 +189,7 @@ TupProjectRequest &TupProjectRequest::operator=(const TupProjectRequest &other)
     actionId = other.actionId;
     isExternal = other.isExternal;
     commandId = other.commandId;
+    dependencyCommandId = other.dependencyCommandId;
 
     return *this;
 }

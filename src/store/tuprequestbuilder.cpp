@@ -60,11 +60,16 @@ QString TupRequestBuilder::resolveCommandId(const QString &commandId)
 }
 
 TupProjectRequest TupRequestBuilder::buildRequest(const QDomDocument &doc, int actionId,
-                                                  const QString &commandId)
+                                                  const QString &commandId,
+                                                  const QString &dependencyCommandId)
 {
     TupProjectRequest request(doc.toString(0));
     request.setActionId(actionId);
     request.setCommandId(commandId);
+
+    if (!dependencyCommandId.trimmed().isEmpty())
+        request.setDependencyCommandId(dependencyCommandId);
+
     return request;
 }
 
@@ -74,13 +79,16 @@ TupProjectRequest TupRequestBuilder::createItemRequest(int sceneIndex, int layer
                                                        TupLibraryObject::ObjectType type,
                                                        int actionId, const QVariant &arg,
                                                        const QByteArray &data,
-                                                       const QString &commandId)
+                                                       const QString &commandId,
+                                                       const QString &dependencyCommandId)
 {
     QDomDocument doc;
     QDomElement root = doc.createElement("project_request");
 
     const QString resolvedCommandId = resolveCommandId(commandId);
     root.setAttribute("command_id", resolvedCommandId);
+    if (!dependencyCommandId.trimmed().isEmpty())
+        root.setAttribute("depends_on", dependencyCommandId.trimmed());
 
     QDomElement scene = doc.createElement("scene");
     scene.setAttribute("index", sceneIndex);
@@ -120,19 +128,22 @@ TupProjectRequest TupRequestBuilder::createItemRequest(int sceneIndex, int layer
     root.appendChild(scene);
     doc.appendChild(root);
 
-    return buildRequest(doc, actionId, resolvedCommandId);
+    return buildRequest(doc, actionId, resolvedCommandId, dependencyCommandId);
 }
 
 TupProjectRequest TupRequestBuilder::createFrameRequest(int sceneIndex, int layerIndex, int frameIndex,
                                                         int actionId, const QVariant &arg,
                                                         const QByteArray &data,
-                                                        const QString &commandId)
+                                                        const QString &commandId,
+                                                        const QString &dependencyCommandId)
 {
     QDomDocument doc;
     QDomElement root = doc.createElement("project_request");
 
     const QString resolvedCommandId = resolveCommandId(commandId);
     root.setAttribute("command_id", resolvedCommandId);
+    if (!dependencyCommandId.trimmed().isEmpty())
+        root.setAttribute("depends_on", dependencyCommandId.trimmed());
 
     QDomElement scene = doc.createElement("scene");
     scene.setAttribute("index", sceneIndex);
@@ -155,18 +166,21 @@ TupProjectRequest TupRequestBuilder::createFrameRequest(int sceneIndex, int laye
     root.appendChild(scene);
     doc.appendChild(root);
 
-    return buildRequest(doc, actionId, resolvedCommandId);
+    return buildRequest(doc, actionId, resolvedCommandId, dependencyCommandId);
 }
 
 TupProjectRequest TupRequestBuilder::createLayerRequest(int sceneIndex, int layerIndex, int actionId,
                                                         const QVariant &arg, const QByteArray &data,
-                                                        const QString &commandId)
+                                                        const QString &commandId,
+                                                        const QString &dependencyCommandId)
 {
     QDomDocument doc;
     QDomElement root = doc.createElement("project_request");
 
     const QString resolvedCommandId = resolveCommandId(commandId);
     root.setAttribute("command_id", resolvedCommandId);
+    if (!dependencyCommandId.trimmed().isEmpty())
+        root.setAttribute("depends_on", dependencyCommandId.trimmed());
 
     QDomElement scene = doc.createElement("scene");
     scene.setAttribute("index", sceneIndex);
@@ -185,18 +199,21 @@ TupProjectRequest TupRequestBuilder::createLayerRequest(int sceneIndex, int laye
     root.appendChild(scene);
     doc.appendChild(root);
 
-    return buildRequest(doc, actionId, resolvedCommandId);
+    return buildRequest(doc, actionId, resolvedCommandId, dependencyCommandId);
 }
 
 TupProjectRequest TupRequestBuilder::createSceneRequest(int sceneIndex, int actionId,
                                                         const QVariant &arg, const QByteArray &data,
-                                                        const QString &commandId)
+                                                        const QString &commandId,
+                                                        const QString &dependencyCommandId)
 {
     QDomDocument doc;
     QDomElement root = doc.createElement("project_request");
 
     const QString resolvedCommandId = resolveCommandId(commandId);
     root.setAttribute("command_id", resolvedCommandId);
+    if (!dependencyCommandId.trimmed().isEmpty())
+        root.setAttribute("depends_on", dependencyCommandId.trimmed());
 
     QDomElement scene = doc.createElement("scene");
     scene.setAttribute("index", sceneIndex);
@@ -211,7 +228,7 @@ TupProjectRequest TupRequestBuilder::createSceneRequest(int sceneIndex, int acti
     root.appendChild(scene);
     doc.appendChild(root);
 
-    return buildRequest(doc, actionId, resolvedCommandId);
+    return buildRequest(doc, actionId, resolvedCommandId, dependencyCommandId);
 }
 
 TupProjectRequest TupRequestBuilder::createLibraryRequest(int actionId, const QVariant &arg,
@@ -221,13 +238,16 @@ TupProjectRequest TupRequestBuilder::createLibraryRequest(int actionId, const QV
                                                           const QString &folder,
                                                           int sceneIndex, int layerIndex,
                                                           int frameIndex,
-                                                          const QString &commandId)
+                                                          const QString &commandId,
+                                                          const QString &dependencyCommandId)
 {
     QDomDocument doc;
     QDomElement root = doc.createElement("project_request");
 
     const QString resolvedCommandId = resolveCommandId(commandId);
     root.setAttribute("command_id", resolvedCommandId);
+    if (!dependencyCommandId.trimmed().isEmpty())
+        root.setAttribute("depends_on", dependencyCommandId.trimmed());
 
     QDomElement scene = doc.createElement("scene");
     scene.setAttribute("index", sceneIndex);
@@ -259,7 +279,7 @@ TupProjectRequest TupRequestBuilder::createLibraryRequest(int actionId, const QV
     layer.appendChild(frame);
     doc.appendChild(root);
 
-    return buildRequest(doc, actionId, resolvedCommandId);
+    return buildRequest(doc, actionId, resolvedCommandId, dependencyCommandId);
 }
 
 void TupRequestBuilder::appendData(QDomDocument &doc, QDomElement &element,

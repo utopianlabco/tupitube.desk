@@ -63,22 +63,26 @@ class TUPITUBE_EXPORT TupRequestBuilder
                                                    TupLibraryObject::ObjectType type, int actionId,
                                                    const QVariant &arg = QString(),
                                                    const QByteArray &data = QByteArray(),
-                                                   const QString &commandId = QString());
+                                                   const QString &commandId = QString(),
+                                                   const QString &dependencyCommandId = QString());
 
         static TupProjectRequest createFrameRequest(int sceneIndex, int layerIndex, int frameIndex, int actionId,
                                                     const QVariant &arg = QString(),
                                                     const QByteArray &data = QByteArray(),
-                                                    const QString &commandId = QString());
+                                                    const QString &commandId = QString(),
+                                                    const QString &dependencyCommandId = QString());
 
         static TupProjectRequest createLayerRequest(int sceneIndex, int layerIndex, int actionId,
                                                     const QVariant &arg = QString(),
                                                     const QByteArray &data = QByteArray(),
-                                                    const QString &commandId = QString());
+                                                    const QString &commandId = QString(),
+                                                    const QString &dependencyCommandId = QString());
 
         static TupProjectRequest createSceneRequest(int sceneIndex, int actionId,
                                                     const QVariant &arg = QString(),
                                                     const QByteArray &data = QByteArray(),
-                                                    const QString &commandId = QString());
+                                                    const QString &commandId = QString(),
+                                                    const QString &dependencyCommandId = QString());
 
         static TupProjectRequest createLibraryRequest(int actionId, const QVariant &arg,
                                                       TupLibraryObject::ObjectType type,
@@ -86,7 +90,8 @@ class TUPITUBE_EXPORT TupRequestBuilder
                                                       const QByteArray &data = QByteArray(),
                                                       const QString &folder = QString(),
                                                       int scene = -1, int layer = -1, int frame = -1,
-                                                      const QString &commandId = QString());
+                                                      const QString &commandId = QString(),
+                                                     const QString &dependencyCommandId = QString());
 
         static TupProjectRequest fromResponse(TupProjectResponse *response,
                                                      bool preserveCommandId = true);
@@ -95,7 +100,8 @@ class TUPITUBE_EXPORT TupRequestBuilder
         static QString createCommandId();
         static QString resolveCommandId(const QString &commandId);
         static TupProjectRequest buildRequest(const QDomDocument &doc, int actionId,
-                                              const QString &commandId);
+                                              const QString &commandId,
+                                              const QString &dependencyCommandId = QString());
         static void appendData(QDomDocument &doc, QDomElement &element, const QByteArray &data);
 };
 

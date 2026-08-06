@@ -56,7 +56,8 @@ HEADERS += tupnetprojectmanagerparams.h \
            tupstoryboardupdatepackage.h \
            tupstoryboardexportpackage.h \
            tupstoryboardparser.h \
-           tupcommandresultparser.h
+           tupcommandresultparser.h \
+           tupcommandtracker.h
 
 SOURCES += tupnetprojectmanagerparams.cpp \
            tupnetprojectmanagerhandler.cpp \
@@ -86,7 +87,8 @@ SOURCES += tupnetprojectmanagerparams.cpp \
            tupstoryboardupdatepackage.cpp \
            tupstoryboardexportpackage.cpp \
            tupstoryboardparser.cpp \
-           tupcommandresultparser.cpp
+           tupcommandresultparser.cpp \
+           tupcommandtracker.cpp
 
 include(net_config.pri)
 

@@ -34,6 +34,12 @@
 
 #include "tupnetprojectmanagerhandler.h"
 
+namespace {
+    const int COMMAND_RETRY_SCAN_INTERVAL_MS = 1000;
+    const qint64 COMMAND_ACK_TIMEOUT_MS = 5000;
+    const int COMMAND_MAX_RETRIES = 3;
+}
+
 TupNetProjectManagerHandler::TupNetProjectManagerHandler(QObject *parent) : TupAbstractProjectHandler(parent)
 {    
     #ifdef TUP_DEBUG
@@ -41,6 +47,12 @@ TupNetProjectManagerHandler::TupNetProjectManagerHandler(QObject *parent) : TupA
     #endif
 
     socket = new TupNetSocket(this);
+    commandTracker = new TupCommandTracker(this);
+    commandRetryTimer = new QTimer(this);
+    commandRetryTimer->setInterval(COMMAND_RETRY_SCAN_INTERVAL_MS);
+    connect(commandRetryTimer, SIGNAL(timeout()),
+            this, SLOT(retryTimedOutCommands()));
+    commandRetryTimer->start();
     // Enable OS-level TCP Keep-Alive to prevent NAT/firewall from dropping idle sockets
     socket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
     connect(socket, SIGNAL(disconnected()), this, SLOT(connectionLost()));
@@ -80,6 +92,12 @@ TupNetProjectManagerHandler::~TupNetProjectManagerHandler()
     #ifdef TUP_DEBUG
         qDebug() << "[~TupNetProjectManagerHandler()]";
     #endif
+
+    if (commandRetryTimer)
+        commandRetryTimer->stop();
+
+    if (commandTracker)
+        commandTracker->clear();
 
     // Robustly disconnect and delete the socket to avoid use-after-free and queued event crashes
     if (socket) {
@@ -146,7 +164,15 @@ void TupNetProjectManagerHandler::handleProjectRequest(const TupProjectRequest *
     qDebug() << request->getXml();
 #endif
 
-    // Milestone 1 keeps the existing optimistic execution behavior.
+    if (!commandTracker || !commandTracker->track(*request)) {
+        qWarning()
+            << "[TupNetProjectManagerHandler::handleProjectRequest()]"
+            << "Unable to track command:"
+            << request->getCommandId();
+        return;
+    }
+
+    // Preserve the existing optimistic local execution behavior.
     emit sendCommand(request, true);
     socket->send(request->getXml());
 }
@@ -586,6 +612,9 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                 return;
         }
 
+        if (commandTracker)
+            commandTracker->complete(parser.commandId());
+
         emit commandResultReceived(
             parser.commandId(),
             status,
@@ -666,13 +695,79 @@ void TupNetProjectManagerHandler::connectionLost()
                emit connectionHasBeenLost(m_disconnectReason);
     }
 
+    if (commandTracker)
+        commandTracker->clear();
+
     // Reset for the next session
     m_disconnectReason = DisconnectReason::UnknownDisconnectReason;
 }
 
+
+void TupNetProjectManagerHandler::retryTimedOutCommands()
+{
+    if (!commandTracker || commandTracker->pendingCount() == 0)
+        return;
+
+    if (!socket || socket->state() != QAbstractSocket::ConnectedState)
+        return;
+
+    const QList<QString> expired =
+        commandTracker->expiredCommandIds(COMMAND_ACK_TIMEOUT_MS);
+
+    for (const QString &commandId : expired) {
+        if (!commandTracker->contains(commandId))
+            continue;
+
+        const int retries = commandTracker->retryCount(commandId);
+
+        if (retries >= COMMAND_MAX_RETRIES) {
+            qWarning()
+                << "[TupNetProjectManagerHandler::retryTimedOutCommands()]"
+                << "Command acknowledgment timed out."
+                << "Command:" << commandId
+                << "Retries:" << retries;
+
+            commandTracker->complete(commandId);
+
+            emit commandResultReceived(
+                commandId,
+                QStringLiteral("failed"),
+                QStringLiteral("ack_timeout"),
+                tr("The server did not acknowledge the command after multiple retries."));
+            continue;
+        }
+
+        const QString xml = commandTracker->commandXml(commandId);
+        if (xml.isEmpty()) {
+            qWarning()
+                << "[TupNetProjectManagerHandler::retryTimedOutCommands()]"
+                << "Cannot retry command because its XML is empty:"
+                << commandId;
+
+            commandTracker->complete(commandId);
+            continue;
+        }
+
+        if (!commandTracker->markRetried(commandId))
+            continue;
+
+#ifdef TUP_DEBUG
+        qWarning()
+            << "[TupNetProjectManagerHandler::retryTimedOutCommands()]"
+            << "Resending timed-out command:" << commandId
+            << "Retry:" << commandTracker->retryCount(commandId);
+#endif
+
+        socket->send(xml);
+    }
+}
+
 void TupNetProjectManagerHandler::closeConnection()
 {
-    if (socket->isOpen())
+    if (commandTracker)
+        commandTracker->clear();
+
+    if (socket && socket->isOpen())
         socket->close();
 }
 

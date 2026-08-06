@@ -47,6 +47,30 @@
 
 #define RETURN_IF_NOT_LIBRARY if (!library) return;
 
+namespace {
+
+const char kCurrentLibraryItemIdProperty[] = "tupCurrentLibraryItemId";
+const char kLastEditedLibraryItemIdProperty[] = "tupLastEditedLibraryItemId";
+
+QTreeWidgetItem *findLibraryTreeItemById(TupItemManager *tree,
+                                         const QString &objectId)
+{
+    if (!tree || objectId.isEmpty())
+        return nullptr;
+
+    QTreeWidgetItemIterator it(tree);
+    while (*it) {
+        QTreeWidgetItem *item = *it;
+        if (item && item->text(3) == objectId)
+            return item;
+        ++it;
+    }
+
+    return nullptr;
+}
+
+} // namespace
+
 TupLibraryWidget::TupLibraryWidget(QWidget *parent) : TupModuleWidgetBase(parent)
 {
     #ifdef TUP_DEBUG
@@ -66,7 +90,6 @@ TupLibraryWidget::TupLibraryWidget(QWidget *parent) : TupModuleWidgetBase(parent
     commandCoordinator = nullptr;
     isExternalLibraryAsset = false;
     removeTempVideo = false;
-    removeTempVideo = "";
 
     setWindowIcon(QPixmap(ICONS_DIR + "library.png"));
     setWindowTitle(tr("Library"));
@@ -404,6 +427,7 @@ void TupLibraryWidget::previewItem(QTreeWidgetItem *item)
 
     if (item) {
         currentItemDisplayed = item;
+        setProperty(kCurrentLibraryItemIdProperty, item->text(3));
 
         if (item->text(2).length() == 0) {
             display->showDisplay();
@@ -909,6 +933,7 @@ void TupLibraryWidget::createRasterObject()
                 previewItem(item);
 
                 lastItemEdited = item;
+                setProperty(kLastEditedLibraryItemIdProperty, item->text(3));
                 executeSoftware(editor, path);
             } else {
                 #ifdef TUP_DEBUG
@@ -1033,6 +1058,7 @@ void TupLibraryWidget::createVectorObject()
                 previewItem(item);
 
                 lastItemEdited = item;
+                setProperty(kLastEditedLibraryItemIdProperty, item->text(3));
                 executeSoftware(editor, path);
             } else {
                 #ifdef TUP_DEBUG
@@ -2471,6 +2497,7 @@ void TupLibraryWidget::callExternalEditor(QTreeWidgetItem *item, const QString &
 {
     if (item) {
         lastItemEdited = item;
+        setProperty(kLastEditedLibraryItemIdProperty, item->text(3));
         QString id = item->text(1) + "." + item->text(2).toLower();
         TupLibraryObject *object = library->getObject(id);
 
@@ -2539,6 +2566,9 @@ void TupLibraryWidget::updateItemFromSaveAction()
         qDebug() << "[TupLibraryWidget::updateItemFromSaveAction()]";
     #endif
 
+    if (!library || !project || !libraryTree)
+        return;
+
     refreshItemFromCollection(library->getObjects());
 
     foreach (TupLibraryFolder *folder, library->getFolders()) {
@@ -2559,22 +2589,53 @@ void TupLibraryWidget::updateItem(const QString &name, const QString &extension,
         qDebug() << "[TupLibraryWidget::updateItem()]";
     #endif
 
-    QString onEdition = name + "." + extension;
-    QString onDisplay = currentItemDisplayed->text(1) + "." + currentItemDisplayed->text(2).toLower();
+    if (!library || !project || !libraryTree || !object) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupLibraryWidget::updateItem()] - "
+                          "Unable to refresh item because required state is missing.";
+        #endif
+        return;
+    }
+
+    const QString normalizedExtension = extension.toLower();
+    const QString onEdition = name + "." + normalizedExtension;
+    const QString onDisplay =
+        property(kCurrentLibraryItemIdProperty).toString();
 
     TupLibraryObject::ObjectType type = TupLibraryObject::Image;
-    if (extension.compare("svg") == 0)
+    if (normalizedExtension.compare(QStringLiteral("svg")) == 0)
         type = TupLibraryObject::Svg;
 
-    if (library->reloadObject(onEdition)) {
-        project->reloadLibraryItem(type, onEdition, object);
+    if (!library->reloadObject(onEdition)) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupLibraryWidget::updateItem()] - "
+                          "Couldn't reload item from Library:"
+                       << onEdition;
+        #endif
+        return;
+    }
 
-        if (onDisplay.compare(onEdition) == 0)
-            previewItem(lastItemEdited);
+    project->reloadLibraryItem(type, onEdition, object);
+
+    if (onDisplay.compare(onEdition) != 0)
+        return;
+
+    const QString editedItemId =
+        property(kLastEditedLibraryItemIdProperty).toString();
+
+    QTreeWidgetItem *item =
+        findLibraryTreeItemById(libraryTree, editedItemId);
+
+    if (!item)
+        item = findLibraryTreeItemById(libraryTree, onEdition);
+
+    if (item) {
+        previewItem(item);
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupLibraryWidget::updateItemFromSaveAction()] - "
-                        "Fatal Error: Couldn't reload item from Library!";
+            qWarning() << "[TupLibraryWidget::updateItem()] - "
+                          "The tree item no longer exists:"
+                       << onEdition;
         #endif
     }
 }

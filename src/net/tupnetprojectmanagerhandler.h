@@ -69,6 +69,7 @@
 #include "tupnotice.h"
 #include "tupcollaboratorslist.h"
 #include "tupcommandresultparser.h"
+#include "tupcommandtracker.h"
 
 #include <QDomDocument>
 #include <QTabWidget>
@@ -77,6 +78,7 @@
 #include <QDesktopWidget>
 #include <QMessageBox>
 #include <QSplitter>
+#include <QTimer>
 
 class TupNetSocket;
 
@@ -129,6 +131,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
     private slots:
         void sendChatMessage(const QString &message);
         void connectionLost();
+        void retryTimedOutCommands();
 
     private:
         void loadProjectFromServer(const QString &projectID, const QString &owner);
@@ -137,6 +140,8 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
 
         TupNetProjectManagerParams *params;
         TupNetSocket *socket;
+        TupCommandTracker *commandTracker;
+        QTimer *commandRetryTimer;
         QString projectName;
         QString username;
         TupProject *project;

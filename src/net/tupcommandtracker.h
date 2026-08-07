@@ -36,6 +36,8 @@ class TUPITUBE_EXPORT TupCommandTracker : public QObject
         qint64 lastSentAt(const QString &commandId) const;
 
         QList<QString> expiredCommandIds(qint64 timeoutMs) const;
+        QList<QString> pendingCommandIds() const;
+        void restartTimeoutWindow();
         bool markRetried(const QString &commandId);
 
         bool complete(const QString &commandId);

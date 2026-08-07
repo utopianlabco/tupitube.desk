@@ -224,6 +224,8 @@ class TupMainWindow : public TabbedMainWindow
         void updateBucketTool(TColorCell::FillType type);
         void openTupiTubeNetwork();
         void handleCollaborativeAuthenticationFailure();
+        void collaborationRecoveryStarted();
+        void collaborationRecoveryFinished();
         void updateColorPanelStatus(bool flag);
         void updatePenPanelStatus(bool flag);
         void updateLibraryPanelStatus(bool flag);
@@ -266,6 +268,7 @@ class TupMainWindow : public TabbedMainWindow
         QPointer<TupNetProjectManagerHandler> netProjectManager;
         TupCommandCoordinator *commandCoordinator;
         bool isNetworked;
+        bool collaborationRecovering;
         ToolView *m_viewChat;
         QTabWidget *m_chatTabWidget;
         bool m_chatTabHighlighted;

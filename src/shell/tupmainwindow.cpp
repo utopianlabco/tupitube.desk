@@ -105,6 +105,7 @@ TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
     screenWidth = dimension.first;
     screenHeight = dimension.second;
     isNetworked = false;
+    collaborationRecovering = false;
     exportWidget = nullptr;
 
     uiStyleSheet = TAppTheme::themeStyles();
@@ -917,6 +918,10 @@ void TupMainWindow::setupCollaborativeProject(TupProjectManagerParams *params)
 
         connect(netProjectManager, SIGNAL(connectionHasBeenLost(DisconnectReason)),
                 this, SLOT(unexpectedClose(DisconnectReason)));
+        connect(netProjectManager, SIGNAL(collaborationRecoveryStarted()),
+                this, SLOT(collaborationRecoveryStarted()));
+        connect(netProjectManager, SIGNAL(collaborationRecoveryFinished()),
+                this, SLOT(collaborationRecoveryFinished()));
 
         connect(netProjectManager, SIGNAL(savingSuccessful()), this, SLOT(netProjectSaved()));
         connect(netProjectManager, SIGNAL(postOperationDone()), this, SLOT(resetMousePointer()));
@@ -1540,6 +1545,13 @@ void TupMainWindow::closeEvent(QCloseEvent *event)
 
 void TupMainWindow::createPaintCommand(const TupPaintAreaEvent *event)
 {
+    if (isNetworked && collaborationRecovering) {
+#ifdef TUP_DEBUG
+        qWarning() << "[TupMainWindow::createPaintCommand()] Ignoring paint mutation while collaborative session is recovering.";
+#endif
+        return;
+    }
+
     #ifdef TUP_DEBUG
         qDebug() << "[TupMainWindow::createPaintCommand()]";
     #endif
@@ -1909,8 +1921,71 @@ void TupMainWindow::requestProject()
     }
 }
 
+void TupMainWindow::collaborationRecoveryStarted()
+{
+    collaborationRecovering = true;
+
+#ifdef TUP_DEBUG
+    qWarning() << "[TupMainWindow::collaborationRecoveryStarted()] Collaborative editing suspended.";
+#endif
+
+    if (animationTab)
+        animationTab->setEnabled(false);
+    if (m_exposureSheet)
+        m_exposureSheet->setEnabled(false);
+    if (m_timeLine)
+        m_timeLine->setEnabled(false);
+    if (m_libraryWidget)
+        m_libraryWidget->setEnabled(false);
+    if (m_brushWidget)
+        m_brushWidget->setEnabled(false);
+    if (m_colorPalette)
+        m_colorPalette->setEnabled(false);
+
+    m_actionManager->enable("save_project", false);
+    m_actionManager->enable("save_project_as", false);
+    m_actionManager->enable("import_project", false);
+    m_actionManager->enable("importImageGroup", false);
+    m_actionManager->enable("importImageSequence", false);
+    m_actionManager->enable("importSvg", false);
+    m_actionManager->enable("importSvgSequence", false);
+    m_actionManager->enable("importAudioFile", false);
+    m_actionManager->enable("importVideoFile", false);
+
+    setWindowTitle(appTitle + " - " + projectName + " " + tr("[ reconnecting | collaboration mode ]"));
+    TOsd::self()->display(TOsd::Warning, tr("Connection lost. Reconnecting... Editing is temporarily disabled."));
+}
+
+void TupMainWindow::collaborationRecoveryFinished()
+{
+    collaborationRecovering = false;
+
+#ifdef TUP_DEBUG
+    qDebug() << "[TupMainWindow::collaborationRecoveryFinished()] Collaborative editing resumed.";
+#endif
+
+    if (animationTab)
+        animationTab->setEnabled(true);
+    if (m_exposureSheet)
+        m_exposureSheet->setEnabled(true);
+    if (m_timeLine)
+        m_timeLine->setEnabled(true);
+    if (m_libraryWidget)
+        m_libraryWidget->setEnabled(true);
+    if (m_brushWidget)
+        m_brushWidget->setEnabled(true);
+    if (m_colorPalette)
+        m_colorPalette->setEnabled(true);
+
+    setMenuItemsContext(true);
+    setWindowTitle(appTitle + " - " + projectName + " " + tr("[ connected as %1 | collaboration mode ]").arg(netUser));
+    TOsd::self()->display(TOsd::Info, tr("Connection restored. Collaborative editing resumed."));
+}
+
 void TupMainWindow::unexpectedClose(DisconnectReason reason)
 {
+    collaborationRecovering = false;
+
     if (m_projectManager->isOpen()) {
         resetUI();
     }

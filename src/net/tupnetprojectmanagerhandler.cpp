@@ -38,6 +38,8 @@ namespace {
     const int COMMAND_RETRY_SCAN_INTERVAL_MS = 1000;
     const qint64 COMMAND_ACK_TIMEOUT_MS = 5000;
     const int COMMAND_MAX_RETRIES = 3;
+    const int RECONNECT_INTERVAL_MS = 2000;
+    const int MAX_RECONNECT_ATTEMPTS = 5;
 }
 
 TupNetProjectManagerHandler::TupNetProjectManagerHandler(QObject *parent) : TupAbstractProjectHandler(parent)
@@ -53,9 +55,13 @@ TupNetProjectManagerHandler::TupNetProjectManagerHandler(QObject *parent) : TupA
     connect(commandRetryTimer, SIGNAL(timeout()),
             this, SLOT(retryTimedOutCommands()));
     commandRetryTimer->start();
+    reconnectTimer = new QTimer(this);
+    reconnectTimer->setInterval(RECONNECT_INTERVAL_MS);
+    connect(reconnectTimer, SIGNAL(timeout()), this, SLOT(attemptReconnect()));
     // Enable OS-level TCP Keep-Alive to prevent NAT/firewall from dropping idle sockets
     socket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
     connect(socket, SIGNAL(disconnected()), this, SLOT(connectionLost()));
+    connect(socket, SIGNAL(connected()), this, SLOT(connectionRestored()));
 
     project = nullptr;
     params = nullptr;
@@ -63,6 +69,10 @@ TupNetProjectManagerHandler::TupNetProjectManagerHandler(QObject *parent) : TupA
     doAction = true;
     projectIsOpen = false;
     dialogIsOpen = false;
+    intentionalClose = false;
+    reconnecting = false;
+    reconnectAttempts = 0;
+    collaborationState = CollaborationState::Disconnected;
     
     communicationModule = new QTabWidget;
 
@@ -95,6 +105,8 @@ TupNetProjectManagerHandler::~TupNetProjectManagerHandler()
 
     if (commandRetryTimer)
         commandRetryTimer->stop();
+    if (reconnectTimer)
+        reconnectTimer->stop();
 
     if (commandTracker)
         commandTracker->clear();
@@ -145,6 +157,16 @@ void TupNetProjectManagerHandler::handleProjectRequest(const TupProjectRequest *
         return;
     }
 
+    if (collaborationState != CollaborationState::Connected) {
+#ifdef TUP_DEBUG
+        qWarning()
+            << "[TupNetProjectManagerHandler::handleProjectRequest()]"
+            << "Command blocked because collaborative editing is unavailable."
+            << "Command:" << request->getCommandId();
+#endif
+        return;
+    }
+
     if (!socket || socket->state() != QAbstractSocket::ConnectedState) {
 #ifdef TUP_DEBUG
         qWarning()
@@ -179,6 +201,13 @@ void TupNetProjectManagerHandler::handleProjectRequest(const TupProjectRequest *
 
 bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
 {
+    if (collaborationState != CollaborationState::Connected) {
+#ifdef TUP_DEBUG
+        qWarning() << "[TupNetProjectManagerHandler::commandExecuted()] Collaborative editing is suspended.";
+#endif
+        return false;
+    }
+
     #ifdef TUP_DEBUG
         qDebug() << "[TupNetProjectManagerHandler::commandExecuted()]";
     #endif
@@ -225,6 +254,9 @@ bool TupNetProjectManagerHandler::loadProject(const QString &fileName, TupProjec
 
 void TupNetProjectManagerHandler::loadProjectFromServer(const QString &projectID, const QString &owner)
 {
+    currentProjectId = projectID;
+    currentProjectOwner = owner;
+
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     
     TupOpenPackage package(projectID, owner);
@@ -239,6 +271,10 @@ void TupNetProjectManagerHandler::initialize(TupProjectManagerParams *parameters
         return;
     
     params = netParams;
+    intentionalClose = false;
+    reconnecting = false;
+    reconnectAttempts = 0;
+    collaborationState = CollaborationState::Disconnected;
 
     #ifdef TUP_DEBUG
         QString server = netParams->server() + ":" + QString::number(netParams->port());
@@ -379,8 +415,26 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                TupAckParser parser(package);
                if (parser.parse()) {
                    sign = parser.sign();
-                   // Login successful
-                   emit authenticationSuccessful(); 
+
+                   if (collaborationState == CollaborationState::Recovering) {
+#ifdef TUP_DEBUG
+                       qDebug() << "[TupNetProjectManagerHandler::handlePackage()] Recovery authentication successful.";
+#endif
+                       if (!currentProjectId.isEmpty()) {
+                           loadProjectFromServer(currentProjectId, currentProjectOwner);
+                       } else {
+                           qWarning() << "[TupNetProjectManagerHandler::handlePackage()] Cannot restore collaborative project: project identity is unknown.";
+                           reconnecting = false;
+                           collaborationState = CollaborationState::Disconnected;
+                           if (commandTracker)
+                               commandTracker->clear();
+                           emit connectionHasBeenLost(DisconnectReason::NetworkError);
+                       }
+                   } else {
+                       collaborationState = CollaborationState::Connected;
+                       // Initial login successful.
+                       emit authenticationSuccessful();
+                   }
                }
     } else if (root == "server_project") {
                TupProjectParser parser(package);
@@ -395,8 +449,21 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                            bool isOk = manager->load(file.fileName(), project);
                            if (isOk) {
                                projectIsOpen = true;
-                               emit openNewArea(project->getName(), parser.partners());
-                               delete manager;
+
+                               if (collaborationState == CollaborationState::Recovering) {
+#ifdef TUP_DEBUG
+                                   qDebug() << "[TupNetProjectManagerHandler::handlePackage()] Collaborative project restored after reconnect.";
+#endif
+                                   delete manager;
+                                   resumePendingCommands();
+                                   collaborationState = CollaborationState::Connected;
+                                   emit collaborationRecoveryFinished();
+                                   QApplication::restoreOverrideCursor();
+                               } else {
+                                   collaborationState = CollaborationState::Connected;
+                                   emit openNewArea(project->getName(), parser.partners());
+                                   delete manager;
+                               }
                            } else {
                                #ifdef TUP_DEBUG
                                    qWarning() << "[TupNetProjectManagerHandler::handlePackage()] - Error: Net project can't be opened";
@@ -675,33 +742,126 @@ void TupNetProjectManagerHandler::sendChatMessage(const QString &message)
 
 void TupNetProjectManagerHandler::connectionLost()
 {
-    #ifdef TUP_DEBUG
-        qWarning() << "[TupNetProjectManagerHandler::connectionLost()] - The socket has been closed";
-    #endif
+#ifdef TUP_DEBUG
+    qWarning() << "[TupNetProjectManagerHandler::connectionLost()] - The socket has been closed";
+#endif
 
-    // If it wasn't explicitly set to "Inactivity" by the server,
-    // it means the connection dropped unexpectedly (Network Error).
-    if (m_disconnectReason == DisconnectReason::UnknownDisconnectReason) {
-        m_disconnectReason = DisconnectReason::NetworkError;
+    if (intentionalClose || collaborationState == CollaborationState::Closing) {
+        if (commandTracker)
+            commandTracker->clear();
+        reconnecting = false;
+        reconnectAttempts = 0;
+        collaborationState = CollaborationState::Disconnected;
+        m_disconnectReason = DisconnectReason::UnknownDisconnectReason;
+        return;
     }
 
-    if (dialogIsOpen) {
-        if (dialog) {
-            if (dialog->isVisible())
-                dialog->close();
-        }
+    if (m_disconnectReason == DisconnectReason::UserInactivity) {
+        if (commandTracker)
+            commandTracker->clear();
+        reconnecting = false;
+        collaborationState = CollaborationState::Disconnected;
         emit connectionHasBeenLost(m_disconnectReason);
-    } else if (projectIsOpen) {
-               emit connectionHasBeenLost(m_disconnectReason);
+        m_disconnectReason = DisconnectReason::UnknownDisconnectReason;
+        return;
     }
 
-    if (commandTracker)
-        commandTracker->clear();
+    if (!projectIsOpen) {
+        collaborationState = CollaborationState::Disconnected;
+        emit connectionHasBeenLost(DisconnectReason::NetworkError);
+        return;
+    }
 
-    // Reset for the next session
-    m_disconnectReason = DisconnectReason::UnknownDisconnectReason;
+    m_disconnectReason = DisconnectReason::NetworkError;
+    collaborationState = CollaborationState::Recovering;
+
+    if (commandRetryTimer)
+        commandRetryTimer->stop();
+
+    reconnecting = true;
+    reconnectAttempts = 0;
+
+#ifdef TUP_DEBUG
+    qWarning() << "[TupNetProjectManagerHandler::connectionLost()] Entering recovery mode. Pending commands:"
+               << (commandTracker ? commandTracker->pendingCount() : 0);
+#endif
+
+    emit collaborationRecoveryStarted();
+
+    if (reconnectTimer && !reconnectTimer->isActive())
+        reconnectTimer->start();
 }
 
+
+void TupNetProjectManagerHandler::attemptReconnect()
+{
+    if (!reconnecting || intentionalClose || !params || !socket)
+        return;
+
+    if (socket->state() == QAbstractSocket::ConnectedState ||
+            socket->state() == QAbstractSocket::ConnectingState)
+        return;
+
+    if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+        reconnectTimer->stop();
+        reconnecting = false;
+        collaborationState = CollaborationState::Disconnected;
+        qWarning() << "[TupNetProjectManagerHandler::attemptReconnect()] Reconnect limit reached. Closing collaborative session. Pending commands:"
+                   << (commandTracker ? commandTracker->pendingCount() : 0);
+        if (commandTracker)
+            commandTracker->clear();
+        emit connectionHasBeenLost(DisconnectReason::NetworkError);
+        return;
+    }
+
+    ++reconnectAttempts;
+#ifdef TUP_DEBUG
+    qWarning() << "[TupNetProjectManagerHandler::attemptReconnect()] Attempt" << reconnectAttempts
+               << "of" << MAX_RECONNECT_ATTEMPTS;
+#endif
+    socket->connectToHost(params->server(), params->port());
+}
+
+void TupNetProjectManagerHandler::connectionRestored()
+{
+    if (!reconnecting || !params || !socket)
+        return;
+
+    if (reconnectTimer)
+        reconnectTimer->stop();
+
+#ifdef TUP_DEBUG
+    qDebug() << "[TupNetProjectManagerHandler::connectionRestored()] TCP connection restored. Re-authenticating.";
+#endif
+
+    TupConnectPackage connectPackage(params->server(), params->login(), params->windowRecordID());
+    socket->send(connectPackage);
+}
+
+void TupNetProjectManagerHandler::resumePendingCommands()
+{
+    if (!reconnecting || !commandTracker || !socket ||
+            socket->state() != QAbstractSocket::ConnectedState)
+        return;
+
+    commandTracker->restartTimeoutWindow();
+    const QList<QString> pendingIds = commandTracker->pendingCommandIds();
+
+#ifdef TUP_DEBUG
+    qDebug() << "[TupNetProjectManagerHandler::resumePendingCommands()] Resuming pending commands:" << pendingIds.count();
+#endif
+
+    for (const QString &commandId : pendingIds) {
+        const QString xml = commandTracker->commandXml(commandId);
+        if (!xml.isEmpty())
+            socket->send(xml);
+    }
+
+    reconnecting = false;
+    reconnectAttempts = 0;
+    if (commandRetryTimer && !commandRetryTimer->isActive())
+        commandRetryTimer->start();
+}
 
 void TupNetProjectManagerHandler::retryTimedOutCommands()
 {
@@ -764,6 +924,11 @@ void TupNetProjectManagerHandler::retryTimedOutCommands()
 
 void TupNetProjectManagerHandler::closeConnection()
 {
+    intentionalClose = true;
+    reconnecting = false;
+    collaborationState = CollaborationState::Closing;
+    if (reconnectTimer)
+        reconnectTimer->stop();
     if (commandTracker)
         commandTracker->clear();
 

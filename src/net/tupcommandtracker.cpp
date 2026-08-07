@@ -118,6 +118,19 @@ QList<QString> TupCommandTracker::expiredCommandIds(qint64 timeoutMs) const
     return expired;
 }
 
+
+QList<QString> TupCommandTracker::pendingCommandIds() const
+{
+    return m_pendingCommands.keys();
+}
+
+void TupCommandTracker::restartTimeoutWindow()
+{
+    const qint64 now = QDateTime::currentMSecsSinceEpoch();
+    for (auto it = m_pendingCommands.begin(); it != m_pendingCommands.end(); ++it)
+        it->lastSentAt = now;
+}
+
 bool TupCommandTracker::markRetried(const QString &commandId)
 {
     const QString normalized = commandId.trimmed();

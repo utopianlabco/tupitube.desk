@@ -115,6 +115,8 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void savingSuccessful();
         void postOperationDone();
         void connectionHasBeenLost(DisconnectReason reason = DisconnectReason::UnknownDisconnectReason);
+        void collaborationRecoveryStarted();
+        void collaborationRecoveryFinished();
         void authenticationFailed();
         void newMessageReceived(int messageType);
         void commandResultReceived(const QString &commandId,
@@ -132,16 +134,28 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void sendChatMessage(const QString &message);
         void connectionLost();
         void retryTimedOutCommands();
+        void attemptReconnect();
+        void connectionRestored();
 
     private:
+        enum class CollaborationState
+        {
+            Disconnected,
+            Connected,
+            Recovering,
+            Closing
+        };
+
         void loadProjectFromServer(const QString &projectID, const QString &owner);
         void emitRequest(TupProjectRequest *request, bool toStack);
         void setProject(TupProject *project);
+        void resumePendingCommands();
 
         TupNetProjectManagerParams *params;
         TupNetSocket *socket;
         TupCommandTracker *commandTracker;
         QTimer *commandRetryTimer;
+        QTimer *reconnectTimer;
         QString projectName;
         QString username;
         TupProject *project;
@@ -158,6 +172,12 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
 
         bool projectIsOpen;
         bool dialogIsOpen;
+        bool intentionalClose;
+        bool reconnecting;
+        int reconnectAttempts;
+        CollaborationState collaborationState;
+        QString currentProjectId;
+        QString currentProjectOwner;
         TupProjectListDialog *dialog;
         DisconnectReason m_disconnectReason = DisconnectReason::UnknownDisconnectReason;
 };

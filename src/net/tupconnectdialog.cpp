@@ -85,12 +85,19 @@ TupConnectDialog::TupConnectDialog(QWidget *parent): QDialog(parent)
 
     // Buttons
     QDialogButtonBox *buttonBox = new QDialogButtonBox;
-    QPushButton *okButton = new QPushButton;
+    okButton = new QPushButton;
     okButton->setMinimumWidth(60);
     okButton->setIcon(QIcon(THEME_DIR + "icons/apply.png"));
     okButton->setToolTip(tr("Accept"));
     connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
+
+    connect(loginLine, SIGNAL(textChanged(QString)),
+            this, SLOT(updateOkButtonState()));
+    connect(cacheLine, SIGNAL(textChanged(QString)),
+            this, SLOT(updateOkButtonState()));
+    connect(serverLine, SIGNAL(textChanged(QString)),
+            this, SLOT(updateOkButtonState()));
 
     QPushButton *cancelButton = new QPushButton;
     cancelButton->setMinimumWidth(60);
@@ -111,6 +118,7 @@ TupConnectDialog::TupConnectDialog(QWidget *parent): QDialog(parent)
     setLayout(mainLayout);
 
     loadSettings();
+    updateOkButtonState();
     loginLine->setFocus();
 }
 
@@ -199,9 +207,23 @@ void TupConnectDialog::saveSettings()
     TAlgorithm::storeRecord(cacheData());
 }
 
+void TupConnectDialog::updateOkButtonState()
+{
+    const bool valid = !loginLine->text().trimmed().isEmpty()
+                       && !cacheLine->text().isEmpty()
+                       && !serverLine->text().trimmed().isEmpty();
+
+    okButton->setEnabled(valid);
+}
+
 void TupConnectDialog::accept()
 {
-    if (serverLine->text().isEmpty()) {
+    if (loginLine->text().trimmed().isEmpty()) {
+        TOsd::self()->display(TOsd::Error, tr("Please, fill in your username"));
+        return;
+    }
+
+    if (serverLine->text().trimmed().isEmpty()) {
         TOsd::self()->display(TOsd::Error, tr("Please, fill in the server address"));
         return;
     }

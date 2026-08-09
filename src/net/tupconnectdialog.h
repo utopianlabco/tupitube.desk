@@ -73,6 +73,7 @@ class TUPITUBE_EXPORT TupConnectDialog : public QDialog
 
     private slots:
         void accept();
+        void updateOkButtonState();
         
     protected:
         void loadSettings();
@@ -87,6 +88,7 @@ class TUPITUBE_EXPORT TupConnectDialog : public QDialog
         QSpinBox *portBox;
         QCheckBox *storePasswdBox;
         QLineEdit *cacheLine;
+        QPushButton *okButton;
 };
 
 #endif

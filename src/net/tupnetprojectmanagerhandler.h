@@ -151,6 +151,9 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void setProject(TupProject *project);
         void resumePendingCommands();
         void handleProjectEvent(const QString &package);
+        void requestProjectSync(bool forceSnapshot = false);
+        void handleProjectSyncResponse(const QString &package);
+        void finishCollaborationRecovery();
 
         TupNetProjectManagerParams *params;
         TupNetSocket *socket;
@@ -181,6 +184,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         QString currentProjectOwner;
         qint64 lastObservedProjectRevision;
         int lastObservedEventIndex;
+        bool recoverySnapshotLoaded;
         TupProjectListDialog *dialog;
         DisconnectReason m_disconnectReason = DisconnectReason::UnknownDisconnectReason;
 };

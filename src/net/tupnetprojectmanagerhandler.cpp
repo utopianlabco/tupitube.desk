@@ -75,6 +75,7 @@ TupNetProjectManagerHandler::TupNetProjectManagerHandler(QObject *parent) : TupA
     collaborationState = CollaborationState::Disconnected;
     lastObservedProjectRevision = -1;
     lastObservedEventIndex = -1;
+    recoverySnapshotLoaded = false;
     
     communicationModule = new QTabWidget;
 
@@ -203,7 +204,8 @@ void TupNetProjectManagerHandler::handleProjectRequest(const TupProjectRequest *
 
 bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
 {
-    if (collaborationState != CollaborationState::Connected) {
+    if (collaborationState != CollaborationState::Connected
+            && collaborationState != CollaborationState::Recovering) {
 #ifdef TUP_DEBUG
         qWarning() << "[TupNetProjectManagerHandler::commandExecuted()] Collaborative editing is suspended.";
 #endif
@@ -346,6 +348,8 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
         msgBox.setIcon(QMessageBox::Critical);
         msgBox.setText(tr("User \"%1\" is disabled.\nPlease, contact the TupiTube server admin to get access.").arg(params->login()));
         msgBox.exec();
+    } else if (root == QStringLiteral("project_sync_response")) {
+        handleProjectSyncResponse(package);
     } else if (root == QStringLiteral("project_event")) {
         handleProjectEvent(package);
     } else if (root == "project_request") {
@@ -863,6 +867,21 @@ void TupNetProjectManagerHandler::handleProjectEvent(const QString &package)
         return;
     }
 
+    if (collaborationState == CollaborationState::Recovering
+            && commandTracker && commandTracker->contains(causedBy)) {
+#ifdef TUP_DEBUG
+        qWarning()
+            << "[TupNetProjectManagerHandler::handleProjectEvent()]"
+            << "Authoritative event confirms a pending optimistic local command;"
+            << "advancing revision without replaying it."
+            << "Command:" << causedBy
+            << "Revision:" << revision;
+#endif
+        lastObservedProjectRevision = revision;
+        lastObservedEventIndex = eventIndex;
+        return;
+    }
+
     TupProjectRequest request =
         TupRequestBuilder::fromResponse(response, true);
     request.setExternal(true);
@@ -880,6 +899,112 @@ void TupNetProjectManagerHandler::handleProjectEvent(const QString &package)
     emitRequest(&request, false);
     lastObservedProjectRevision = revision;
     lastObservedEventIndex = eventIndex;
+}
+
+void TupNetProjectManagerHandler::requestProjectSync(bool forceSnapshot)
+{
+    if (!socket || socket->state() != QAbstractSocket::ConnectedState
+            || currentProjectId.isEmpty() || currentProjectOwner.isEmpty()) {
+        qWarning() << "[TupNetProjectManagerHandler::requestProjectSync()] Cannot request synchronization.";
+        return;
+    }
+
+    QDomDocument document;
+    QDomElement root = document.createElement(QStringLiteral("project_sync_request"));
+    root.setAttribute(QStringLiteral("version"), QStringLiteral("1"));
+    root.setAttribute(QStringLiteral("project_id"), currentProjectId);
+    root.setAttribute(QStringLiteral("owner"), currentProjectOwner);
+    root.setAttribute(QStringLiteral("last_revision"), lastObservedProjectRevision);
+    root.setAttribute(QStringLiteral("last_event_index"), lastObservedEventIndex);
+    if (forceSnapshot)
+        root.setAttribute(QStringLiteral("force_snapshot"), QStringLiteral("1"));
+    document.appendChild(root);
+
+    recoverySnapshotLoaded = false;
+
+#ifdef TUP_DEBUG
+    qWarning() << "[TupNetProjectManagerHandler::requestProjectSync()] Requesting recovery. Project:"
+               << currentProjectId << "Revision:" << lastObservedProjectRevision
+               << "Index:" << lastObservedEventIndex
+               << "Force snapshot:" << forceSnapshot;
+#endif
+
+    socket->send(document);
+}
+
+void TupNetProjectManagerHandler::finishCollaborationRecovery()
+{
+    resumePendingCommands();
+    collaborationState = CollaborationState::Connected;
+    emit collaborationRecoveryFinished();
+    QApplication::restoreOverrideCursor();
+}
+
+void TupNetProjectManagerHandler::handleProjectSyncResponse(const QString &package)
+{
+    if (collaborationState != CollaborationState::Recovering)
+        return;
+
+    QDomDocument document;
+    if (!document.setContent(package)) {
+        qWarning() << "[TupNetProjectManagerHandler::handleProjectSyncResponse()] Invalid XML.";
+        return;
+    }
+
+    const QDomElement root = document.documentElement();
+    if (root.tagName() != QStringLiteral("project_sync_response"))
+        return;
+
+    bool versionOk = false;
+    const int version = root.attribute(QStringLiteral("version")).toInt(&versionOk);
+    bool toRevisionOk = false;
+    const qint64 toRevision = root.attribute(QStringLiteral("to_revision")).toLongLong(&toRevisionOk);
+    const QString projectId = root.attribute(QStringLiteral("project_id")).trimmed();
+    const QString mode = root.attribute(QStringLiteral("mode")).trimmed();
+
+    if (!versionOk || version != 1 || !toRevisionOk || toRevision < 0
+            || projectId != currentProjectId) {
+        qWarning() << "[TupNetProjectManagerHandler::handleProjectSyncResponse()] Invalid sync metadata.";
+        return;
+    }
+
+    if (mode == QStringLiteral("events")) {
+        if (lastObservedProjectRevision != toRevision) {
+            qWarning() << "[TupNetProjectManagerHandler::handleProjectSyncResponse()] Event catch-up incomplete."
+                       << "Observed:" << lastObservedProjectRevision
+                       << "Expected:" << toRevision
+                       << "Requesting snapshot fallback.";
+            requestProjectSync(true);
+            return;
+        }
+
+#ifdef TUP_DEBUG
+        qWarning() << "[TupNetProjectManagerHandler::handleProjectSyncResponse()] Event catch-up complete at revision:"
+                   << toRevision;
+#endif
+        finishCollaborationRecovery();
+        return;
+    }
+
+    if (mode == QStringLiteral("snapshot")) {
+        if (!recoverySnapshotLoaded) {
+            qWarning() << "[TupNetProjectManagerHandler::handleProjectSyncResponse()] Snapshot metadata arrived before snapshot data.";
+            return;
+        }
+
+        lastObservedProjectRevision = toRevision;
+        lastObservedEventIndex = -1;
+        recoverySnapshotLoaded = false;
+
+#ifdef TUP_DEBUG
+        qWarning() << "[TupNetProjectManagerHandler::handleProjectSyncResponse()] Snapshot recovery complete at revision:"
+                   << toRevision;
+#endif
+        finishCollaborationRecovery();
+        return;
+    }
+
+    qWarning() << "[TupNetProjectManagerHandler::handleProjectSyncResponse()] Unsupported mode:" << mode;
 }
 
 bool TupNetProjectManagerHandler::isValid() const

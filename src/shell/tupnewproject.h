@@ -86,6 +86,7 @@ class TupNewProject : public TabDialog
         void setBgColor();
         void setPresets(int index);
         void updateFormatCombo();
+        void updateOkButtonState();
 
     public slots:
         void enableNetOptions(bool isEnabled);

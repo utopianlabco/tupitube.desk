@@ -49,6 +49,8 @@
 
 TupNewProject::TupNewProject(QWidget *parent) : TabDialog(parent)
 {
+    enableUseNetwork = false;
+
     setWindowIcon(QPixmap(THEME_DIR + "icons/new.png"));
     setWindowTitle(tr("Create New Project"));
     setModal(true);
@@ -81,6 +83,10 @@ TupNewProject::TupNewProject(QWidget *parent) : TabDialog(parent)
     description->setMaxLength(50);
     description->setText(tr("Just for fun!"));
     layout->addWidget(description, 3, 1);
+
+    connect(projectName, SIGNAL(textChanged(QString)), this, SLOT(updateOkButtonState()));
+    connect(authorName, SIGNAL(textChanged(QString)), this, SLOT(updateOkButtonState()));
+    connect(description, SIGNAL(textChanged(QString)), this, SLOT(updateOkButtonState()));
 
     QBoxLayout *presetsLayout = new QBoxLayout(QBoxLayout::LeftToRight);
     QLabel *presetsLabel = new QLabel(tr("Presets") + " ");
@@ -126,6 +132,7 @@ TupNewProject::TupNewProject(QWidget *parent) : TabDialog(parent)
     QLabel *label = new QLabel(tr("FPS"));
     fps = new QSpinBox();
     fps->setValue(24);
+    connect(fps, SIGNAL(valueChanged(int)), this, SLOT(updateOkButtonState()));
 
     fpsLayout->addWidget(label);
     fpsLayout->addWidget(fps);
@@ -139,6 +146,7 @@ TupNewProject::TupNewProject(QWidget *parent) : TabDialog(parent)
     size->setY(380);
 
     connect(size, SIGNAL(valuesHaveChanged()), this, SLOT(updateFormatCombo()));
+    connect(size, SIGNAL(valuesHaveChanged()), this, SLOT(updateOkButtonState()));
 
     QWidget *panel = new QWidget;
     QVBoxLayout *sizeLayout = new QVBoxLayout(panel);
@@ -165,6 +173,8 @@ TupNewProject::TupNewProject(QWidget *parent) : TabDialog(parent)
 
     if (presetIndex >= 0)
         presets->setCurrentIndex(presetIndex);
+
+    updateOkButtonState();
 }
 
 TupNewProject::~TupNewProject()
@@ -204,6 +214,11 @@ void TupNewProject::setupNetOptions()
     port->setMinimum(80);
     port->setMaximum(65000); 
     cacheData = new QLineEdit;
+
+    connect(username, SIGNAL(textChanged(QString)), this, SLOT(updateOkButtonState()));
+    connect(server, SIGNAL(textChanged(QString)), this, SLOT(updateOkButtonState()));
+    connect(cacheData, SIGNAL(textChanged(QString)), this, SLOT(updateOkButtonState()));
+    connect(port, SIGNAL(valueChanged(int)), this, SLOT(updateOkButtonState()));
 
     TConfig *config = kApp->config("CollabServer");
 
@@ -298,24 +313,49 @@ bool TupNewProject::useNetwork() const
 
 void TupNewProject::ok()
 {
-    if (projectName->text().isEmpty()) {
+    if (projectName->text().trimmed().isEmpty()) {
         TOsd::self()->display(TOsd::Error, tr("Please, set a name for the project"));
         return;
     }
 
+    if (authorName->text().trimmed().isEmpty()) {
+        TOsd::self()->display(TOsd::Error, tr("Please, fill in the author name"));
+        return;
+    }
+
+    if (description->text().trimmed().isEmpty()) {
+        TOsd::self()->display(TOsd::Error, tr("Please, fill in the project description"));
+        return;
+    }
+
+    if (size->x() <= 0 || size->y() <= 0) {
+        TOsd::self()->display(TOsd::Error, tr("Please, set the project dimensions"));
+        return;
+    }
+
+    if (fps->value() <= 0) {
+        TOsd::self()->display(TOsd::Error, tr("Please, set the project FPS"));
+        return;
+    }
+
     if (enableUseNetwork) {
-        if (username->text().isEmpty()) {
+        if (server->text().trimmed().isEmpty()) {
+            TOsd::self()->display(TOsd::Error, tr("Please, fill in the server name or IP"));
+            return;
+        }
+
+        if (port->value() <= 0) {
+            TOsd::self()->display(TOsd::Error, tr("Please, fill in the server port"));
+            return;
+        }
+
+        if (username->text().trimmed().isEmpty()) {
             TOsd::self()->display(TOsd::Error, tr("Please, fill in your username"));
             return;
         }
 
         if (cacheData->text().isEmpty()) {
             TOsd::self()->display(TOsd::Error, tr("Please, fill in your password"));
-            return;
-        }
-
-        if (server->text().isEmpty()) {
-            TOsd::self()->display(TOsd::Error, tr("Please, fill in the server name or IP"));
             return;
         }
     }
@@ -332,6 +372,7 @@ void TupNewProject::enableNetOptions(bool isEnabled)
 {
     enableUseNetwork = isEnabled;
     tabWidget()->setTabVisible(1, isEnabled);
+    updateOkButtonState();
 }
 
 void TupNewProject::focusProjectLabel() 
@@ -444,6 +485,26 @@ void TupNewProject::updateFormatCombo()
     presets->blockSignals(true);
     presets->setCurrentIndex(0);
     presets->blockSignals(false);
+}
+
+void TupNewProject::updateOkButtonState()
+{
+    bool valid = !projectName->text().trimmed().isEmpty()
+                 && !authorName->text().trimmed().isEmpty()
+                 && !description->text().trimmed().isEmpty()
+                 && size->x() > 0
+                 && size->y() > 0
+                 && fps->value() > 0;
+
+    if (valid && enableUseNetwork) {
+        valid = !server->text().trimmed().isEmpty()
+                && port->value() > 0
+                && !username->text().trimmed().isEmpty()
+                && !cacheData->text().isEmpty();
+    }
+
+    if (QPushButton *okButton = button(TabDialog::Ok))
+        okButton->setEnabled(valid);
 }
 
 QString TupNewProject::labelColor() const

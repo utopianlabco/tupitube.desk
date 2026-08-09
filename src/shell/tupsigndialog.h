@@ -57,6 +57,7 @@ class TupSignDialog : public QDialog
     private slots:
         void signUp();
         void apply();
+        void updateOkButtonState();
 
     private:
         void setForm();
@@ -68,6 +69,7 @@ class TupSignDialog : public QDialog
         QLineEdit *metadata;
         QCheckBox *storeMetadata;
         QCheckBox *anonymousBox;
+        QPushButton *acceptButton;
 
     public:
         bool isAnonymous() const;

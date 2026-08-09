@@ -84,12 +84,16 @@ void TupSignDialog::setForm()
     anonymousBox->setChecked(TCONFIG->value("Anonymous", false).toBool());
     formLayout->addWidget(anonymousBox);
 
-    // Connect to slot to enable/disable fields
+    // Connect to slot to enable/disable fields and refresh form validity
     connect(anonymousBox, &QCheckBox::toggled, this, [=](bool checked) {
         username->setDisabled(checked);
         metadata->setDisabled(checked);
         storeMetadata->setDisabled(checked);
+        updateOkButtonState();
     });
+
+    connect(username, SIGNAL(textChanged(QString)), this, SLOT(updateOkButtonState()));
+    connect(metadata, SIGNAL(textChanged(QString)), this, SLOT(updateOkButtonState()));
 
     // Set initial state
     bool anonChecked = anonymousBox->isChecked();
@@ -103,7 +107,7 @@ void TupSignDialog::setForm()
     connect(signUpButton, SIGNAL(clicked()), this, SLOT(signUp()));
     buttonLayout->addWidget(signUpButton);
 
-    QPushButton *acceptButton = new QPushButton;
+    acceptButton = new QPushButton;
     acceptButton->setMinimumWidth(60);
     acceptButton->setIcon(QIcon(THEME_DIR + "icons/apply.png"));
     acceptButton->setToolTip(tr("Accept"));
@@ -120,6 +124,17 @@ void TupSignDialog::setForm()
     layout->addWidget(form, Qt::AlignHCenter);
     layout->addWidget(new TSeparator(Qt::Horizontal));
     layout->addLayout(buttonLayout);
+
+    updateOkButtonState();
+}
+
+void TupSignDialog::updateOkButtonState()
+{
+    const bool valid = anonymousBox->isChecked()
+                       || (!username->text().trimmed().isEmpty()
+                           && !metadata->text().isEmpty());
+
+    acceptButton->setEnabled(valid);
 }
 
 void TupSignDialog::signUp()

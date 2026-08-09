@@ -150,6 +150,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void emitRequest(TupProjectRequest *request, bool toStack);
         void setProject(TupProject *project);
         void resumePendingCommands();
+        void handleProjectEvent(const QString &package);
 
         TupNetProjectManagerParams *params;
         TupNetSocket *socket;
@@ -178,6 +179,8 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         CollaborationState collaborationState;
         QString currentProjectId;
         QString currentProjectOwner;
+        qint64 lastObservedProjectRevision;
+        int lastObservedEventIndex;
         TupProjectListDialog *dialog;
         DisconnectReason m_disconnectReason = DisconnectReason::UnknownDisconnectReason;
 };

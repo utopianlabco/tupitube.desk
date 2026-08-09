@@ -60,6 +60,7 @@ class TUPITUBE_EXPORT TupProjectCommand : public QUndoCommand
         bool succeeded() const;
         QString errorCode() const;
         QString commandId() const;
+        QString eventType() const;
         
     private:
         bool executeResponse();

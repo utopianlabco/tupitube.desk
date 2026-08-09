@@ -73,6 +73,8 @@ TupNetProjectManagerHandler::TupNetProjectManagerHandler(QObject *parent) : TupA
     reconnecting = false;
     reconnectAttempts = 0;
     collaborationState = CollaborationState::Disconnected;
+    lastObservedProjectRevision = -1;
+    lastObservedEventIndex = -1;
     
     communicationModule = new QTabWidget;
 
@@ -256,6 +258,8 @@ void TupNetProjectManagerHandler::loadProjectFromServer(const QString &projectID
 {
     currentProjectId = projectID;
     currentProjectOwner = owner;
+    lastObservedProjectRevision = -1;
+    lastObservedEventIndex = -1;
 
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     
@@ -342,6 +346,8 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
         msgBox.setIcon(QMessageBox::Critical);
         msgBox.setText(tr("User \"%1\" is disabled.\nPlease, contact the TupiTube server admin to get access.").arg(params->login()));
         msgBox.exec();
+    } else if (root == QStringLiteral("project_event")) {
+        handleProjectEvent(package);
     } else if (root == "project_request") {
         TupRequestParser parser;
 
@@ -692,6 +698,188 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
           qWarning() << "[TupNetProjectManagerHandler::handlePackage()] - Error: Unknown package ->" << root;
       #endif
     }
+}
+
+void TupNetProjectManagerHandler::handleProjectEvent(const QString &package)
+{
+    QDomDocument document;
+
+    if (!document.setContent(package)) {
+        qWarning()
+            << "[TupNetProjectManagerHandler::handleProjectEvent()]"
+            << "Unable to parse project_event XML.";
+        return;
+    }
+
+    const QDomElement root = document.documentElement();
+    if (root.isNull() || root.tagName() != QStringLiteral("project_event")) {
+        qWarning()
+            << "[TupNetProjectManagerHandler::handleProjectEvent()]"
+            << "Invalid project_event root element.";
+        return;
+    }
+
+    bool versionOk = false;
+    const int version = root.attribute(QStringLiteral("version")).toInt(&versionOk);
+    if (!versionOk || version != 1) {
+        qWarning()
+            << "[TupNetProjectManagerHandler::handleProjectEvent()]"
+            << "Unsupported project_event version:"
+            << root.attribute(QStringLiteral("version"));
+        return;
+    }
+
+    const QString eventId =
+        root.attribute(QStringLiteral("event_id")).trimmed();
+    const QString causedBy =
+        root.attribute(QStringLiteral("caused_by")).trimmed();
+    const QString eventProjectId =
+        root.attribute(QStringLiteral("project_id")).trimmed();
+    const QString eventType =
+        root.attribute(QStringLiteral("event_type")).trimmed();
+
+    bool revisionOk = false;
+    const qint64 revision =
+        root.attribute(QStringLiteral("revision")).toLongLong(&revisionOk);
+
+    bool eventIndexOk = false;
+    const int eventIndex =
+        root.attribute(QStringLiteral("event_index")).toInt(&eventIndexOk);
+
+    if (eventId.isEmpty()
+            || causedBy.isEmpty()
+            || eventProjectId.isEmpty()
+            || eventType.isEmpty()
+            || !revisionOk
+            || revision <= 0
+            || !eventIndexOk
+            || eventIndex < 0) {
+        qWarning()
+            << "[TupNetProjectManagerHandler::handleProjectEvent()]"
+            << "Incomplete project_event metadata.";
+        return;
+    }
+
+    if (!currentProjectId.isEmpty()
+            && eventProjectId != currentProjectId) {
+        qWarning()
+            << "[TupNetProjectManagerHandler::handleProjectEvent()]"
+            << "Ignoring event for a different project."
+            << "Current:" << currentProjectId
+            << "Event project:" << eventProjectId;
+        return;
+    }
+
+    // TCP preserves ordering for a live connection. Validate the complete
+    // authoritative ordering key (revision, event_index), so a future
+    // command may safely emit more than one event for the same revision.
+    if (lastObservedProjectRevision < 0) {
+        if (eventIndex != 0) {
+            qCritical()
+                << "[TupNetProjectManagerHandler::handleProjectEvent()]"
+                << "First observed event does not start at event_index 0."
+                << "Revision:" << revision
+                << "Index:" << eventIndex
+                << "Event:" << eventId;
+            return;
+        }
+    } else if (revision < lastObservedProjectRevision
+               || (revision == lastObservedProjectRevision
+                   && eventIndex <= lastObservedEventIndex)) {
+#ifdef TUP_DEBUG
+        qWarning()
+            << "[TupNetProjectManagerHandler::handleProjectEvent()]"
+            << "Ignoring duplicate/out-of-order event."
+            << "Event:" << eventId
+            << "Revision:" << revision
+            << "Index:" << eventIndex
+            << "Last revision:" << lastObservedProjectRevision
+            << "Last index:" << lastObservedEventIndex;
+#endif
+        return;
+    } else {
+        const bool nextSameRevision =
+            revision == lastObservedProjectRevision
+            && eventIndex == lastObservedEventIndex + 1;
+        const bool nextRevision =
+            revision == lastObservedProjectRevision + 1
+            && eventIndex == 0;
+
+        if (!nextSameRevision && !nextRevision) {
+            qCritical()
+                << "[TupNetProjectManagerHandler::handleProjectEvent()]"
+                << "Authoritative event sequence gap detected."
+                << "Last:" << lastObservedProjectRevision
+                << lastObservedEventIndex
+                << "Received:" << revision
+                << eventIndex
+                << "Event:" << eventId;
+            return;
+        }
+    }
+
+    const QDomElement payloadElement =
+        root.firstChildElement(QStringLiteral("payload"));
+    if (payloadElement.isNull()) {
+        qWarning()
+            << "[TupNetProjectManagerHandler::handleProjectEvent()]"
+            << "project_event has no payload.";
+        return;
+    }
+
+    const QString payloadXml = payloadElement.text().trimmed();
+    if (payloadXml.isEmpty()) {
+        qWarning()
+            << "[TupNetProjectManagerHandler::handleProjectEvent()]"
+            << "project_event payload is empty.";
+        return;
+    }
+
+    TupRequestParser parser;
+    if (!parser.parse(payloadXml)) {
+        qWarning()
+            << "[TupNetProjectManagerHandler::handleProjectEvent()]"
+            << "Unable to parse authoritative event payload."
+            << "Event:" << eventId;
+        return;
+    }
+
+    TupProjectResponse *response = parser.getResponse();
+    if (!response) {
+        qWarning()
+            << "[TupNetProjectManagerHandler::handleProjectEvent()]"
+            << "Event payload produced no project response."
+            << "Event:" << eventId;
+        return;
+    }
+
+    if (response->getCommandId() != causedBy) {
+        qWarning()
+            << "[TupNetProjectManagerHandler::handleProjectEvent()]"
+            << "Event cause does not match payload command ID."
+            << "Event:" << eventId
+            << "caused_by:" << causedBy
+            << "payload command:" << response->getCommandId();
+        return;
+    }
+
+    TupProjectRequest request =
+        TupRequestBuilder::fromResponse(response, true);
+    request.setExternal(true);
+
+#ifdef TUP_DEBUG
+    qWarning()
+        << "[TupNetProjectManagerHandler::handleProjectEvent()]"
+        << "Applying authoritative event:"
+        << eventId
+        << "Type:" << eventType
+        << "Revision:" << revision
+        << "Command:" << causedBy;
+#endif
+
+    emitRequest(&request, false);
+    lastObservedProjectRevision = revision;
+    lastObservedEventIndex = eventIndex;
 }
 
 bool TupNetProjectManagerHandler::isValid() const

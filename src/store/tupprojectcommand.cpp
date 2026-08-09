@@ -310,6 +310,105 @@ QString TupProjectCommand::commandId() const
     return response ? response->getCommandId() : QString();
 }
 
+QString TupProjectCommand::eventType() const
+{
+    if (!response)
+        return QStringLiteral("project.command-committed");
+
+    switch (response->getPart()) {
+        case TupProjectRequest::Frame:
+            switch (response->getAction()) {
+                case TupProjectRequest::Add: return QStringLiteral("frame.created");
+                case TupProjectRequest::Remove: return QStringLiteral("frame.removed");
+                case TupProjectRequest::RemoveSelection: return QStringLiteral("frame.selection-removed");
+                case TupProjectRequest::Reset: return QStringLiteral("frame.reset");
+                case TupProjectRequest::Exchange: return QStringLiteral("frame.exchanged");
+                case TupProjectRequest::Move: return QStringLiteral("frame.moved");
+                case TupProjectRequest::ReverseSelection: return QStringLiteral("frame.selection-reversed");
+                case TupProjectRequest::Rename: return QStringLiteral("frame.renamed");
+                case TupProjectRequest::Select: return QStringLiteral("frame.selected");
+                case TupProjectRequest::View: return QStringLiteral("frame.visibility-changed");
+                case TupProjectRequest::Extend: return QStringLiteral("frame.extended");
+                case TupProjectRequest::CopySelection: return QStringLiteral("frame.selection-copied");
+                case TupProjectRequest::PasteSelection: return QStringLiteral("frame.selection-pasted");
+                default: break;
+            }
+            break;
+
+        case TupProjectRequest::Layer:
+            switch (response->getAction()) {
+                case TupProjectRequest::Add: return QStringLiteral("layer.created");
+                case TupProjectRequest::Duplicate: return QStringLiteral("layer.duplicated");
+                case TupProjectRequest::AddLipSync: return QStringLiteral("layer.lipsync-added");
+                case TupProjectRequest::UpdateLipSync: return QStringLiteral("layer.lipsync-updated");
+                case TupProjectRequest::Remove: return QStringLiteral("layer.removed");
+                case TupProjectRequest::RemoveLipSync: return QStringLiteral("layer.lipsync-removed");
+                case TupProjectRequest::Move: return QStringLiteral("layer.moved");
+                case TupProjectRequest::Lock: return QStringLiteral("layer.locked");
+                case TupProjectRequest::Rename: return QStringLiteral("layer.renamed");
+                case TupProjectRequest::Select: return QStringLiteral("layer.selected");
+                case TupProjectRequest::View: return QStringLiteral("layer.visibility-changed");
+                case TupProjectRequest::UpdateOpacity: return QStringLiteral("layer.opacity-updated");
+                default: break;
+            }
+            break;
+
+        case TupProjectRequest::Scene:
+            switch (response->getAction()) {
+                case TupProjectRequest::GetInfo: return QStringLiteral("scene.info-read");
+                case TupProjectRequest::Add: return QStringLiteral("scene.created");
+                case TupProjectRequest::Duplicate: return QStringLiteral("scene.duplicated");
+                case TupProjectRequest::Remove: return QStringLiteral("scene.removed");
+                case TupProjectRequest::Reset: return QStringLiteral("scene.reset");
+                case TupProjectRequest::Move: return QStringLiteral("scene.moved");
+                case TupProjectRequest::Lock: return QStringLiteral("scene.locked");
+                case TupProjectRequest::Rename: return QStringLiteral("scene.renamed");
+                case TupProjectRequest::Select: return QStringLiteral("scene.selected");
+                case TupProjectRequest::View: return QStringLiteral("scene.visibility-changed");
+                case TupProjectRequest::BgColor: return QStringLiteral("scene.background-color-updated");
+                case TupProjectRequest::SetFps: return QStringLiteral("scene.fps-updated");
+                default: break;
+            }
+            break;
+
+        case TupProjectRequest::Item:
+            switch (response->originalAction()) {
+                case TupProjectRequest::Add: return QStringLiteral("item.created");
+                case TupProjectRequest::Remove: return QStringLiteral("item.removed");
+                case TupProjectRequest::Move: return QStringLiteral("item.moved");
+                case TupProjectRequest::Convert: return QStringLiteral("item.converted");
+                case TupProjectRequest::EditNodes: return QStringLiteral("item.nodes-edited");
+                case TupProjectRequest::Pen: return QStringLiteral("item.pen-updated");
+                case TupProjectRequest::Brush: return QStringLiteral("item.brush-updated");
+                case TupProjectRequest::TextColor: return QStringLiteral("item.text-color-updated");
+                case TupProjectRequest::Transform: return QStringLiteral("item.transformed");
+                case TupProjectRequest::Group: return QStringLiteral("item.grouped");
+                case TupProjectRequest::Ungroup: return QStringLiteral("item.ungrouped");
+                case TupProjectRequest::SetTween: return QStringLiteral("item.tween-updated");
+                case TupProjectRequest::UpdateTweenPath: return QStringLiteral("item.tween-path-updated");
+                case TupProjectRequest::AddRasterItem: return QStringLiteral("item.raster-item-added");
+                case TupProjectRequest::ClearRasterCanvas: return QStringLiteral("item.raster-canvas-cleared");
+                default: break;
+            }
+            break;
+
+        case TupProjectRequest::Library:
+            switch (response->getAction()) {
+                case TupProjectRequest::Add: return QStringLiteral("library.object-imported");
+                case TupProjectRequest::Remove: return QStringLiteral("library.object-removed");
+                case TupProjectRequest::InsertSymbolIntoFrame: return QStringLiteral("frame.symbol-inserted");
+                case TupProjectRequest::RemoveSymbolFromFrame: return QStringLiteral("frame.symbol-removed");
+                default: break;
+            }
+            break;
+
+        default:
+            break;
+    }
+
+    return QStringLiteral("project.command-committed");
+}
+
 bool TupProjectCommand::executeResponse()
 {
     switch (response->getPart()) {

@@ -992,6 +992,17 @@ void TupNetProjectManagerHandler::handleProjectEvent(const QString &package)
 #endif
         lastObservedProjectRevision = revision;
         lastObservedEventIndex = eventIndex;
+
+        // The authoritative event proves that this optimistic local command
+        // was durably committed. Complete it through the same local lifecycle
+        // used by command_result so it is not resent after recovery and any
+        // dependent commands can be released by the coordinator.
+        commandTracker->complete(causedBy);
+        emit commandResultReceived(
+            causedBy,
+            QStringLiteral("committed"),
+            QString(),
+            QString());
         return;
     }
 

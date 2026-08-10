@@ -136,6 +136,8 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void retryTimedOutCommands();
         void attemptReconnect();
         void connectionRestored();
+        void heartbeatTick();
+        void recoveryWatchdogExpired();
 
     private:
         enum class CollaborationState
@@ -154,12 +156,17 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void requestProjectSync(bool forceSnapshot = false);
         void handleProjectSyncResponse(const QString &package);
         void finishCollaborationRecovery();
+        void startHeartbeat();
+        void stopHeartbeat();
+        void scheduleReconnect(int delayMs);
 
         TupNetProjectManagerParams *params;
         TupNetSocket *socket;
         TupCommandTracker *commandTracker;
         QTimer *commandRetryTimer;
         QTimer *reconnectTimer;
+        QTimer *heartbeatTimer;
+        QTimer *recoveryWatchdogTimer;
         QString projectName;
         QString username;
         TupProject *project;
@@ -179,6 +186,8 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         bool intentionalClose;
         bool reconnecting;
         int reconnectAttempts;
+        int reconnectDelayMs;
+        int missedHeartbeats;
         CollaborationState collaborationState;
         QString currentProjectId;
         QString currentProjectOwner;

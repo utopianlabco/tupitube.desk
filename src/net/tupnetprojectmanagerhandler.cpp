@@ -38,8 +38,12 @@ namespace {
     const int COMMAND_RETRY_SCAN_INTERVAL_MS = 1000;
     const qint64 COMMAND_ACK_TIMEOUT_MS = 5000;
     const int COMMAND_MAX_RETRIES = 3;
-    const int RECONNECT_INTERVAL_MS = 2000;
-    const int MAX_RECONNECT_ATTEMPTS = 5;
+    const int RECONNECT_INITIAL_DELAY_MS = 1000;
+    const int RECONNECT_MAX_DELAY_MS = 30000;
+    const int HEARTBEAT_INTERVAL_MS = 5000;
+    const int HEARTBEAT_MISSED_LIMIT = 3;
+    const int RECOVERY_AUTH_TIMEOUT_MS = 10000;
+    const int RECOVERY_SYNC_TIMEOUT_MS = 30000;
 }
 
 TupNetProjectManagerHandler::TupNetProjectManagerHandler(QObject *parent) : TupAbstractProjectHandler(parent)
@@ -56,8 +60,14 @@ TupNetProjectManagerHandler::TupNetProjectManagerHandler(QObject *parent) : TupA
             this, SLOT(retryTimedOutCommands()));
     commandRetryTimer->start();
     reconnectTimer = new QTimer(this);
-    reconnectTimer->setInterval(RECONNECT_INTERVAL_MS);
+    reconnectTimer->setSingleShot(true);
     connect(reconnectTimer, SIGNAL(timeout()), this, SLOT(attemptReconnect()));
+    heartbeatTimer = new QTimer(this);
+    heartbeatTimer->setInterval(HEARTBEAT_INTERVAL_MS);
+    connect(heartbeatTimer, SIGNAL(timeout()), this, SLOT(heartbeatTick()));
+    recoveryWatchdogTimer = new QTimer(this);
+    recoveryWatchdogTimer->setSingleShot(true);
+    connect(recoveryWatchdogTimer, SIGNAL(timeout()), this, SLOT(recoveryWatchdogExpired()));
     // Enable OS-level TCP Keep-Alive to prevent NAT/firewall from dropping idle sockets
     socket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
     connect(socket, SIGNAL(disconnected()), this, SLOT(connectionLost()));
@@ -72,6 +82,8 @@ TupNetProjectManagerHandler::TupNetProjectManagerHandler(QObject *parent) : TupA
     intentionalClose = false;
     reconnecting = false;
     reconnectAttempts = 0;
+    reconnectDelayMs = RECONNECT_INITIAL_DELAY_MS;
+    missedHeartbeats = 0;
     collaborationState = CollaborationState::Disconnected;
     lastObservedProjectRevision = -1;
     lastObservedEventIndex = -1;
@@ -110,6 +122,10 @@ TupNetProjectManagerHandler::~TupNetProjectManagerHandler()
         commandRetryTimer->stop();
     if (reconnectTimer)
         reconnectTimer->stop();
+    if (heartbeatTimer)
+        heartbeatTimer->stop();
+    if (recoveryWatchdogTimer)
+        recoveryWatchdogTimer->stop();
 
     if (commandTracker)
         commandTracker->clear();
@@ -260,8 +276,10 @@ void TupNetProjectManagerHandler::loadProjectFromServer(const QString &projectID
 {
     currentProjectId = projectID;
     currentProjectOwner = owner;
-    lastObservedProjectRevision = -1;
-    lastObservedEventIndex = -1;
+    if (collaborationState != CollaborationState::Recovering) {
+        lastObservedProjectRevision = -1;
+        lastObservedEventIndex = -1;
+    }
 
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     
@@ -348,6 +366,12 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
         msgBox.setIcon(QMessageBox::Critical);
         msgBox.setText(tr("User \"%1\" is disabled.\nPlease, contact the TupiTube server admin to get access.").arg(params->login()));
         msgBox.exec();
+    } else if (root == QStringLiteral("pong")) {
+        missedHeartbeats = 0;
+#ifdef TUP_DEBUG
+        qDebug() << "[TupNetProjectManagerHandler::handlePackage()] Heartbeat pong received.";
+#endif
+        return;
     } else if (root == QStringLiteral("project_sync_response")) {
         handleProjectSyncResponse(package);
     } else if (root == QStringLiteral("project_event")) {
@@ -431,7 +455,9 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                        qDebug() << "[TupNetProjectManagerHandler::handlePackage()] Recovery authentication successful.";
 #endif
                        if (!currentProjectId.isEmpty()) {
-                           loadProjectFromServer(currentProjectId, currentProjectOwner);
+                           if (recoveryWatchdogTimer)
+                               recoveryWatchdogTimer->start(RECOVERY_SYNC_TIMEOUT_MS);
+                           requestProjectSync(false);
                        } else {
                            qWarning() << "[TupNetProjectManagerHandler::handlePackage()] Cannot restore collaborative project: project identity is unknown.";
                            reconnecting = false;
@@ -462,15 +488,13 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
 
                                if (collaborationState == CollaborationState::Recovering) {
 #ifdef TUP_DEBUG
-                                   qDebug() << "[TupNetProjectManagerHandler::handlePackage()] Collaborative project restored after reconnect.";
+                                   qDebug() << "[TupNetProjectManagerHandler::handlePackage()] Recovery snapshot loaded; waiting for authoritative revision metadata.";
 #endif
+                                   recoverySnapshotLoaded = true;
                                    delete manager;
-                                   resumePendingCommands();
-                                   collaborationState = CollaborationState::Connected;
-                                   emit collaborationRecoveryFinished();
-                                   QApplication::restoreOverrideCursor();
                                } else {
                                    collaborationState = CollaborationState::Connected;
+                                   startHeartbeat();
                                    emit openNewArea(project->getName(), parser.partners());
                                    delete manager;
                                }
@@ -934,8 +958,11 @@ void TupNetProjectManagerHandler::requestProjectSync(bool forceSnapshot)
 
 void TupNetProjectManagerHandler::finishCollaborationRecovery()
 {
+    if (recoveryWatchdogTimer)
+        recoveryWatchdogTimer->stop();
     resumePendingCommands();
     collaborationState = CollaborationState::Connected;
+    startHeartbeat();
     emit collaborationRecoveryFinished();
     QApplication::restoreOverrideCursor();
 }
@@ -1085,54 +1112,67 @@ void TupNetProjectManagerHandler::connectionLost()
         return;
     }
 
+    const bool wasRecovering = collaborationState == CollaborationState::Recovering;
     m_disconnectReason = DisconnectReason::NetworkError;
     collaborationState = CollaborationState::Recovering;
+    stopHeartbeat();
+    if (recoveryWatchdogTimer)
+        recoveryWatchdogTimer->stop();
 
     if (commandRetryTimer)
         commandRetryTimer->stop();
 
     reconnecting = true;
-    reconnectAttempts = 0;
+    if (!wasRecovering) {
+        reconnectAttempts = 0;
+        reconnectDelayMs = RECONNECT_INITIAL_DELAY_MS;
 
 #ifdef TUP_DEBUG
-    qWarning() << "[TupNetProjectManagerHandler::connectionLost()] Entering recovery mode. Pending commands:"
-               << (commandTracker ? commandTracker->pendingCount() : 0);
+        qWarning() << "[TupNetProjectManagerHandler::connectionLost()] Entering recovery mode. Pending commands:"
+                   << (commandTracker ? commandTracker->pendingCount() : 0);
 #endif
+        emit collaborationRecoveryStarted();
+    } else {
+#ifdef TUP_DEBUG
+        qWarning() << "[TupNetProjectManagerHandler::connectionLost()] Recovery connection lost again; continuing reconnect loop.";
+#endif
+    }
 
-    emit collaborationRecoveryStarted();
-
-    if (reconnectTimer && !reconnectTimer->isActive())
-        reconnectTimer->start();
+    scheduleReconnect(reconnectDelayMs);
 }
 
+void TupNetProjectManagerHandler::scheduleReconnect(int delayMs)
+{
+    if (!reconnectTimer || !reconnecting || intentionalClose)
+        return;
+
+    reconnectTimer->start(qMax(1, delayMs));
+}
 
 void TupNetProjectManagerHandler::attemptReconnect()
 {
     if (!reconnecting || intentionalClose || !params || !socket)
         return;
 
-    if (socket->state() == QAbstractSocket::ConnectedState ||
-            socket->state() == QAbstractSocket::ConnectingState)
+    if (socket->state() == QAbstractSocket::ConnectedState)
         return;
 
-    if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-        reconnectTimer->stop();
-        reconnecting = false;
-        collaborationState = CollaborationState::Disconnected;
-        qWarning() << "[TupNetProjectManagerHandler::attemptReconnect()] Reconnect limit reached. Closing collaborative session. Pending commands:"
-                   << (commandTracker ? commandTracker->pendingCount() : 0);
-        if (commandTracker)
-            commandTracker->clear();
-        emit connectionHasBeenLost(DisconnectReason::NetworkError);
+    if (socket->state() == QAbstractSocket::ConnectingState) {
+        scheduleReconnect(reconnectDelayMs);
         return;
     }
 
     ++reconnectAttempts;
 #ifdef TUP_DEBUG
     qWarning() << "[TupNetProjectManagerHandler::attemptReconnect()] Attempt" << reconnectAttempts
-               << "of" << MAX_RECONNECT_ATTEMPTS;
+               << "Delay:" << reconnectDelayMs << "ms";
 #endif
+
+    socket->abort();
     socket->connectToHost(params->server(), params->port());
+
+    reconnectDelayMs = qMin(reconnectDelayMs * 2, RECONNECT_MAX_DELAY_MS);
+    scheduleReconnect(reconnectDelayMs);
 }
 
 void TupNetProjectManagerHandler::connectionRestored()
@@ -1142,6 +1182,8 @@ void TupNetProjectManagerHandler::connectionRestored()
 
     if (reconnectTimer)
         reconnectTimer->stop();
+    if (recoveryWatchdogTimer)
+        recoveryWatchdogTimer->start(RECOVERY_AUTH_TIMEOUT_MS);
 
 #ifdef TUP_DEBUG
     qDebug() << "[TupNetProjectManagerHandler::connectionRestored()] TCP connection restored. Re-authenticating.";
@@ -1172,6 +1214,7 @@ void TupNetProjectManagerHandler::resumePendingCommands()
 
     reconnecting = false;
     reconnectAttempts = 0;
+    reconnectDelayMs = RECONNECT_INITIAL_DELAY_MS;
     if (commandRetryTimer && !commandRetryTimer->isActive())
         commandRetryTimer->start();
 }
@@ -1235,6 +1278,61 @@ void TupNetProjectManagerHandler::retryTimedOutCommands()
     }
 }
 
+void TupNetProjectManagerHandler::startHeartbeat()
+{
+    missedHeartbeats = 0;
+    if (heartbeatTimer && projectIsOpen && collaborationState == CollaborationState::Connected
+            && !heartbeatTimer->isActive())
+        heartbeatTimer->start();
+}
+
+void TupNetProjectManagerHandler::stopHeartbeat()
+{
+    missedHeartbeats = 0;
+    if (heartbeatTimer)
+        heartbeatTimer->stop();
+}
+
+void TupNetProjectManagerHandler::heartbeatTick()
+{
+    if (collaborationState != CollaborationState::Connected || !projectIsOpen || !socket)
+        return;
+
+    if (socket->state() != QAbstractSocket::ConnectedState) {
+        socket->abort();
+        return;
+    }
+
+    ++missedHeartbeats;
+    if (missedHeartbeats >= HEARTBEAT_MISSED_LIMIT) {
+        qWarning() << "[TupNetProjectManagerHandler::heartbeatTick()] Heartbeat timeout. Missed responses:"
+                   << missedHeartbeats;
+        stopHeartbeat();
+        socket->abort();
+        return;
+    }
+
+    QDomDocument document;
+    QDomElement root = document.createElement(QStringLiteral("ping"));
+    root.setAttribute(QStringLiteral("version"), QStringLiteral("1"));
+    document.appendChild(root);
+    socket->send(document);
+
+#ifdef TUP_DEBUG
+    qDebug() << "[TupNetProjectManagerHandler::heartbeatTick()] Ping sent. Outstanding heartbeats:"
+             << missedHeartbeats;
+#endif
+}
+
+void TupNetProjectManagerHandler::recoveryWatchdogExpired()
+{
+    if (collaborationState != CollaborationState::Recovering || !socket)
+        return;
+
+    qWarning() << "[TupNetProjectManagerHandler::recoveryWatchdogExpired()] Recovery handshake/synchronization timed out; reconnecting.";
+    socket->abort();
+}
+
 void TupNetProjectManagerHandler::closeConnection()
 {
     intentionalClose = true;
@@ -1242,6 +1340,9 @@ void TupNetProjectManagerHandler::closeConnection()
     collaborationState = CollaborationState::Closing;
     if (reconnectTimer)
         reconnectTimer->stop();
+    stopHeartbeat();
+    if (recoveryWatchdogTimer)
+        recoveryWatchdogTimer->stop();
     if (commandTracker)
         commandTracker->clear();
 

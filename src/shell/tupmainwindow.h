@@ -72,11 +72,13 @@
 #include <QToolBar>
 #include <QDragEnterEvent>
 #include <QDropEvent>
+#include <QPointer>
 
 class TupProjectManagerParams;
 class TupNetProjectManagerParams;
 class TupProjectResponse;
 class TupCommandCoordinator;
+class QMessageBox;
 
 class TupMainWindow : public TabbedMainWindow
 {
@@ -269,6 +271,7 @@ class TupMainWindow : public TabbedMainWindow
         TupCommandCoordinator *commandCoordinator;
         bool isNetworked;
         bool collaborationRecovering;
+        QPointer<QMessageBox> collaborationRecoveryDialog;
         ToolView *m_viewChat;
         QTabWidget *m_chatTabWidget;
         bool m_chatTabHighlighted;

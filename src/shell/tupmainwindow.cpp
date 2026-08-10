@@ -73,6 +73,7 @@
 #include <QFileDialog>
 #include <QDomDocument>
 #include <QMessageBox>
+#include <QPushButton>
 #include <QDesktopServices>
 #include <QDesktopWidget>
 #include <QThread>
@@ -1954,11 +1955,42 @@ void TupMainWindow::collaborationRecoveryStarted()
 
     setWindowTitle(appTitle + " - " + projectName + " " + tr("[ reconnecting | collaboration mode ]"));
     TOsd::self()->display(TOsd::Warning, tr("Connection lost. Reconnecting... Editing is temporarily disabled."));
+
+    if (!collaborationRecoveryDialog) {
+        collaborationRecoveryDialog = new QMessageBox(this);
+        collaborationRecoveryDialog->setAttribute(Qt::WA_DeleteOnClose, false);
+        collaborationRecoveryDialog->setWindowTitle(tr("Connection Lost"));
+        collaborationRecoveryDialog->setIcon(QMessageBox::Warning);
+        collaborationRecoveryDialog->setText(tr("Connection to the server lost. Waiting for reconnection..."));
+        collaborationRecoveryDialog->setInformativeText(
+                    tr("TupiTube will keep trying to reconnect automatically. "
+                       "Your collaborative project will remain open while editing is suspended."));
+        collaborationRecoveryDialog->setWindowModality(Qt::ApplicationModal);
+        collaborationRecoveryDialog->setWindowFlag(Qt::WindowCloseButtonHint, false);
+
+        QPushButton *exitButton = collaborationRecoveryDialog->addButton(
+                    tr("Exit TupiTube"), QMessageBox::DestructiveRole);
+        collaborationRecoveryDialog->setEscapeButton(nullptr);
+
+        connect(exitButton, &QPushButton::clicked, this, []() {
+            QApplication::quit();
+        });
+    }
+
+    collaborationRecoveryDialog->show();
+    collaborationRecoveryDialog->raise();
+    collaborationRecoveryDialog->activateWindow();
 }
 
 void TupMainWindow::collaborationRecoveryFinished()
 {
     collaborationRecovering = false;
+
+    if (collaborationRecoveryDialog) {
+        collaborationRecoveryDialog->hide();
+        collaborationRecoveryDialog->deleteLater();
+        collaborationRecoveryDialog = nullptr;
+    }
 
 #ifdef TUP_DEBUG
     qDebug() << "[TupMainWindow::collaborationRecoveryFinished()] Collaborative editing resumed.";
@@ -1985,6 +2017,12 @@ void TupMainWindow::collaborationRecoveryFinished()
 void TupMainWindow::unexpectedClose(DisconnectReason reason)
 {
     collaborationRecovering = false;
+
+    if (collaborationRecoveryDialog) {
+        collaborationRecoveryDialog->hide();
+        collaborationRecoveryDialog->deleteLater();
+        collaborationRecoveryDialog = nullptr;
+    }
 
     if (m_projectManager->isOpen()) {
         resetUI();

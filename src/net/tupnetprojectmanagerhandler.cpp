@@ -571,9 +571,26 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                if (parser.parse()) {
                    int code = parser.notification().code;
                    switch(code) {
-                          case 400:
+                          case 400: {
+                               const QString message = parser.notification().message;
+                               if (collaborationState == CollaborationState::Recovering
+                                       && message.contains(QStringLiteral("already logged on"),
+                                                           Qt::CaseInsensitive)) {
+#ifdef TUP_DEBUG
+                                   qWarning()
+                                       << "[TupNetProjectManagerHandler::handlePackage()]"
+                                       << "Recovery authentication collided with stale server session; retrying.";
+#endif
+                                   if (recoveryWatchdogTimer)
+                                       recoveryWatchdogTimer->stop();
+                                   if (socket)
+                                       socket->abort();
+                                   return;
+                               }
+
                                emit authenticationFailed();
                                return;
+                          }
                           break;
                           case 380:
                                emit savingSuccessful();

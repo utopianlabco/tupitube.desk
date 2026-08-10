@@ -522,8 +522,22 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                        file.flush();
             
                        if (project) {
+#ifdef TUP_DEBUG
+                           qWarning() << "[SNAPSHOT TRACE][NetHandler] server_project received."
+                                      << "Recovering:" << (collaborationState == CollaborationState::Recovering)
+                                      << "Project ptr:" << project
+                                      << "Scenes BEFORE load:" << project->scenesCount()
+                                      << "Scene names BEFORE load:" << project->getSceneNames();
+#endif
                            TupFileManager *manager = new TupFileManager;
                            bool isOk = manager->load(file.fileName(), project);
+#ifdef TUP_DEBUG
+                           qWarning() << "[SNAPSHOT TRACE][NetHandler] server_project load finished."
+                                      << "Success:" << isOk
+                                      << "Recovering:" << (collaborationState == CollaborationState::Recovering)
+                                      << "Scenes AFTER load:" << project->scenesCount()
+                                      << "Scene names AFTER load:" << project->getSceneNames();
+#endif
                            if (isOk) {
                                projectIsOpen = true;
 

@@ -124,6 +124,10 @@ void TupProject::clear()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupProject::clear()]";
+        qWarning() << "[SNAPSHOT TRACE][TupProject::clear] BEFORE"
+                   << "Project ptr:" << this
+                   << "Scene count:" << scenesList.count()
+                   << "Scene names:" << getSceneNames();
     #endif
 
     for (int i=0; i<scenesList.count(); i++) {
@@ -136,6 +140,13 @@ void TupProject::clear()
 
     scenesList.clear();
     sceneCounter = 0;
+
+    #ifdef TUP_DEBUG
+        qWarning() << "[SNAPSHOT TRACE][TupProject::clear] AFTER"
+                   << "Project ptr:" << this
+                   << "Scene count:" << scenesList.count()
+                   << "Scene names:" << getSceneNames();
+    #endif
 }
 
 void TupProject::setProjectName(const QString &name)
@@ -267,6 +278,13 @@ TupScene *TupProject::createScene(QString name, int position, bool loaded)
         qDebug() << "[TupProject::createScene()] - name ->" << name;
         qDebug() << "[TupProject::createScene()] - position ->" << position;
         qDebug() << "[TupProject::createScene()] - loaded ->" << loaded;
+        qWarning() << "[SNAPSHOT TRACE][TupProject::createScene] BEFORE"
+                   << "Project ptr:" << this
+                   << "Name:" << name
+                   << "Position:" << position
+                   << "Loaded:" << loaded
+                   << "Scene count:" << scenesList.count()
+                   << "Scene names:" << getSceneNames();
     #endif
 
     if (position < 0 || position > scenesList.count())
@@ -280,6 +298,13 @@ TupScene *TupProject::createScene(QString name, int position, bool loaded)
 
     #ifdef TUP_DEBUG
         qDebug() << "[TupProject::createScene()] - scenesList.count() ->" << scenesList.count();
+        qWarning() << "[SNAPSHOT TRACE][TupProject::createScene] AFTER"
+                   << "Project ptr:" << this
+                   << "Name:" << name
+                   << "Position:" << position
+                   << "Loaded:" << loaded
+                   << "Scene count:" << scenesList.count()
+                   << "Scene names:" << getSceneNames();
     #endif
 
     if (loaded)

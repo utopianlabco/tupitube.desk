@@ -529,6 +529,18 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                                       << "Scenes BEFORE load:" << project->scenesCount()
                                       << "Scene names BEFORE load:" << project->getSceneNames();
 #endif
+                           if (collaborationState == CollaborationState::Recovering) {
+#ifdef TUP_DEBUG
+                               qWarning() << "[TupNetProjectManagerHandler::handlePackage()] Preparing authoritative recovery snapshot replacement.";
+#endif
+                               // The recovery snapshot is authoritative. Give the UI a
+                               // synchronous chance to discard scene views that still
+                               // reference the current model, then clear the model before
+                               // TupFileManager reconstructs it from the snapshot.
+                               emit recoverySnapshotAboutToLoad();
+                               project->clear();
+                           }
+
                            TupFileManager *manager = new TupFileManager;
                            bool isOk = manager->load(file.fileName(), project);
 #ifdef TUP_DEBUG

@@ -130,15 +130,14 @@ void TupProject::clear()
                    << "Scene names:" << getSceneNames();
     #endif
 
-    for (int i=0; i<scenesList.count(); i++) {
-         TupScene *scene = scenesList.takeAt(i);
-         scene->clear();
-
-         scene = nullptr;
-         delete scene;
+    while (!scenesList.isEmpty()) {
+         TupScene *scene = scenesList.takeFirst();
+         if (scene) {
+             scene->clear();
+             delete scene;
+         }
     }
 
-    scenesList.clear();
     sceneCounter = 0;
 
     #ifdef TUP_DEBUG

@@ -227,6 +227,7 @@ class TupMainWindow : public TabbedMainWindow
         void openTupiTubeNetwork();
         void handleCollaborativeAuthenticationFailure();
         void collaborationRecoveryStarted();
+        void prepareRecoverySnapshot();
         void collaborationRecoveryFinished();
         void updateColorPanelStatus(bool flag);
         void updatePenPanelStatus(bool flag);

@@ -921,6 +921,8 @@ void TupMainWindow::setupCollaborativeProject(TupProjectManagerParams *params)
                 this, SLOT(unexpectedClose(DisconnectReason)));
         connect(netProjectManager, SIGNAL(collaborationRecoveryStarted()),
                 this, SLOT(collaborationRecoveryStarted()));
+        connect(netProjectManager, SIGNAL(recoverySnapshotAboutToLoad()),
+                this, SLOT(prepareRecoverySnapshot()));
         connect(netProjectManager, SIGNAL(collaborationRecoveryFinished()),
                 this, SLOT(collaborationRecoveryFinished()));
 
@@ -1980,6 +1982,25 @@ void TupMainWindow::collaborationRecoveryStarted()
     collaborationRecoveryDialog->show();
     collaborationRecoveryDialog->raise();
     collaborationRecoveryDialog->activateWindow();
+}
+
+void TupMainWindow::prepareRecoverySnapshot()
+{
+#ifdef TUP_DEBUG
+    qWarning() << "[TupMainWindow::prepareRecoverySnapshot()] Preparing UI for authoritative snapshot replacement.";
+#endif
+
+    // Keep the collaborative session, recovery dialog, network handler, and
+    // pending-command coordinator alive. Only discard UI state that mirrors
+    // the project model; TupProject will be cleared by the network handler
+    // immediately after this synchronous signal returns.
+    if (m_exposureSheet)
+        m_exposureSheet->closeAllScenes();
+    if (m_timeLine)
+        m_timeLine->closeAllScenes();
+
+    if (m_projectManager)
+        m_projectManager->clearUndoStack();
 }
 
 void TupMainWindow::collaborationRecoveryFinished()

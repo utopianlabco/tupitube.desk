@@ -88,6 +88,8 @@ TupNetProjectManagerHandler::TupNetProjectManagerHandler(QObject *parent) : TupA
     lastObservedProjectRevision = -1;
     lastObservedEventIndex = -1;
     recoverySnapshotLoaded = false;
+    snapshotRecoveryRevision = -1;
+    snapshotReconciliationCommands.clear();
     
     communicationModule = new QTabWidget;
 
@@ -299,6 +301,8 @@ void TupNetProjectManagerHandler::initialize(TupProjectManagerParams *parameters
     reconnecting = false;
     reconnectAttempts = 0;
     collaborationState = CollaborationState::Disconnected;
+    snapshotRecoveryRevision = -1;
+    snapshotReconciliationCommands.clear();
 
     #ifdef TUP_DEBUG
         QString server = netParams->server() + ":" + QString::number(netParams->port());
@@ -732,6 +736,24 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                     const qint64 revision = parser.committedRevision();
                     const int eventIndex = parser.eventIndex();
 
+                    // A snapshot can overwrite an optimistic local mutation while
+                    // its command is still pending. If this command committed after
+                    // that snapshot, the server snapshot cannot contain the mutation
+                    // and the sender will not receive its own project_event. Reapply
+                    // the tracked command locally exactly once before completing it.
+                    if (snapshotReconciliationCommands.contains(parser.commandId())
+                            && snapshotRecoveryRevision >= 0
+                            && revision > snapshotRecoveryRevision) {
+                        if (!reapplyPendingCommandAfterSnapshot(parser.commandId())) {
+                            qCritical()
+                                << "[TupNetProjectManagerHandler::handlePackage()]"
+                                << "Unable to restore a pending command after snapshot recovery."
+                                << "Command:" << parser.commandId()
+                                << "Snapshot revision:" << snapshotRecoveryRevision
+                                << "Committed revision:" << revision;
+                        }
+                    }
+
                     if (eventIndex < 0) {
                         qWarning()
                             << "[TupNetProjectManagerHandler::handlePackage()]"
@@ -804,6 +826,10 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
 
         if (commandTracker)
             commandTracker->complete(parser.commandId());
+
+        snapshotReconciliationCommands.remove(parser.commandId());
+        if (snapshotReconciliationCommands.isEmpty())
+            snapshotRecoveryRevision = -1;
 
         emit commandResultReceived(
             parser.commandId(),
@@ -1000,6 +1026,9 @@ void TupNetProjectManagerHandler::handleProjectEvent(const QString &package)
         // used by command_result so it is not resent after recovery and any
         // dependent commands can be released by the coordinator.
         commandTracker->complete(causedBy);
+        snapshotReconciliationCommands.remove(causedBy);
+        if (snapshotReconciliationCommands.isEmpty())
+            snapshotRecoveryRevision = -1;
         emit commandResultReceived(
             causedBy,
             QStringLiteral("committed"),
@@ -1180,9 +1209,25 @@ void TupNetProjectManagerHandler::handleProjectSyncResponse(const QString &packa
         lastObservedEventIndex = -1;
         recoverySnapshotLoaded = false;
 
+        // The snapshot replaces the entire local project state, including any
+        // optimistic mutations that were still awaiting an authoritative result.
+        // Keep those command IDs until their command_result tells us whether each
+        // mutation is already present in this snapshot or committed afterwards.
+        snapshotRecoveryRevision = toRevision;
+        snapshotReconciliationCommands.clear();
+        if (commandTracker) {
+            const QList<QString> pendingIds = commandTracker->pendingCommandIds();
+            for (const QString &commandId : pendingIds)
+                snapshotReconciliationCommands.insert(commandId);
+        }
+        if (snapshotReconciliationCommands.isEmpty())
+            snapshotRecoveryRevision = -1;
+
 #ifdef TUP_DEBUG
         qWarning() << "[TupNetProjectManagerHandler::handleProjectSyncResponse()] Snapshot recovery complete at revision:"
-                   << toRevision;
+                   << toRevision
+                   << "Pending commands requiring snapshot reconciliation:"
+                   << snapshotReconciliationCommands.count();
 #endif
         finishCollaborationRecovery();
         return;
@@ -1350,6 +1395,51 @@ void TupNetProjectManagerHandler::connectionRestored()
     socket->send(connectPackage);
 }
 
+bool TupNetProjectManagerHandler::reapplyPendingCommandAfterSnapshot(const QString &commandId)
+{
+    if (!commandTracker || commandId.trimmed().isEmpty())
+        return false;
+
+    const QString xml = commandTracker->commandXml(commandId);
+    if (xml.isEmpty())
+        return false;
+
+    TupRequestParser parser;
+    if (!parser.parse(xml)) {
+        qWarning()
+            << "[TupNetProjectManagerHandler::reapplyPendingCommandAfterSnapshot()]"
+            << "Unable to parse tracked command XML."
+            << "Command:" << commandId;
+        return false;
+    }
+
+    TupProjectResponse *response = parser.getResponse();
+    if (!response || response->getCommandId() != commandId) {
+        qWarning()
+            << "[TupNetProjectManagerHandler::reapplyPendingCommandAfterSnapshot()]"
+            << "Tracked command response is invalid."
+            << "Command:" << commandId;
+        return false;
+    }
+
+    // Preserve the authoritative command ID but do not create a second undo-stack
+    // entry. The original optimistic command already represented the user's action;
+    // this replay only restores local state that the recovery snapshot replaced.
+    TupProjectRequest request = TupRequestBuilder::fromResponse(response, true);
+    request.setExternal(false);
+
+#ifdef TUP_DEBUG
+    qWarning()
+        << "[TupNetProjectManagerHandler::reapplyPendingCommandAfterSnapshot()]"
+        << "Restoring pending local mutation after snapshot."
+        << "Command:" << commandId
+        << "Snapshot revision:" << snapshotRecoveryRevision;
+#endif
+
+    emitRequest(&request, false);
+    return true;
+}
+
 void TupNetProjectManagerHandler::resumePendingCommands()
 {
     if (!reconnecting || !commandTracker || !socket ||
@@ -1502,6 +1592,8 @@ void TupNetProjectManagerHandler::closeConnection()
         recoveryWatchdogTimer->stop();
     if (commandTracker)
         commandTracker->clear();
+    snapshotRecoveryRevision = -1;
+    snapshotReconciliationCommands.clear();
 
     if (socket && socket->isOpen())
         socket->close();

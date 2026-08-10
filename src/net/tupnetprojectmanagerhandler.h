@@ -79,6 +79,7 @@
 #include <QMessageBox>
 #include <QSplitter>
 #include <QTimer>
+#include <QSet>
 
 class TupNetSocket;
 
@@ -152,6 +153,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void emitRequest(TupProjectRequest *request, bool toStack);
         void setProject(TupProject *project);
         void resumePendingCommands();
+        bool reapplyPendingCommandAfterSnapshot(const QString &commandId);
         void handleProjectEvent(const QString &package);
         void beginProjectEventGapRecovery();
         void requestProjectSync(bool forceSnapshot = false);
@@ -195,6 +197,8 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         qint64 lastObservedProjectRevision;
         int lastObservedEventIndex;
         bool recoverySnapshotLoaded;
+        qint64 snapshotRecoveryRevision;
+        QSet<QString> snapshotReconciliationCommands;
         TupProjectListDialog *dialog;
         DisconnectReason m_disconnectReason = DisconnectReason::UnknownDisconnectReason;
 };

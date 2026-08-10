@@ -153,6 +153,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void setProject(TupProject *project);
         void resumePendingCommands();
         void handleProjectEvent(const QString &package);
+        void beginProjectEventGapRecovery();
         void requestProjectSync(bool forceSnapshot = false);
         void handleProjectSyncResponse(const QString &package);
         void finishCollaborationRecovery();

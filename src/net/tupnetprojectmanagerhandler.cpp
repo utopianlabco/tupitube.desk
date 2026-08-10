@@ -898,6 +898,7 @@ void TupNetProjectManagerHandler::handleProjectEvent(const QString &package)
                 << "Revision:" << revision
                 << "Index:" << eventIndex
                 << "Event:" << eventId;
+            beginProjectEventGapRecovery();
             return;
         }
     } else if (revision < lastObservedProjectRevision
@@ -931,6 +932,7 @@ void TupNetProjectManagerHandler::handleProjectEvent(const QString &package)
                 << "Received:" << revision
                 << eventIndex
                 << "Event:" << eventId;
+            beginProjectEventGapRecovery();
             return;
         }
     }
@@ -1025,6 +1027,47 @@ void TupNetProjectManagerHandler::handleProjectEvent(const QString &package)
     lastObservedEventIndex = eventIndex;
 }
 
+void TupNetProjectManagerHandler::beginProjectEventGapRecovery()
+{
+    // If recovery is already active, the current sync request owns the repair.
+    // Additional live events may still arrive on the socket while the server is
+    // preparing catch-up; discard them and wait for the authoritative replay.
+    if (collaborationState == CollaborationState::Recovering)
+        return;
+
+    if (collaborationState != CollaborationState::Connected
+            || !projectIsOpen || !socket
+            || socket->state() != QAbstractSocket::ConnectedState) {
+        qWarning()
+            << "[TupNetProjectManagerHandler::beginProjectEventGapRecovery()]"
+            << "Cannot start live event-gap recovery in the current state.";
+        return;
+    }
+
+    collaborationState = CollaborationState::Recovering;
+    recoverySnapshotLoaded = false;
+    stopHeartbeat();
+
+    if (commandRetryTimer)
+        commandRetryTimer->stop();
+
+    if (recoveryWatchdogTimer)
+        recoveryWatchdogTimer->start(RECOVERY_SYNC_TIMEOUT_MS);
+
+#ifdef TUP_DEBUG
+    qWarning()
+        << "[TupNetProjectManagerHandler::beginProjectEventGapRecovery()]"
+        << "Starting live authoritative event-gap recovery from:"
+        << lastObservedProjectRevision
+        << lastObservedEventIndex
+        << "Pending commands:"
+        << (commandTracker ? commandTracker->pendingCount() : 0);
+#endif
+
+    emit collaborationRecoveryStarted();
+    requestProjectSync(false);
+}
+
 void TupNetProjectManagerHandler::requestProjectSync(bool forceSnapshot)
 {
     if (!socket || socket->state() != QAbstractSocket::ConnectedState
@@ -1060,7 +1103,21 @@ void TupNetProjectManagerHandler::finishCollaborationRecovery()
 {
     if (recoveryWatchdogTimer)
         recoveryWatchdogTimer->stop();
-    resumePendingCommands();
+
+    if (reconnecting) {
+        // A real transport reconnect may have lost outgoing commands, so resend
+        // whatever remains unresolved after authoritative catch-up.
+        resumePendingCommands();
+    } else {
+        // A live sequence-gap recovery kept the same TCP connection. Pending
+        // commands were already sent; restart their timeout window instead of
+        // immediately sending duplicates.
+        if (commandTracker)
+            commandTracker->restartTimeoutWindow();
+        if (commandRetryTimer && !commandRetryTimer->isActive())
+            commandRetryTimer->start();
+    }
+
     collaborationState = CollaborationState::Connected;
     startHeartbeat();
     emit collaborationRecoveryFinished();

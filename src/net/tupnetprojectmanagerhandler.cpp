@@ -372,6 +372,43 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
         qDebug() << "[TupNetProjectManagerHandler::handlePackage()] Heartbeat pong received.";
 #endif
         return;
+    } else if (root == QStringLiteral("project_revision")) {
+        QDomDocument document;
+        if (!document.setContent(package)) {
+            qWarning() << "[TupNetProjectManagerHandler::handlePackage()] Invalid project_revision XML.";
+            return;
+        }
+
+        const QDomElement revisionRoot = document.documentElement();
+        bool versionOk = false;
+        const int version = revisionRoot.attribute(QStringLiteral("version")).toInt(&versionOk);
+        bool revisionOk = false;
+        const qint64 revision = revisionRoot.attribute(QStringLiteral("revision")).toLongLong(&revisionOk);
+        bool eventIndexOk = false;
+        const int eventIndex = revisionRoot.attribute(QStringLiteral("event_index")).toInt(&eventIndexOk);
+        const QString projectId = revisionRoot.attribute(QStringLiteral("project_id")).trimmed();
+
+        if (!versionOk || version != 1 || !revisionOk || revision < 0
+                || !eventIndexOk || eventIndex < -1
+                || (!currentProjectId.isEmpty() && projectId != currentProjectId)) {
+            qWarning() << "[TupNetProjectManagerHandler::handlePackage()] Invalid project_revision metadata.";
+            return;
+        }
+
+        if ((revision == 0 && eventIndex != -1)
+                || (revision > 0 && eventIndex < 0)) {
+            qWarning() << "[TupNetProjectManagerHandler::handlePackage()] Inconsistent project_revision ordering metadata.";
+            return;
+        }
+
+        lastObservedProjectRevision = revision;
+        lastObservedEventIndex = eventIndex;
+
+#ifdef TUP_DEBUG
+        qWarning() << "[TupNetProjectManagerHandler::handlePackage()] Authoritative snapshot revision:"
+                   << lastObservedProjectRevision << "Index:" << lastObservedEventIndex;
+#endif
+        return;
     } else if (root == QStringLiteral("project_sync_response")) {
         handleProjectSyncResponse(package);
     } else if (root == QStringLiteral("project_event")) {
@@ -690,11 +727,46 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
         switch (parser.status()) {
             case TupCommandResultParser::Committed:
                 status = QStringLiteral("committed");
+
+                if (parser.committedRevision() > 0) {
+                    const qint64 revision = parser.committedRevision();
+                    const int eventIndex = parser.eventIndex();
+
+                    if (eventIndex < 0) {
+                        qWarning()
+                            << "[TupNetProjectManagerHandler::handlePackage()]"
+                            << "Committed result has no valid event index."
+                            << "Command:" << parser.commandId();
+                    } else if (lastObservedProjectRevision < 0
+                               || (revision == lastObservedProjectRevision + 1
+                                   && eventIndex == 0)
+                               || (revision == lastObservedProjectRevision
+                                   && eventIndex > lastObservedEventIndex)) {
+                        lastObservedProjectRevision = revision;
+                        lastObservedEventIndex = eventIndex;
+                    } else if (revision < lastObservedProjectRevision
+                               || (revision == lastObservedProjectRevision
+                                   && eventIndex <= lastObservedEventIndex)) {
+                        // Duplicate/retried command_result; never move the
+                        // authoritative cursor backwards.
+                    } else {
+                        qCritical()
+                            << "[TupNetProjectManagerHandler::handlePackage()]"
+                            << "Authoritative revision gap in command_result."
+                            << "Last:" << lastObservedProjectRevision
+                            << lastObservedEventIndex
+                            << "Received:" << revision << eventIndex
+                            << "Command:" << parser.commandId();
+                    }
+                }
 #ifdef TUP_DEBUG
                 qDebug()
                     << "[TupNetProjectManagerHandler::handlePackage()]"
                     << "Command committed:"
-                    << parser.commandId();
+                    << parser.commandId()
+                    << "Revision:" << parser.committedRevision()
+                    << "Event index:" << parser.eventIndex()
+                    << "Observed revision:" << lastObservedProjectRevision;
 #endif
                 break;
 

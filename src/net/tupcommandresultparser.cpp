@@ -10,13 +10,17 @@
 
 TupCommandResultParser::TupCommandResultParser()
     : m_version(0),
-      m_status(Invalid)
+      m_status(Invalid),
+      m_committedRevision(-1),
+      m_eventIndex(-1)
 {
 }
 
 TupCommandResultParser::TupCommandResultParser(const QString &xml)
     : m_version(0),
-      m_status(Invalid)
+      m_status(Invalid),
+      m_committedRevision(-1),
+      m_eventIndex(-1)
 {
     parse(xml);
 }
@@ -96,6 +100,34 @@ bool TupCommandResultParser::parse(const QString &xml)
                 .toString()
                 .trimmed();
 
+            if (attributes.hasAttribute(QStringLiteral("committed_revision"))) {
+                bool revisionOk = false;
+                const qint64 revision = attributes
+                    .value(QStringLiteral("committed_revision"))
+                    .toString()
+                    .toLongLong(&revisionOk);
+                if (!revisionOk || revision <= 0) {
+                    reader.raiseError(
+                        QStringLiteral("Invalid committed_revision attribute."));
+                    continue;
+                }
+                m_committedRevision = revision;
+            }
+
+            if (attributes.hasAttribute(QStringLiteral("event_index"))) {
+                bool eventIndexOk = false;
+                const int eventIndex = attributes
+                    .value(QStringLiteral("event_index"))
+                    .toString()
+                    .toInt(&eventIndexOk);
+                if (!eventIndexOk || eventIndex < 0) {
+                    reader.raiseError(
+                        QStringLiteral("Invalid event_index attribute."));
+                    continue;
+                }
+                m_eventIndex = eventIndex;
+            }
+
             continue;
         }
 
@@ -152,6 +184,16 @@ QString TupCommandResultParser::message() const
     return m_message;
 }
 
+qint64 TupCommandResultParser::committedRevision() const
+{
+    return m_committedRevision;
+}
+
+int TupCommandResultParser::eventIndex() const
+{
+    return m_eventIndex;
+}
+
 QString TupCommandResultParser::errorString() const
 {
     return m_errorString;
@@ -164,6 +206,8 @@ void TupCommandResultParser::reset()
     m_status = Invalid;
     m_errorCode.clear();
     m_message.clear();
+    m_committedRevision = -1;
+    m_eventIndex = -1;
     m_errorString.clear();
 }
 

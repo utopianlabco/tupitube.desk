@@ -33,6 +33,8 @@ public:
     Status status() const;
     QString errorCode() const;
     QString message() const;
+    qint64 committedRevision() const;
+    int eventIndex() const;
     QString errorString() const;
 
 private:
@@ -45,6 +47,8 @@ private:
     Status m_status;
     QString m_errorCode;
     QString m_message;
+    qint64 m_committedRevision;
+    int m_eventIndex;
     QString m_errorString;
 };
 

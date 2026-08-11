@@ -929,6 +929,7 @@ void TupMainWindow::setupCollaborativeProject(TupProjectManagerParams *params)
                 this, SLOT(collaborationRecoveryFinished()));
 
         connect(netProjectManager, SIGNAL(savingSuccessful()), this, SLOT(netProjectSaved()));
+        connect(netProjectManager, SIGNAL(savingFailed()), this, SLOT(netProjectSaveFailed()));
         connect(netProjectManager, SIGNAL(postOperationDone()), this, SLOT(resetMousePointer()));
         connect(netProjectManager, SIGNAL(newMessageReceived(int)), this, SLOT(notifyChatMessage(int)));
         // Milestone 3: route every terminal server result through the generic
@@ -2124,6 +2125,14 @@ void TupMainWindow::handleCollaborativeAuthenticationFailure()
 void TupMainWindow::netProjectSaved()
 {
     m_projectManager->setModificationStatus(false);
+    QApplication::restoreOverrideCursor();
+}
+
+void TupMainWindow::netProjectSaveFailed()
+{
+    // The project remains modified so the user can retry the save, but the
+    // asynchronous network save operation has completed and must release the
+    // wait cursor.
     QApplication::restoreOverrideCursor();
 }
 

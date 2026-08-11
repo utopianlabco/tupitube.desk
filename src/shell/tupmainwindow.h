@@ -193,6 +193,7 @@ class TupMainWindow : public TabbedMainWindow
         void requestProject();
         void createNewNetProject(const QString &title, const QStringList &users);
         void netProjectSaved();
+        void netProjectSaveFailed();
         void notifyChatMessage(int messageType);
         void handleChatVisibilityChanged(bool visible);
         void handleChatTabChanged(int index);

@@ -647,6 +647,9 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                           case 380:
                                emit savingSuccessful();
                           break;
+                          case 381:
+                               emit savingFailed();
+                          break;
                           case 100:
                           case 101:
                           case 102:

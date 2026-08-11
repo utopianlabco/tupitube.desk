@@ -114,6 +114,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void projectPathChanged();
         void soundPathsChanged();
         void savingSuccessful();
+        void savingFailed();
         void postOperationDone();
         void connectionHasBeenLost(DisconnectReason reason = DisconnectReason::UnknownDisconnectReason);
         void collaborationRecoveryStarted();

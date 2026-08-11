@@ -1641,6 +1641,29 @@ void TupDocumentView::closeRasterWindow(const QString &imgPath)
     }
 }
 
+void TupDocumentView::prepareRecoverySnapshot()
+{
+    #ifdef TUP_DEBUG
+        qWarning() << "[RECOVERY SNAPSHOT][TupDocumentView::prepareRecoverySnapshot()]";
+    #endif
+
+    if (currentTool)
+        currentTool->aboutToChangeTool();
+
+    if (paintArea)
+        paintArea->prepareRecoverySnapshot();
+}
+
+void TupDocumentView::completeRecoverySnapshot()
+{
+    #ifdef TUP_DEBUG
+        qWarning() << "[RECOVERY SNAPSHOT][TupDocumentView::completeRecoverySnapshot()]";
+    #endif
+
+    if (paintArea)
+        paintArea->completeRecoverySnapshot();
+}
+
 void TupDocumentView::closeInterface()
 {
     if (currentTool)

@@ -65,6 +65,8 @@ class TUPITUBE_EXPORT TupCameraWidget : public QFrame
         void loadSoundRecords();
         bool removeSoundTrack(const QString &soundKey);
         void releaseAudioResources();
+        void prepareRecoverySnapshot();
+        void completeRecoverySnapshot();
 
     signals:
         void requestTriggered(const TupProjectRequest *event);

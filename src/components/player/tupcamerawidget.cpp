@@ -799,6 +799,66 @@ void TupCameraWidget::saveProjectInfo(const QString &author, const QString &desc
     project->setDescription(description);
 }
 
+void TupCameraWidget::prepareRecoverySnapshot()
+{
+    #ifdef TUP_DEBUG
+        qWarning() << "[RECOVERY SNAPSHOT][TupCameraWidget::prepareRecoverySnapshot()]";
+    #endif
+
+    if (previewScreen)
+        previewScreen->prepareRecoverySnapshot();
+
+    currentSceneIndex = 0;
+    framesTotal = 0;
+    currentFrameBox->setText("1");
+    framesCount->setText("/ 0");
+    timerSecsLabel->setText("00.00");
+    duration->clear();
+
+    if (cameraStatus) {
+        cameraStatus->blockSignals(true);
+        cameraStatus->setScenes(QStringList());
+        cameraStatus->blockSignals(false);
+    }
+}
+
+void TupCameraWidget::completeRecoverySnapshot()
+{
+    #ifdef TUP_DEBUG
+        qWarning() << "[RECOVERY SNAPSHOT][TupCameraWidget::completeRecoverySnapshot()]"
+                   << "Scenes:" << project->scenesCount();
+    #endif
+
+    if (previewScreen)
+        previewScreen->completeRecoverySnapshot();
+
+    QStringList scenes = project->getSceneNames();
+    if (cameraStatus) {
+        cameraStatus->blockSignals(true);
+        cameraStatus->setScenes(scenes);
+        if (!scenes.isEmpty())
+            cameraStatus->setCurrentScene(0);
+        cameraStatus->blockSignals(false);
+    }
+
+    currentSceneIndex = 0;
+    if (project->scenesCount() > 0) {
+        updateFramesTotal(0);
+        const int fps = project->getFPS(0);
+        if (fps > 0) {
+            fpsDelta = 1.0 / fps;
+            if (cameraStatus) {
+                cameraStatus->blockSignals(true);
+                cameraStatus->setFPS(fps);
+                cameraStatus->blockSignals(false);
+            }
+        }
+    } else {
+        framesTotal = 0;
+        framesCount->setText("/ 0");
+    }
+}
+
 void TupCameraWidget::clearMemory()
 {
     previewScreen->clearPhotograms();

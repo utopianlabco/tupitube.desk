@@ -558,6 +558,7 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                                    qDebug() << "[TupNetProjectManagerHandler::handlePackage()] Recovery snapshot loaded; waiting for authoritative revision metadata.";
 #endif
                                    recoverySnapshotLoaded = true;
+                                   emit recoverySnapshotUiReady();
                                    delete manager;
                                } else {
                                    collaborationState = CollaborationState::Connected;

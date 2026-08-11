@@ -923,6 +923,8 @@ void TupMainWindow::setupCollaborativeProject(TupProjectManagerParams *params)
                 this, SLOT(collaborationRecoveryStarted()));
         connect(netProjectManager, SIGNAL(recoverySnapshotAboutToLoad()),
                 this, SLOT(prepareRecoverySnapshot()));
+        connect(netProjectManager, SIGNAL(recoverySnapshotUiReady()),
+                this, SLOT(completeRecoverySnapshotUi()));
         connect(netProjectManager, SIGNAL(collaborationRecoveryFinished()),
                 this, SLOT(collaborationRecoveryFinished()));
 
@@ -1990,10 +1992,22 @@ void TupMainWindow::prepareRecoverySnapshot()
     qWarning() << "[TupMainWindow::prepareRecoverySnapshot()] Preparing UI for authoritative snapshot replacement.";
 #endif
 
-    // Keep the collaborative session, recovery dialog, network handler, and
-    // pending-command coordinator alive. Only discard UI state that mirrors
-    // the project model; TupProject will be cleared by the network handler
-    // immediately after this synchronous signal returns.
+    // The loader emits project responses while rebuilding the snapshot.
+    // Exposure Sheet/Timeline need those responses, but the paint area and
+    // camera own state tied to the old scene objects and must not process a
+    // partially rebuilt model. Suspend only those two consumers.
+    if (animationTab) {
+        disconnectWidgetToManager(animationTab);
+        animationTab->prepareRecoverySnapshot();
+    }
+
+    if (cameraWidget) {
+        disconnectWidgetToManager(cameraWidget);
+        cameraWidget->prepareRecoverySnapshot();
+    }
+
+    recoverySnapshotConsumersSuspended = true;
+
     if (m_exposureSheet)
         m_exposureSheet->closeAllScenes();
     if (m_timeLine)
@@ -2001,6 +2015,30 @@ void TupMainWindow::prepareRecoverySnapshot()
 
     if (m_projectManager)
         m_projectManager->clearUndoStack();
+}
+
+void TupMainWindow::completeRecoverySnapshotUi()
+{
+#ifdef TUP_DEBUG
+    qWarning() << "[TupMainWindow::completeRecoverySnapshotUi()] Rebinding UI to authoritative snapshot.";
+#endif
+
+    if (!recoverySnapshotConsumersSuspended)
+        return;
+
+    // Rebind only after TupFileManager::load() has reconstructed the complete
+    // project. This prevents stale pointers and partial scene/layer state.
+    if (animationTab) {
+        animationTab->completeRecoverySnapshot();
+        connectWidgetToManager(animationTab);
+    }
+
+    if (cameraWidget) {
+        cameraWidget->completeRecoverySnapshot();
+        connectWidgetToManager(cameraWidget);
+    }
+
+    recoverySnapshotConsumersSuspended = false;
 }
 
 void TupMainWindow::collaborationRecoveryFinished()

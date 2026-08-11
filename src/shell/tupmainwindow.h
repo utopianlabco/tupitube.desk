@@ -228,6 +228,7 @@ class TupMainWindow : public TabbedMainWindow
         void handleCollaborativeAuthenticationFailure();
         void collaborationRecoveryStarted();
         void prepareRecoverySnapshot();
+        void completeRecoverySnapshotUi();
         void collaborationRecoveryFinished();
         void updateColorPanelStatus(bool flag);
         void updatePenPanelStatus(bool flag);
@@ -273,6 +274,7 @@ class TupMainWindow : public TabbedMainWindow
         bool isNetworked;
         bool collaborationRecovering;
         QPointer<QMessageBox> collaborationRecoveryDialog;
+        bool recoverySnapshotConsumersSuspended = false;
         ToolView *m_viewChat;
         QTabWidget *m_chatTabWidget;
         bool m_chatTabHighlighted;

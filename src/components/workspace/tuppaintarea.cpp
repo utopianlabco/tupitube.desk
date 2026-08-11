@@ -1380,6 +1380,51 @@ void TupPaintArea::requestItemMovement(QAction *action)
     }
 }
 
+void TupPaintArea::prepareRecoverySnapshot()
+{
+    #ifdef TUP_DEBUG
+        qWarning() << "[RECOVERY SNAPSHOT][TupPaintArea::prepareRecoverySnapshot()]";
+    #endif
+
+    TupGraphicsScene *guiScene = graphicsScene();
+    if (!guiScene)
+        return;
+
+    // The authoritative snapshot replaces TupScene/TupLayer/TupFrame objects.
+    // Detach the graphics scene before those model objects are deleted so no
+    // stale scene/frame pointer survives the replacement.
+    guiScene->clearWorkSpace();
+    guiScene->setCurrentScene(nullptr);
+    globalSceneIndex = 0;
+}
+
+void TupPaintArea::completeRecoverySnapshot()
+{
+    #ifdef TUP_DEBUG
+        qWarning() << "[RECOVERY SNAPSHOT][TupPaintArea::completeRecoverySnapshot()]"
+                   << "Scenes:" << project->scenesCount();
+    #endif
+
+    TupGraphicsScene *guiScene = graphicsScene();
+    if (!guiScene)
+        return;
+
+    if (project->scenesCount() <= 0) {
+        guiScene->setCurrentScene(nullptr);
+        viewport()->update();
+        return;
+    }
+
+    setCurrentScene(0);
+    TupScene *scene = project->sceneAt(0);
+    if (scene && scene->layersCount() > 0) {
+        guiScene->setCurrentFrame(0, 0);
+        updatePaintArea();
+    }
+
+    viewport()->update();
+}
+
 void TupPaintArea::updatePaintArea() 
 {
     #ifdef TUP_DEBUG

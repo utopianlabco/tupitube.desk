@@ -96,6 +96,8 @@ class Q_DECL_EXPORT TupDocumentView: public QMainWindow
         void updatePerspective();
         QColor currentBGColor() const;
         void updateWorkspace();
+        void prepareRecoverySnapshot();
+        void completeRecoverySnapshot();
         void setBucketTool(TColorCell::FillType type);
         void updateColorOnSelection(TupProjectRequest::Action action, const QColor &color);
         void updatePenOnSelection(const QPen &pen);

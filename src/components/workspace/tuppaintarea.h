@@ -108,6 +108,8 @@ class TUPITUBE_EXPORT TupPaintArea : public TupPaintAreaBase, public TupAbstract
         void getWebAsset(const QString &webPath);
         void importLocalProject(const QString &path, bool onlyLibrary = false);
         void drawCurrentPhotogram();
+        void prepareRecoverySnapshot();
+        void completeRecoverySnapshot();
 
     public slots:
         void updatePaintArea();

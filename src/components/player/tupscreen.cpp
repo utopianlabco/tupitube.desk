@@ -247,6 +247,53 @@ void TupScreen::clearAllScenesPhotograms()
     projectFramesTotal = 0;
 }
 
+void TupScreen::prepareRecoverySnapshot()
+{
+    #ifdef TUP_DEBUG
+        qWarning() << "[RECOVERY SNAPSHOT][TupScreen::prepareRecoverySnapshot()]";
+    #endif
+
+    stopAnimation();
+    releaseAudioResources();
+    clearPhotograms();
+    clearAllScenesPhotograms();
+
+    sceneIndex = -1;
+    currentFramePosition = 0;
+    projectFramePosition = 0;
+    projectFramesTotal = 0;
+    projectSceneIndex = 0;
+    firstFrameRendered = false;
+    renderedImg = QImage();
+    currentPhotogram = QImage();
+    update();
+}
+
+void TupScreen::completeRecoverySnapshot()
+{
+    #ifdef TUP_DEBUG
+        qWarning() << "[RECOVERY SNAPSHOT][TupScreen::completeRecoverySnapshot()]"
+                   << "Scenes:" << project->scenesCount();
+    #endif
+
+    clearPhotograms();
+    clearAllScenesPhotograms();
+    initAllPhotograms();
+    loadSoundRecords();
+
+    if (project->scenesCount() > 0) {
+        sceneIndex = 0;
+        updateSceneIndex(0);
+        calculateFramesTotal();
+        updateFirstFrame();
+    } else {
+        sceneIndex = -1;
+        projectFramesTotal = 0;
+    }
+
+    update();
+}
+
 void TupScreen::releaseAudioResources()
 {
     #ifdef TUP_DEBUG

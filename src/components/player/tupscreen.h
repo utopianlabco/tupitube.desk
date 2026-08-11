@@ -71,6 +71,8 @@ class TUPITUBE_EXPORT TupScreen : public QFrame, public TupAbstractProjectRespon
         void clearPhotograms();
         void clearAllScenesPhotograms();
         void releaseAudioResources();
+        void prepareRecoverySnapshot();
+        void completeRecoverySnapshot();
 
         void setPlayMode(PlayMode mode, int sceneIndex);
         PlayDirection getPlayDirection();

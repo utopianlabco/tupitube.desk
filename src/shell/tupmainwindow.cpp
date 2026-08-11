@@ -1988,9 +1988,7 @@ void TupMainWindow::collaborationRecoveryStarted()
 
 void TupMainWindow::prepareRecoverySnapshot()
 {
-#ifdef TUP_DEBUG
-    qWarning() << "[TupMainWindow::prepareRecoverySnapshot()] Preparing UI for authoritative snapshot replacement.";
-#endif
+
 
     // The loader emits project responses while rebuilding the snapshot.
     // Exposure Sheet/Timeline need those responses, but the paint area and
@@ -2019,9 +2017,7 @@ void TupMainWindow::prepareRecoverySnapshot()
 
 void TupMainWindow::completeRecoverySnapshotUi()
 {
-#ifdef TUP_DEBUG
-    qWarning() << "[TupMainWindow::completeRecoverySnapshotUi()] Rebinding UI to authoritative snapshot.";
-#endif
+
 
     if (!recoverySnapshotConsumersSuspended)
         return;

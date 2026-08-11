@@ -249,9 +249,7 @@ void TupScreen::clearAllScenesPhotograms()
 
 void TupScreen::prepareRecoverySnapshot()
 {
-    #ifdef TUP_DEBUG
-        qWarning() << "[RECOVERY SNAPSHOT][TupScreen::prepareRecoverySnapshot()]";
-    #endif
+    
 
     stopAnimation();
     releaseAudioResources();
@@ -271,10 +269,7 @@ void TupScreen::prepareRecoverySnapshot()
 
 void TupScreen::completeRecoverySnapshot()
 {
-    #ifdef TUP_DEBUG
-        qWarning() << "[RECOVERY SNAPSHOT][TupScreen::completeRecoverySnapshot()]"
-                   << "Scenes:" << project->scenesCount();
-    #endif
+    
 
     clearPhotograms();
     clearAllScenesPhotograms();

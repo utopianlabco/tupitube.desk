@@ -801,9 +801,7 @@ void TupCameraWidget::saveProjectInfo(const QString &author, const QString &desc
 
 void TupCameraWidget::prepareRecoverySnapshot()
 {
-    #ifdef TUP_DEBUG
-        qWarning() << "[RECOVERY SNAPSHOT][TupCameraWidget::prepareRecoverySnapshot()]";
-    #endif
+    
 
     if (previewScreen)
         previewScreen->prepareRecoverySnapshot();
@@ -824,10 +822,7 @@ void TupCameraWidget::prepareRecoverySnapshot()
 
 void TupCameraWidget::completeRecoverySnapshot()
 {
-    #ifdef TUP_DEBUG
-        qWarning() << "[RECOVERY SNAPSHOT][TupCameraWidget::completeRecoverySnapshot()]"
-                   << "Scenes:" << project->scenesCount();
-    #endif
+    
 
     if (previewScreen)
         previewScreen->completeRecoverySnapshot();

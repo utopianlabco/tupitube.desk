@@ -192,10 +192,6 @@ void TupCameraStatus::setScenes(QStringList scenes)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupCameraStatus::setScenes()] - scenes ->" << scenes;
-        qWarning() << "[SNAPSHOT TRACE][TupCameraStatus::setScenes]"
-                   << "Incoming scene count:" << scenes.size()
-                   << "Incoming scenes:" << scenes
-                   << "Combo count BEFORE:" << scenesCombo->count();
     #endif
 
     if (scenesCombo->count())
@@ -204,10 +200,6 @@ void TupCameraStatus::setScenes(QStringList scenes)
     scenesCombo->addItems(scenes);
     scenesCombo->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 
-    #ifdef TUP_DEBUG
-        qWarning() << "[SNAPSHOT TRACE][TupCameraStatus::setScenes]"
-                   << "Combo count AFTER:" << scenesCombo->count();
-    #endif
 
     bool enable = false;
     if (scenes.size() > 1)

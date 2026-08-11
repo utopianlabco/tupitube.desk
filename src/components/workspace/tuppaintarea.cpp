@@ -1382,9 +1382,7 @@ void TupPaintArea::requestItemMovement(QAction *action)
 
 void TupPaintArea::prepareRecoverySnapshot()
 {
-    #ifdef TUP_DEBUG
-        qWarning() << "[RECOVERY SNAPSHOT][TupPaintArea::prepareRecoverySnapshot()]";
-    #endif
+    
 
     TupGraphicsScene *guiScene = graphicsScene();
     if (!guiScene)
@@ -1400,10 +1398,7 @@ void TupPaintArea::prepareRecoverySnapshot()
 
 void TupPaintArea::completeRecoverySnapshot()
 {
-    #ifdef TUP_DEBUG
-        qWarning() << "[RECOVERY SNAPSHOT][TupPaintArea::completeRecoverySnapshot()]"
-                   << "Scenes:" << project->scenesCount();
-    #endif
+    
 
     TupGraphicsScene *guiScene = graphicsScene();
     if (!guiScene)

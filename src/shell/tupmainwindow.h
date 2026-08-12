@@ -114,6 +114,12 @@ class TupMainWindow : public TabbedMainWindow
         void storyboardCalled();
 
     private:
+        enum PendingCloseAction {
+            NoPendingClose = 0,
+            CloseProjectAfterSave,
+            ExitApplicationAfterSave
+        };
+
         void createGUI();
         void setupFileActions();
         void setPreferenceActions();
@@ -138,7 +144,7 @@ class TupMainWindow : public TabbedMainWindow
         void resetUI();
         void updateRecentProjectList();
         void saveDefaultPath(const QString &dir);
-        bool cancelChanges();
+        bool cancelChanges(PendingCloseAction action = NoPendingClose);
         bool storeProcedure();
         void setupCameraConnections();
         void disconnectCameraConnections();
@@ -246,6 +252,7 @@ class TupMainWindow : public TabbedMainWindow
         TupProjectManager *m_projectManager;
         QString m_filename;
         bool lastSave;
+        PendingCloseAction pendingCloseAction;
 
     private:
         int screenWidth;

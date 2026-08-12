@@ -266,6 +266,7 @@ TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
     TCONFIG->setValue("AssetsPath", CACHE_DIR + TAlgorithm::randomString(8) + "/");
     requestType = NoRequest;
     lastSave = false;
+    pendingCloseAction = NoPendingClose;
 
     if (!sourceFile.isEmpty())
         openProject(sourceFile);
@@ -628,7 +629,7 @@ void TupMainWindow::newProject()
     delete wizard;
 }
 
-bool TupMainWindow::cancelChanges()
+bool TupMainWindow::cancelChanges(PendingCloseAction action)
 {
     if (m_projectManager->projectWasModified()) {
         QMessageBox msgBox;
@@ -644,16 +645,28 @@ bool TupMainWindow::cancelChanges()
         msgBox.show();
 
         msgBox.move(static_cast<int> ((screenWidth - msgBox.width()) / 2),
-                     static_cast<int> ((screenHeight - msgBox.height()) / 2));
+                    static_cast<int> ((screenHeight - msgBox.height()) / 2));
 
         int ret = msgBox.exec();
         switch (ret) {
             case QMessageBox::AcceptRole:
-                 lastSave = true;
-                 saveProject();
-                 return false;
+                if (isNetworked && action != NoPendingClose) {
+                    pendingCloseAction = action;
+                    lastSave = true;
+                    if (!saveProject()) {
+                        pendingCloseAction = NoPendingClose;
+                        lastSave = false;
+                    }
+                    // Network saves are asynchronous. Prevent the caller from
+                    // closing until the server acknowledges success or failure.
+                    return true;
+                }
+
+                lastSave = false;
+                saveProject();
+                return false;
             case QMessageBox::DestructiveRole:
-                 return true;
+                return true;
         }
     }
 
@@ -666,7 +679,10 @@ void TupMainWindow::closeInterface()
         qDebug() << "[TupMainWindow::closeInterface()]";
     #endif
 
-    if (cancelChanges())
+    if (pendingCloseAction != NoPendingClose)
+        return;
+
+    if (cancelChanges(CloseProjectAfterSave))
         return;
 
     closeProject();
@@ -1353,13 +1369,15 @@ bool TupMainWindow::saveProject()
 
         return storeProcedure();
     } else {
+        if (!netProjectManager)
+            return false;
+
         TupSavePackage package(lastSave);
         netProjectManager->sendPackage(package);
 
-        if (!lastSave)
-            QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-        else
-            lastSave = false;
+        // Collaborative saves complete only after the server acknowledges them.
+        QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+        lastSave = false;
     }
 
     #ifdef TUP_DEBUG
@@ -1516,7 +1534,12 @@ void TupMainWindow::closeEvent(QCloseEvent *event)
         qDebug() << "[TupMainWindow::closeEvent(QCloseEvent)]";
     #endif
 
-    if (cancelChanges()) {
+    if (pendingCloseAction != NoPendingClose) {
+        event->ignore();
+        return;
+    }
+
+    if (cancelChanges(ExitApplicationAfterSave)) {
         event->ignore();
         return;
     } else {
@@ -2126,13 +2149,24 @@ void TupMainWindow::netProjectSaved()
 {
     m_projectManager->setModificationStatus(false);
     QApplication::restoreOverrideCursor();
+
+    PendingCloseAction action = pendingCloseAction;
+    pendingCloseAction = NoPendingClose;
+
+    if (action == CloseProjectAfterSave) {
+        closeProject();
+    } else if (action == ExitApplicationAfterSave) {
+        // Re-enter closeEvent now that the authoritative save succeeded.
+        close();
+    }
 }
 
 void TupMainWindow::netProjectSaveFailed()
 {
-    // The project remains modified so the user can retry the save, but the
-    // asynchronous network save operation has completed and must release the
-    // wait cursor.
+    // Keep the project open and dirty so the user can retry. A failed
+    // Save-on-close must cancel the deferred close instead of tearing down UI.
+    pendingCloseAction = NoPendingClose;
+    lastSave = false;
     QApplication::restoreOverrideCursor();
 }
 

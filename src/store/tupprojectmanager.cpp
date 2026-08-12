@@ -467,7 +467,7 @@ void TupProjectManager::emitResponse(TupProjectResponse *response)
         qDebug() << "[TupProjectManager::emitResponse()] - response->action() ->" << response->getAction();
     #endif
 
-    if (response->getAction() != TupProjectRequest::Select)
+    if (response->getAction() != TupProjectRequest::Select && !response->external())
         modified = true;
 
    if (handler) {

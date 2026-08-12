@@ -121,6 +121,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void recoverySnapshotAboutToLoad();
         void recoverySnapshotUiReady();
         void collaborationRecoveryFinished();
+        void authoritativeModifiedStateChanged(bool modified);
         void authenticationFailed();
         void newMessageReceived(int messageType);
         void commandResultReceived(const QString &commandId,
@@ -162,6 +163,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void requestProjectSync(bool forceSnapshot = false);
         void handleProjectSyncResponse(const QString &package);
         void finishCollaborationRecovery();
+        void updateAuthoritativeModifiedState();
         void startHeartbeat();
         void stopHeartbeat();
         void scheduleReconnect(int delayMs);
@@ -198,6 +200,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         QString currentProjectId;
         QString currentProjectOwner;
         qint64 lastObservedProjectRevision;
+        qint64 lastSavedProjectRevision;
         int lastObservedEventIndex;
         bool recoverySnapshotLoaded;
         qint64 snapshotRecoveryRevision;

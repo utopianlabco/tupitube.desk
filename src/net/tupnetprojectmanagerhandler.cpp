@@ -86,6 +86,7 @@ TupNetProjectManagerHandler::TupNetProjectManagerHandler(QObject *parent) : TupA
     missedHeartbeats = 0;
     collaborationState = CollaborationState::Disconnected;
     lastObservedProjectRevision = -1;
+    lastSavedProjectRevision = -1;
     lastObservedEventIndex = -1;
     recoverySnapshotLoaded = false;
     snapshotRecoveryRevision = -1;
@@ -280,6 +281,7 @@ void TupNetProjectManagerHandler::loadProjectFromServer(const QString &projectID
     currentProjectOwner = owner;
     if (collaborationState != CollaborationState::Recovering) {
         lastObservedProjectRevision = -1;
+        lastSavedProjectRevision = -1;
         lastObservedEventIndex = -1;
     }
 
@@ -388,11 +390,15 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
         const int version = revisionRoot.attribute(QStringLiteral("version")).toInt(&versionOk);
         bool revisionOk = false;
         const qint64 revision = revisionRoot.attribute(QStringLiteral("revision")).toLongLong(&revisionOk);
+        bool savedRevisionOk = false;
+        const qint64 savedRevision =
+            revisionRoot.attribute(QStringLiteral("saved_revision")).toLongLong(&savedRevisionOk);
         bool eventIndexOk = false;
         const int eventIndex = revisionRoot.attribute(QStringLiteral("event_index")).toInt(&eventIndexOk);
         const QString projectId = revisionRoot.attribute(QStringLiteral("project_id")).trimmed();
 
         if (!versionOk || version != 1 || !revisionOk || revision < 0
+                || !savedRevisionOk || savedRevision < 0 || savedRevision > revision
                 || !eventIndexOk || eventIndex < -1
                 || (!currentProjectId.isEmpty() && projectId != currentProjectId)) {
             qWarning() << "[TupNetProjectManagerHandler::handlePackage()] Invalid project_revision metadata.";
@@ -406,12 +412,40 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
         }
 
         lastObservedProjectRevision = revision;
+        lastSavedProjectRevision = savedRevision;
         lastObservedEventIndex = eventIndex;
 
 #ifdef TUP_DEBUG
         qWarning() << "[TupNetProjectManagerHandler::handlePackage()] Authoritative snapshot revision:"
-                   << lastObservedProjectRevision << "Index:" << lastObservedEventIndex;
+                   << lastObservedProjectRevision
+                   << "Saved revision:" << lastSavedProjectRevision
+                   << "Index:" << lastObservedEventIndex;
 #endif
+        return;
+    } else if (root == QStringLiteral("project_saved")) {
+        QDomDocument document;
+        if (!document.setContent(package)) {
+            qWarning() << "[TupNetProjectManagerHandler::handlePackage()] Invalid project_saved XML.";
+            return;
+        }
+
+        const QDomElement savedRoot = document.documentElement();
+        bool versionOk = false;
+        const int version = savedRoot.attribute(QStringLiteral("version")).toInt(&versionOk);
+        bool revisionOk = false;
+        const qint64 savedRevision =
+            savedRoot.attribute(QStringLiteral("revision")).toLongLong(&revisionOk);
+        const QString projectId = savedRoot.attribute(QStringLiteral("project_id")).trimmed();
+
+        if (!versionOk || version != 1 || !revisionOk || savedRevision < 0
+                || projectId != currentProjectId) {
+            qWarning() << "[TupNetProjectManagerHandler::handlePackage()] Invalid project_saved metadata.";
+            return;
+        }
+
+        if (savedRevision > lastSavedProjectRevision)
+            lastSavedProjectRevision = savedRevision;
+        updateAuthoritativeModifiedState();
         return;
     } else if (root == QStringLiteral("project_sync_response")) {
         handleProjectSyncResponse(package);
@@ -841,6 +875,8 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
         if (commandTracker)
             commandTracker->complete(parser.commandId());
 
+        updateAuthoritativeModifiedState();
+
         snapshotReconciliationCommands.remove(parser.commandId());
         if (snapshotReconciliationCommands.isEmpty())
             snapshotRecoveryRevision = -1;
@@ -1040,6 +1076,7 @@ void TupNetProjectManagerHandler::handleProjectEvent(const QString &package)
         // used by command_result so it is not resent after recovery and any
         // dependent commands can be released by the coordinator.
         commandTracker->complete(causedBy);
+        updateAuthoritativeModifiedState();
         snapshotReconciliationCommands.remove(causedBy);
         if (snapshotReconciliationCommands.isEmpty())
             snapshotRecoveryRevision = -1;
@@ -1068,6 +1105,7 @@ void TupNetProjectManagerHandler::handleProjectEvent(const QString &package)
     emitRequest(&request, false);
     lastObservedProjectRevision = revision;
     lastObservedEventIndex = eventIndex;
+    updateAuthoritativeModifiedState();
 }
 
 void TupNetProjectManagerHandler::beginProjectEventGapRecovery()
@@ -1163,8 +1201,29 @@ void TupNetProjectManagerHandler::finishCollaborationRecovery()
 
     collaborationState = CollaborationState::Connected;
     startHeartbeat();
+    updateAuthoritativeModifiedState();
     emit collaborationRecoveryFinished();
     QApplication::restoreOverrideCursor();
+}
+
+void TupNetProjectManagerHandler::updateAuthoritativeModifiedState()
+{
+    if (lastObservedProjectRevision < 0 || lastSavedProjectRevision < 0)
+        return;
+
+    const bool hasPendingCommands = commandTracker && commandTracker->pendingCount() > 0;
+    const bool modified = hasPendingCommands
+        || lastObservedProjectRevision > lastSavedProjectRevision;
+
+#ifdef TUP_DEBUG
+    qDebug() << "[TupNetProjectManagerHandler::updateAuthoritativeModifiedState()]"
+             << "Observed:" << lastObservedProjectRevision
+             << "Saved:" << lastSavedProjectRevision
+             << "Pending:" << (commandTracker ? commandTracker->pendingCount() : 0)
+             << "Modified:" << modified;
+#endif
+
+    emit authoritativeModifiedStateChanged(modified);
 }
 
 void TupNetProjectManagerHandler::handleProjectSyncResponse(const QString &package)
@@ -1186,14 +1245,20 @@ void TupNetProjectManagerHandler::handleProjectSyncResponse(const QString &packa
     const int version = root.attribute(QStringLiteral("version")).toInt(&versionOk);
     bool toRevisionOk = false;
     const qint64 toRevision = root.attribute(QStringLiteral("to_revision")).toLongLong(&toRevisionOk);
+    bool savedRevisionOk = false;
+    const qint64 savedRevision =
+        root.attribute(QStringLiteral("saved_revision")).toLongLong(&savedRevisionOk);
     const QString projectId = root.attribute(QStringLiteral("project_id")).trimmed();
     const QString mode = root.attribute(QStringLiteral("mode")).trimmed();
 
     if (!versionOk || version != 1 || !toRevisionOk || toRevision < 0
+            || !savedRevisionOk || savedRevision < 0 || savedRevision > toRevision
             || projectId != currentProjectId) {
         qWarning() << "[TupNetProjectManagerHandler::handleProjectSyncResponse()] Invalid sync metadata.";
         return;
     }
+
+    lastSavedProjectRevision = savedRevision;
 
     if (mode == QStringLiteral("events")) {
         if (lastObservedProjectRevision != toRevision) {

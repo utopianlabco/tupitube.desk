@@ -123,6 +123,14 @@ void TupProjectManager::setHandler(TupAbstractProjectHandler *pHandler, bool net
     connect(handler, SIGNAL(projectPathChanged()), this, SIGNAL(projectPathChanged()));
     connect(handler, SIGNAL(soundPathsChanged()), this, SIGNAL(soundPathsChanged()));
 
+    if (networked) {
+        // Keep TupProjectManager independent of the concrete network handler.
+        // The old-style signal/slot connection is resolved by Qt's meta-object
+        // system at runtime, so this layer does not need the network header.
+        connect(handler, SIGNAL(authoritativeModifiedStateChanged(bool)),
+                this, SLOT(setModificationStatus(bool)));
+    }
+
     isNetworked = networked;
 }
 

@@ -87,6 +87,9 @@ class TUPITUBE_EXPORT TupGraphicsScene : public QGraphicsScene
         TupScene *currentScene() const;
         
         TupFrame *currentFrame();
+        TupFrame *activeFrame() const;
+        TupGraphicObject *graphicObject(QGraphicsItem *item) const;
+        QString objectId(QGraphicsItem *item) const;
         
         void setTool(TupToolPlugin *tool);
         TupToolPlugin *currentTool() const;

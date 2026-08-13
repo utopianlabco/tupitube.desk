@@ -702,7 +702,8 @@ bool TupProjectCommand::itemCommand()
     TupItemResponse *res = static_cast<TupItemResponse *>(response);
     
     #ifdef TUP_DEBUG
-        qDebug() << "[TupProjectCommand::itemCommand()] - itemIndex:" << res->getItemIndex();
+        qDebug() << "[TupProjectCommand::itemCommand()] - itemIndex:" << res->getItemIndex()
+                 << "objectId:" << res->getObjectId();
     #endif
 
     // Use originalAction() to route to the correct executor method

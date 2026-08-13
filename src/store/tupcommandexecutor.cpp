@@ -98,6 +98,32 @@ bool TupCommandExecutor::validateIndices(int sceneIdx, int layerIdx, int frameId
     return true;
 }
 
+int TupCommandExecutor::resolveItemIndex(TupFrame *frame, TupItemResponse *response) const
+{
+    if (!frame || !response)
+        return -1;
+
+    if (response->getItemType() == TupLibraryObject::Svg)
+        return response->getItemIndex();
+
+    const QString objectId = response->getObjectId().trimmed();
+    if (objectId.isEmpty())
+        return response->getItemIndex();
+
+    const int resolvedIndex = frame->graphicIndexById(objectId);
+
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupCommandExecutor::resolveItemIndex()] - objectId:" << objectId
+                 << "requestIndex:" << response->getItemIndex()
+                 << "resolvedIndex:" << resolvedIndex;
+    #endif
+
+    if (resolvedIndex >= 0)
+        response->setItemIndex(resolvedIndex);
+
+    return resolvedIndex;
+}
+
 void TupCommandExecutor::getScenes(TupSceneResponse *response)
 {
     response->setScenes(project->getScenes());

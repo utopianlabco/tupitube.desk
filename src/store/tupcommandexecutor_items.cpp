@@ -300,9 +300,18 @@ bool TupCommandExecutor::removeItem(TupItemResponse *response)
                         emit responsed(response);
                         return true;
                     } else {
-                        TupGraphicObject *object = frame->graphicAt(response->getItemIndex());
+                        const int itemIndex = resolveItemIndex(frame, response);
+                        if (itemIndex < 0) {
+                            #ifdef TUP_DEBUG
+                                qDebug() << "[TupCommandExecutor::removeItem()] - Error: Object id was not found ->"
+                                         << response->getObjectId();
+                            #endif
+                            return false;
+                        }
+
+                        TupGraphicObject *object = frame->graphicAt(itemIndex);
                         if (object) {
-                            frame->removeGraphic(response->getItemIndex());
+                            frame->removeGraphic(itemIndex);
 
                             // if (object->hasTween()) 
                             //     scene->removeTweenObject(layerIndex, object);
@@ -352,10 +361,19 @@ bool TupCommandExecutor::removeItem(TupItemResponse *response)
                             frame->restoreGraphic();
                     } else {
                         // Handle DO/REDO mode - remove the item
-                        if (type == TupLibraryObject::Svg) 
+                        if (type == TupLibraryObject::Svg) {
                             frame->removeSvg(response->getItemIndex());
-                        else
-                            frame->removeGraphic(response->getItemIndex());
+                        } else {
+                            const int itemIndex = resolveItemIndex(frame, response);
+                            if (itemIndex < 0) {
+                                #ifdef TUP_DEBUG
+                                    qDebug() << "[TupCommandExecutor::removeItem()] - Error: Object id was not found ->"
+                                             << response->getObjectId();
+                                #endif
+                                return false;
+                            }
+                            frame->removeGraphic(itemIndex);
+                        }
                     }
 
                     emit responsed(response);
@@ -419,6 +437,12 @@ bool TupCommandExecutor::moveItem(TupItemResponse *response)
             if (layer) {
                 TupFrame *frame = layer->frameAt(frameIndex);
                 if (frame) {
+                    if (type != TupLibraryObject::Svg) {
+                        objectIndex = resolveItemIndex(frame, response);
+                        if (objectIndex < 0)
+                            return false;
+                    }
+
                     if (frame->moveItem(type, objectIndex, action)) {
                         emit responsed(response);
                         return true;
@@ -443,6 +467,12 @@ bool TupCommandExecutor::moveItem(TupItemResponse *response)
                 }
 
                 if (frame) {
+                    if (type != TupLibraryObject::Svg) {
+                        objectIndex = resolveItemIndex(frame, response);
+                        if (objectIndex < 0)
+                            return false;
+                    }
+
                     if (frame->moveItem(type, objectIndex, action)) {
                         emit responsed(response);
                         return true;
@@ -823,6 +853,12 @@ bool TupCommandExecutor::transformItem(TupItemResponse *response)
             if (layer) {
                 TupFrame *frame = layer->frameAt(frameIndex);
                 if (frame) {
+                    if (type != TupLibraryObject::Svg) {
+                        itemIndex = resolveItemIndex(frame, response);
+                        if (itemIndex < 0)
+                            return false;
+                    }
+
                     QGraphicsItem *item;
                     if (type == TupLibraryObject::Svg)
                         item = frame->svgAt(itemIndex);
@@ -864,6 +900,12 @@ bool TupCommandExecutor::transformItem(TupItemResponse *response)
                 }
 
                 if (frame) {
+                    if (type != TupLibraryObject::Svg) {
+                        itemIndex = resolveItemIndex(frame, response);
+                        if (itemIndex < 0)
+                            return false;
+                    }
+
                     QGraphicsItem *item;
                     if (type == TupLibraryObject::Svg)
                         item = frame->svgAt(itemIndex);

@@ -37,6 +37,7 @@
 #include "tuppaintareaevent.h"
 #include "tosd.h"
 #include "tupitemgroup.h"
+#include "tupgraphicobject.h"
 #include "tuppixmapitem.h"
 #include "tupsvg2qt.h"
 #include "tmouthtarget.h"
@@ -824,10 +825,15 @@ void TupPaintArea::deleteItems()
                  }
 
                  if (itemIndex >= 0) {
+                     QString objectId;
+                     if (!svg)
+                         objectId = currentScene->objectId(item);
+
                      TupProjectRequest event = TupRequestBuilder::createItemRequest(
                                                currentScene->currentSceneIndex(), layerIndex, frameIndex,
                                                itemIndex, QPointF(), spaceMode, type,
-                                               TupProjectRequest::Remove);
+                                               TupProjectRequest::Remove, QString(), QByteArray(),
+                                               QString(), QString(), objectId);
                      emit requestTriggered(&event);
                  } else {
                      #ifdef TUP_DEBUG
@@ -1361,9 +1367,17 @@ void TupPaintArea::requestItemMovement(QAction *action)
                  int moveType = action->data().toInt(&ok);
 
                  if (ok) {
+                     QString objectId;
+                     if (!qgraphicsitem_cast<TupSvgItem *>(item)) {
+                         TupGraphicObject *object = currentFrame->graphicAt(index);
+                         if (object)
+                             objectId = object->objectId();
+                     }
+
                      TupProjectRequest event = TupRequestBuilder::createItemRequest(currentScene->currentSceneIndex(),
-                                               currentScene->currentLayerIndex(), currentScene->currentFrameIndex(), index, QPointF(), 
-                                               spaceMode, type, TupProjectRequest::Move, moveType);
+                                               currentScene->currentLayerIndex(), currentScene->currentFrameIndex(), index, QPointF(),
+                                               spaceMode, type, TupProjectRequest::Move, moveType, QByteArray(),
+                                               QString(), QString(), objectId);
                      emit requestTriggered(&event);
                  } else {
                      #ifdef TUP_DEBUG

@@ -41,6 +41,7 @@
 #include <QObject>
 
 class TupProject;
+class TupFrame;
 class TupProjectRequest;
 class TupFrameResponse;
 class TupItemResponse;
@@ -138,6 +139,7 @@ class TUPITUBE_EXPORT TupCommandExecutor : public QObject
 
     private:
         bool validateIndices(int sceneIdx, int layerIdx = -1, int frameIdx = -1, int itemIdx = -1);
+        int resolveItemIndex(TupFrame *frame, TupItemResponse *response) const;
 
         TupProject *project;
         QList<QString> selectionFramesCopy;

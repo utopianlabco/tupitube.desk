@@ -749,12 +749,17 @@ void SelectionTool::applyFlip(SelectionSettings::Flip flip)
                     position = frame->indexOf(manager->parentItem());
                 }
 
+                QString objectId;
+                if (!svg)
+                    objectId = scene->objectId(manager->parentItem());
+
                 TupProjectRequest event = TupRequestBuilder::createItemRequest(
                     scene->currentSceneIndex(),
                     currentLayer, currentFrame,
                     position, QPointF(), 
                     scene->getSpaceContext(), type,
-                    TupProjectRequest::Transform, doc.toString());
+                    TupProjectRequest::Transform, doc.toString(),
+                    QByteArray(), QString(), QString(), objectId);
                     emit requested(&event);
             }
         }
@@ -781,9 +786,14 @@ void SelectionTool::applyOrderAction(SelectionSettings::Order action)
             position = frame->indexOf(item);
         }
 
+        QString objectId;
+        if (!svg)
+            objectId = scene->objectId(item);
+
         TupProjectRequest event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(),
                                   currentLayer, currentFrame, position, QPointF(),
-                                  scene->getSpaceContext(), type, TupProjectRequest::Move, action);
+                                  scene->getSpaceContext(), type, TupProjectRequest::Move, action,
+                                  QByteArray(), QString(), QString(), objectId);
         emit requested(&event);
     }
 }
@@ -1190,10 +1200,15 @@ void SelectionTool::requestTransformation(QGraphicsItem *item, TupFrame *frame)
     }
 
     if (position >= 0) {
+        QString objectId;
+        if (!svg)
+            objectId = scene->objectId(item);
+
         TupProjectRequest event = TupRequestBuilder::createItemRequest(
                           scene->currentSceneIndex(), currentLayer, currentFrame,
                           position, QPointF(), scene->getSpaceContext(), type,
-                          TupProjectRequest::Transform, doc.toString());
+                          TupProjectRequest::Transform, doc.toString(),
+                          QByteArray(), QString(), QString(), objectId);
 
         emit requested(&event);
     } else {

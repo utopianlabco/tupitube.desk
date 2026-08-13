@@ -1394,6 +1394,72 @@ TupFrame *TupGraphicsScene::currentFrame()
     return nullptr;
 }
 
+TupFrame *TupGraphicsScene::activeFrame() const
+{
+    if (!tupScene)
+        return nullptr;
+
+    if (spaceContext == TupProject::FRAMES_MODE) {
+        if (tupScene->layersCount() <= 0)
+            return nullptr;
+
+        int layerIndex = framePosition.layer;
+        if (layerIndex < 0)
+            return nullptr;
+
+        if (layerIndex >= tupScene->layersCount())
+            layerIndex = tupScene->layersCount() - 1;
+
+        TupLayer *layer = tupScene->layerAt(layerIndex);
+        if (!layer || layer->getFrames().isEmpty())
+            return nullptr;
+
+        if (framePosition.frame < 0 || framePosition.frame >= layer->framesCount())
+            return nullptr;
+
+        return layer->frameAt(framePosition.frame);
+    }
+
+    if (!background)
+        return nullptr;
+
+    if (spaceContext == TupProject::VECTOR_STATIC_BG_MODE)
+        return background->vectorStaticFrame();
+
+    if (spaceContext == TupProject::VECTOR_DYNAMIC_BG_MODE)
+        return background->vectorDynamicFrame();
+
+    if (spaceContext == TupProject::VECTOR_FG_MODE)
+        return background->vectorForegroundFrame();
+
+    return nullptr;
+}
+
+TupGraphicObject *TupGraphicsScene::graphicObject(QGraphicsItem *item) const
+{
+    if (!item)
+        return nullptr;
+
+    TupFrame *frame = activeFrame();
+    if (!frame)
+        return nullptr;
+
+    int index = frame->indexOf(item);
+    if (index < 0)
+        return nullptr;
+
+    return frame->graphicAt(index);
+}
+
+QString TupGraphicsScene::objectId(QGraphicsItem *item) const
+{
+    TupGraphicObject *object = graphicObject(item);
+    if (!object)
+        return QString();
+
+    return object->objectId();
+}
+
 void TupGraphicsScene::setCurrentScene(TupScene *scene)
 {
     #ifdef TUP_DEBUG

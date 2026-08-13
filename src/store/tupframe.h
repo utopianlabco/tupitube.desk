@@ -119,6 +119,8 @@ class TUPITUBE_EXPORT TupFrame : public QObject, public TupAbstractSerializable
         SvgObjects svgItems() const; 
        
         TupGraphicObject *graphicAt(int position) const;
+        TupGraphicObject *graphicById(const QString &objectId) const;
+        int graphicIndexById(const QString &objectId) const;
         TupSvgItem *svgAt(int position) const; 
         QGraphicsItem *item(int position) const;
        

@@ -42,6 +42,7 @@
 
 #include <QObject>
 #include <QGraphicsItem>
+#include <QUuid>
 
 class TUPITUBE_EXPORT TupGraphicObject : public QObject, public TupAbstractSerializable
 {
@@ -57,6 +58,9 @@ class TUPITUBE_EXPORT TupGraphicObject : public QObject, public TupAbstractSeria
         
         void setObjectName(const QString &objectName);
         QString objectName() const;
+
+        void setObjectId(const QString &id);
+        QString objectId() const;
 
         void addTween(TupItemTweener *itemTween);
 
@@ -116,6 +120,7 @@ class TUPITUBE_EXPORT TupGraphicObject : public QObject, public TupAbstractSeria
         QList<TupItemTweener*> tweens;
 
         QString name;
+        QString persistentObjectId;
         TupFrame *tupFrame;
         QPointF lastTweenPosition;
 

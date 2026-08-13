@@ -64,7 +64,8 @@ class TUPITUBE_EXPORT TupRequestBuilder
                                                    const QVariant &arg = QString(),
                                                    const QByteArray &data = QByteArray(),
                                                    const QString &commandId = QString(),
-                                                   const QString &dependencyCommandId = QString());
+                                                   const QString &dependencyCommandId = QString(),
+                                                   const QString &objectId = QString());
 
         static TupProjectRequest createFrameRequest(int sceneIndex, int layerIndex, int frameIndex, int actionId,
                                                     const QVariant &arg = QString(),

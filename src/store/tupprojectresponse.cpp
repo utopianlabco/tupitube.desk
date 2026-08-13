@@ -269,6 +269,16 @@ void TupItemResponse::setItemIndex(int index)
     m_itemIndex = index;
 }
 
+QString TupItemResponse::getObjectId() const
+{
+    return m_objectId;
+}
+
+void TupItemResponse::setObjectId(const QString &objectId)
+{
+    m_objectId = objectId.trimmed();
+}
+
 TupLibraryObject::ObjectType TupItemResponse::getItemType() const
 {
     return m_itemType;

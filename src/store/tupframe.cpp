@@ -313,6 +313,8 @@ void TupFrame::fromXml(const QString &xml)
 
                           createItem(point, newDoc);
                           last = graphics.at(graphics.size()-1);
+                          if (last)
+                              last->setObjectId(e.attribute(QStringLiteral("object_id")));
                       }
                       n2 = n2.nextSibling();
                }
@@ -1415,6 +1417,35 @@ TupGraphicObject *TupFrame::graphicAt(int position) const
     } 
 
     return graphics.at(position);
+}
+
+TupGraphicObject *TupFrame::graphicById(const QString &objectId) const
+{
+    const QString normalized = objectId.trimmed();
+    if (normalized.isEmpty())
+        return nullptr;
+
+    for (TupGraphicObject *object : graphics) {
+        if (object && object->objectId() == normalized)
+            return object;
+    }
+
+    return nullptr;
+}
+
+int TupFrame::graphicIndexById(const QString &objectId) const
+{
+    const QString normalized = objectId.trimmed();
+    if (normalized.isEmpty())
+        return -1;
+
+    for (int i = 0; i < graphics.size(); ++i) {
+        TupGraphicObject *object = graphics.at(i);
+        if (object && object->objectId() == normalized)
+            return i;
+    }
+
+    return -1;
 }
 
 TupSvgItem *TupFrame::svgAt(int position) const

@@ -98,8 +98,13 @@ bool TupRequestParserHandler::parse()
             if (!ensureResponse(tag))
                 continue;
 
-            static_cast<TupItemResponse *>(response)->setItemIndex(
+            TupItemResponse *itemResponse =
+                static_cast<TupItemResponse *>(response);
+
+            itemResponse->setItemIndex(
                 attributes().value(QStringLiteral("index")).toInt());
+            itemResponse->setObjectId(
+                attributes().value(QStringLiteral("object_id")).toString());
 
         } else if (tag == QStringLiteral("objectType")) {
             if (!ensureResponse(tag))

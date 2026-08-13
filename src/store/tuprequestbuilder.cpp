@@ -80,7 +80,8 @@ TupProjectRequest TupRequestBuilder::createItemRequest(int sceneIndex, int layer
                                                        int actionId, const QVariant &arg,
                                                        const QByteArray &data,
                                                        const QString &commandId,
-                                                       const QString &dependencyCommandId)
+                                                       const QString &dependencyCommandId,
+                                                       const QString &objectId)
 {
     QDomDocument doc;
     QDomElement root = doc.createElement("project_request");
@@ -101,6 +102,8 @@ TupProjectRequest TupRequestBuilder::createItemRequest(int sceneIndex, int layer
 
     QDomElement item = doc.createElement("item");
     item.setAttribute("index", itemIndex);
+    if (!objectId.trimmed().isEmpty())
+        item.setAttribute("object_id", objectId.trimmed());
 
     QDomElement objectType = doc.createElement("objectType");
     objectType.setAttribute("id", type);
@@ -316,7 +319,9 @@ TupProjectRequest TupRequestBuilder::fromResponse(TupProjectResponse *response,
                                      response->getAction(),
                                      response->getArg().toString(),
                                      response->getData(),
-                                     commandId);
+                                     commandId,
+                                     QString(),
+                                     itemResponse->getObjectId());
         }
         case TupProjectRequest::Frame: {
             TupFrameResponse *frameResponse = static_cast<TupFrameResponse *>(response);

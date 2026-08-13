@@ -46,6 +46,7 @@ TupGraphicObject::TupGraphicObject(QGraphicsItem *graphic, TupFrame *parent) : Q
 
     graphicItem = graphic;
     tupFrame = parent;
+    persistentObjectId = QUuid::createUuid().toString(QUuid::WithoutBraces);
 
     initItemData();
 }
@@ -61,12 +62,19 @@ TupGraphicObject::~TupGraphicObject()
 
 void TupGraphicObject::fromXml(const QString &xml)
 {
-    Q_UNUSED(xml)
+    QDomDocument document;
+    if (!document.setContent(xml))
+        return;
+
+    const QDomElement root = document.documentElement();
+    if (root.tagName() == QStringLiteral("object"))
+        setObjectId(root.attribute(QStringLiteral("object_id")));
 }
 
 QDomElement TupGraphicObject::toXml(QDomDocument &doc) const
 {
     QDomElement object = doc.createElement("object");
+    object.setAttribute(QStringLiteral("object_id"), persistentObjectId);
 
     if (TupTextItem *textItem = dynamic_cast<TupTextItem *>(graphicItem)) {
         object.appendChild(textItem->toXml(doc));
@@ -106,6 +114,20 @@ void TupGraphicObject::setObjectName(const QString &objectName)
 QString TupGraphicObject::objectName() const
 {
     return name;
+}
+
+void TupGraphicObject::setObjectId(const QString &id)
+{
+    const QString normalized = id.trimmed();
+    if (normalized.isEmpty())
+        persistentObjectId = QUuid::createUuid().toString(QUuid::WithoutBraces);
+    else
+        persistentObjectId = normalized;
+}
+
+QString TupGraphicObject::objectId() const
+{
+    return persistentObjectId;
 }
 
 void TupGraphicObject::initItemData()

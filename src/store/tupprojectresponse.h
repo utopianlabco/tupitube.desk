@@ -142,6 +142,8 @@ class TUPITUBE_EXPORT TupItemResponse : public TupFrameResponse
 
         int getItemIndex() const;
         void setItemIndex(int index);
+        QString getObjectId() const;
+        void setObjectId(const QString &objectId);
         TupLibraryObject::ObjectType getItemType() const;
         void setItemType(TupLibraryObject::ObjectType type);
         QPointF position() const;
@@ -154,6 +156,7 @@ class TUPITUBE_EXPORT TupItemResponse : public TupFrameResponse
 
     private:
         int m_itemIndex;
+        QString m_objectId;
         TupLibraryObject::ObjectType m_itemType;
         double m_x;
         double m_y;

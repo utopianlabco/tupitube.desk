@@ -1297,13 +1297,14 @@ void SelectionTool::updateColorOnSelection(TupProjectRequest::Action action, con
                                           currentFrame, itemIndex, QPointF(),
                                           scene->getSpaceContext(), TupLibraryObject::Item,
                                           TupProjectRequest::TextColor,
-                                          color.name(QColor::HexArgb));
+                                          color.name(QColor::HexArgb),
+                                          QByteArray(), QString(), QString(), scene->objectId(item));
                 emit requested(&event);
             } else if (QAbstractGraphicsShapeItem *shape = qgraphicsitem_cast<QAbstractGraphicsShapeItem *>(item)) {
                 QDomDocument doc;
                 QPen pen = shape->pen();
                 if (action == TupProjectRequest::Brush) {
-                    QBrush brush = pen.brush();
+                    QBrush brush = shape->brush();
                     brush.setColor(color);
                     doc.appendChild(TupSerializer::brush(&brush, doc));
                 } else {
@@ -1314,7 +1315,8 @@ void SelectionTool::updateColorOnSelection(TupProjectRequest::Action action, con
                                           scene->currentSceneIndex(), currentLayer,
                                           currentFrame, itemIndex, QPointF(),
                                           scene->getSpaceContext(), TupLibraryObject::Item,
-                                          action, doc.toString());
+                                          action, doc.toString(),
+                                          QByteArray(), QString(), QString(), scene->objectId(item));
                 emit requested(&event);
             }
         }
@@ -1381,7 +1383,8 @@ void SelectionTool::updatePenOnSelection(const QPen &pen)
                                           scene->currentSceneIndex(), currentLayer,
                                           currentFrame, itemIndex, QPointF(),
                                           scene->getSpaceContext(), TupLibraryObject::Item,
-                                          TupProjectRequest::Pen, doc.toString());
+                                          TupProjectRequest::Pen, doc.toString(),
+                                          QByteArray(), QString(), QString(), scene->objectId(item));
                 emit requested(&event);
             }
         }

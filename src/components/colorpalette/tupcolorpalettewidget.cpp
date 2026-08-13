@@ -406,7 +406,7 @@ void TupColorPaletteWidget::setColorOnAppFromHTML(const QBrush& brush)
     if (currentSpace == TColorCell::Inner) {
         fillColorCell->setBrush(brush);
 
-        TupPaintAreaEvent fillEvent(TupPaintAreaEvent::ChangeBrush, brush);
+        TupPaintAreaEvent fillEvent(TupPaintAreaEvent::ChangeBrush, brush.color());
         emit paintAreaEventTriggered(&fillEvent);
     }
 }
@@ -431,7 +431,7 @@ void TupColorPaletteWidget::setGlobalColors(const QBrush &brush)
                     fillColorCell->setBrush(black);
                     currentFillBrush = black;
 
-                    TupPaintAreaEvent event(TupPaintAreaEvent::ChangeBrush, black);
+                    TupPaintAreaEvent event(TupPaintAreaEvent::ChangeBrush, black.color());
                     emit paintAreaEventTriggered(&event);
                 }
             }
@@ -456,7 +456,7 @@ void TupColorPaletteWidget::setGlobalColors(const QBrush &brush)
             fillColorCell->setBrush(brush);
             currentFillBrush = brush;
 
-            TupPaintAreaEvent event(TupPaintAreaEvent::ChangeBrush, brush);
+            TupPaintAreaEvent event(TupPaintAreaEvent::ChangeBrush, brush.color());
             emit paintAreaEventTriggered(&event);
         }
         htmlField->setText(brush.color().name());
@@ -618,7 +618,7 @@ void TupColorPaletteWidget::init()
 
     emit colorSpaceChanged(TColorCell::Contour);
 
-    TupPaintAreaEvent fillEvent(TupPaintAreaEvent::ChangeBrush, currentFillBrush);
+    TupPaintAreaEvent fillEvent(TupPaintAreaEvent::ChangeBrush, currentFillBrush.color());
     emit paintAreaEventTriggered(&fillEvent);
 
     TupPaintAreaEvent event(TupPaintAreaEvent::ChangePenColor, contourColor);
@@ -680,7 +680,7 @@ void TupColorPaletteWidget::switchColors()
     colorForm->setColor(color);
     blockSignals(false);
 
-    TupPaintAreaEvent event = TupPaintAreaEvent(TupPaintAreaEvent::ChangeBrush, currentFillBrush);
+    TupPaintAreaEvent event = TupPaintAreaEvent(TupPaintAreaEvent::ChangeBrush, currentFillBrush.color());
     emit paintAreaEventTriggered(&event);
 
     event = TupPaintAreaEvent(TupPaintAreaEvent::ChangePenColor, currentContourBrush.color());

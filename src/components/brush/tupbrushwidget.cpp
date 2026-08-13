@@ -223,9 +223,13 @@ void TupBrushWidget::setBorderBrushStyle(QListWidgetItem *item)
     */
 
     int index = borderBrushesList->row(item);
-    thickPreview->setBrush(index + 1);
-    borderBrush.setStyle(Qt::BrushStyle(index + 1));
+    Qt::BrushStyle brushStyle = Qt::BrushStyle(index + 1);
 
+    borderBrush = pen.brush();
+    borderBrush.setStyle(brushStyle);
+    pen.setBrush(borderBrush);
+
+    thickPreview->setBrush(index + 1);
     updatePenProperties();
 }
 
@@ -241,7 +245,9 @@ void TupBrushWidget::setFillBrushStyle(QListWidgetItem *item)
 
 void TupBrushWidget::setPenColor(const QColor color)
 {
+    borderBrush = pen.brush();
     borderBrush.setColor(color);
+    pen.setBrush(borderBrush);
     thickPreview->setColor(color);
 }
 
@@ -265,6 +271,7 @@ void TupBrushWidget::setPenThickness(int width)
 void TupBrushWidget::setBrush(const QBrush b)
 {
     borderBrush = b;
+    pen.setBrush(borderBrush);
     thickPreview->setBrush(b);
 }
 

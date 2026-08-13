@@ -973,6 +973,10 @@ bool TupCommandExecutor::setPathItem(TupItemResponse *response)
             if (layer) {
                 TupFrame *frame = layer->frameAt(frameIndex);
                 if (frame) {
+                    itemIndex = resolveItemIndex(frame, response);
+                    if (itemIndex < 0)
+                        return false;
+
                     TupPathItem *item = qgraphicsitem_cast<TupPathItem *>(frame->item(itemIndex));
                     if (item) {
                         if (response->getMode() == TupProjectResponse::Do)
@@ -1013,6 +1017,10 @@ bool TupCommandExecutor::setPathItem(TupItemResponse *response)
                 }
 
                 if (frame) {
+                    itemIndex = resolveItemIndex(frame, response);
+                    if (itemIndex < 0)
+                        return false;
+
                     TupPathItem *item = qgraphicsitem_cast<TupPathItem *>(frame->item(itemIndex));
                     if (item) {
                         if (response->getMode() == TupProjectResponse::Do)
@@ -1141,6 +1149,10 @@ bool TupCommandExecutor::setBrush(TupItemResponse *response)
             if (layer) {
                 TupFrame *frame = layer->frameAt(frameIndex);
                 if (frame) {
+                    itemIndex = resolveItemIndex(frame, response);
+                    if (itemIndex < 0)
+                        return false;
+
                     QGraphicsItem *item = frame->item(itemIndex);
                     if (item) {
                         if (response->getMode() == TupProjectResponse::Do)
@@ -1175,6 +1187,10 @@ bool TupCommandExecutor::setBrush(TupItemResponse *response)
                 }
 
                 if (frame) {
+                    itemIndex = resolveItemIndex(frame, response);
+                    if (itemIndex < 0)
+                        return false;
+
                     QGraphicsItem *item = frame->item(itemIndex);
                     if (item) {
                         if (response->getMode() == TupProjectResponse::Do)
@@ -1233,6 +1249,10 @@ bool TupCommandExecutor::setPen(TupItemResponse *response)
             if (layer) {
                 TupFrame *frame = layer->frameAt(frameIndex);
                 if (frame) {
+                    itemIndex = resolveItemIndex(frame, response);
+                    if (itemIndex < 0)
+                        return false;
+
                     QGraphicsItem *item = frame->item(itemIndex);
                     if (item) {
                         if (response->getMode() == TupProjectResponse::Do)
@@ -1267,6 +1287,10 @@ bool TupCommandExecutor::setPen(TupItemResponse *response)
                 }
 
                 if (frame) {
+                    itemIndex = resolveItemIndex(frame, response);
+                    if (itemIndex < 0)
+                        return false;
+
                     QGraphicsItem *item = frame->item(itemIndex);
                     if (item) {
                         if (response->getMode() == TupProjectResponse::Do)
@@ -1326,6 +1350,10 @@ bool TupCommandExecutor::setTextColor(TupItemResponse *response)
             if (layer) {
                 TupFrame *frame = layer->frameAt(frameIndex);
                 if (frame) {
+                    itemIndex = resolveItemIndex(frame, response);
+                    if (itemIndex < 0)
+                        return false;
+
                     QGraphicsItem *item = frame->item(itemIndex);
                     if (item) {
                         if (response->getMode() == TupProjectResponse::Do)
@@ -1360,6 +1388,10 @@ bool TupCommandExecutor::setTextColor(TupItemResponse *response)
                 }
 
                 if (frame) {
+                    itemIndex = resolveItemIndex(frame, response);
+                    if (itemIndex < 0)
+                        return false;
+
                     QGraphicsItem *item = frame->item(itemIndex);
                     if (item) {
                         if (response->getMode() == TupProjectResponse::Do)

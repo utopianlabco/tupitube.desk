@@ -679,7 +679,8 @@ void TextTool::updateText()
                 TupProjectRequest event = TupRequestBuilder::createItemRequest(
                                           scene->currentSceneIndex(), layerIndex, frameIndex,
                                           itemIndex, QPointF(), scene->getSpaceContext(), TupLibraryObject::Item,
-                                          TupProjectRequest::Remove);
+                                          TupProjectRequest::Remove, QString(),
+                                          QByteArray(), QString(), QString(), scene->objectId(item));
                 emit requested(&event);
             } else {
                 QTextOption option = textItem->document()->defaultTextOption();
@@ -770,7 +771,8 @@ void TextTool::requestTransformation(QGraphicsItem *item, TupFrame *frame)
         TupProjectRequest event = TupRequestBuilder::createItemRequest(
                           scene->currentSceneIndex(), currentLayer, currentFrame,
                           position, QPointF(), scene->getSpaceContext(), type,
-                          TupProjectRequest::Transform, doc.toString());
+                          TupProjectRequest::Transform, doc.toString(),
+                          QByteArray(), QString(), QString(), scene->objectId(item));
 
         emit requested(&event);
     } else {

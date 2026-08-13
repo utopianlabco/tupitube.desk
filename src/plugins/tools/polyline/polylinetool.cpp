@@ -240,9 +240,11 @@ void PolyLineTool::release(const TupInputDeviceInformation *input, TupBrushManag
             int position = getItemPosition();
             if (position >= 0) {
                 QString pathStr = pathItem->pathToString();
+                QString objectId = gScene->objectId(pathItem);
                 TupProjectRequest event = TupRequestBuilder::createItemRequest(gScene->currentSceneIndex(), gScene->currentLayerIndex(),
                                                                                gScene->currentFrameIndex(), position, QPointF(), gScene->getSpaceContext(),
-                                                                               TupLibraryObject::Item, TupProjectRequest::EditNodes, pathStr);
+                                                                               TupLibraryObject::Item, TupProjectRequest::EditNodes, pathStr,
+                                                                               QByteArray(), QString(), QString(), objectId);
                 emit requested(&event);
             } else {
                 #ifdef TUP_DEBUG
@@ -471,9 +473,11 @@ void PolyLineTool::nodeChanged()
                 TupPathItem *item = qgraphicsitem_cast<TupPathItem *>(nodeGroup->parentItem());
                 if (item) {
                     QString pathStr = item->pathToString();
+                    QString objectId = scene->objectId(item);
                     TupProjectRequest event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(), scene->currentLayerIndex(),
                                                                                    scene->currentFrameIndex(), position, QPointF(), scene->getSpaceContext(),
-                                                                                   TupLibraryObject::Item, TupProjectRequest::EditNodes, pathStr);
+                                                                                   TupLibraryObject::Item, TupProjectRequest::EditNodes, pathStr,
+                                                                                   QByteArray(), QString(), QString(), objectId);
                     emit requested(&event);
                 }
             } else {

@@ -71,6 +71,8 @@ NodeSettings::NodeSettings(QWidget *parent) : QWidget(parent)
 
     QHBoxLayout *controlLayout = new QHBoxLayout;
 
+    maximumNodes = 0;
+
     clearSpinBox = new QSpinBox(this);
     clearSpinBox->setMinimum(2);
     clearSpinBox->setMaximum(100);
@@ -233,15 +235,18 @@ void NodeSettings::setNodesTotal(int value)
     if (!clearWidget->isVisible())
         showClearPanel(true);
 
+    if (maximumNodes < 2 || value > maximumNodes)
+        maximumNodes = value;
+
     clearSpinBox->blockSignals(true);
     clearSpinBox->setMinimum(2);
-    clearSpinBox->setMaximum(value);
+    clearSpinBox->setMaximum(maximumNodes);
     clearSpinBox->setValue(value);
     clearSpinBox->blockSignals(false);
 
     clearSlider->blockSignals(true);
     clearSlider->setMinimum(2);
-    clearSlider->setMaximum(value);
+    clearSlider->setMaximum(maximumNodes);
     clearSlider->setValue(value);
     clearSlider->blockSignals(false);
 
@@ -304,6 +309,7 @@ void NodeSettings::updatePolicyParam(int index)
 
     policy = NodeLocation(index);
     int value = clearSpinBox->value();
+    maximumNodes = value;
     clearSpinBox->setMinimum(2);
     clearSpinBox->setMaximum(value);
 
@@ -325,4 +331,5 @@ void NodeSettings::resetHistory()
 {
     undoValues.clear();
     redoValues.clear();
+    maximumNodes = 0;
 }

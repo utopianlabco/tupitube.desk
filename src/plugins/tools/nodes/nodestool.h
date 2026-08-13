@@ -136,7 +136,8 @@ class TUPITUBE_PLUGIN NodesTool : public TupToolPlugin
         QCursor targetCursor;
 
         int nodeIndex;
-        bool expandNode;       
+        bool expandNode;
+        QMap<int, QString> restorablePaths;
 };
 
 #endif

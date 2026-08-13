@@ -64,9 +64,6 @@ void NodesTool::init(TupGraphicsScene *gScene)
         }
     }
 
-    if (configPanel)
-        configPanel->resetHistory();
-
     nodeZValue = ((BG_LAYERS + 1) * ZLAYER_LIMIT) + (scene->currentScene()->layersCount() * ZLAYER_LIMIT);
     if (scene->getSpaceContext() == TupProject::VECTOR_FG_MODE)
         nodeZValue += ZLAYER_LIMIT;
@@ -298,6 +295,9 @@ bool NodesTool::setPathNodes(QPointF coord, QList<QGraphicsItem *> currentSelect
                     if (pathItem->isNotEdited())
                         pathItem->saveOriginalPath();
 
+                    configPanel->resetHistory();
+                    restorablePaths.clear();
+                    restorablePaths.insert(pathItem->nodesCount(), pathItem->pathToString());
                     configPanel->setNodesTotal(pathItem->nodesCount());
 
                     #ifdef TUP_DEBUG
@@ -375,6 +375,9 @@ bool NodesTool::setPathNodes(QPointF coord, QList<QGraphicsItem *> currentSelect
                 if (pathItem->isNotEdited())
                     pathItem->saveOriginalPath();
 
+                configPanel->resetHistory();
+                restorablePaths.clear();
+                restorablePaths.insert(pathItem->nodesCount(), pathItem->pathToString());
                 configPanel->setNodesTotal(pathItem->nodesCount());
             }
         }
@@ -869,7 +872,9 @@ void NodesTool::updateCurrentPath(int newTotal)
             int nodesTotal = pathItem->nodesCount();
             TupFrame *frame = getCurrentFrame();
             int position = frame->indexOf(nodeGroup->parentItem());
-            QString path = "";
+
+            if (position < 0)
+                return;
 
             QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
@@ -877,8 +882,12 @@ void NodesTool::updateCurrentPath(int newTotal)
                 if (nodesTotal > 2) {
                     int iterations = nodesTotal - newTotal;
                     int nodesCounter = nodesTotal;
-                    for(int i=0; i < iterations; i++) {
-                        path = pathItem->refactoringPath(configPanel->policyParam(), nodesCounter);
+                    for (int i = 0; i < iterations; i++) {
+                        // Keep the exact geometry for every node count so the slider can
+                        // restore it even after authoritative EditNodes responses.
+                        restorablePaths.insert(nodesCounter, pathItem->pathToString());
+
+                        QString path = pathItem->refactoringPath(configPanel->policyParam(), nodesCounter);
                         nodesCounter--;
 
                         TupProjectRequest event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(),
@@ -888,13 +897,12 @@ void NodesTool::updateCurrentPath(int newTotal)
                         emit requested(&event);
                     }
                 }
-            } else { // Restoring nodes
-                int iterations = newTotal - nodesTotal;
-                int nodesCounter = nodesTotal;
-                for(int i=0; i < iterations; i++) {
+            } else if (newTotal > nodesTotal) { // Restoring nodes
+                QString path = restorablePaths.value(newTotal);
+                if (path.isEmpty())
                     path = pathItem->pathRestored(newTotal);
-                    nodesCounter--;
 
+                if (!path.isEmpty()) {
                     TupProjectRequest event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(),
                                                                                    currentLayer, currentFrame, position,
                                                                                    QPointF(), scene->getSpaceContext(), TupLibraryObject::Item,
@@ -916,6 +924,8 @@ void NodesTool::resetPathHistory()
                 qDebug() << "[NodesTool::resetPathHistory()] - Resetting path history...";
             #endif
             pathItem->resetPathHistory();
+            restorablePaths.clear();
+            restorablePaths.insert(pathItem->nodesCount(), pathItem->pathToString());
         }
     }
 }

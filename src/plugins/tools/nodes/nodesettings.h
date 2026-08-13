@@ -80,6 +80,7 @@ class TUPITUBE_PLUGIN NodeSettings : public QWidget
 
         QList<int> undoValues;
         QList<int> redoValues;
+        int maximumNodes;
 
         NodeLocation policy;
 

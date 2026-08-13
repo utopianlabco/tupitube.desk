@@ -435,6 +435,51 @@ void TextTool::itemResponse(const TupItemResponse *response)
             syncNodes();
         }
         break;
+        case TupProjectRequest::TextColor:
+        {
+            #ifdef TUP_DEBUG
+                qDebug() << "[TextTool::itemResponse()] - TupProjectRequest::TextColor";
+            #endif
+
+            TupTextItem *textItem = qgraphicsitem_cast<TupTextItem *>(item);
+            if (!textItem) {
+                #ifdef TUP_DEBUG
+                    qDebug() << "[TextTool::itemResponse()] - TextColor target is not a text item";
+                #endif
+                break;
+            }
+
+            removeManager();
+
+            textItem->setSelected(true);
+            nodesManager = new NodeManager(TextNode, textItem, scene, nodeZValue);
+            connect(nodesManager, SIGNAL(positionUpdated(const QPointF &)), this, SLOT(updatePositionRecord(const QPointF&)));
+            connect(nodesManager, SIGNAL(rotationUpdated(int)), this, SLOT(updateRotationAngleRecord(int)));
+            connect(nodesManager, SIGNAL(scaleUpdated(double,double)), this, SLOT(updateScaleFactorRecord(double,double)));
+
+            nodesManager->show();
+            nodesManager->resizeNodes(realFactor);
+            nodesManager->beginToEdit();
+            activeSelection = true;
+
+            QString text = textItem->data(0).toString();
+            if (text.isEmpty()) {
+                text = textItem->toPlainText();
+                textItem->setData(0, text);
+            }
+
+            configPanel->loadTextSettings(textItem->font(), text, textItem->defaultTextColor());
+
+            QPointF pos = textItem->pos();
+            pos += QPointF(textItem->boundingRect().size().width()/2,
+                           textItem->boundingRect().size().height()/2);
+
+            QDomDocument doc;
+            configPanel->displayControls(true, pos,
+                                         TupSerializer::properties(textItem, doc, textItem->toPlainText(),
+                                                                   textItem->textWidth()));
+        }
+        break;
         default:
         {
             #ifdef TUP_DEBUG
@@ -897,6 +942,39 @@ void TextTool::updateTextColor(const QColor &color)
     #endif
 
     configPanel->setTextColor(color);
+
+    if (!activeSelection || !nodesManager || !scene)
+        return;
+
+    QGraphicsItem *item = nodesManager->parentItem();
+    TupTextItem *textItem = qgraphicsitem_cast<TupTextItem *>(item);
+    if (!textItem || textItem->defaultTextColor() == color)
+        return;
+
+    TupFrame *targetFrame = getCurrentFrame();
+    if (!targetFrame) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[TextTool::updateTextColor()] - Fatal Error: Current frame is NULL!";
+        #endif
+        return;
+    }
+
+    int itemIndex = targetFrame->indexOf(item);
+    if (itemIndex < 0) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[TextTool::updateTextColor()] - Fatal Error: Invalid item position ->" << itemIndex;
+        #endif
+        return;
+    }
+
+    textItem->setDefaultTextColor(color);
+
+    TupProjectRequest event = TupRequestBuilder::createItemRequest(
+                              scene->currentSceneIndex(), currentLayer, currentFrame,
+                              itemIndex, QPointF(), scene->getSpaceContext(), TupLibraryObject::Item,
+                              TupProjectRequest::TextColor, color.name(QColor::HexArgb),
+                              QByteArray(), QString(), QString(), scene->objectId(item));
+    emit requested(&event);
 }
 
 void TextTool::updatePositionRecord(const QPointF &point)

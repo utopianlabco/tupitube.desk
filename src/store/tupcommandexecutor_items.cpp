@@ -775,10 +775,24 @@ bool TupCommandExecutor::convertItem(TupItemResponse *response)
         success = TupItemConverter::applyRepresentation(
             object, response->conversionTargetSnapshot(), &errorCode);
     } else {
-        TupConversionResult result;
-        success = TupItemConverter::convertToPath(object, &result, &errorCode);
-        if (success)
-            response->setConversionSnapshots(result.sourceRepresentation, result.targetRepresentation);
+        const QByteArray authoritativeData = response->getData();
+        if (response->external() && !authoritativeData.isEmpty()) {
+            const QString sourceSnapshot =
+                TupItemConverter::representationSnapshot(object, &errorCode);
+            const QString targetSnapshot = QString::fromUtf8(authoritativeData);
+
+            if (!sourceSnapshot.isEmpty()) {
+                success = TupItemConverter::applyRepresentation(
+                    object, targetSnapshot, &errorCode);
+                if (success)
+                    response->setConversionSnapshots(sourceSnapshot, targetSnapshot);
+            }
+        } else {
+            TupConversionResult result;
+            success = TupItemConverter::convertToPath(object, &result, &errorCode);
+            if (success)
+                response->setConversionSnapshots(result.sourceRepresentation, result.targetRepresentation);
+        }
     }
 
     if (!success) {

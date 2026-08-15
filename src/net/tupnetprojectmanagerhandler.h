@@ -157,7 +157,9 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void emitRequest(TupProjectRequest *request, bool toStack);
         void setProject(TupProject *project);
         void resumePendingCommands();
-        bool reapplyPendingCommandAfterSnapshot(const QString &commandId);
+        bool reapplyPendingCommandAfterSnapshot(
+            const QString &commandId,
+            const QString &authoritativePayload = QString());
         void handleProjectEvent(const QString &package);
         void beginProjectEventGapRecovery();
         void requestProjectSync(bool forceSnapshot = false);

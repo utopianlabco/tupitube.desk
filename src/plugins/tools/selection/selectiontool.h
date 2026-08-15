@@ -114,6 +114,7 @@ class TUPITUBE_PLUGIN SelectionTool : public TupToolPlugin
         void applyFlip(SelectionSettings::Flip flip);
         void applyOrderAction(SelectionSettings::Order order);
         void applyGroupAction(SelectionSettings::Group action);
+        void convertSelectionToPath();
         void setItemPosition(int x, int y);
         void setItemRotation(int angle);
         void setItemScale(double xFactor, double yFactor);
@@ -133,6 +134,7 @@ class TUPITUBE_PLUGIN SelectionTool : public TupToolPlugin
         void requestTransformation(QGraphicsItem *item, TupFrame *frame);
         void addNodeManager(QGraphicsItem *item);
         void selectItem(QGraphicsItem *item);
+        void updateConvertToPathState();
 
         SelectionSettings *settingsPanel;
         QMap<TAction::ActionId, TAction *> selectActions;

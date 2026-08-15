@@ -55,7 +55,7 @@ class TUPITUBE_PLUGIN SelectionSettings : public QWidget
     Q_OBJECT
 
     public:
-        enum Action { AlignAction = 0, FlipsAction, OrderAction, GroupAction, PosAction, RotateAction, ScaleAction };
+        enum Action { AlignAction = 0, FlipsAction, OrderAction, GroupAction, ConvertAction, PosAction, RotateAction, ScaleAction };
         enum Align { hAlign = 1, vAlign, totalAlign };
         enum Flip { Vertical = 1, Horizontal, Crossed };
         enum Order { ToBack = 0, ToFront, ToBackOneLevel, ToFrontOneLevel };
@@ -65,6 +65,7 @@ class TUPITUBE_PLUGIN SelectionSettings : public QWidget
         ~SelectionSettings();
 
         void enableFormControls(bool flag);
+        void setConvertToPathEnabled(bool flag);
         void setPos(int x, int y);
         void setProportionState(int flag);
         bool formIsVisible();
@@ -74,6 +75,7 @@ class TUPITUBE_PLUGIN SelectionSettings : public QWidget
         void callFlip(SelectionSettings::Flip flip);
         void callOrderAction(SelectionSettings::Order action);
         void callGroupAction(SelectionSettings::Group action);
+        void convertToPathRequested();
         void positionUpdated(int x, int y);
         void rotationUpdated(int angle);
         void scaleUpdated(double xFactor, double yFactor);
@@ -105,6 +107,7 @@ class TUPITUBE_PLUGIN SelectionSettings : public QWidget
         void notifyYScale(double factor);
         void groupItems();
         void ungroupItems();
+        void convertToPath();
         void enableProportion(int flag);
         void enablePasteOnMouse(int flag);
         void enablePasteOnMouse();
@@ -118,15 +121,16 @@ class TUPITUBE_PLUGIN SelectionSettings : public QWidget
         QBoxLayout * setFlipsBlock();
         QBoxLayout * setOrderBlock();
         QBoxLayout * setGroupBlock();
+        QBoxLayout * setConvertBlock();
         QBoxLayout * setPosBlock();
         QBoxLayout * setRotateBlock();
         QBoxLayout * setScaleBlock();
         QBoxLayout * setPasteBlock();
 
         QStringList buttonLabels;
-        QPushButton * actionButton[7];
-        QWidget * actionWidget[7];
-        QBoxLayout *actionLayout[7];
+        QPushButton * actionButton[8];
+        QWidget * actionWidget[8];
+        QBoxLayout *actionLayout[8];
 
         QSpinBox *xPosField;
         QSpinBox *yPosField;
@@ -135,6 +139,7 @@ class TUPITUBE_PLUGIN SelectionSettings : public QWidget
         QDoubleSpinBox *factorYField;
         QCheckBox *propCheck;
         QCheckBox *pasteCheck;
+        QPushButton *convertToPathButton;
 
         QPushButton *tips;
         QWidget *formPanel;

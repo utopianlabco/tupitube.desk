@@ -60,6 +60,20 @@ void TupItemConverter::copyProperties(QGraphicsItem *src, QGraphicsItem *dest)
     dest->setPos(src->scenePos());
     dest->setFlags(src->flags() );
     dest->setSelected(src->isSelected());
+
+    const int transformationKeys[] = {
+        TupGraphicObject::ScaleX,
+        TupGraphicObject::ScaleY,
+        TupGraphicObject::Rotate,
+        TupGraphicObject::TranslateX,
+        TupGraphicObject::TranslateY
+    };
+
+    for (int key : transformationKeys) {
+        const QVariant value = src->data(key);
+        if (value.isValid())
+            dest->setData(key, value);
+    }
     
     // Shapes
     QAbstractGraphicsShapeItem *shape =  dynamic_cast<QAbstractGraphicsShapeItem*>(src);
@@ -230,6 +244,29 @@ bool TupItemConverter::convertToPath(TupGraphicObject *object, TupConversionResu
 
     object->setItem(target);
     return true;
+}
+
+QString TupItemConverter::representationSnapshot(TupGraphicObject *object, QString *errorCode)
+{
+    if (errorCode)
+        errorCode->clear();
+
+    if (!object) {
+        setConversionError(errorCode, QStringLiteral("missing_object"));
+        return QString();
+    }
+
+    QGraphicsItem *item = object->item();
+    if (!item) {
+        setConversionError(errorCode, QStringLiteral("missing_representation"));
+        return QString();
+    }
+
+    const QString snapshot = serializeRepresentation(item);
+    if (snapshot.isEmpty())
+        setConversionError(errorCode, QStringLiteral("serialize_representation_failed"));
+
+    return snapshot;
 }
 
 bool TupItemConverter::applyRepresentation(TupGraphicObject *object, const QString &representationXml,

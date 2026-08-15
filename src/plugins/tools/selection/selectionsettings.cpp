@@ -152,6 +152,13 @@ void SelectionSettings::setLargetInterface()
     formLayout->addLayout(setGroupBlock());
     formLayout->addWidget(new TSeparator(Qt::Horizontal));
 
+    QLabel *convertLayer = new QLabel("<b>" + tr("Convert") + "</b>");
+    convertLayer->setAlignment(Qt::AlignHCenter);
+    formLayout->addWidget(convertLayer);
+
+    formLayout->addLayout(setConvertBlock());
+    formLayout->addWidget(new TSeparator(Qt::Horizontal));
+
     // Transformation Panels
 
     QLabel *position = new QLabel("<b>" + tr("Position") + "</b>");
@@ -180,7 +187,7 @@ void SelectionSettings::setLargetInterface()
 void SelectionSettings::setCompactInterface()
 {
     buttonLabels << tr("Alignment") << tr("Flips") << tr("Order") << tr("Group");
-    buttonLabels << tr("Position") << tr("Rotation") << tr("Scale");
+    buttonLabels << tr("Convert") << tr("Position") << tr("Rotation") << tr("Scale");
 
     QFont font = this->font();
     font.setPointSize(8);
@@ -192,9 +199,10 @@ void SelectionSettings::setCompactInterface()
     actionLayout[1] = setFlipsBlock();
     actionLayout[2] = setOrderBlock();
     actionLayout[3] = setGroupBlock();
-    actionLayout[4] = setPosBlock();
-    actionLayout[5] = setRotateBlock();
-    actionLayout[6] = setScaleBlock();
+    actionLayout[4] = setConvertBlock();
+    actionLayout[5] = setPosBlock();
+    actionLayout[6] = setRotateBlock();
+    actionLayout[7] = setScaleBlock();
 
     QButtonGroup *actionsGroup = new QButtonGroup(this);
 
@@ -333,6 +341,22 @@ QBoxLayout * SelectionSettings::setGroupBlock()
     groupLayout->addWidget(ungroupButton);
 
     return groupLayout;
+}
+
+QBoxLayout * SelectionSettings::setConvertBlock()
+{
+    QBoxLayout *convertLayout = new QBoxLayout(QBoxLayout::LeftToRight);
+    convertLayout->setMargin(0);
+    convertLayout->setSpacing(0);
+
+    convertToPathButton = new QPushButton(tr("Convert to Path"));
+    convertToPathButton->setToolTip(tr("Convert the selected rectangle or ellipse to an editable path"));
+    convertToPathButton->setEnabled(false);
+    connect(convertToPathButton, SIGNAL(clicked()), this, SLOT(convertToPath()));
+
+    convertLayout->addWidget(convertToPathButton);
+
+    return convertLayout;
 }
 
 QBoxLayout * SelectionSettings::setPosBlock()
@@ -509,6 +533,11 @@ void SelectionSettings::ungroupItems()
     emit callGroupAction(SelectionSettings::UngroupItems);
 }
 
+void SelectionSettings::convertToPath()
+{
+    emit convertToPathRequested();
+}
+
 void SelectionSettings::openTipPanel()
 {
     if (helpComponent->isVisible()) {
@@ -536,6 +565,12 @@ void SelectionSettings::enableFormControls(bool flag)
     }
     isVisible = flag;
     formPanel->setVisible(flag);
+}
+
+void SelectionSettings::setConvertToPathEnabled(bool flag)
+{
+    if (convertToPathButton)
+        convertToPathButton->setEnabled(flag);
 }
 
 void SelectionSettings::setPos(int x, int y)

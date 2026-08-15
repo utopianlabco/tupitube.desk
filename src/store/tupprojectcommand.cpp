@@ -37,6 +37,7 @@
 #include "tupprojectrequest.h"
 #include "tuppaintareaevent.h"
 #include "tuprequestparser.h"
+#include "tuprequestbuilder.h"
 #include "tupprojectresponse.h"
 #include "tupsvg2qt.h"
 
@@ -308,6 +309,47 @@ QString TupProjectCommand::errorCode() const
 QString TupProjectCommand::commandId() const
 {
     return response ? response->getCommandId() : QString();
+}
+
+bool TupProjectCommand::hasAuthoritativeEventPayload() const
+{
+    return !authoritativeEventPayload().isEmpty();
+}
+
+QString TupProjectCommand::authoritativeEventPayload() const
+{
+    if (!response || !executionSucceeded)
+        return QString();
+
+    if (response->getPart() != TupProjectRequest::Item
+            || response->originalAction() != TupProjectRequest::Convert) {
+        return QString();
+    }
+
+    TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+    if (!itemResponse->hasConversionSnapshots())
+        return QString();
+
+    const QString targetSnapshot = itemResponse->conversionTargetSnapshot();
+    if (targetSnapshot.isEmpty())
+        return QString();
+
+    const TupProjectRequest request = TupRequestBuilder::createItemRequest(
+        itemResponse->getSceneIndex(),
+        itemResponse->getLayerIndex(),
+        itemResponse->getFrameIndex(),
+        itemResponse->getItemIndex(),
+        itemResponse->position(),
+        itemResponse->spaceMode(),
+        itemResponse->getItemType(),
+        TupProjectRequest::Convert,
+        QStringLiteral("path"),
+        targetSnapshot.toUtf8(),
+        response->getCommandId(),
+        QString(),
+        itemResponse->getObjectId());
+
+    return request.getXml();
 }
 
 QString TupProjectCommand::eventType() const

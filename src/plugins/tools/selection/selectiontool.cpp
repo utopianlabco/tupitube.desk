@@ -40,6 +40,7 @@
 #include "tuplayer.h"
 #include "tupsvgitem.h"
 #include "tuptextitem.h"
+#include "tuprectitem.h"
 #include "tupsvg2qt.h"
 #include "tupitemgroup.h"
 #include "tupgraphicobject.h"
@@ -259,12 +260,14 @@ void SelectionTool::release(const TupInputDeviceInformation *input, TupBrushMana
         updateItemPosition();
         updateItemRotation();
         updateItemScale();
+        updateConvertToPathState();
     } else {
         #ifdef TUP_DEBUG
             qDebug() << "[SelectionTool::release()] - No items selected!";
         #endif
 
         settingsPanel->enableFormControls(false);
+        settingsPanel->setConvertToPathEnabled(false);
         if (targetIsIncluded)
             targetIsIncluded = false;
 
@@ -375,6 +378,7 @@ QWidget *SelectionTool::configurator()
         connect(settingsPanel, SIGNAL(callFlip(SelectionSettings::Flip)), this, SLOT(applyFlip(SelectionSettings::Flip)));
         connect(settingsPanel, SIGNAL(callOrderAction(SelectionSettings::Order)), this, SLOT(applyOrderAction(SelectionSettings::Order)));
         connect(settingsPanel, SIGNAL(callGroupAction(SelectionSettings::Group)), this, SLOT(applyGroupAction(SelectionSettings::Group)));
+        connect(settingsPanel, SIGNAL(convertToPathRequested()), this, SLOT(convertSelectionToPath()));
         connect(settingsPanel, SIGNAL(positionUpdated(int, int)), this, SLOT(setItemPosition(int, int)));
         connect(settingsPanel, SIGNAL(rotationUpdated(int)), this, SLOT(setItemRotation(int)));
         connect(settingsPanel, SIGNAL(scaleUpdated(double, double)), this, SLOT(setItemScale(double, double)));
@@ -499,6 +503,17 @@ void SelectionTool::itemResponse(const TupItemResponse *response)
 
             nodeManagers.clear();
             selectedObjects.clear();
+        }
+        break;
+        case TupProjectRequest::Convert:
+        {
+            #ifdef TUP_DEBUG
+                qDebug() << "[SelectionTool::itemResponse()] - TupProjectRequest::Convert";
+            #endif
+
+            clearSelection();
+            settingsPanel->enableFormControls(false);
+            settingsPanel->setConvertToPathEnabled(false);
         }
         break;
         case TupProjectRequest::Pen:
@@ -883,6 +898,69 @@ void SelectionTool::applyGroupAction(SelectionSettings::Group action)
             }
         }
     }
+}
+
+void SelectionTool::updateConvertToPathState()
+{
+    bool enabled = false;
+    const QList<QGraphicsItem *> selection = scene ? scene->selectedItems() : QList<QGraphicsItem *>();
+
+    if (selection.count() == 1) {
+        QGraphicsItem *item = selection.first();
+        const bool isNative = !qgraphicsitem_cast<TupSvgItem *>(item);
+        const bool isSupported = dynamic_cast<TupRectItem *>(item)
+                                 || dynamic_cast<TupEllipseItem *>(item);
+        enabled = isNative && isSupported && !scene->objectId(item).trimmed().isEmpty();
+    }
+
+    settingsPanel->setConvertToPathEnabled(enabled);
+}
+
+void SelectionTool::convertSelectionToPath()
+{
+    if (!scene)
+        return;
+
+    const QList<QGraphicsItem *> selection = scene->selectedItems();
+    if (selection.count() != 1)
+        return;
+
+    QGraphicsItem *item = selection.first();
+    if (qgraphicsitem_cast<TupSvgItem *>(item))
+        return;
+
+    if (!dynamic_cast<TupRectItem *>(item)
+        && !dynamic_cast<TupEllipseItem *>(item))
+        return;
+
+    TupFrame *targetFrame = getCurrentFrame();
+    if (!targetFrame)
+        return;
+
+    const int itemIndex = targetFrame->indexOf(item);
+    const QString objectId = scene->objectId(item).trimmed();
+    if (itemIndex < 0 || objectId.isEmpty())
+        return;
+
+    TupProjectRequest event = TupRequestBuilder::createItemRequest(
+        scene->currentSceneIndex(),
+        currentLayer,
+        currentFrame,
+        itemIndex,
+        QPointF(),
+        scene->getSpaceContext(),
+        TupLibraryObject::Item,
+        TupProjectRequest::Convert,
+        QStringLiteral("path"),
+        QByteArray(),
+        QString(),
+        QString(),
+        objectId);
+
+    clearSelection();
+    settingsPanel->enableFormControls(false);
+    settingsPanel->setConvertToPathEnabled(false);
+    emit requested(&event);
 }
 
 QCursor SelectionTool::cursor()
@@ -1420,6 +1498,7 @@ void SelectionTool::selectAll()
                 addTargetForMultipleSelection();
             }
             settingsPanel->enableFormControls(true);
+            updateConvertToPathState();
         }
     }
 }
@@ -1440,6 +1519,8 @@ void SelectionTool::clearSelection()
         }
         selectedObjects.clear();
         activeSelection = false;
+        if (settingsPanel)
+            settingsPanel->setConvertToPathEnabled(false);
         scene->drawCurrentPhotogram();
     }
 }

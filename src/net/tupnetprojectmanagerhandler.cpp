@@ -792,7 +792,9 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                     if (snapshotReconciliationCommands.contains(parser.commandId())
                             && snapshotRecoveryRevision >= 0
                             && revision > snapshotRecoveryRevision) {
-                        if (!reapplyPendingCommandAfterSnapshot(parser.commandId())) {
+                        if (!reapplyPendingCommandAfterSnapshot(
+                                parser.commandId(),
+                                parser.authoritativePayload())) {
                             qCritical()
                                 << "[TupNetProjectManagerHandler::handlePackage()]"
                                 << "Unable to restore a pending command after snapshot recovery."
@@ -1474,21 +1476,26 @@ void TupNetProjectManagerHandler::connectionRestored()
     socket->send(connectPackage);
 }
 
-bool TupNetProjectManagerHandler::reapplyPendingCommandAfterSnapshot(const QString &commandId)
+bool TupNetProjectManagerHandler::reapplyPendingCommandAfterSnapshot(
+    const QString &commandId, const QString &authoritativePayload)
 {
     if (!commandTracker || commandId.trimmed().isEmpty())
         return false;
 
-    const QString xml = commandTracker->commandXml(commandId);
-    if (xml.isEmpty())
+    const QString replayXml = authoritativePayload.trimmed().isEmpty()
+        ? commandTracker->commandXml(commandId)
+        : authoritativePayload.trimmed();
+
+    if (replayXml.isEmpty())
         return false;
 
     TupRequestParser parser;
-    if (!parser.parse(xml)) {
+    if (!parser.parse(replayXml)) {
         qWarning()
             << "[TupNetProjectManagerHandler::reapplyPendingCommandAfterSnapshot()]"
-            << "Unable to parse tracked command XML."
-            << "Command:" << commandId;
+            << "Unable to parse replay command XML."
+            << "Command:" << commandId
+            << "Authoritative:" << !authoritativePayload.trimmed().isEmpty();
         return false;
     }
 
@@ -1496,23 +1503,24 @@ bool TupNetProjectManagerHandler::reapplyPendingCommandAfterSnapshot(const QStri
     if (!response || response->getCommandId() != commandId) {
         qWarning()
             << "[TupNetProjectManagerHandler::reapplyPendingCommandAfterSnapshot()]"
-            << "Tracked command response is invalid."
+            << "Replay command response is invalid."
             << "Command:" << commandId;
         return false;
     }
 
     // Preserve the authoritative command ID but do not create a second undo-stack
-    // entry. The original optimistic command already represented the user's action;
-    // this replay only restores local state that the recovery snapshot replaced.
+    // entry. Prefer the server-produced authoritative result when one is present;
+    // otherwise retain the existing replay behavior for ordinary commands.
     TupProjectRequest request = TupRequestBuilder::fromResponse(response, true);
-    request.setExternal(false);
+    request.setExternal(!authoritativePayload.trimmed().isEmpty());
 
 #ifdef TUP_DEBUG
     qWarning()
         << "[TupNetProjectManagerHandler::reapplyPendingCommandAfterSnapshot()]"
         << "Restoring pending local mutation after snapshot."
         << "Command:" << commandId
-        << "Snapshot revision:" << snapshotRecoveryRevision;
+        << "Snapshot revision:" << snapshotRecoveryRevision
+        << "Authoritative:" << !authoritativePayload.trimmed().isEmpty();
 #endif
 
     emitRequest(&request, false);

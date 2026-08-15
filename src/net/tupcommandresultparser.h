@@ -35,6 +35,8 @@ public:
     QString message() const;
     qint64 committedRevision() const;
     int eventIndex() const;
+    QString eventType() const;
+    QString authoritativePayload() const;
     QString errorString() const;
 
 private:
@@ -49,6 +51,8 @@ private:
     QString m_message;
     qint64 m_committedRevision;
     int m_eventIndex;
+    QString m_eventType;
+    QString m_authoritativePayload;
     QString m_errorString;
 };
 

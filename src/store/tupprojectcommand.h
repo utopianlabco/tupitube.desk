@@ -61,6 +61,8 @@ class TUPITUBE_EXPORT TupProjectCommand : public QUndoCommand
         QString errorCode() const;
         QString commandId() const;
         QString eventType() const;
+        bool hasAuthoritativeEventPayload() const;
+        QString authoritativeEventPayload() const;
         
     private:
         bool executeResponse();

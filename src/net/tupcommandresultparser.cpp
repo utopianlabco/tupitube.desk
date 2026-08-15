@@ -128,11 +128,18 @@ bool TupCommandResultParser::parse(const QString &xml)
                 m_eventIndex = eventIndex;
             }
 
+            m_eventType = attributes
+                .value(QStringLiteral("event_type"))
+                .toString()
+                .trimmed();
+
             continue;
         }
 
         if (elementName == QStringLiteral("message")) {
             m_message = reader.readElementText().trimmed();
+        } else if (elementName == QStringLiteral("authoritative_payload")) {
+            m_authoritativePayload = reader.readElementText().trimmed();
         } else {
             reader.skipCurrentElement();
         }
@@ -194,6 +201,16 @@ int TupCommandResultParser::eventIndex() const
     return m_eventIndex;
 }
 
+QString TupCommandResultParser::eventType() const
+{
+    return m_eventType;
+}
+
+QString TupCommandResultParser::authoritativePayload() const
+{
+    return m_authoritativePayload;
+}
+
 QString TupCommandResultParser::errorString() const
 {
     return m_errorString;
@@ -208,6 +225,8 @@ void TupCommandResultParser::reset()
     m_message.clear();
     m_committedRevision = -1;
     m_eventIndex = -1;
+    m_eventType.clear();
+    m_authoritativePayload.clear();
     m_errorString.clear();
 }
 

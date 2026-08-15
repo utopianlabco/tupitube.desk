@@ -67,6 +67,8 @@ class TUPITUBE_EXPORT TupItemConverter
         static TupPathItem *convertToPath(QGraphicsItem *item);
         static bool convertToPath(TupGraphicObject *object, TupConversionResult *result,
                                   QString *errorCode = nullptr);
+        static QString representationSnapshot(TupGraphicObject *object,
+                                              QString *errorCode = nullptr);
         static bool applyRepresentation(TupGraphicObject *object, const QString &representationXml,
                                         QString *errorCode = nullptr);
         static TupEllipseItem *convertToEllipse(QGraphicsItem *item);

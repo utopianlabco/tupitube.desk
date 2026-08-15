@@ -672,153 +672,124 @@ bool TupCommandExecutor::ungroupItems(TupItemResponse *response)
     return false;
 }
 
-static QGraphicsItem *convert(QGraphicsItem *item, int toType)
+static TupFrame *conversionFrame(TupScene *scene, TupProject::Mode mode,
+                                 int layerIndex, int frameIndex)
 {
-    /* SQA: Debugging tracers
-    tFatal() << "TupPathItem::Type: " << TupPathItem::Type;
-    tFatal() << "TupRectItem::Type: " <<  TupRectItem::Type;
-    tFatal() << "TupEllipseItem::Type: " <<  TupEllipseItem::Type;
-    tFatal() << "TupProxyItem::Type: " <<  TupProxyItem::Type;
-    tFatal() << "TupLineItem::Type: " <<  TupLineItem::Type;
-    */
+    if (!scene)
+        return nullptr;
 
-    switch (toType) {
-            case TupPathItem::Type: // Path
-            {
-                 TupPathItem *path = TupItemConverter::convertToPath(item);
-                 return path;
-            }
-            case TupRectItem::Type: // Rect
-            {
-                 TupRectItem *rect = TupItemConverter::convertToRect(item);
-                 return rect;
-            }
-            case TupEllipseItem::Type: // Ellipse
-            {
-                 TupEllipseItem *ellipse = TupItemConverter::convertToEllipse(item);
-                 return ellipse;
-            }
-            case TupProxyItem::Type:
-            {
-                 return new TupProxyItem(item);
-            }
-            case TupLineItem::Type:
-            {
-                 return TupItemConverter::convertToLine(item);
-            }
-            default:
-            {
-                #ifdef TUP_DEBUG
-                    qWarning() << "[TupCommandExecutor::convert()] - Error: Unknown item type -> " << toType;
-                #endif
-            }
+    if (mode == TupProject::FRAMES_MODE) {
+        TupLayer *layer = scene->layerAt(layerIndex);
+        return layer ? layer->frameAt(frameIndex) : nullptr;
     }
+
+    TupBackground *bg = scene->sceneBackground();
+    if (!bg)
+        return nullptr;
+
+    if (mode == TupProject::VECTOR_STATIC_BG_MODE)
+        return bg->vectorStaticFrame();
+    if (mode == TupProject::VECTOR_FG_MODE)
+        return bg->vectorForegroundFrame();
+    if (mode == TupProject::VECTOR_DYNAMIC_BG_MODE)
+        return bg->vectorDynamicFrame();
 
     return nullptr;
 }
 
 bool TupCommandExecutor::convertItem(TupItemResponse *response)
-{    
+{
     #ifdef TUP_DEBUG
         qDebug() << "[TupCommandExecutor::convertItem()]";
     #endif
 
-    int sceneIndex = response->getSceneIndex();
-    int layerIndex = response->getLayerIndex();
-    int frameIndex = response->getFrameIndex();
-    int itemIndex = response->getItemIndex();
-    TupProject::Mode mode = response->spaceMode();
-    int toType = response->getArg().toInt();
-    
-    TupScene *scene = project->sceneAt(sceneIndex);
+    if (!response)
+        return false;
 
-    if (scene) {
-        if (mode == TupProject::FRAMES_MODE) {
-            TupLayer *layer = scene->layerAt(layerIndex);
-            if (layer) {
-                TupFrame *frame = layer->frameAt(frameIndex);
-                if (frame) {
-                    QGraphicsItem *item = frame->item(itemIndex);
-                    if (item) {
-                        // tDebug("items") << item->type();
-                    
-                        if (toType == item->type()) 
-                            return false;
-                    
-                        QGraphicsItem *itemConverted = convert(item, toType);
-                        // tFatal() << "TupCommandExecutor::convertItem() - item new type: " << toType;
-                    
-                        if (itemConverted) {
-                            // scene->removeItem(item); // FIXME?
-                            // scene->addItem(itemConverted); // FIXME?
-                            itemConverted->setZValue(item->zValue());
-                            frame->replaceItem(itemIndex, itemConverted);
-                        
-                            response->setArg(QString::number(item->type()));
-                            emit responsed(response);
-
-                            return true;
-                        }
-                    }
-                }
-            }
-        } else {
-            TupBackground *bg = scene->sceneBackground();
-            if (bg) {
-                TupFrame *frame = nullptr;
-                if (mode == TupProject::VECTOR_STATIC_BG_MODE) {
-                    frame = bg->vectorStaticFrame();
-                } else if (mode == TupProject::VECTOR_FG_MODE) {
-                    frame = bg->vectorForegroundFrame();
-                } else if (mode == TupProject::VECTOR_DYNAMIC_BG_MODE) {
-                    frame = bg->vectorDynamicFrame();
-                } else {
-                    #ifdef TUP_DEBUG
-                        qDebug() << "[TupCommandExecutor::convertItem()] - Error: Invalid mode!";
-                    #endif
-                    return false;
-                }
-                if (frame) {
-                    QGraphicsItem *item = frame->item(itemIndex);
-                    if (item) {
-                        // tDebug("items") << item->type();
-
-                        if (toType == item->type())
-                            return false;
-
-                        QGraphicsItem * itemConverted = convert(item, toType);
-
-                        if (itemConverted) {
-                            itemConverted->setZValue(item->zValue());
-                            frame->replaceItem(itemIndex, itemConverted);
-
-                            response->setArg(QString::number(item->type()));
-                            emit responsed(response);
-
-                            return true;
-                        }
-                    } else {
-                        #ifdef TUP_DEBUG
-                            qDebug() << "[TupCommandExecutor::convertItem()] - Error: Invalid item index!";
-                        #endif
-                        return false;
-                    }
-                } else {                    
-                    #ifdef TUP_DEBUG
-                        qDebug() << "[TupCommandExecutor::convertItem()] - Error: Invalid background frame!";
-                    #endif
-                    return false;
-                }
-            } else {
-                #ifdef TUP_DEBUG
-                    qDebug() << "[TupCommandExecutor::convertItem()] - Error: Invalid background data structure!";
-                #endif
-                return false;
-            }
-        }
+    const QString objectId = response->getObjectId().trimmed();
+    if (objectId.isEmpty()) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupCommandExecutor::convertItem()] - Error: object_id is required";
+        #endif
+        return false;
     }
 
-    return false;
+    if (response->getItemType() == TupLibraryObject::Svg) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupCommandExecutor::convertItem()] - Error: SVG conversion is not supported";
+        #endif
+        return false;
+    }
+
+    const QString target = response->getArg().toString().trimmed().toLower();
+    if (target != QStringLiteral("path")) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupCommandExecutor::convertItem()] - Error: Unsupported conversion target ->" << target;
+        #endif
+        return false;
+    }
+
+    const int sceneIndex = response->getSceneIndex();
+    const int layerIndex = response->getLayerIndex();
+    const int frameIndex = response->getFrameIndex();
+    const TupProject::Mode mode = response->spaceMode();
+
+    if (mode == TupProject::FRAMES_MODE && !validateIndices(sceneIndex, layerIndex, frameIndex))
+        return false;
+    if (mode != TupProject::FRAMES_MODE && !validateIndices(sceneIndex))
+        return false;
+
+    TupScene *scene = project->sceneAt(sceneIndex);
+    TupFrame *frame = conversionFrame(scene, mode, layerIndex, frameIndex);
+    if (!frame) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupCommandExecutor::convertItem()] - Error: Invalid target frame";
+        #endif
+        return false;
+    }
+
+    const int itemIndex = frame->graphicIndexById(objectId);
+    if (itemIndex < 0) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupCommandExecutor::convertItem()] - Error: object_id was not found ->" << objectId;
+        #endif
+        return false;
+    }
+
+    response->setItemIndex(itemIndex);
+    TupGraphicObject *object = frame->graphicAt(itemIndex);
+    if (!object)
+        return false;
+
+    QString errorCode;
+    bool success = false;
+
+    if (response->getMode() == TupProjectResponse::Undo) {
+        if (!response->hasConversionSnapshots())
+            return false;
+        success = TupItemConverter::applyRepresentation(
+            object, response->conversionSourceSnapshot(), &errorCode);
+    } else if (response->getMode() == TupProjectResponse::Redo) {
+        if (!response->hasConversionSnapshots())
+            return false;
+        success = TupItemConverter::applyRepresentation(
+            object, response->conversionTargetSnapshot(), &errorCode);
+    } else {
+        TupConversionResult result;
+        success = TupItemConverter::convertToPath(object, &result, &errorCode);
+        if (success)
+            response->setConversionSnapshots(result.sourceRepresentation, result.targetRepresentation);
+    }
+
+    if (!success) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupCommandExecutor::convertItem()] - Conversion failed ->" << errorCode;
+        #endif
+        return false;
+    }
+
+    emit responsed(response);
+    return true;
 }
 
 bool TupCommandExecutor::transformItem(TupItemResponse *response)

@@ -45,6 +45,14 @@ class TupPathItem;
 class TupEllipseItem;
 class TupRectItem;
 class TupLineItem;
+class TupGraphicObject;
+
+struct TUPITUBE_EXPORT TupConversionResult
+{
+    QString objectId;
+    QString sourceRepresentation;
+    QString targetRepresentation;
+};
 
 class TUPITUBE_EXPORT TupItemConverter
 {
@@ -57,6 +65,10 @@ class TUPITUBE_EXPORT TupItemConverter
         static void copyProperties(QGraphicsItem *src, QGraphicsItem *dest);
         
         static TupPathItem *convertToPath(QGraphicsItem *item);
+        static bool convertToPath(TupGraphicObject *object, TupConversionResult *result,
+                                  QString *errorCode = nullptr);
+        static bool applyRepresentation(TupGraphicObject *object, const QString &representationXml,
+                                        QString *errorCode = nullptr);
         static TupEllipseItem *convertToEllipse(QGraphicsItem *item);
         static TupRectItem *convertToRect(QGraphicsItem *item);
         static TupLineItem *convertToLine(QGraphicsItem *item);

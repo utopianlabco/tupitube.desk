@@ -51,6 +51,8 @@ HEADERS += tuplayer.h \
            tupserializer.h \
            tuplineitem.h \
            tupitemconverter.h \
+           tuprepresentationsnapshot.h \
+           tuprepresentationsnapshotservice.h \
            tupitemgroup.h \
            tupprojectmanagerparams.h \
            tupabstractprojectmanagerhandler.h \
@@ -98,6 +100,8 @@ SOURCES += tuplayer.cpp \
            tupserializer.cpp \
            tuplineitem.cpp \
            tupitemconverter.cpp \
+           tuprepresentationsnapshot.cpp \
+           tuprepresentationsnapshotservice.cpp \
            tupitemgroup.cpp \
            tupprojectmanagerparams.cpp \
            tupabstractprojectmanagerhandler.cpp \

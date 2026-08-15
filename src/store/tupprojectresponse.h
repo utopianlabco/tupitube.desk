@@ -154,6 +154,12 @@ class TUPITUBE_EXPORT TupItemResponse : public TupFrameResponse
         bool frameIsEmpty();
         void setFrameState(bool state);
 
+        void setConversionSnapshots(const QString &sourceRepresentation,
+                                    const QString &targetRepresentation);
+        bool hasConversionSnapshots() const;
+        QString conversionSourceSnapshot() const;
+        QString conversionTargetSnapshot() const;
+
     private:
         int m_itemIndex;
         QString m_objectId;
@@ -162,6 +168,8 @@ class TUPITUBE_EXPORT TupItemResponse : public TupFrameResponse
         double m_y;
         TupProject::Mode m_mode;
         bool empty;
+        QString m_conversionSourceSnapshot;
+        QString m_conversionTargetSnapshot;
 };
 
 class TUPITUBE_EXPORT TupLibraryResponse : public TupFrameResponse

@@ -324,6 +324,28 @@ void TupItemResponse::setFrameState(bool state)
     empty = state;
 }
 
+void TupItemResponse::setConversionSnapshots(const QString &sourceRepresentation,
+                                             const QString &targetRepresentation)
+{
+    m_conversionSourceSnapshot = sourceRepresentation;
+    m_conversionTargetSnapshot = targetRepresentation;
+}
+
+bool TupItemResponse::hasConversionSnapshots() const
+{
+    return !m_conversionSourceSnapshot.isEmpty() && !m_conversionTargetSnapshot.isEmpty();
+}
+
+QString TupItemResponse::conversionSourceSnapshot() const
+{
+    return m_conversionSourceSnapshot;
+}
+
+QString TupItemResponse::conversionTargetSnapshot() const
+{
+    return m_conversionTargetSnapshot;
+}
+
 TupLibraryResponse::TupLibraryResponse(int part, int action) : TupFrameResponse(part, action)
 {
 }

@@ -114,16 +114,23 @@ bool NodesTool::setPathNodes(QPointF coord, QList<QGraphicsItem *> currentSelect
     QString pathStr = "";
     TupPathItem *pathItem = nullptr;
     TupFrame *frame = getCurrentFrame();
-    int itemIndex;
+    int itemIndex = -1;
 
     foreach(QGraphicsItem *item, currentSelection) {
-        itemIndex = frame->indexOf(item);
+        const bool controlNode = qgraphicsitem_cast<TControlNode *>(item);
+        if (!controlNode) {
+            itemIndex = frame->indexOf(item);
 
-        if (itemIndex < 0) {
-            #ifdef TUP_DEBUG
-                qDebug() << "[NodesTool::setPathNodes()] - Fatal Error: Invalid item index! ->" << itemIndex;
-            #endif
-            return false;
+            if (itemIndex < 0) {
+                #ifdef TUP_DEBUG
+                    qDebug() << "[NodesTool::setPathNodes()] - Fatal Error: Invalid item index! ->" << itemIndex;
+                #endif
+                return false;
+            }
+        } else {
+            // Control nodes belong to TNodeGroup, not to TupFrame. The existing
+            // node-action branch below intentionally uses itemIndex == -1.
+            itemIndex = -1;
         }
 
         // SVG items are not allowed
@@ -160,7 +167,7 @@ bool NodesTool::setPathNodes(QPointF coord, QList<QGraphicsItem *> currentSelect
         }
 
         // Check if the selected item is either a node or a path
-        if (!qgraphicsitem_cast<TControlNode*>(item)) {
+        if (!controlNode) {
             if (!qgraphicsitem_cast<TupPathItem *>(item)) {
                 TOsd::self()->display(TOsd::Error, tr("Only pencil/ink lines can be edited!"));
 

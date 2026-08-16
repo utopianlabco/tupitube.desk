@@ -102,7 +102,8 @@ class TUPITUBE_EXPORT TupProjectManager : public QObject
         void emitResponse(TupProjectResponse *response);
         void undo();
         void redo();
-        void correctRejectedConvertRestore(bool undoWasRejected);
+        void advanceAuthoritativeConvertRestore(const QString &commandId, bool undoRestore);
+        void finishAuthoritativeConvertRestore(const QString &commandId);
 
     signals:
         void responsed(TupProjectResponse *reponse);
@@ -117,6 +118,7 @@ class TUPITUBE_EXPORT TupProjectManager : public QObject
         int frameIndex;
         bool isNetworked;
         bool macroInProgress;
+        QString pendingConvertRestoreCommandId;
 
         TupProject *project;
         QUndoStack *undoStack;

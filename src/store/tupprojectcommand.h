@@ -60,6 +60,8 @@ class TUPITUBE_EXPORT TupProjectCommand : public QUndoCommand
         bool succeeded() const;
         QString errorCode() const;
         QString commandId() const;
+        bool isItemConvert() const;
+        void skipNextStackExecution();
         QString eventType() const;
         bool hasAuthoritativeEventPayload() const;
         QString authoritativeEventPayload() const;
@@ -100,6 +102,7 @@ class TUPITUBE_EXPORT TupProjectCommand : public QUndoCommand
         TupProjectResponse *response;
         bool executed;
         bool executionSucceeded;
+        bool skipStackExecution;
         QString executionErrorCode;
 };
 

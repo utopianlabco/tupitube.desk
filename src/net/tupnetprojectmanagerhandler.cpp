@@ -74,6 +74,29 @@ namespace {
     }
 }
 
+QString convertRestoreOriginalCommandIdFromRequestXml(const QString &xml)
+{
+    TupRequestParser parser;
+    if (!parser.parse(xml))
+        return QString();
+
+    TupProjectResponse *response = parser.getResponse();
+    if (!response || response->getPart() != TupProjectRequest::Item
+            || response->originalAction() != TupProjectRequest::Convert) {
+        return QString();
+    }
+
+    const QString argument = response->getArg().toString();
+    const QString sourcePrefix = QStringLiteral("restore_source:");
+    const QString targetPrefix = QStringLiteral("restore_target:");
+    if (argument.startsWith(sourcePrefix))
+        return argument.mid(sourcePrefix.size()).trimmed();
+    if (argument.startsWith(targetPrefix))
+        return argument.mid(targetPrefix.size()).trimmed();
+
+    return QString();
+}
+
 TupNetProjectManagerHandler::TupNetProjectManagerHandler(QObject *parent) : TupAbstractProjectHandler(parent)
 {    
     #ifdef TUP_DEBUG
@@ -105,7 +128,6 @@ TupNetProjectManagerHandler::TupNetProjectManagerHandler(QObject *parent) : TupA
     params = nullptr;
     ownPackage = false;
     doAction = true;
-    suppressNextConvertRestore = false;
     projectIsOpen = false;
     dialogIsOpen = false;
     intentionalClose = false;
@@ -250,6 +272,46 @@ void TupNetProjectManagerHandler::handleProjectRequest(const TupProjectRequest *
     socket->send(request->getXml());
 }
 
+void TupNetProjectManagerHandler::requestAuthoritativeConvertRestore(
+    const QString &commandId, bool undoRestore)
+{
+    const QString normalizedCommandId = commandId.trimmed();
+    if (normalizedCommandId.isEmpty()
+            || !convertRestoreContexts.contains(normalizedCommandId)
+            || !socket
+            || socket->state() != QAbstractSocket::ConnectedState) {
+        emit convertRestoreRequestFinished(normalizedCommandId);
+        return;
+    }
+
+    const ConvertRestoreContext context = convertRestoreContexts.value(normalizedCommandId);
+    const QString restoreAction = undoRestore
+        ? QStringLiteral("restore_source:")
+        : QStringLiteral("restore_target:");
+
+    TupProjectRequest request = TupRequestBuilder::createItemRequest(
+        context.sceneIndex,
+        context.layerIndex,
+        context.frameIndex,
+        context.itemIndex,
+        context.position,
+        static_cast<TupProject::Mode>(context.spaceMode),
+        static_cast<TupLibraryObject::ObjectType>(context.itemType),
+        TupProjectRequest::Convert,
+        restoreAction + normalizedCommandId,
+        QByteArray(),
+        QString(),
+        QString(),
+        context.objectId);
+
+    if (!request.isValid() || !commandTracker || !commandTracker->track(request)) {
+        emit convertRestoreRequestFinished(normalizedCommandId);
+        return;
+    }
+
+    socket->send(request.getXml());
+}
+
 bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
 {
     if (collaborationState != CollaborationState::Connected
@@ -277,69 +339,35 @@ bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
             }
         }
 
+        if (response->getPart() == TupProjectRequest::Item
+                && response->originalAction() == TupProjectRequest::Convert) {
+            TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+            const QString commandId = itemResponse->getCommandId().trimmed();
+            if (!commandId.isEmpty() && !itemResponse->getObjectId().trimmed().isEmpty()) {
+                ConvertRestoreContext context;
+                context.sceneIndex = itemResponse->getSceneIndex();
+                context.layerIndex = itemResponse->getLayerIndex();
+                context.frameIndex = itemResponse->getFrameIndex();
+                context.itemIndex = itemResponse->getItemIndex();
+                context.position = itemResponse->position();
+                context.spaceMode = static_cast<int>(itemResponse->spaceMode());
+                context.itemType = static_cast<int>(itemResponse->getItemType());
+                context.objectId = itemResponse->getObjectId().trimmed();
+                convertRestoreContexts.insert(commandId, context);
+            }
+        }
+
         doAction = true;
         return true;
     } 
 
-    TupProjectRequest request;
-    bool authoritativeConvertRestore = false;
+    TupProjectRequest request = TupRequestBuilder::fromResponse(response, false);
     doAction = false;
-
-    if ((response->getMode() == TupProjectResponse::Undo
-            || response->getMode() == TupProjectResponse::Redo)
-            && response->getPart() == TupProjectRequest::Item
-            && response->originalAction() == TupProjectRequest::Convert) {
-        if (suppressNextConvertRestore) {
-            suppressNextConvertRestore = false;
-            doAction = false;
-#ifdef TUP_DEBUG
-            qWarning()
-                << "[TupNetProjectManagerHandler::commandExecuted()]"
-                << "Suppressing network restore while correcting a rejected Convert undo/redo.";
-#endif
-            return true;
-        }
-
-        TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
-        const QString restoreAction = response->getMode() == TupProjectResponse::Undo
-            ? QStringLiteral("restore_source:")
-            : QStringLiteral("restore_target:");
-
-        request = TupRequestBuilder::createItemRequest(
-            itemResponse->getSceneIndex(),
-            itemResponse->getLayerIndex(),
-            itemResponse->getFrameIndex(),
-            itemResponse->getItemIndex(),
-            itemResponse->position(),
-            itemResponse->spaceMode(),
-            itemResponse->getItemType(),
-            TupProjectRequest::Convert,
-            restoreAction + response->getCommandId(),
-            QByteArray(),
-            QString(),
-            QString(),
-            itemResponse->getObjectId());
-        authoritativeConvertRestore = true;
-    } else {
-        request = TupRequestBuilder::fromResponse(response, false);
-    }
 
     if (response->getMode() != TupProjectResponse::Undo && response->getMode() != TupProjectResponse::Redo) {
         handleProjectRequest(&request);
-    } else { 
-        if (socket->state() == QAbstractSocket::ConnectedState && request.isValid()) {
-            if (authoritativeConvertRestore && commandTracker) {
-                if (!commandTracker->track(request)) {
-                    qWarning()
-                        << "[TupNetProjectManagerHandler::commandExecuted()]"
-                        << "Unable to track authoritative Convert restore:"
-                        << request.getCommandId();
-                    return false;
-                }
-            }
-
-            socket->send(request.getXml());
-        }
+    } else if (socket->state() == QAbstractSocket::ConnectedState && request.isValid()) {
+        socket->send(request.getXml());
     }
 
     return true;
@@ -865,15 +893,24 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
         }
 
         QString status;
-        const int pendingRestoreMode = commandTracker
-            ? convertRestoreModeFromRequestXml(
-                commandTracker->commandXml(parser.commandId()))
-            : -1;
-        const bool isPendingConvertRestore = pendingRestoreMode >= 0;
+        const QString pendingCommandXml = commandTracker
+            ? commandTracker->commandXml(parser.commandId())
+            : QString();
+        const int pendingRestoreMode = convertRestoreModeFromRequestXml(pendingCommandXml);
+        const QString pendingRestoreOriginalCommandId =
+            convertRestoreOriginalCommandIdFromRequestXml(pendingCommandXml);
+        const bool isPendingConvertRestore = pendingRestoreMode >= 0
+            && !pendingRestoreOriginalCommandId.isEmpty();
 
         switch (parser.status()) {
             case TupCommandResultParser::Committed:
                 status = QStringLiteral("committed");
+
+                if (isPendingConvertRestore) {
+                    emit convertRestoreStackAdvanceRequested(
+                        pendingRestoreOriginalCommandId,
+                        pendingRestoreMode == static_cast<int>(TupProjectResponse::Undo));
+                }
 
                 if (!parser.authoritativePayload().trimmed().isEmpty()) {
                     if (parser.eventType() == QStringLiteral("item.created")) {
@@ -972,10 +1009,6 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                     << parser.message();
 
                 if (isPendingConvertRestore) {
-                    suppressNextConvertRestore = true;
-                    emit convertRestoreStackCorrectionRequested(
-                        pendingRestoreMode == static_cast<int>(TupProjectResponse::Undo));
-
                     if (!parser.authoritativePayload().trimmed().isEmpty()
                             && !applyAuthoritativeConvertResult(
                                 parser.commandId(),
@@ -1000,10 +1033,6 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                     << parser.message();
 
                 if (isPendingConvertRestore) {
-                    suppressNextConvertRestore = true;
-                    emit convertRestoreStackCorrectionRequested(
-                        pendingRestoreMode == static_cast<int>(TupProjectResponse::Undo));
-
                     if (!parser.authoritativePayload().trimmed().isEmpty()
                             && !applyAuthoritativeConvertResult(
                                 parser.commandId(),
@@ -1026,6 +1055,9 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
 
         if (commandTracker)
             commandTracker->complete(parser.commandId());
+
+        if (isPendingConvertRestore)
+            emit convertRestoreRequestFinished(pendingRestoreOriginalCommandId);
 
         provisionalCreatedObjectIds.remove(parser.commandId());
         updateAuthoritativeModifiedState();
@@ -1915,6 +1947,7 @@ void TupNetProjectManagerHandler::closeConnection()
         recoveryWatchdogTimer->stop();
     if (commandTracker)
         commandTracker->clear();
+    convertRestoreContexts.clear();
     snapshotRecoveryRevision = -1;
     snapshotReconciliationCommands.clear();
 

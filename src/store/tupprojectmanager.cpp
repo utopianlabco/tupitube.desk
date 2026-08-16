@@ -60,6 +60,7 @@ TupProjectManager::TupProjectManager(QObject *parent) : QObject(parent)
     modified = false;
     handler = nullptr;
     macroInProgress = false;
+    pendingConvertRestoreCommandId.clear();
 
     project = new TupProject(this);
     undoStack = new QUndoStack(this);
@@ -129,8 +130,10 @@ void TupProjectManager::setHandler(TupAbstractProjectHandler *pHandler, bool net
         // system at runtime, so this layer does not need the network header.
         connect(handler, SIGNAL(authoritativeModifiedStateChanged(bool)),
                 this, SLOT(setModificationStatus(bool)));
-        connect(handler, SIGNAL(convertRestoreStackCorrectionRequested(bool)),
-                this, SLOT(correctRejectedConvertRestore(bool)));
+        connect(handler, SIGNAL(convertRestoreStackAdvanceRequested(const QString &, bool)),
+                this, SLOT(advanceAuthoritativeConvertRestore(const QString &, bool)));
+        connect(handler, SIGNAL(convertRestoreRequestFinished(const QString &)),
+                this, SLOT(finishAuthoritativeConvertRestore(const QString &)));
     }
 
     isNetworked = networked;
@@ -432,12 +435,30 @@ void TupProjectManager::undo()
 {
     if (undoStack->count() > 0) {
         if (undoStack->canUndo()) {
-            /*
-            qDebug() << "";
-            qDebug() << "[TupProjectManager::undo()] - count: " << undoStack->count();
-            qDebug() << "[TupProjectManager::undo()] - undo text: " << undoStack->undoText();
-            qDebug() << "";
-            */
+            if (isNetworked && pendingConvertRestoreCommandId.isEmpty()) {
+                const int commandIndex = undoStack->index() - 1;
+                const TupProjectCommand *command = commandIndex >= 0
+                    ? dynamic_cast<const TupProjectCommand *>(undoStack->command(commandIndex))
+                    : nullptr;
+                if (command && command->isItemConvert()) {
+                    const QString commandId = command->commandId().trimmed();
+                    if (!commandId.isEmpty()) {
+                        pendingConvertRestoreCommandId = commandId;
+                        if (QMetaObject::invokeMethod(
+                                handler,
+                                "requestAuthoritativeConvertRestore",
+                                Qt::DirectConnection,
+                                Q_ARG(QString, commandId),
+                                Q_ARG(bool, true))) {
+                            return;
+                        }
+                        pendingConvertRestoreCommandId.clear();
+                    }
+                }
+            } else if (isNetworked && !pendingConvertRestoreCommandId.isEmpty()) {
+                return;
+            }
+
             undoStack->undo();
         } else {
             #ifdef TUP_DEBUG
@@ -451,12 +472,30 @@ void TupProjectManager::redo()
 {
     if (undoStack->count() > 0) {
        if (undoStack->canRedo()) {
-           /*
-           qDebug() << "";
-           qDebug() << "[TupProjectManager::redo()] - count: " << undoStack->count();
-           qDebug() << "[TupProjectManager::redo()] - redo text: " << undoStack->redoText();
-           qDebug() << "";
-           */
+           if (isNetworked && pendingConvertRestoreCommandId.isEmpty()) {
+               const int commandIndex = undoStack->index();
+               const TupProjectCommand *command = commandIndex < undoStack->count()
+                   ? dynamic_cast<const TupProjectCommand *>(undoStack->command(commandIndex))
+                   : nullptr;
+               if (command && command->isItemConvert()) {
+                   const QString commandId = command->commandId().trimmed();
+                   if (!commandId.isEmpty()) {
+                       pendingConvertRestoreCommandId = commandId;
+                       if (QMetaObject::invokeMethod(
+                               handler,
+                               "requestAuthoritativeConvertRestore",
+                               Qt::DirectConnection,
+                               Q_ARG(QString, commandId),
+                               Q_ARG(bool, false))) {
+                           return;
+                       }
+                       pendingConvertRestoreCommandId.clear();
+                   }
+               }
+           } else if (isNetworked && !pendingConvertRestoreCommandId.isEmpty()) {
+               return;
+           }
+
            undoStack->redo();
        } else {
            #ifdef TUP_DEBUG
@@ -466,23 +505,36 @@ void TupProjectManager::redo()
    }
 }
 
-
-void TupProjectManager::correctRejectedConvertRestore(bool undoWasRejected)
+void TupProjectManager::advanceAuthoritativeConvertRestore(
+    const QString &commandId, bool undoRestore)
 {
-    if (!undoStack)
+    if (!undoStack || pendingConvertRestoreCommandId != commandId.trimmed())
         return;
 
-    if (undoWasRejected) {
-        if (undoStack->canRedo())
-            undoStack->redo();
-    } else {
-        if (undoStack->canUndo())
-            undoStack->undo();
-    }
+    const int commandIndex = undoRestore ? undoStack->index() - 1 : undoStack->index();
+    const TupProjectCommand *constCommand = commandIndex >= 0 && commandIndex < undoStack->count()
+        ? dynamic_cast<const TupProjectCommand *>(undoStack->command(commandIndex))
+        : nullptr;
+    if (!constCommand || constCommand->commandId() != pendingConvertRestoreCommandId)
+        return;
+
+    TupProjectCommand *command = const_cast<TupProjectCommand *>(constCommand);
+    command->skipNextStackExecution();
+    if (undoRestore)
+        undoStack->undo();
+    else
+        undoStack->redo();
+}
+
+void TupProjectManager::finishAuthoritativeConvertRestore(const QString &commandId)
+{
+    if (pendingConvertRestoreCommandId == commandId.trimmed())
+        pendingConvertRestoreCommandId.clear();
 }
 
 void TupProjectManager::clearUndoStack()
 {
+    pendingConvertRestoreCommandId.clear();
     undoStack->clear();
 }
 

@@ -81,6 +81,7 @@
 #include <QTimer>
 #include <QSet>
 #include <QHash>
+#include <QPointF>
 
 class TupNetSocket;
 
@@ -129,9 +130,11 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
                                    const QString &status,
                                    const QString &errorCode,
                                    const QString &message);
-        void convertRestoreStackCorrectionRequested(bool undoWasRejected);
+        void convertRestoreStackAdvanceRequested(const QString &commandId, bool undoRestore);
+        void convertRestoreRequestFinished(const QString &commandId);
 
     public slots:
+        void requestAuthoritativeConvertRestore(const QString &commandId, bool undoRestore);
         void sendExportImageRequest(int frameIndex, int sceneIndex, const QString &title, const QString &topics, const QString &description);
         void updateStoryboardRequest(TupStoryboard *storyboard, int sceneIndex);
         void postStoryboardRequest(int sceneIndex);
@@ -147,6 +150,18 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void recoveryWatchdogExpired();
 
     private:
+        struct ConvertRestoreContext
+        {
+            int sceneIndex = -1;
+            int layerIndex = -1;
+            int frameIndex = -1;
+            int itemIndex = -1;
+            QPointF position;
+            int spaceMode = 0;
+            int itemType = 0;
+            QString objectId;
+        };
+
         enum class CollaborationState
         {
             Disconnected,
@@ -216,7 +231,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         qint64 snapshotRecoveryRevision;
         QSet<QString> snapshotReconciliationCommands;
         QHash<QString, QString> provisionalCreatedObjectIds;
-        bool suppressNextConvertRestore;
+        QHash<QString, ConvertRestoreContext> convertRestoreContexts;
         TupProjectListDialog *dialog;
         DisconnectReason m_disconnectReason = DisconnectReason::UnknownDisconnectReason;
 };

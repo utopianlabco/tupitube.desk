@@ -53,7 +53,8 @@ TupProjectCommand::TupProjectCommand(TupCommandExecutor *exec, const TupProjectR
       executor(exec),
       response(nullptr),
       executed(false),
-      executionSucceeded(false)
+      executionSucceeded(false),
+      skipStackExecution(false)
 {
 #ifdef TUP_DEBUG
     qDebug() << "[TupProjectCommand()]";
@@ -96,7 +97,8 @@ TupProjectCommand::TupProjectCommand(TupCommandExecutor *exec, TupProjectRespons
       executor(exec),
       response(res),
       executed(false),
-      executionSucceeded(false)
+      executionSucceeded(false),
+      skipStackExecution(false)
 {
 #ifdef TUP_DEBUG
     qDebug() << "[TupProjectCommand()]";
@@ -246,6 +248,14 @@ void TupProjectCommand::redo()
         return;
     }
 
+    if (skipStackExecution) {
+        skipStackExecution = false;
+        if (executed)
+            response->setMode(TupProjectResponse::Redo);
+        executionSucceeded = true;
+        return;
+    }
+
     if (executed)
         response->setMode(TupProjectResponse::Redo);
     else {
@@ -275,6 +285,13 @@ void TupProjectCommand::undo()
     }
     if (!executor) {
         fail(QStringLiteral("missing_executor"));
+        return;
+    }
+
+    if (skipStackExecution) {
+        skipStackExecution = false;
+        response->setMode(TupProjectResponse::Undo);
+        executionSucceeded = true;
         return;
     }
 
@@ -310,6 +327,18 @@ QString TupProjectCommand::errorCode() const
 QString TupProjectCommand::commandId() const
 {
     return response ? response->getCommandId() : QString();
+}
+
+bool TupProjectCommand::isItemConvert() const
+{
+    return response
+        && response->getPart() == TupProjectRequest::Item
+        && response->originalAction() == TupProjectRequest::Convert;
+}
+
+void TupProjectCommand::skipNextStackExecution()
+{
+    skipStackExecution = true;
 }
 
 bool TupProjectCommand::hasAuthoritativeEventPayload() const

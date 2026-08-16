@@ -256,15 +256,53 @@ bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
         return true;
     } 
 
-    TupProjectRequest request = TupRequestBuilder::fromResponse(response, false);
+    TupProjectRequest request;
+    bool authoritativeConvertRestore = false;
     doAction = false;
+
+    if ((response->getMode() == TupProjectResponse::Undo
+            || response->getMode() == TupProjectResponse::Redo)
+            && response->getPart() == TupProjectRequest::Item
+            && response->originalAction() == TupProjectRequest::Convert) {
+        TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+        const QString restoreAction = response->getMode() == TupProjectResponse::Undo
+            ? QStringLiteral("restore_source:")
+            : QStringLiteral("restore_target:");
+
+        request = TupRequestBuilder::createItemRequest(
+            itemResponse->getSceneIndex(),
+            itemResponse->getLayerIndex(),
+            itemResponse->getFrameIndex(),
+            itemResponse->getItemIndex(),
+            itemResponse->position(),
+            itemResponse->spaceMode(),
+            itemResponse->getItemType(),
+            TupProjectRequest::Convert,
+            restoreAction + response->getCommandId(),
+            QByteArray(),
+            QString(),
+            QString(),
+            itemResponse->getObjectId());
+        authoritativeConvertRestore = true;
+    } else {
+        request = TupRequestBuilder::fromResponse(response, false);
+    }
 
     if (response->getMode() != TupProjectResponse::Undo && response->getMode() != TupProjectResponse::Redo) {
         handleProjectRequest(&request);
     } else { 
-        if (socket->state() == QAbstractSocket::ConnectedState) {
-            if (request.isValid())
-                socket->send(request.getXml());
+        if (socket->state() == QAbstractSocket::ConnectedState && request.isValid()) {
+            if (authoritativeConvertRestore && commandTracker) {
+                if (!commandTracker->track(request)) {
+                    qWarning()
+                        << "[TupNetProjectManagerHandler::commandExecuted()]"
+                        << "Unable to track authoritative Convert restore:"
+                        << request.getCommandId();
+                    return false;
+                }
+            }
+
+            socket->send(request.getXml());
         }
     }
 
@@ -797,14 +835,25 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                 status = QStringLiteral("committed");
 
                 if (!parser.authoritativePayload().trimmed().isEmpty()) {
-                    if (!reconcileAuthoritativeCreatedObjectId(
-                            parser.commandId(), parser.authoritativePayload())) {
+                    if (parser.eventType() == QStringLiteral("item.created")) {
+                        if (!reconcileAuthoritativeCreatedObjectId(
+                                parser.commandId(), parser.authoritativePayload())) {
 #ifdef TUP_DEBUG
-                        qWarning()
-                            << "[TupNetProjectManagerHandler::handlePackage()]"
-                            << "Authoritative create-ID reconciliation was not applicable."
-                            << "Command:" << parser.commandId();
+                            qWarning()
+                                << "[TupNetProjectManagerHandler::handlePackage()]"
+                                << "Authoritative create-ID reconciliation was not applicable."
+                                << "Command:" << parser.commandId();
 #endif
+                        }
+                    } else if (parser.eventType() == QStringLiteral("item.converted")
+                            && !snapshotReconciliationCommands.contains(parser.commandId())) {
+                        if (!applyAuthoritativeConvertResult(
+                                parser.commandId(), parser.authoritativePayload())) {
+                            qWarning()
+                                << "[TupNetProjectManagerHandler::handlePackage()]"
+                                << "Unable to apply authoritative Convert result."
+                                << "Command:" << parser.commandId();
+                        }
                     }
                 }
 
@@ -1555,6 +1604,38 @@ bool TupNetProjectManagerHandler::reconcileAuthoritativeCreatedObjectId(
         << "Authoritative object_id:" << authoritativeObjectId;
 #endif
 
+    return true;
+}
+
+
+bool TupNetProjectManagerHandler::applyAuthoritativeConvertResult(
+    const QString &commandId, const QString &authoritativePayload)
+{
+    if (commandId.trimmed().isEmpty() || authoritativePayload.trimmed().isEmpty())
+        return false;
+
+    TupRequestParser parser;
+    if (!parser.parse(authoritativePayload.trimmed()))
+        return false;
+
+    TupProjectResponse *response = parser.getResponse();
+    if (!response || response->getPart() != TupProjectRequest::Item
+            || response->originalAction() != TupProjectRequest::Convert
+            || response->getCommandId() != commandId) {
+        return false;
+    }
+
+    TupProjectRequest request = TupRequestBuilder::fromResponse(response, true);
+    request.setExternal(true);
+
+#ifdef TUP_DEBUG
+    qWarning()
+        << "[TupNetProjectManagerHandler::applyAuthoritativeConvertResult()]"
+        << "Applying authoritative Convert result."
+        << "Command:" << commandId;
+#endif
+
+    emitRequest(&request, false);
     return true;
 }
 

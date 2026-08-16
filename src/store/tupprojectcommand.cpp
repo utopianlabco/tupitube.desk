@@ -42,6 +42,7 @@
 #include "tupsvg2qt.h"
 
 #include <QVariant>
+#include <QDomDocument>
 #include <QDebug>
 
 static int undoSequence = 0;
@@ -375,7 +376,20 @@ QString TupProjectCommand::authoritativeEventPayload() const
         QString(),
         itemResponse->getObjectId());
 
-    return request.getXml();
+    QDomDocument document;
+    if (!document.setContent(request.getXml()))
+        return QString();
+
+    QDomElement root = document.documentElement();
+    QDomElement sourceElement = document.createElement(
+        QStringLiteral("conversion_source"));
+    sourceElement.setAttribute(QStringLiteral("encoding"), QStringLiteral("base64"));
+    sourceElement.appendChild(document.createTextNode(
+        QString::fromLatin1(
+            itemResponse->conversionSourceSnapshot().toUtf8().toBase64())));
+    root.appendChild(sourceElement);
+
+    return document.toString();
 }
 
 QString TupProjectCommand::eventType() const

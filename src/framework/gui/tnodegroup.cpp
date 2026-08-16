@@ -74,7 +74,7 @@ void TNodeGroup::clear()
         return;
 
     foreach (TControlNode *node, nodes) {
-        if (node)
+        if (node && node->scene() == nodeScene)
             nodeScene->removeItem(node);
     }
 

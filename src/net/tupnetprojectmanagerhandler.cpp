@@ -37,6 +37,9 @@
 #include "tuplayer.h"
 #include "tupframe.h"
 #include "tupgraphicobject.h"
+#include "tupitemconverter.h"
+
+#include <QStringList>
 
 namespace {
     const int COMMAND_RETRY_SCAN_INTERVAL_MS = 1000;
@@ -48,6 +51,53 @@ namespace {
     const int HEARTBEAT_MISSED_LIMIT = 3;
     const int RECOVERY_AUTH_TIMEOUT_MS = 10000;
     const int RECOVERY_SYNC_TIMEOUT_MS = 30000;
+
+    QString canonicalRepresentationElement(const QDomElement &element)
+    {
+        if (element.isNull())
+            return QString();
+
+        QString result = QStringLiteral("<") + element.tagName();
+
+        QStringList attributes;
+        const QDomNamedNodeMap attributeMap = element.attributes();
+        for (int index = 0; index < attributeMap.count(); ++index) {
+            const QDomAttr attribute = attributeMap.item(index).toAttr();
+            attributes.append(attribute.name() + QStringLiteral("=") + attribute.value());
+        }
+        attributes.sort(Qt::CaseSensitive);
+
+        for (const QString &attribute : attributes)
+            result += QStringLiteral("|") + attribute;
+
+        result += QStringLiteral(">");
+
+        QDomNode child = element.firstChild();
+        while (!child.isNull()) {
+            if (child.isElement()) {
+                result += canonicalRepresentationElement(child.toElement());
+            } else if (child.isText() || child.isCDATASection()) {
+                const QString text = child.nodeValue().trimmed();
+                if (!text.isEmpty())
+                    result += QStringLiteral("#") + text;
+            }
+            child = child.nextSibling();
+        }
+
+        result += QStringLiteral("</") + element.tagName() + QStringLiteral(">");
+        return result;
+    }
+
+    bool representationsEquivalent(const QString &left, const QString &right)
+    {
+        QDomDocument leftDocument;
+        QDomDocument rightDocument;
+        if (!leftDocument.setContent(left) || !rightDocument.setContent(right))
+            return false;
+
+        return canonicalRepresentationElement(leftDocument.documentElement())
+            == canonicalRepresentationElement(rightDocument.documentElement());
+    }
 
     int convertRestoreModeFromRequestXml(const QString &xml)
     {
@@ -1728,6 +1778,38 @@ bool TupNetProjectManagerHandler::applyAuthoritativeConvertResult(
             || response->originalAction() != TupProjectRequest::Convert
             || response->getCommandId() != commandId) {
         return false;
+    }
+
+    TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+    if (project && !itemResponse->getObjectId().trimmed().isEmpty()) {
+        TupScene *scene = project->sceneAt(itemResponse->getSceneIndex());
+        TupLayer *layer = scene ? scene->layerAt(itemResponse->getLayerIndex()) : nullptr;
+        TupFrame *frame = layer ? layer->frameAt(itemResponse->getFrameIndex()) : nullptr;
+        TupGraphicObject *object = frame
+            ? frame->graphicById(itemResponse->getObjectId().trimmed())
+            : nullptr;
+
+        if (object) {
+            QString snapshotError;
+            const QString currentRepresentation =
+                TupItemConverter::representationSnapshot(object, &snapshotError);
+            const QString authoritativeRepresentation = itemResponse->getData();
+
+            if (snapshotError.isEmpty()
+                    && !currentRepresentation.trimmed().isEmpty()
+                    && !authoritativeRepresentation.trimmed().isEmpty()
+                    && representationsEquivalent(
+                        currentRepresentation, authoritativeRepresentation)) {
+#ifdef TUP_DEBUG
+                qWarning()
+                    << "[TupNetProjectManagerHandler::applyAuthoritativeConvertResult()]"
+                    << "Authoritative Convert result already matches the current representation;"
+                    << "skipping replacement."
+                    << "Command:" << commandId;
+#endif
+                return true;
+            }
+        }
     }
 
     TupProjectRequest request = TupRequestBuilder::fromResponse(response, true);

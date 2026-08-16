@@ -56,13 +56,7 @@ void NodesTool::init(TupGraphicsScene *gScene)
     ctrlEnabled = false;
     scene = gScene;
 
-    if (scene->selectedItems().count() > 0) {
-        scene->clearSelection();
-        if (nodeGroup) {
-            nodeGroup->clear();
-            nodeGroup = nullptr;
-        }
-    }
+    clearSelection();
 
     nodeZValue = ((BG_LAYERS + 1) * ZLAYER_LIMIT) + (scene->currentScene()->layersCount() * ZLAYER_LIMIT);
     if (scene->getSpaceContext() == TupProject::VECTOR_FG_MODE)
@@ -541,16 +535,15 @@ void NodesTool::itemResponse(const TupItemResponse *response)
         case TupProjectRequest::Convert:
         {
              #ifdef TUP_DEBUG
-                 qDebug() << "[NodesTool::itemResponse()] - Convert case";
+                 qDebug() << "[NodesTool::itemResponse()] - Convert case: invalidating node selection";
              #endif
 
-             if (item) {
-                 nodeGroup = new TNodeGroup(item, scene, TNodeGroup::PathSelection, nodeZValue);
-             } else {
-                 #ifdef TUP_DEBUG
-                     qDebug() << "[NodesTool::itemResponse()] - Fatal Error: No item was found";
-                 #endif
-             }
+             // Convert replaces the drawable representation while preserving the
+             // logical TupGraphicObject. Any node editor state necessarily refers
+             // to the old representation and must not survive the replacement.
+             clearSelection();
+             if (configPanel)
+                 configPanel->showClearPanel(false);
         }
         break;
         case TupProjectRequest::EditNodes:
@@ -730,6 +723,7 @@ void NodesTool::keyReleaseEvent(QKeyEvent *event)
 void NodesTool::setupActions()
 {
     configPanel = nullptr;
+    nodeGroup = nullptr;
     activeSelection = false;
 
     TAction *nodes = new TAction(QPixmap(ICONS_DIR + "nodes.png"), tr("Nodes Selection"), this);
@@ -805,14 +799,14 @@ void NodesTool::updateZoomFactor(qreal scaleFactor)
 
 void NodesTool::clearSelection()
 {
-    if (scene->selectedItems().count() > 0) {
+    if (scene && !scene->selectedItems().isEmpty())
         scene->clearSelection();
-        if (activeSelection)
-            activeSelection = false;
-        if (nodeGroup) {
-            nodeGroup->clear();
-            nodeGroup = nullptr;
-        }
+
+    activeSelection = false;
+
+    if (nodeGroup) {
+        nodeGroup->clear();
+        nodeGroup = nullptr;
     }
 }
 

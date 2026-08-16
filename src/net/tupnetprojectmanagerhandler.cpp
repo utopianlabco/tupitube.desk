@@ -48,6 +48,30 @@ namespace {
     const int HEARTBEAT_MISSED_LIMIT = 3;
     const int RECOVERY_AUTH_TIMEOUT_MS = 10000;
     const int RECOVERY_SYNC_TIMEOUT_MS = 30000;
+
+    int convertRestoreModeFromRequestXml(const QString &xml)
+    {
+        if (xml.trimmed().isEmpty())
+            return -1;
+
+        TupRequestParser parser;
+        if (!parser.parse(xml))
+            return -1;
+
+        TupProjectResponse *response = parser.getResponse();
+        if (!response || response->getPart() != TupProjectRequest::Item
+                || response->originalAction() != TupProjectRequest::Convert) {
+            return -1;
+        }
+
+        const QString argument = response->getArg().toString().trimmed();
+        if (argument.startsWith(QStringLiteral("restore_source:")))
+            return static_cast<int>(TupProjectResponse::Undo);
+        if (argument.startsWith(QStringLiteral("restore_target:")))
+            return static_cast<int>(TupProjectResponse::Redo);
+
+        return -1;
+    }
 }
 
 TupNetProjectManagerHandler::TupNetProjectManagerHandler(QObject *parent) : TupAbstractProjectHandler(parent)
@@ -81,6 +105,7 @@ TupNetProjectManagerHandler::TupNetProjectManagerHandler(QObject *parent) : TupA
     params = nullptr;
     ownPackage = false;
     doAction = true;
+    suppressNextConvertRestore = false;
     projectIsOpen = false;
     dialogIsOpen = false;
     intentionalClose = false;
@@ -264,6 +289,17 @@ bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
             || response->getMode() == TupProjectResponse::Redo)
             && response->getPart() == TupProjectRequest::Item
             && response->originalAction() == TupProjectRequest::Convert) {
+        if (suppressNextConvertRestore) {
+            suppressNextConvertRestore = false;
+            doAction = false;
+#ifdef TUP_DEBUG
+            qWarning()
+                << "[TupNetProjectManagerHandler::commandExecuted()]"
+                << "Suppressing network restore while correcting a rejected Convert undo/redo.";
+#endif
+            return true;
+        }
+
         TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
         const QString restoreAction = response->getMode() == TupProjectResponse::Undo
             ? QStringLiteral("restore_source:")
@@ -829,6 +865,11 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
         }
 
         QString status;
+        const int pendingRestoreMode = commandTracker
+            ? convertRestoreModeFromRequestXml(
+                commandTracker->commandXml(parser.commandId()))
+            : -1;
+        const bool isPendingConvertRestore = pendingRestoreMode >= 0;
 
         switch (parser.status()) {
             case TupCommandResultParser::Committed:
@@ -929,6 +970,22 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                     << parser.errorCode()
                     << "Message:"
                     << parser.message();
+
+                if (isPendingConvertRestore) {
+                    suppressNextConvertRestore = true;
+                    emit convertRestoreStackCorrectionRequested(
+                        pendingRestoreMode == static_cast<int>(TupProjectResponse::Undo));
+
+                    if (!parser.authoritativePayload().trimmed().isEmpty()
+                            && !applyAuthoritativeConvertResult(
+                                parser.commandId(),
+                                parser.authoritativePayload())) {
+                        qWarning()
+                            << "[TupNetProjectManagerHandler::handlePackage()]"
+                            << "Unable to reconcile a rejected Convert restore."
+                            << "Command:" << parser.commandId();
+                    }
+                }
                 break;
 
             case TupCommandResultParser::Failed:
@@ -941,6 +998,22 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                     << parser.errorCode()
                     << "Message:"
                     << parser.message();
+
+                if (isPendingConvertRestore) {
+                    suppressNextConvertRestore = true;
+                    emit convertRestoreStackCorrectionRequested(
+                        pendingRestoreMode == static_cast<int>(TupProjectResponse::Undo));
+
+                    if (!parser.authoritativePayload().trimmed().isEmpty()
+                            && !applyAuthoritativeConvertResult(
+                                parser.commandId(),
+                                parser.authoritativePayload())) {
+                        qWarning()
+                            << "[TupNetProjectManagerHandler::handlePackage()]"
+                            << "Unable to reconcile a failed Convert restore."
+                            << "Command:" << parser.commandId();
+                    }
+                }
                 break;
 
             case TupCommandResultParser::Invalid:

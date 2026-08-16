@@ -102,6 +102,7 @@ class TUPITUBE_EXPORT TupProjectManager : public QObject
         void emitResponse(TupProjectResponse *response);
         void undo();
         void redo();
+        void correctRejectedConvertRestore(bool undoWasRejected);
 
     signals:
         void responsed(TupProjectResponse *reponse);

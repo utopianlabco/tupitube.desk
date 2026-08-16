@@ -129,6 +129,8 @@ void TupProjectManager::setHandler(TupAbstractProjectHandler *pHandler, bool net
         // system at runtime, so this layer does not need the network header.
         connect(handler, SIGNAL(authoritativeModifiedStateChanged(bool)),
                 this, SLOT(setModificationStatus(bool)));
+        connect(handler, SIGNAL(convertRestoreStackCorrectionRequested(bool)),
+                this, SLOT(correctRejectedConvertRestore(bool)));
     }
 
     isNetworked = networked;
@@ -462,6 +464,21 @@ void TupProjectManager::redo()
            #endif
        }
    }
+}
+
+
+void TupProjectManager::correctRejectedConvertRestore(bool undoWasRejected)
+{
+    if (!undoStack)
+        return;
+
+    if (undoWasRejected) {
+        if (undoStack->canRedo())
+            undoStack->redo();
+    } else {
+        if (undoStack->canUndo())
+            undoStack->undo();
+    }
 }
 
 void TupProjectManager::clearUndoStack()

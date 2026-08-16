@@ -129,6 +129,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
                                    const QString &status,
                                    const QString &errorCode,
                                    const QString &message);
+        void convertRestoreStackCorrectionRequested(bool undoWasRejected);
 
     public slots:
         void sendExportImageRequest(int frameIndex, int sceneIndex, const QString &title, const QString &topics, const QString &description);
@@ -215,6 +216,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         qint64 snapshotRecoveryRevision;
         QSet<QString> snapshotReconciliationCommands;
         QHash<QString, QString> provisionalCreatedObjectIds;
+        bool suppressNextConvertRestore;
         TupProjectListDialog *dialog;
         DisconnectReason m_disconnectReason = DisconnectReason::UnknownDisconnectReason;
 };

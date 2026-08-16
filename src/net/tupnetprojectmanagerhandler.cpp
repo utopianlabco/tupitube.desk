@@ -63,7 +63,16 @@ namespace {
         const QDomNamedNodeMap attributeMap = element.attributes();
         for (int index = 0; index < attributeMap.count(); ++index) {
             const QDomAttr attribute = attributeMap.item(index).toAttr();
-            attributes.append(attribute.name() + QStringLiteral("=") + attribute.value());
+            const QString attributeName = attribute.name();
+
+            if (element.tagName() == QStringLiteral("properties")
+                    && (attributeName == QStringLiteral("flags")
+                        || attributeName == QStringLiteral("scale_x")
+                        || attributeName == QStringLiteral("scale_y"))) {
+                continue;
+            }
+
+            attributes.append(attributeName + QStringLiteral("=") + attribute.value());
         }
         attributes.sort(Qt::CaseSensitive);
 

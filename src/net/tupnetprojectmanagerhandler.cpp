@@ -33,6 +33,10 @@
  ***************************************************************************/
 
 #include "tupnetprojectmanagerhandler.h"
+#include "tupscene.h"
+#include "tuplayer.h"
+#include "tupframe.h"
+#include "tupgraphicobject.h"
 
 namespace {
     const int COMMAND_RETRY_SCAN_INTERVAL_MS = 1000;
@@ -236,6 +240,18 @@ bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
     #endif
 
     if (response->getMode() == TupProjectResponse::Do) {
+        if (response->getPart() == TupProjectRequest::Item
+                && response->originalAction() == TupProjectRequest::Add) {
+            TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+            if (itemResponse->getItemType() != TupLibraryObject::Svg
+                    && !itemResponse->getCommandId().trimmed().isEmpty()
+                    && !itemResponse->getObjectId().trimmed().isEmpty()) {
+                provisionalCreatedObjectIds.insert(
+                    itemResponse->getCommandId(),
+                    itemResponse->getObjectId().trimmed());
+            }
+        }
+
         doAction = true;
         return true;
     } 
@@ -780,6 +796,18 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
             case TupCommandResultParser::Committed:
                 status = QStringLiteral("committed");
 
+                if (!parser.authoritativePayload().trimmed().isEmpty()) {
+                    if (!reconcileAuthoritativeCreatedObjectId(
+                            parser.commandId(), parser.authoritativePayload())) {
+#ifdef TUP_DEBUG
+                        qWarning()
+                            << "[TupNetProjectManagerHandler::handlePackage()]"
+                            << "Authoritative create-ID reconciliation was not applicable."
+                            << "Command:" << parser.commandId();
+#endif
+                    }
+                }
+
                 if (parser.committedRevision() > 0) {
                     const qint64 revision = parser.committedRevision();
                     const int eventIndex = parser.eventIndex();
@@ -877,6 +905,7 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
         if (commandTracker)
             commandTracker->complete(parser.commandId());
 
+        provisionalCreatedObjectIds.remove(parser.commandId());
         updateAuthoritativeModifiedState();
 
         snapshotReconciliationCommands.remove(parser.commandId());
@@ -1474,6 +1503,59 @@ void TupNetProjectManagerHandler::connectionRestored()
 
     TupConnectPackage connectPackage(params->server(), params->login(), params->windowRecordID());
     socket->send(connectPackage);
+}
+
+bool TupNetProjectManagerHandler::reconcileAuthoritativeCreatedObjectId(
+    const QString &commandId, const QString &authoritativePayload)
+{
+    const QString provisionalObjectId = provisionalCreatedObjectIds.value(commandId).trimmed();
+    if (provisionalObjectId.isEmpty() || authoritativePayload.trimmed().isEmpty() || !project)
+        return false;
+
+    TupRequestParser parser;
+    if (!parser.parse(authoritativePayload.trimmed()))
+        return false;
+
+    TupProjectResponse *response = parser.getResponse();
+    if (!response || response->getPart() != TupProjectRequest::Item
+            || response->originalAction() != TupProjectRequest::Add) {
+        return false;
+    }
+
+    TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+    const QString authoritativeObjectId = itemResponse->getObjectId().trimmed();
+    if (authoritativeObjectId.isEmpty()
+            || itemResponse->getItemType() == TupLibraryObject::Svg) {
+        return false;
+    }
+
+    TupScene *scene = project->sceneAt(itemResponse->getSceneIndex());
+    if (!scene)
+        return false;
+
+    TupLayer *layer = scene->layerAt(itemResponse->getLayerIndex());
+    if (!layer)
+        return false;
+
+    TupFrame *frame = layer->frameAt(itemResponse->getFrameIndex());
+    if (!frame)
+        return false;
+
+    TupGraphicObject *object = frame->graphicById(provisionalObjectId);
+    if (!object)
+        return false;
+
+    object->setObjectId(authoritativeObjectId);
+
+#ifdef TUP_DEBUG
+    qWarning()
+        << "[TupNetProjectManagerHandler::reconcileAuthoritativeCreatedObjectId()]"
+        << "Command:" << commandId
+        << "Provisional object_id:" << provisionalObjectId
+        << "Authoritative object_id:" << authoritativeObjectId;
+#endif
+
+    return true;
 }
 
 bool TupNetProjectManagerHandler::reapplyPendingCommandAfterSnapshot(

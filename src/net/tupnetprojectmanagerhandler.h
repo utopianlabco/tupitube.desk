@@ -80,6 +80,7 @@
 #include <QSplitter>
 #include <QTimer>
 #include <QSet>
+#include <QHash>
 
 class TupNetSocket;
 
@@ -160,6 +161,9 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         bool reapplyPendingCommandAfterSnapshot(
             const QString &commandId,
             const QString &authoritativePayload = QString());
+        bool reconcileAuthoritativeCreatedObjectId(
+            const QString &commandId,
+            const QString &authoritativePayload);
         void handleProjectEvent(const QString &package);
         void beginProjectEventGapRecovery();
         void requestProjectSync(bool forceSnapshot = false);
@@ -207,6 +211,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         bool recoverySnapshotLoaded;
         qint64 snapshotRecoveryRevision;
         QSet<QString> snapshotReconciliationCommands;
+        QHash<QString, QString> provisionalCreatedObjectIds;
         TupProjectListDialog *dialog;
         DisconnectReason m_disconnectReason = DisconnectReason::UnknownDisconnectReason;
 };

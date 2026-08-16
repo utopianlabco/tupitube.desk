@@ -321,12 +321,38 @@ QString TupProjectCommand::authoritativeEventPayload() const
     if (!response || !executionSucceeded)
         return QString();
 
-    if (response->getPart() != TupProjectRequest::Item
-            || response->originalAction() != TupProjectRequest::Convert) {
+    if (response->getPart() != TupProjectRequest::Item)
         return QString();
-    }
 
     TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+
+    if (response->originalAction() == TupProjectRequest::Add) {
+        if (itemResponse->getItemType() == TupLibraryObject::Svg
+                || itemResponse->getObjectId().trimmed().isEmpty()) {
+            return QString();
+        }
+
+        const TupProjectRequest request = TupRequestBuilder::createItemRequest(
+            itemResponse->getSceneIndex(),
+            itemResponse->getLayerIndex(),
+            itemResponse->getFrameIndex(),
+            itemResponse->getItemIndex(),
+            itemResponse->position(),
+            itemResponse->spaceMode(),
+            itemResponse->getItemType(),
+            TupProjectRequest::Add,
+            itemResponse->getArg().toString(),
+            itemResponse->getData(),
+            response->getCommandId(),
+            QString(),
+            itemResponse->getObjectId());
+
+        return request.getXml();
+    }
+
+    if (response->originalAction() != TupProjectRequest::Convert)
+        return QString();
+
     if (!itemResponse->hasConversionSnapshots())
         return QString();
 

@@ -420,12 +420,63 @@ bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
         return true;
     } 
 
-    TupProjectRequest request = TupRequestBuilder::fromResponse(response, false);
+    const bool undoOrRedo = response->getMode() == TupProjectResponse::Undo
+        || response->getMode() == TupProjectResponse::Redo;
+
+    const bool editNodesUndoOrRedo = undoOrRedo
+        && response->getPart() == TupProjectRequest::Item
+        && response->originalAction() == TupProjectRequest::EditNodes;
+
+    TupProjectRequest request;
+    if (editNodesUndoOrRedo) {
+        TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+        const QString sourceRoute = itemResponse->getState();
+        const QString targetRoute = response->getArg().toString();
+        const bool undo = response->getMode() == TupProjectResponse::Undo;
+        const QString route = undo ? sourceRoute : targetRoute;
+        const QString previousRoute = undo ? targetRoute : sourceRoute;
+
+        if (route.trimmed().isEmpty()) {
+            qWarning()
+                << "[TupNetProjectManagerHandler::commandExecuted()]"
+                << "EditNodes Undo/Redo has no path snapshot."
+                << "Command:" << response->getCommandId()
+                << "Mode:" << response->getMode();
+            return false;
+        }
+
+        request = TupRequestBuilder::createItemRequest(
+            itemResponse->getSceneIndex(),
+            itemResponse->getLayerIndex(),
+            itemResponse->getFrameIndex(),
+            itemResponse->getItemIndex(),
+            itemResponse->position(),
+            itemResponse->spaceMode(),
+            itemResponse->getItemType(),
+            TupProjectRequest::EditNodes,
+            route,
+            previousRoute.toUtf8(),
+            QString(),
+            QString(),
+            itemResponse->getObjectId());
+    } else {
+        request = TupRequestBuilder::fromResponse(response, false);
+    }
+
     doAction = false;
 
-    if (response->getMode() != TupProjectResponse::Undo && response->getMode() != TupProjectResponse::Redo) {
+    if (!undoOrRedo) {
         handleProjectRequest(&request);
     } else if (socket->state() == QAbstractSocket::ConnectedState && request.isValid()) {
+        if (editNodesUndoOrRedo) {
+            if (!commandTracker || !commandTracker->track(request)) {
+                qWarning()
+                    << "[TupNetProjectManagerHandler::commandExecuted()]"
+                    << "Unable to track EditNodes Undo/Redo command:"
+                    << request.getCommandId();
+                return false;
+            }
+        }
         socket->send(request.getXml());
     }
 

@@ -574,8 +574,11 @@ void NodesTool::itemResponse(const TupItemResponse *response)
                              path->setSelected(true);
 
                          if (expandNode) {
-                             nodeGroup->expandNode(nodeIndex);
+                             if (nodeIndex > 0)
+                                 nodeGroup->expandNode(nodeIndex);
+
                              expandNode = false;
+                             nodeIndex = -1;
                          }
                      }
                  } else {
@@ -593,8 +596,11 @@ void NodesTool::itemResponse(const TupItemResponse *response)
                          item->setSelected(true);
 
                      if (expandNode) {
-                         nodeGroup->expandNode(nodeIndex);
+                         if (nodeIndex > 0)
+                             nodeGroup->expandNode(nodeIndex);
+
                          expandNode = false;
+                         nodeIndex = -1;
                      }
                  }
 
@@ -731,6 +737,8 @@ void NodesTool::setupActions()
 {
     configPanel = nullptr;
     nodeGroup = nullptr;
+    nodeIndex = -1;
+    expandNode = false;
     activeSelection = false;
 
     TAction *nodes = new TAction(QPixmap(ICONS_DIR + "nodes.png"), tr("Nodes Selection"), this);

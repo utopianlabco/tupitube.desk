@@ -47,6 +47,7 @@ NodesTool::NodesTool()
 
 NodesTool::~NodesTool()
 {
+    delete nodeGroup;
 }
 
 void NodesTool::init(TupGraphicsScene *gScene)
@@ -208,7 +209,7 @@ bool NodesTool::setPathNodes(QPointF coord, QList<QGraphicsItem *> currentSelect
                     TupProjectRequest event = TupRequestBuilder::createItemRequest(gScene->currentSceneIndex(),
                                                                                    currentLayer, currentFrame, itemIndex,
                                                                                    QPointF(), gScene->getSpaceContext(), TupLibraryObject::Item,
-                                                                                   TupProjectRequest::EditNodes, pathStr, QByteArray(), QString(), QString(), scene->objectId(pathItem));
+                                                                                   TupProjectRequest::EditNodes, pathStr, committedPath.toUtf8(), QString(), QString(), scene->objectId(pathItem));
                     emit requested(&event);
                 }
             } else { // Point is out the path but inside the item rect
@@ -238,7 +239,7 @@ bool NodesTool::setPathNodes(QPointF coord, QList<QGraphicsItem *> currentSelect
                     TupProjectRequest event = TupRequestBuilder::createItemRequest(gScene->currentSceneIndex(),
                                                                                    currentLayer, currentFrame, itemIndex,
                                                                                    QPointF(), gScene->getSpaceContext(), TupLibraryObject::Item,
-                                                                                   TupProjectRequest::EditNodes, pathStr, QByteArray(), QString(), QString(), scene->objectId(pathItem));
+                                                                                   TupProjectRequest::EditNodes, pathStr, committedPath.toUtf8(), QString(), QString(), scene->objectId(pathItem));
                     emit requested(&event);
                 }
             }
@@ -257,7 +258,7 @@ bool NodesTool::setPathNodes(QPointF coord, QList<QGraphicsItem *> currentSelect
                         TupProjectRequest event = TupRequestBuilder::createItemRequest(gScene->currentSceneIndex(),
                                                                                        currentLayer, currentFrame, nodeIndex,
                                                                                        QPointF(), gScene->getSpaceContext(), TupLibraryObject::Item,
-                                                                                       TupProjectRequest::EditNodes, path, QByteArray(), QString(), QString(), scene->objectId(item));
+                                                                                       TupProjectRequest::EditNodes, path, committedPath.toUtf8(), QString(), QString(), scene->objectId(item));
                         emit requested(&event);
                         nodeGroup->clearChangedNodes();
                     } else {
@@ -284,8 +285,7 @@ bool NodesTool::setPathNodes(QPointF coord, QList<QGraphicsItem *> currentSelect
                     #ifdef TUP_DEBUG
                         qDebug() << "[NodesTool::setPathNodes()] - A new object has been selected! (active selection was on)";
                     #endif
-                    nodeGroup->clear();
-
+                    delete nodeGroup;
                     nodeGroup = new TNodeGroup(pathItem, gScene, TNodeGroup::PathSelection, nodeZValue);
                     connect(nodeGroup, SIGNAL(nodeRemoved(int)), this, SLOT(removeNodeFromPath(int)));
                     connect(nodeGroup, SIGNAL(nodeTypeChanged(int)), this, SLOT(modifyNodeFromPath(int)));
@@ -298,7 +298,8 @@ bool NodesTool::setPathNodes(QPointF coord, QList<QGraphicsItem *> currentSelect
 
                     configPanel->resetHistory();
                     restorablePaths.clear();
-                    restorablePaths.insert(pathItem->nodesCount(), pathItem->pathToString());
+                    committedPath = pathItem->pathToString();
+                    restorablePaths.insert(pathItem->nodesCount(), committedPath);
                     configPanel->setNodesTotal(pathItem->nodesCount());
 
                     #ifdef TUP_DEBUG
@@ -317,7 +318,7 @@ bool NodesTool::setPathNodes(QPointF coord, QList<QGraphicsItem *> currentSelect
                             TupProjectRequest event = TupRequestBuilder::createItemRequest(gScene->currentSceneIndex(),
                                                                                            currentLayer, currentFrame, index,
                                                                                            QPointF(), gScene->getSpaceContext(), TupLibraryObject::Item,
-                                                                                           TupProjectRequest::EditNodes, path, QByteArray(), QString(), QString(), scene->objectId(item));
+                                                                                           TupProjectRequest::EditNodes, path, committedPath.toUtf8(), QString(), QString(), scene->objectId(item));
                             emit requested(&event);
                             nodeGroup->clearChangedNodes();
                         } else {
@@ -378,7 +379,8 @@ bool NodesTool::setPathNodes(QPointF coord, QList<QGraphicsItem *> currentSelect
 
                 configPanel->resetHistory();
                 restorablePaths.clear();
-                restorablePaths.insert(pathItem->nodesCount(), pathItem->pathToString());
+                committedPath = pathItem->pathToString();
+                restorablePaths.insert(pathItem->nodesCount(), committedPath);
                 configPanel->setNodesTotal(pathItem->nodesCount());
             }
         }
@@ -429,7 +431,7 @@ void NodesTool::addNode(QPointF coord, int penWidth, TupGraphicsScene *gScene)
                 TupProjectRequest event = TupRequestBuilder::createItemRequest(gScene->currentSceneIndex(),
                                                                                currentLayer, currentFrame, itemIndex,
                                                                                QPointF(), gScene->getSpaceContext(), TupLibraryObject::Item,
-                                                                               TupProjectRequest::EditNodes, pathStr, QByteArray(), QString(), QString(), scene->objectId(pathItem));
+                                                                               TupProjectRequest::EditNodes, pathStr, committedPath.toUtf8(), QString(), QString(), scene->objectId(pathItem));
                 emit requested(&event);
             }
         } else {
@@ -459,7 +461,7 @@ void NodesTool::addNode(QPointF coord, int penWidth, TupGraphicsScene *gScene)
                     TupProjectRequest event = TupRequestBuilder::createItemRequest(gScene->currentSceneIndex(),
                                                                                    currentLayer, currentFrame, itemIndex,
                                                                                    QPointF(), gScene->getSpaceContext(), TupLibraryObject::Item,
-                                                                                   TupProjectRequest::EditNodes, pathStr, QByteArray(), QString(), QString(), scene->objectId(pathItem));
+                                                                                   TupProjectRequest::EditNodes, pathStr, committedPath.toUtf8(), QString(), QString(), scene->objectId(pathItem));
                     emit requested(&event);
                 }
             }
@@ -469,9 +471,7 @@ void NodesTool::addNode(QPointF coord, int penWidth, TupGraphicsScene *gScene)
             qDebug() << "[NodesTool::addNode()] - Empty selection! Removing nodes...";
         #endif
         if (nodeGroup) {
-            nodeGroup->clear();
-            disconnect(nodeGroup, SIGNAL(nodeRemoved(int)), this, SLOT(removeNodeFromPath(int)));
-            disconnect(nodeGroup, SIGNAL(nodeTypeChanged(int)), this, SLOT(modifyNodeFromPath(int)));
+            delete nodeGroup;
             nodeGroup = nullptr;
         }
         activeSelection = false;
@@ -585,6 +585,7 @@ void NodesTool::itemResponse(const TupItemResponse *response)
                      #ifdef TUP_DEBUG
                          qDebug() << "[NodesTool::itemResponse()] - Showing nodes from selected item! (Creating new nodeGroup)";
                      #endif
+                     delete nodeGroup;
                      nodeGroup = new TNodeGroup(item, scene, TNodeGroup::PathSelection, nodeZValue);
                      connect(nodeGroup, SIGNAL(nodeRemoved(int)), this, SLOT(removeNodeFromPath(int)));
                      connect(nodeGroup, SIGNAL(nodeTypeChanged(int)), this, SLOT(modifyNodeFromPath(int)));
@@ -604,8 +605,10 @@ void NodesTool::itemResponse(const TupItemResponse *response)
                      }
                  }
 
-                 if (TupPathItem *pathItem = qgraphicsitem_cast<TupPathItem *>(item))
+                 if (TupPathItem *pathItem = qgraphicsitem_cast<TupPathItem *>(item)) {
+                     committedPath = pathItem->pathToString();
                      configPanel->setNodesTotal(pathItem->nodesCount());
+                 }
             }
         }
         break;
@@ -625,6 +628,7 @@ void NodesTool::itemResponse(const TupItemResponse *response)
              #endif
 
              if (item) {
+                 delete nodeGroup;
                  nodeGroup = new TNodeGroup(item, scene, TNodeGroup::PathSelection, nodeZValue);
                  connect(nodeGroup, SIGNAL(nodeRemoved(int)), this, SLOT(removeNodeFromPath(int)));
                  connect(nodeGroup, SIGNAL(nodeTypeChanged(int)), this, SLOT(modifyNodeFromPath(int)));
@@ -739,6 +743,7 @@ void NodesTool::setupActions()
     nodeGroup = nullptr;
     nodeIndex = -1;
     expandNode = false;
+    committedPath.clear();
     activeSelection = false;
 
     TAction *nodes = new TAction(QPixmap(ICONS_DIR + "nodes.png"), tr("Nodes Selection"), this);
@@ -818,9 +823,10 @@ void NodesTool::clearSelection()
         scene->clearSelection();
 
     activeSelection = false;
+    committedPath.clear();
 
     if (nodeGroup) {
-        nodeGroup->clear();
+        delete nodeGroup;
         nodeGroup = nullptr;
     }
 }
@@ -902,7 +908,7 @@ void NodesTool::updateCurrentPath(int newTotal)
                         TupProjectRequest event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(),
                                                                                        currentLayer, currentFrame, position,
                                                                                        QPointF(), scene->getSpaceContext(), TupLibraryObject::Item,
-                                                                                       TupProjectRequest::EditNodes, path, QByteArray(), QString(), QString(), scene->objectId(pathItem));
+                                                                                       TupProjectRequest::EditNodes, path, committedPath.toUtf8(), QString(), QString(), scene->objectId(pathItem));
                         emit requested(&event);
                     }
                 }
@@ -915,7 +921,7 @@ void NodesTool::updateCurrentPath(int newTotal)
                     TupProjectRequest event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(),
                                                                                    currentLayer, currentFrame, position,
                                                                                    QPointF(), scene->getSpaceContext(), TupLibraryObject::Item,
-                                                                                   TupProjectRequest::EditNodes, path, QByteArray(), QString(), QString(), scene->objectId(pathItem));
+                                                                                   TupProjectRequest::EditNodes, path, committedPath.toUtf8(), QString(), QString(), scene->objectId(pathItem));
                     emit requested(&event);
                 }
             }
@@ -934,7 +940,8 @@ void NodesTool::resetPathHistory()
             #endif
             pathItem->resetPathHistory();
             restorablePaths.clear();
-            restorablePaths.insert(pathItem->nodesCount(), pathItem->pathToString());
+            committedPath = pathItem->pathToString();
+            restorablePaths.insert(pathItem->nodesCount(), committedPath);
         }
     }
 }
@@ -965,7 +972,7 @@ void NodesTool::removeNodeFromPath(int index)
             TupProjectRequest event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(),
                                                                            currentLayer, currentFrame, position,
                                                                            QPointF(), scene->getSpaceContext(), TupLibraryObject::Item,
-                                                                           TupProjectRequest::EditNodes, path, QByteArray(), QString(), QString(), scene->objectId(nodeGroup->parentItem()));
+                                                                           TupProjectRequest::EditNodes, path, committedPath.toUtf8(), QString(), QString(), scene->objectId(nodeGroup->parentItem()));
             emit requested(&event);
 
             configPanel->setNodesTotal(pathItem->nodesCount());
@@ -990,7 +997,7 @@ void NodesTool::modifyNodeFromPath(int index)
         TupProjectRequest event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(),
                                                                        currentLayer, currentFrame, position,
                                                                        QPointF(), scene->getSpaceContext(), TupLibraryObject::Item,
-                                                                       TupProjectRequest::EditNodes, path, QByteArray(), QString(), QString(), scene->objectId(nodeGroup->parentItem()));
+                                                                       TupProjectRequest::EditNodes, path, committedPath.toUtf8(), QString(), QString(), scene->objectId(nodeGroup->parentItem()));
         emit requested(&event);
     }
 }

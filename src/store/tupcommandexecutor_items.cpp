@@ -974,14 +974,37 @@ bool TupCommandExecutor::setPathItem(TupItemResponse *response)
 
                     TupPathItem *item = qgraphicsitem_cast<TupPathItem *>(frame->item(itemIndex));
                     if (item) {
-                        if (response->getMode() == TupProjectResponse::Do)
+                        if (response->getMode() == TupProjectResponse::Do) {
+                            const QString currentRoute = item->pathToString();
+                            QString sourceRoute = currentRoute;
+                            const QString suppliedSource = QString::fromUtf8(response->getData());
+
+                            // NodesTool edits the live path before submitting the command.
+                            // If the model already equals the requested target, use the
+                            // producer's pre-edit snapshot. Otherwise the current model is
+                            // authoritative and is the correct source snapshot.
+                            if (currentRoute == route && !suppliedSource.isEmpty())
+                                sourceRoute = suppliedSource;
+
+                            response->setState(sourceRoute);
                             item->setPathFromString(route);
+                        }
 
-                        if (response->getMode() == TupProjectResponse::Redo)
-                            item->redoPath();
+                        if (response->getMode() == TupProjectResponse::Redo) {
+                            QPainterPath path;
+                            TupSvg2Qt::svgpath2qtpath(route, path);
+                            item->setPath(path);
+                        }
 
-                        if (response->getMode() == TupProjectResponse::Undo)
-                            item->undoPath();
+                        if (response->getMode() == TupProjectResponse::Undo) {
+                            const QString sourceRoute = response->getState();
+                            if (sourceRoute.isEmpty())
+                                return false;
+
+                            QPainterPath path;
+                            TupSvg2Qt::svgpath2qtpath(sourceRoute, path);
+                            item->setPath(path);
+                        }
 
                         emit responsed(response);
                         return true;
@@ -1018,14 +1041,37 @@ bool TupCommandExecutor::setPathItem(TupItemResponse *response)
 
                     TupPathItem *item = qgraphicsitem_cast<TupPathItem *>(frame->item(itemIndex));
                     if (item) {
-                        if (response->getMode() == TupProjectResponse::Do)
+                        if (response->getMode() == TupProjectResponse::Do) {
+                            const QString currentRoute = item->pathToString();
+                            QString sourceRoute = currentRoute;
+                            const QString suppliedSource = QString::fromUtf8(response->getData());
+
+                            // NodesTool edits the live path before submitting the command.
+                            // If the model already equals the requested target, use the
+                            // producer's pre-edit snapshot. Otherwise the current model is
+                            // authoritative and is the correct source snapshot.
+                            if (currentRoute == route && !suppliedSource.isEmpty())
+                                sourceRoute = suppliedSource;
+
+                            response->setState(sourceRoute);
                             item->setPathFromString(route);
+                        }
 
-                        if (response->getMode() == TupProjectResponse::Redo)
-                            item->redoPath();
+                        if (response->getMode() == TupProjectResponse::Redo) {
+                            QPainterPath path;
+                            TupSvg2Qt::svgpath2qtpath(route, path);
+                            item->setPath(path);
+                        }
 
-                        if (response->getMode() == TupProjectResponse::Undo)
-                            item->undoPath();
+                        if (response->getMode() == TupProjectResponse::Undo) {
+                            const QString sourceRoute = response->getState();
+                            if (sourceRoute.isEmpty())
+                                return false;
+
+                            QPainterPath path;
+                            TupSvg2Qt::svgpath2qtpath(sourceRoute, path);
+                            item->setPath(path);
+                        }
 
                         emit responsed(response);
                         return true;

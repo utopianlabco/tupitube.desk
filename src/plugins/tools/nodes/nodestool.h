@@ -137,6 +137,7 @@ class TUPITUBE_PLUGIN NodesTool : public TupToolPlugin
 
         int nodeIndex;
         bool expandNode;
+        QString committedPath;
         QMap<int, QString> restorablePaths;
 };
 

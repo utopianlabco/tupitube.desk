@@ -60,8 +60,7 @@ TNodeGroup::~TNodeGroup()
         qDebug() << "[~TNodeGroup()]";
     #endif
 
-    delete nodeParentItem;
-    delete nodeScene;
+    clear();
 }
 
 void TNodeGroup::clear()
@@ -78,6 +77,7 @@ void TNodeGroup::clear()
             nodeScene->removeItem(node);
     }
 
+    qDeleteAll(nodes);
     nodes.clear();
     if (nodeParentItem)
         nodeParentItem->update();

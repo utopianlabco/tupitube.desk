@@ -336,6 +336,13 @@ bool TupProjectCommand::isItemConvert() const
         && response->originalAction() == TupProjectRequest::Convert;
 }
 
+bool TupProjectCommand::isItemEditNodes() const
+{
+    return response
+        && response->getPart() == TupProjectRequest::Item
+        && response->originalAction() == TupProjectRequest::EditNodes;
+}
+
 void TupProjectCommand::skipNextStackExecution()
 {
     skipStackExecution = true;

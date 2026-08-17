@@ -61,6 +61,7 @@ class TUPITUBE_EXPORT TupProjectCommand : public QUndoCommand
         QString errorCode() const;
         QString commandId() const;
         bool isItemConvert() const;
+        bool isItemEditNodes() const;
         void skipNextStackExecution();
         QString eventType() const;
         bool hasAuthoritativeEventPayload() const;

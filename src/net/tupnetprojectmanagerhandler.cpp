@@ -131,6 +131,30 @@ namespace {
 
         return -1;
     }
+
+    int editNodesRestoreModeFromRequestXml(const QString &xml)
+    {
+        if (xml.trimmed().isEmpty())
+            return -1;
+
+        TupRequestParser parser;
+        if (!parser.parse(xml))
+            return -1;
+
+        TupProjectResponse *response = parser.getResponse();
+        if (!response || response->getPart() != TupProjectRequest::Item
+                || response->originalAction() != TupProjectRequest::EditNodes) {
+            return -1;
+        }
+
+        const QString argument = response->getArg().toString().trimmed();
+        if (argument.startsWith(QStringLiteral("restore_source:")))
+            return static_cast<int>(TupProjectResponse::Undo);
+        if (argument.startsWith(QStringLiteral("restore_target:")))
+            return static_cast<int>(TupProjectResponse::Redo);
+
+        return -1;
+    }
 }
 
 QString convertRestoreOriginalCommandIdFromRequestXml(const QString &xml)
@@ -142,6 +166,29 @@ QString convertRestoreOriginalCommandIdFromRequestXml(const QString &xml)
     TupProjectResponse *response = parser.getResponse();
     if (!response || response->getPart() != TupProjectRequest::Item
             || response->originalAction() != TupProjectRequest::Convert) {
+        return QString();
+    }
+
+    const QString argument = response->getArg().toString();
+    const QString sourcePrefix = QStringLiteral("restore_source:");
+    const QString targetPrefix = QStringLiteral("restore_target:");
+    if (argument.startsWith(sourcePrefix))
+        return argument.mid(sourcePrefix.size()).trimmed();
+    if (argument.startsWith(targetPrefix))
+        return argument.mid(targetPrefix.size()).trimmed();
+
+    return QString();
+}
+
+QString editNodesRestoreOriginalCommandIdFromRequestXml(const QString &xml)
+{
+    TupRequestParser parser;
+    if (!parser.parse(xml))
+        return QString();
+
+    TupProjectResponse *response = parser.getResponse();
+    if (!response || response->getPart() != TupProjectRequest::Item
+            || response->originalAction() != TupProjectRequest::EditNodes) {
         return QString();
     }
 
@@ -371,6 +418,46 @@ void TupNetProjectManagerHandler::requestAuthoritativeConvertRestore(
     socket->send(request.getXml());
 }
 
+void TupNetProjectManagerHandler::requestAuthoritativeEditNodesRestore(
+    const QString &commandId, bool undoRestore)
+{
+    const QString normalizedCommandId = commandId.trimmed();
+    if (normalizedCommandId.isEmpty()
+            || !editNodesRestoreContexts.contains(normalizedCommandId)
+            || !socket
+            || socket->state() != QAbstractSocket::ConnectedState) {
+        emit editNodesRestoreRequestFinished(normalizedCommandId);
+        return;
+    }
+
+    const EditNodesRestoreContext context = editNodesRestoreContexts.value(normalizedCommandId);
+    const QString restoreAction = undoRestore
+        ? QStringLiteral("restore_source:")
+        : QStringLiteral("restore_target:");
+
+    TupProjectRequest request = TupRequestBuilder::createItemRequest(
+        context.sceneIndex,
+        context.layerIndex,
+        context.frameIndex,
+        context.itemIndex,
+        context.position,
+        static_cast<TupProject::Mode>(context.spaceMode),
+        static_cast<TupLibraryObject::ObjectType>(context.itemType),
+        TupProjectRequest::EditNodes,
+        restoreAction + normalizedCommandId,
+        QByteArray(),
+        QString(),
+        QString(),
+        context.objectId);
+
+    if (!request.isValid() || !commandTracker || !commandTracker->track(request)) {
+        emit editNodesRestoreRequestFinished(normalizedCommandId);
+        return;
+    }
+
+    socket->send(request.getXml());
+}
+
 bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
 {
     if (collaborationState != CollaborationState::Connected
@@ -413,6 +500,24 @@ bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
                 context.itemType = static_cast<int>(itemResponse->getItemType());
                 context.objectId = itemResponse->getObjectId().trimmed();
                 convertRestoreContexts.insert(commandId, context);
+            }
+        }
+
+        if (response->getPart() == TupProjectRequest::Item
+                && response->originalAction() == TupProjectRequest::EditNodes) {
+            TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+            const QString commandId = itemResponse->getCommandId().trimmed();
+            if (!commandId.isEmpty() && !itemResponse->getObjectId().trimmed().isEmpty()) {
+                EditNodesRestoreContext context;
+                context.sceneIndex = itemResponse->getSceneIndex();
+                context.layerIndex = itemResponse->getLayerIndex();
+                context.frameIndex = itemResponse->getFrameIndex();
+                context.itemIndex = itemResponse->getItemIndex();
+                context.position = itemResponse->position();
+                context.spaceMode = static_cast<int>(itemResponse->spaceMode());
+                context.itemType = static_cast<int>(itemResponse->getItemType());
+                context.objectId = itemResponse->getObjectId().trimmed();
+                editNodesRestoreContexts.insert(commandId, context);
             }
         }
 
@@ -1011,6 +1116,12 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
             convertRestoreOriginalCommandIdFromRequestXml(pendingCommandXml);
         const bool isPendingConvertRestore = pendingRestoreMode >= 0
             && !pendingRestoreOriginalCommandId.isEmpty();
+        const int pendingEditNodesRestoreMode =
+            editNodesRestoreModeFromRequestXml(pendingCommandXml);
+        const QString pendingEditNodesRestoreOriginalCommandId =
+            editNodesRestoreOriginalCommandIdFromRequestXml(pendingCommandXml);
+        const bool isPendingEditNodesRestore = pendingEditNodesRestoreMode >= 0
+            && !pendingEditNodesRestoreOriginalCommandId.isEmpty();
 
         switch (parser.status()) {
             case TupCommandResultParser::Committed:
@@ -1020,6 +1131,12 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                     emit convertRestoreStackAdvanceRequested(
                         pendingRestoreOriginalCommandId,
                         pendingRestoreMode == static_cast<int>(TupProjectResponse::Undo));
+                }
+
+                if (isPendingEditNodesRestore) {
+                    emit editNodesRestoreStackAdvanceRequested(
+                        pendingEditNodesRestoreOriginalCommandId,
+                        pendingEditNodesRestoreMode == static_cast<int>(TupProjectResponse::Undo));
                 }
 
                 if (!parser.authoritativePayload().trimmed().isEmpty()) {
@@ -1168,6 +1285,8 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
 
         if (isPendingConvertRestore)
             emit convertRestoreRequestFinished(pendingRestoreOriginalCommandId);
+        if (isPendingEditNodesRestore)
+            emit editNodesRestoreRequestFinished(pendingEditNodesRestoreOriginalCommandId);
 
         provisionalCreatedObjectIds.remove(parser.commandId());
         updateAuthoritativeModifiedState();
@@ -2090,6 +2209,7 @@ void TupNetProjectManagerHandler::closeConnection()
     if (commandTracker)
         commandTracker->clear();
     convertRestoreContexts.clear();
+    editNodesRestoreContexts.clear();
     snapshotRecoveryRevision = -1;
     snapshotReconciliationCommands.clear();
 

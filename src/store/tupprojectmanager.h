@@ -104,6 +104,8 @@ class TUPITUBE_EXPORT TupProjectManager : public QObject
         void redo();
         void advanceAuthoritativeConvertRestore(const QString &commandId, bool undoRestore);
         void finishAuthoritativeConvertRestore(const QString &commandId);
+        void advanceAuthoritativeEditNodesRestore(const QString &commandId, bool undoRestore);
+        void finishAuthoritativeEditNodesRestore(const QString &commandId);
 
     signals:
         void responsed(TupProjectResponse *reponse);
@@ -119,6 +121,7 @@ class TUPITUBE_EXPORT TupProjectManager : public QObject
         bool isNetworked;
         bool macroInProgress;
         QString pendingConvertRestoreCommandId;
+        QString pendingEditNodesRestoreCommandId;
 
         TupProject *project;
         QUndoStack *undoStack;

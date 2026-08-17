@@ -132,9 +132,12 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
                                    const QString &message);
         void convertRestoreStackAdvanceRequested(const QString &commandId, bool undoRestore);
         void convertRestoreRequestFinished(const QString &commandId);
+        void editNodesRestoreStackAdvanceRequested(const QString &commandId, bool undoRestore);
+        void editNodesRestoreRequestFinished(const QString &commandId);
 
     public slots:
         void requestAuthoritativeConvertRestore(const QString &commandId, bool undoRestore);
+        void requestAuthoritativeEditNodesRestore(const QString &commandId, bool undoRestore);
         void sendExportImageRequest(int frameIndex, int sceneIndex, const QString &title, const QString &topics, const QString &description);
         void updateStoryboardRequest(TupStoryboard *storyboard, int sceneIndex);
         void postStoryboardRequest(int sceneIndex);
@@ -151,6 +154,18 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
 
     private:
         struct ConvertRestoreContext
+        {
+            int sceneIndex = -1;
+            int layerIndex = -1;
+            int frameIndex = -1;
+            int itemIndex = -1;
+            QPointF position;
+            int spaceMode = 0;
+            int itemType = 0;
+            QString objectId;
+        };
+
+        struct EditNodesRestoreContext
         {
             int sceneIndex = -1;
             int layerIndex = -1;
@@ -232,6 +247,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         QSet<QString> snapshotReconciliationCommands;
         QHash<QString, QString> provisionalCreatedObjectIds;
         QHash<QString, ConvertRestoreContext> convertRestoreContexts;
+        QHash<QString, EditNodesRestoreContext> editNodesRestoreContexts;
         TupProjectListDialog *dialog;
         DisconnectReason m_disconnectReason = DisconnectReason::UnknownDisconnectReason;
 };

@@ -62,6 +62,10 @@ class TUPITUBE_EXPORT TupProjectCommand : public QUndoCommand
         QString commandId() const;
         bool isItemConvert() const;
         bool isItemEditNodes() const;
+        bool isUndoBlocked() const;
+        bool isRedoBlocked() const;
+        void setUndoBlocked(bool blocked);
+        void setRedoBlocked(bool blocked);
         void skipNextStackExecution();
         QString eventType() const;
         bool hasAuthoritativeEventPayload() const;
@@ -104,6 +108,8 @@ class TUPITUBE_EXPORT TupProjectCommand : public QUndoCommand
         bool executed;
         bool executionSucceeded;
         bool skipStackExecution;
+        bool undoBlocked;
+        bool redoBlocked;
         QString executionErrorCode;
 };
 

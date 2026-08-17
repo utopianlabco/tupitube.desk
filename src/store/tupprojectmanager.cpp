@@ -138,6 +138,8 @@ void TupProjectManager::setHandler(TupAbstractProjectHandler *pHandler, bool net
                 this, SLOT(advanceAuthoritativeEditNodesRestore(const QString &, bool)));
         connect(handler, SIGNAL(editNodesRestoreRequestFinished(const QString &)),
                 this, SLOT(finishAuthoritativeEditNodesRestore(const QString &)));
+        connect(handler, SIGNAL(authoritativeRestoreConflict(const QString &, bool)),
+                this, SLOT(markAuthoritativeRestoreConflict(const QString &, bool)));
     }
 
     isNetworked = networked;
@@ -437,108 +439,126 @@ void TupProjectManager::endUndoMacro()
 
 void TupProjectManager::undo()
 {
-    if (undoStack->count() > 0) {
-        if (undoStack->canUndo()) {
-            if (isNetworked && pendingConvertRestoreCommandId.isEmpty()
-                    && pendingEditNodesRestoreCommandId.isEmpty()) {
-                const int commandIndex = undoStack->index() - 1;
-                const TupProjectCommand *command = commandIndex >= 0
-                    ? dynamic_cast<const TupProjectCommand *>(undoStack->command(commandIndex))
-                    : nullptr;
-                if (command && command->isItemConvert()) {
-                    const QString commandId = command->commandId().trimmed();
-                    if (!commandId.isEmpty()) {
-                        pendingConvertRestoreCommandId = commandId;
-                        if (QMetaObject::invokeMethod(
-                                handler,
-                                "requestAuthoritativeConvertRestore",
-                                Qt::DirectConnection,
-                                Q_ARG(QString, commandId),
-                                Q_ARG(bool, true))) {
-                            return;
-                        }
-                        pendingConvertRestoreCommandId.clear();
-                    }
-                } else if (command && command->isItemEditNodes()) {
-                    const QString commandId = command->commandId().trimmed();
-                    if (!commandId.isEmpty()) {
-                        pendingEditNodesRestoreCommandId = commandId;
-                        if (QMetaObject::invokeMethod(
-                                handler,
-                                "requestAuthoritativeEditNodesRestore",
-                                Qt::DirectConnection,
-                                Q_ARG(QString, commandId),
-                                Q_ARG(bool, true))) {
-                            return;
-                        }
-                        pendingEditNodesRestoreCommandId.clear();
-                    }
-                }
-            } else if (isNetworked && (!pendingConvertRestoreCommandId.isEmpty()
-                    || !pendingEditNodesRestoreCommandId.isEmpty())) {
-                return;
-            }
+    if (!undoStack || undoStack->count() == 0)
+        return;
 
-            undoStack->undo();
-        } else {
-            #ifdef TUP_DEBUG
-                qWarning() << "[TupProjectManager::undo()] - No undo actions available!";
-            #endif
-        }
+    if (isNetworked && (!pendingConvertRestoreCommandId.isEmpty()
+            || !pendingEditNodesRestoreCommandId.isEmpty())) {
+        return;
     }
+
+    while (undoStack->canUndo()) {
+        const int commandIndex = undoStack->index() - 1;
+        const TupProjectCommand *constCommand = commandIndex >= 0
+            ? dynamic_cast<const TupProjectCommand *>(undoStack->command(commandIndex))
+            : nullptr;
+
+        if (isNetworked && constCommand && constCommand->isUndoBlocked()) {
+            TupProjectCommand *command = const_cast<TupProjectCommand *>(constCommand);
+            command->skipNextStackExecution();
+            undoStack->undo();
+            continue;
+        }
+
+        if (isNetworked && constCommand && constCommand->isItemConvert()) {
+            const QString commandId = constCommand->commandId().trimmed();
+            if (!commandId.isEmpty()) {
+                pendingConvertRestoreCommandId = commandId;
+                if (QMetaObject::invokeMethod(
+                        handler,
+                        "requestAuthoritativeConvertRestore",
+                        Qt::DirectConnection,
+                        Q_ARG(QString, commandId),
+                        Q_ARG(bool, true))) {
+                    return;
+                }
+                pendingConvertRestoreCommandId.clear();
+            }
+        } else if (isNetworked && constCommand && constCommand->isItemEditNodes()) {
+            const QString commandId = constCommand->commandId().trimmed();
+            if (!commandId.isEmpty()) {
+                pendingEditNodesRestoreCommandId = commandId;
+                if (QMetaObject::invokeMethod(
+                        handler,
+                        "requestAuthoritativeEditNodesRestore",
+                        Qt::DirectConnection,
+                        Q_ARG(QString, commandId),
+                        Q_ARG(bool, true))) {
+                    return;
+                }
+                pendingEditNodesRestoreCommandId.clear();
+            }
+        }
+
+        undoStack->undo();
+        return;
+    }
+
+#ifdef TUP_DEBUG
+    qWarning() << "[TupProjectManager::undo()] - No undo actions available!";
+#endif
 }
 
 void TupProjectManager::redo()
 {
-    if (undoStack->count() > 0) {
-       if (undoStack->canRedo()) {
-           if (isNetworked && pendingConvertRestoreCommandId.isEmpty()
-                   && pendingEditNodesRestoreCommandId.isEmpty()) {
-               const int commandIndex = undoStack->index();
-               const TupProjectCommand *command = commandIndex < undoStack->count()
-                   ? dynamic_cast<const TupProjectCommand *>(undoStack->command(commandIndex))
-                   : nullptr;
-               if (command && command->isItemConvert()) {
-                   const QString commandId = command->commandId().trimmed();
-                   if (!commandId.isEmpty()) {
-                       pendingConvertRestoreCommandId = commandId;
-                       if (QMetaObject::invokeMethod(
-                               handler,
-                               "requestAuthoritativeConvertRestore",
-                               Qt::DirectConnection,
-                               Q_ARG(QString, commandId),
-                               Q_ARG(bool, false))) {
-                           return;
-                       }
-                       pendingConvertRestoreCommandId.clear();
-                   }
-               } else if (command && command->isItemEditNodes()) {
-                   const QString commandId = command->commandId().trimmed();
-                   if (!commandId.isEmpty()) {
-                       pendingEditNodesRestoreCommandId = commandId;
-                       if (QMetaObject::invokeMethod(
-                               handler,
-                               "requestAuthoritativeEditNodesRestore",
-                               Qt::DirectConnection,
-                               Q_ARG(QString, commandId),
-                               Q_ARG(bool, false))) {
-                           return;
-                       }
-                       pendingEditNodesRestoreCommandId.clear();
-                   }
-               }
-           } else if (isNetworked && (!pendingConvertRestoreCommandId.isEmpty()
-                   || !pendingEditNodesRestoreCommandId.isEmpty())) {
-               return;
-           }
+    if (!undoStack || undoStack->count() == 0)
+        return;
 
-           undoStack->redo();
-       } else {
-           #ifdef TUP_DEBUG
-               qWarning() << "[TupProjectManager::redo()] - No redo actions available!";
-           #endif
-       }
-   }
+    if (isNetworked && (!pendingConvertRestoreCommandId.isEmpty()
+            || !pendingEditNodesRestoreCommandId.isEmpty())) {
+        return;
+    }
+
+    while (undoStack->canRedo()) {
+        const int commandIndex = undoStack->index();
+        const TupProjectCommand *constCommand = commandIndex < undoStack->count()
+            ? dynamic_cast<const TupProjectCommand *>(undoStack->command(commandIndex))
+            : nullptr;
+
+        if (isNetworked && constCommand && constCommand->isRedoBlocked()) {
+            TupProjectCommand *command = const_cast<TupProjectCommand *>(constCommand);
+            command->skipNextStackExecution();
+            undoStack->redo();
+            continue;
+        }
+
+        if (isNetworked && constCommand && constCommand->isItemConvert()) {
+            const QString commandId = constCommand->commandId().trimmed();
+            if (!commandId.isEmpty()) {
+                pendingConvertRestoreCommandId = commandId;
+                if (QMetaObject::invokeMethod(
+                        handler,
+                        "requestAuthoritativeConvertRestore",
+                        Qt::DirectConnection,
+                        Q_ARG(QString, commandId),
+                        Q_ARG(bool, false))) {
+                    return;
+                }
+                pendingConvertRestoreCommandId.clear();
+            }
+        } else if (isNetworked && constCommand && constCommand->isItemEditNodes()) {
+            const QString commandId = constCommand->commandId().trimmed();
+            if (!commandId.isEmpty()) {
+                pendingEditNodesRestoreCommandId = commandId;
+                if (QMetaObject::invokeMethod(
+                        handler,
+                        "requestAuthoritativeEditNodesRestore",
+                        Qt::DirectConnection,
+                        Q_ARG(QString, commandId),
+                        Q_ARG(bool, false))) {
+                    return;
+                }
+                pendingEditNodesRestoreCommandId.clear();
+            }
+        }
+
+        undoStack->redo();
+        return;
+    }
+
+#ifdef TUP_DEBUG
+    qWarning() << "[TupProjectManager::redo()] - No redo actions available!";
+#endif
 }
 
 void TupProjectManager::advanceAuthoritativeConvertRestore(
@@ -555,6 +575,10 @@ void TupProjectManager::advanceAuthoritativeConvertRestore(
         return;
 
     TupProjectCommand *command = const_cast<TupProjectCommand *>(constCommand);
+    if (undoRestore)
+        command->setRedoBlocked(false);
+    else
+        command->setUndoBlocked(false);
     command->skipNextStackExecution();
     if (undoRestore)
         undoStack->undo();
@@ -582,6 +606,10 @@ void TupProjectManager::advanceAuthoritativeEditNodesRestore(
         return;
 
     TupProjectCommand *command = const_cast<TupProjectCommand *>(constCommand);
+    if (undoRestore)
+        command->setRedoBlocked(false);
+    else
+        command->setUndoBlocked(false);
     command->skipNextStackExecution();
     if (undoRestore)
         undoStack->undo();
@@ -593,6 +621,31 @@ void TupProjectManager::finishAuthoritativeEditNodesRestore(const QString &comma
 {
     if (pendingEditNodesRestoreCommandId == commandId.trimmed())
         pendingEditNodesRestoreCommandId.clear();
+}
+
+void TupProjectManager::markAuthoritativeRestoreConflict(
+    const QString &commandId, bool undoRestore)
+{
+    if (!undoStack)
+        return;
+
+    const QString normalizedCommandId = commandId.trimmed();
+    if (normalizedCommandId.isEmpty())
+        return;
+
+    for (int index = 0; index < undoStack->count(); ++index) {
+        const TupProjectCommand *constCommand =
+            dynamic_cast<const TupProjectCommand *>(undoStack->command(index));
+        if (!constCommand || constCommand->commandId() != normalizedCommandId)
+            continue;
+
+        TupProjectCommand *command = const_cast<TupProjectCommand *>(constCommand);
+        if (undoRestore)
+            command->setUndoBlocked(true);
+        else
+            command->setRedoBlocked(true);
+        return;
+    }
 }
 
 void TupProjectManager::clearUndoStack()

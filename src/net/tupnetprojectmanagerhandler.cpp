@@ -1236,6 +1236,12 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                     << parser.message();
 
                 if (isPendingConvertRestore) {
+                    if (parser.errorCode() == QStringLiteral("conversion_restore_conflict")) {
+                        emit authoritativeRestoreConflict(
+                            pendingRestoreOriginalCommandId,
+                            pendingRestoreMode == static_cast<int>(TupProjectResponse::Undo));
+                    }
+
                     if (!parser.authoritativePayload().trimmed().isEmpty()
                             && !applyAuthoritativeConvertResult(
                                 parser.commandId(),
@@ -1245,6 +1251,13 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                             << "Unable to reconcile a rejected Convert restore."
                             << "Command:" << parser.commandId();
                     }
+                }
+
+                if (isPendingEditNodesRestore
+                        && parser.errorCode() == QStringLiteral("edit_nodes_restore_conflict")) {
+                    emit authoritativeRestoreConflict(
+                        pendingEditNodesRestoreOriginalCommandId,
+                        pendingEditNodesRestoreMode == static_cast<int>(TupProjectResponse::Undo));
                 }
                 break;
 

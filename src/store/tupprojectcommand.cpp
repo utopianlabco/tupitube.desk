@@ -54,7 +54,9 @@ TupProjectCommand::TupProjectCommand(TupCommandExecutor *exec, const TupProjectR
       response(nullptr),
       executed(false),
       executionSucceeded(false),
-      skipStackExecution(false)
+      skipStackExecution(false),
+      undoBlocked(false),
+      redoBlocked(false)
 {
 #ifdef TUP_DEBUG
     qDebug() << "[TupProjectCommand()]";
@@ -98,7 +100,9 @@ TupProjectCommand::TupProjectCommand(TupCommandExecutor *exec, TupProjectRespons
       response(res),
       executed(false),
       executionSucceeded(false),
-      skipStackExecution(false)
+      skipStackExecution(false),
+      undoBlocked(false),
+      redoBlocked(false)
 {
 #ifdef TUP_DEBUG
     qDebug() << "[TupProjectCommand()]";
@@ -341,6 +345,26 @@ bool TupProjectCommand::isItemEditNodes() const
     return response
         && response->getPart() == TupProjectRequest::Item
         && response->originalAction() == TupProjectRequest::EditNodes;
+}
+
+bool TupProjectCommand::isUndoBlocked() const
+{
+    return undoBlocked;
+}
+
+bool TupProjectCommand::isRedoBlocked() const
+{
+    return redoBlocked;
+}
+
+void TupProjectCommand::setUndoBlocked(bool blocked)
+{
+    undoBlocked = blocked;
+}
+
+void TupProjectCommand::setRedoBlocked(bool blocked)
+{
+    redoBlocked = blocked;
 }
 
 void TupProjectCommand::skipNextStackExecution()

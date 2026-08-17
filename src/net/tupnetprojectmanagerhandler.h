@@ -199,6 +199,9 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         bool applyAuthoritativeConvertResult(
             const QString &commandId,
             const QString &authoritativePayload);
+        bool applyAuthoritativeEditNodesResult(
+            const QString &commandId,
+            const QString &authoritativePayload);
         void handleProjectEvent(const QString &package);
         void beginProjectEventGapRecovery();
         void requestProjectSync(bool forceSnapshot = false);

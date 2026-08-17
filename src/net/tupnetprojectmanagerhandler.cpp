@@ -1124,19 +1124,14 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
             && !pendingEditNodesRestoreOriginalCommandId.isEmpty();
 
         switch (parser.status()) {
-            case TupCommandResultParser::Committed:
+            case TupCommandResultParser::Committed: {
                 status = QStringLiteral("committed");
+                bool editNodesAuthoritativeApplied = !isPendingEditNodesRestore;
 
                 if (isPendingConvertRestore) {
                     emit convertRestoreStackAdvanceRequested(
                         pendingRestoreOriginalCommandId,
                         pendingRestoreMode == static_cast<int>(TupProjectResponse::Undo));
-                }
-
-                if (isPendingEditNodesRestore) {
-                    emit editNodesRestoreStackAdvanceRequested(
-                        pendingEditNodesRestoreOriginalCommandId,
-                        pendingEditNodesRestoreMode == static_cast<int>(TupProjectResponse::Undo));
                 }
 
                 if (!parser.authoritativePayload().trimmed().isEmpty()) {
@@ -1159,7 +1154,23 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                                 << "Unable to apply authoritative Convert result."
                                 << "Command:" << parser.commandId();
                         }
+                    } else if (isPendingEditNodesRestore
+                            && parser.eventType() == QStringLiteral("item.nodes-edited")) {
+                        editNodesAuthoritativeApplied = applyAuthoritativeEditNodesResult(
+                            parser.commandId(), parser.authoritativePayload());
+                        if (!editNodesAuthoritativeApplied) {
+                            qWarning()
+                                << "[TupNetProjectManagerHandler::handlePackage()]"
+                                << "Unable to apply authoritative EditNodes result."
+                                << "Command:" << parser.commandId();
+                        }
                     }
+                }
+
+                if (isPendingEditNodesRestore && editNodesAuthoritativeApplied) {
+                    emit editNodesRestoreStackAdvanceRequested(
+                        pendingEditNodesRestoreOriginalCommandId,
+                        pendingEditNodesRestoreMode == static_cast<int>(TupProjectResponse::Undo));
                 }
 
                 if (parser.committedRevision() > 0) {
@@ -1223,6 +1234,7 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                     << "Observed revision:" << lastObservedProjectRevision;
 #endif
                 break;
+            }
 
             case TupCommandResultParser::Rejected:
                 status = QStringLiteral("rejected");
@@ -2012,6 +2024,50 @@ bool TupNetProjectManagerHandler::applyAuthoritativeConvertResult(
         << "[TupNetProjectManagerHandler::applyAuthoritativeConvertResult()]"
         << "Applying authoritative Convert result."
         << "Command:" << commandId;
+#endif
+
+    emitRequest(&request, false);
+    return true;
+}
+
+bool TupNetProjectManagerHandler::applyAuthoritativeEditNodesResult(
+    const QString &commandId, const QString &authoritativePayload)
+{
+    if (commandId.trimmed().isEmpty() || authoritativePayload.trimmed().isEmpty() || !project)
+        return false;
+
+    TupRequestParser parser;
+    if (!parser.parse(authoritativePayload.trimmed()))
+        return false;
+
+    TupProjectResponse *response = parser.getResponse();
+    if (!response || response->getPart() != TupProjectRequest::Item
+            || response->originalAction() != TupProjectRequest::EditNodes
+            || response->getCommandId() != commandId) {
+        return false;
+    }
+
+    TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+    const QString objectId = itemResponse->getObjectId().trimmed();
+    const QString route = itemResponse->getArg().toString().trimmed();
+    if (objectId.isEmpty() || route.isEmpty())
+        return false;
+
+    TupScene *scene = project->sceneAt(itemResponse->getSceneIndex());
+    TupLayer *layer = scene ? scene->layerAt(itemResponse->getLayerIndex()) : nullptr;
+    TupFrame *frame = layer ? layer->frameAt(itemResponse->getFrameIndex()) : nullptr;
+    if (!frame || !frame->graphicById(objectId))
+        return false;
+
+    TupProjectRequest request = TupRequestBuilder::fromResponse(response, true);
+    request.setExternal(true);
+
+#ifdef TUP_DEBUG
+    qWarning()
+        << "[TupNetProjectManagerHandler::applyAuthoritativeEditNodesResult()]"
+        << "Applying authoritative EditNodes result."
+        << "Command:" << commandId
+        << "object_id:" << objectId;
 #endif
 
     emitRequest(&request, false);

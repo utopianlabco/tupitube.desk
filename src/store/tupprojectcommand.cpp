@@ -347,6 +347,17 @@ bool TupProjectCommand::isItemEditNodes() const
         && response->originalAction() == TupProjectRequest::EditNodes;
 }
 
+bool TupProjectCommand::isItemTransform() const
+{
+    if (!response || response->getPart() != TupProjectRequest::Item
+            || response->originalAction() != TupProjectRequest::Transform) {
+        return false;
+    }
+
+    TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+    return !itemResponse->getObjectId().trimmed().isEmpty();
+}
+
 bool TupProjectCommand::isUndoBlocked() const
 {
     return undoBlocked;
@@ -408,6 +419,23 @@ QString TupProjectCommand::authoritativeEventPayload() const
             QString(),
             itemResponse->getObjectId());
 
+        return request.getXml();
+    }
+
+    if (response->originalAction() == TupProjectRequest::Transform) {
+        const QByteArray sourceSnapshot = response->getData();
+        const QString targetSnapshot = response->getArg().toString();
+        if (sourceSnapshot.trimmed().isEmpty() || targetSnapshot.trimmed().isEmpty()
+                || itemResponse->getObjectId().trimmed().isEmpty())
+            return QString();
+
+        const TupProjectRequest request = TupRequestBuilder::createItemRequest(
+            itemResponse->getSceneIndex(), itemResponse->getLayerIndex(),
+            itemResponse->getFrameIndex(), itemResponse->getItemIndex(),
+            itemResponse->position(), itemResponse->spaceMode(),
+            itemResponse->getItemType(), TupProjectRequest::Transform,
+            targetSnapshot, sourceSnapshot, response->getCommandId(),
+            QString(), itemResponse->getObjectId());
         return request.getXml();
     }
 

@@ -138,6 +138,10 @@ void TupProjectManager::setHandler(TupAbstractProjectHandler *pHandler, bool net
                 this, SLOT(advanceAuthoritativeEditNodesRestore(const QString &, bool)));
         connect(handler, SIGNAL(editNodesRestoreRequestFinished(const QString &)),
                 this, SLOT(finishAuthoritativeEditNodesRestore(const QString &)));
+        connect(handler, SIGNAL(transformRestoreStackAdvanceRequested(const QString &, bool)),
+                this, SLOT(advanceAuthoritativeTransformRestore(const QString &, bool)));
+        connect(handler, SIGNAL(transformRestoreRequestFinished(const QString &)),
+                this, SLOT(finishAuthoritativeTransformRestore(const QString &)));
         connect(handler, SIGNAL(authoritativeRestoreConflict(const QString &, bool)),
                 this, SLOT(markAuthoritativeRestoreConflict(const QString &, bool)));
     }
@@ -443,7 +447,8 @@ void TupProjectManager::undo()
         return;
 
     if (isNetworked && (!pendingConvertRestoreCommandId.isEmpty()
-            || !pendingEditNodesRestoreCommandId.isEmpty())) {
+            || !pendingEditNodesRestoreCommandId.isEmpty()
+            || !pendingTransformRestoreCommandId.isEmpty())) {
         return;
     }
 
@@ -488,6 +493,15 @@ void TupProjectManager::undo()
                 }
                 pendingEditNodesRestoreCommandId.clear();
             }
+        } else if (isNetworked && constCommand && constCommand->isItemTransform()) {
+            const QString commandId = constCommand->commandId().trimmed();
+            if (!commandId.isEmpty()) {
+                pendingTransformRestoreCommandId = commandId;
+                if (QMetaObject::invokeMethod(handler, "requestAuthoritativeTransformRestore",
+                        Qt::DirectConnection, Q_ARG(QString, commandId), Q_ARG(bool, true)))
+                    return;
+                pendingTransformRestoreCommandId.clear();
+            }
         }
 
         undoStack->undo();
@@ -505,7 +519,8 @@ void TupProjectManager::redo()
         return;
 
     if (isNetworked && (!pendingConvertRestoreCommandId.isEmpty()
-            || !pendingEditNodesRestoreCommandId.isEmpty())) {
+            || !pendingEditNodesRestoreCommandId.isEmpty()
+            || !pendingTransformRestoreCommandId.isEmpty())) {
         return;
     }
 
@@ -549,6 +564,15 @@ void TupProjectManager::redo()
                     return;
                 }
                 pendingEditNodesRestoreCommandId.clear();
+            }
+        } else if (isNetworked && constCommand && constCommand->isItemTransform()) {
+            const QString commandId = constCommand->commandId().trimmed();
+            if (!commandId.isEmpty()) {
+                pendingTransformRestoreCommandId = commandId;
+                if (QMetaObject::invokeMethod(handler, "requestAuthoritativeTransformRestore",
+                        Qt::DirectConnection, Q_ARG(QString, commandId), Q_ARG(bool, false)))
+                    return;
+                pendingTransformRestoreCommandId.clear();
             }
         }
 
@@ -623,6 +647,27 @@ void TupProjectManager::finishAuthoritativeEditNodesRestore(const QString &comma
         pendingEditNodesRestoreCommandId.clear();
 }
 
+void TupProjectManager::advanceAuthoritativeTransformRestore(const QString &commandId, bool undoRestore)
+{
+    if (!undoStack || pendingTransformRestoreCommandId != commandId.trimmed())
+        return;
+    const int commandIndex = undoRestore ? undoStack->index() - 1 : undoStack->index();
+    const TupProjectCommand *constCommand = commandIndex >= 0 && commandIndex < undoStack->count()
+        ? dynamic_cast<const TupProjectCommand *>(undoStack->command(commandIndex)) : nullptr;
+    if (!constCommand || constCommand->commandId() != pendingTransformRestoreCommandId)
+        return;
+    TupProjectCommand *command = const_cast<TupProjectCommand *>(constCommand);
+    if (undoRestore) command->setRedoBlocked(false); else command->setUndoBlocked(false);
+    command->skipNextStackExecution();
+    if (undoRestore) undoStack->undo(); else undoStack->redo();
+}
+
+void TupProjectManager::finishAuthoritativeTransformRestore(const QString &commandId)
+{
+    if (pendingTransformRestoreCommandId == commandId.trimmed())
+        pendingTransformRestoreCommandId.clear();
+}
+
 void TupProjectManager::markAuthoritativeRestoreConflict(
     const QString &commandId, bool undoRestore)
 {
@@ -652,6 +697,7 @@ void TupProjectManager::clearUndoStack()
 {
     pendingConvertRestoreCommandId.clear();
     pendingEditNodesRestoreCommandId.clear();
+    pendingTransformRestoreCommandId.clear();
     undoStack->clear();
 }
 

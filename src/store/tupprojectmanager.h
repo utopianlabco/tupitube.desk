@@ -106,6 +106,8 @@ class TUPITUBE_EXPORT TupProjectManager : public QObject
         void finishAuthoritativeConvertRestore(const QString &commandId);
         void advanceAuthoritativeEditNodesRestore(const QString &commandId, bool undoRestore);
         void finishAuthoritativeEditNodesRestore(const QString &commandId);
+        void advanceAuthoritativeTransformRestore(const QString &commandId, bool undoRestore);
+        void finishAuthoritativeTransformRestore(const QString &commandId);
         void markAuthoritativeRestoreConflict(const QString &commandId, bool undoRestore);
 
     signals:
@@ -123,6 +125,7 @@ class TUPITUBE_EXPORT TupProjectManager : public QObject
         bool macroInProgress;
         QString pendingConvertRestoreCommandId;
         QString pendingEditNodesRestoreCommandId;
+        QString pendingTransformRestoreCommandId;
 
         TupProject *project;
         QUndoStack *undoStack;

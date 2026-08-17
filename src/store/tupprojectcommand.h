@@ -62,6 +62,7 @@ class TUPITUBE_EXPORT TupProjectCommand : public QUndoCommand
         QString commandId() const;
         bool isItemConvert() const;
         bool isItemEditNodes() const;
+        bool isItemTransform() const;
         bool isUndoBlocked() const;
         bool isRedoBlocked() const;
         void setUndoBlocked(bool blocked);

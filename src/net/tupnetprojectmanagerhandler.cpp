@@ -646,14 +646,12 @@ bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
     if (!undoOrRedo) {
         handleProjectRequest(&request);
     } else if (socket->state() == QAbstractSocket::ConnectedState && request.isValid()) {
-        if (editNodesUndoOrRedo) {
-            if (!commandTracker || !commandTracker->track(request)) {
-                qWarning()
-                    << "[TupNetProjectManagerHandler::commandExecuted()]"
-                    << "Unable to track EditNodes Undo/Redo command:"
-                    << request.getCommandId();
-                return false;
-            }
+        if (!commandTracker || !commandTracker->track(request)) {
+            qWarning()
+                << "[TupNetProjectManagerHandler::commandExecuted()]"
+                << "Unable to track Undo/Redo command:"
+                << request.getCommandId();
+            return false;
         }
         socket->send(request.getXml());
     }

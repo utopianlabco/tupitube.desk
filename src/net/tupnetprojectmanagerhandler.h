@@ -170,6 +170,20 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
             QString objectId;
         };
 
+        struct PendingConvertContext
+        {
+            int sceneIndex = -1;
+            int layerIndex = -1;
+            int frameIndex = -1;
+            int itemIndex = -1;
+            QPointF position;
+            int spaceMode = 0;
+            int itemType = 0;
+            QString objectId;
+            QString sourceRepresentation;
+            QString targetRepresentation;
+        };
+
         struct EditNodesRestoreContext
         {
             int sceneIndex = -1;
@@ -207,6 +221,9 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
             const QString &commandId,
             const QString &authoritativePayload);
         bool applyAuthoritativeConvertResult(
+            const QString &commandId,
+            const QString &authoritativePayload);
+        bool reconcileRejectedOptimisticConvert(
             const QString &commandId,
             const QString &authoritativePayload);
         bool applyAuthoritativeEditNodesResult(
@@ -264,6 +281,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         QSet<QString> snapshotReconciliationCommands;
         QHash<QString, QString> provisionalCreatedObjectIds;
         QHash<QString, ConvertRestoreContext> convertRestoreContexts;
+        QHash<QString, PendingConvertContext> pendingConvertContexts;
         QHash<QString, EditNodesRestoreContext> editNodesRestoreContexts;
         QHash<QString, TransformRestoreContext> transformRestoreContexts;
         TupProjectListDialog *dialog;

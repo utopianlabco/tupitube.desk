@@ -169,7 +169,37 @@ namespace {
         if (argument.startsWith(QStringLiteral("restore_target:"))) return static_cast<int>(TupProjectResponse::Redo);
         return -1;
     }
+
+    TupFrame *resolveNativeItemFrame(TupProject *project, TupItemResponse *itemResponse)
+    {
+        if (!project || !itemResponse)
+            return nullptr;
+
+        TupScene *scene = project->sceneAt(itemResponse->getSceneIndex());
+        if (!scene)
+            return nullptr;
+
+        const TupProject::Mode spaceMode = itemResponse->spaceMode();
+        if (spaceMode == TupProject::FRAMES_MODE) {
+            TupLayer *layer = scene->layerAt(itemResponse->getLayerIndex());
+            return layer ? layer->frameAt(itemResponse->getFrameIndex()) : nullptr;
+        }
+
+        TupBackground *background = scene->sceneBackground();
+        if (!background)
+            return nullptr;
+
+        if (spaceMode == TupProject::VECTOR_STATIC_BG_MODE)
+            return background->vectorStaticFrame();
+        if (spaceMode == TupProject::VECTOR_DYNAMIC_BG_MODE)
+            return background->vectorDynamicFrame();
+        if (spaceMode == TupProject::VECTOR_FG_MODE)
+            return background->vectorForegroundFrame();
+
+        return nullptr;
+    }
 }
+
 
 QString convertRestoreOriginalCommandIdFromRequestXml(const QString &xml)
 {
@@ -393,6 +423,47 @@ void TupNetProjectManagerHandler::handleProjectRequest(const TupProjectRequest *
         return;
     }
 
+    if (project && request->getActionId() == TupProjectRequest::Convert) {
+        TupRequestParser requestParser;
+        if (requestParser.parse(request->getXml())) {
+            TupProjectResponse *response = requestParser.getResponse();
+            if (response && response->getPart() == TupProjectRequest::Item
+                    && response->originalAction() == TupProjectRequest::Convert
+                    && response->getArg().toString().trimmed() == QStringLiteral("path")) {
+                TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+                const QString commandId = itemResponse->getCommandId().trimmed();
+                const QString objectId = itemResponse->getObjectId().trimmed();
+                TupFrame *frame = resolveNativeItemFrame(project, itemResponse);
+                TupGraphicObject *object = frame ? frame->graphicById(objectId) : nullptr;
+
+                if (!commandId.isEmpty() && object) {
+                    QString snapshotError;
+                    const QString sourceRepresentation =
+                        TupItemConverter::representationSnapshot(object, &snapshotError);
+                    if (snapshotError.isEmpty() && !sourceRepresentation.trimmed().isEmpty()) {
+                        PendingConvertContext context;
+                        context.sceneIndex = itemResponse->getSceneIndex();
+                        context.layerIndex = itemResponse->getLayerIndex();
+                        context.frameIndex = itemResponse->getFrameIndex();
+                        context.itemIndex = itemResponse->getItemIndex();
+                        context.position = itemResponse->position();
+                        context.spaceMode = static_cast<int>(itemResponse->spaceMode());
+                        context.itemType = static_cast<int>(itemResponse->getItemType());
+                        context.objectId = objectId;
+                        context.sourceRepresentation = sourceRepresentation;
+                        pendingConvertContexts.insert(commandId, context);
+                    } else {
+                        qWarning()
+                            << "[TupNetProjectManagerHandler::handleProjectRequest()]"
+                            << "Unable to snapshot optimistic Convert source."
+                            << "Command:" << commandId
+                            << "Error:" << snapshotError;
+                    }
+                }
+            }
+        }
+    }
+
 #ifdef TUP_DEBUG
     qDebug()
         << "[TupNetProjectManagerHandler::handleProjectRequest()]"
@@ -403,6 +474,7 @@ void TupNetProjectManagerHandler::handleProjectRequest(const TupProjectRequest *
 #endif
 
     if (!commandTracker || !commandTracker->track(*request)) {
+        pendingConvertContexts.remove(request->getCommandId());
         qWarning()
             << "[TupNetProjectManagerHandler::handleProjectRequest()]"
             << "Unable to track command:"
@@ -556,6 +628,30 @@ bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
                 context.itemType = static_cast<int>(itemResponse->getItemType());
                 context.objectId = itemResponse->getObjectId().trimmed();
                 convertRestoreContexts.insert(commandId, context);
+
+                if (pendingConvertContexts.contains(commandId)) {
+                    TupFrame *frame = resolveNativeItemFrame(project, itemResponse);
+                    TupGraphicObject *object = frame
+                        ? frame->graphicById(itemResponse->getObjectId().trimmed())
+                        : nullptr;
+                    if (object) {
+                        QString snapshotError;
+                        const QString targetRepresentation =
+                            TupItemConverter::representationSnapshot(object, &snapshotError);
+                        if (snapshotError.isEmpty() && !targetRepresentation.trimmed().isEmpty()) {
+                            PendingConvertContext pendingContext =
+                                pendingConvertContexts.value(commandId);
+                            pendingContext.targetRepresentation = targetRepresentation;
+                            pendingConvertContexts.insert(commandId, pendingContext);
+                        } else {
+                            qWarning()
+                                << "[TupNetProjectManagerHandler::commandExecuted()]"
+                                << "Unable to snapshot optimistic Convert target."
+                                << "Command:" << commandId
+                                << "Error:" << snapshotError;
+                        }
+                    }
+                }
             }
         }
 
@@ -1199,6 +1295,8 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
             transformRestoreOriginalCommandIdFromRequestXml(pendingCommandXml);
         const bool isPendingTransformRestore = pendingTransformRestoreMode >= 0
             && !pendingTransformRestoreOriginalCommandId.isEmpty();
+        const bool isPendingNormalConvert =
+            pendingConvertContexts.contains(parser.commandId()) && !isPendingConvertRestore;
 
         switch (parser.status()) {
             case TupCommandResultParser::Committed: {
@@ -1364,6 +1462,15 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                     }
                 }
 
+                if (isPendingNormalConvert
+                        && !reconcileRejectedOptimisticConvert(
+                            parser.commandId(), parser.authoritativePayload())) {
+                    qWarning()
+                        << "[TupNetProjectManagerHandler::handlePackage()]"
+                        << "Rejected optimistic Convert could not be reconciled locally."
+                        << "Command:" << parser.commandId();
+                }
+
                 if (isPendingEditNodesRestore
                         && parser.errorCode() == QStringLiteral("edit_nodes_restore_conflict")) {
                     emit authoritativeRestoreConflict(
@@ -1401,6 +1508,15 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                             << "Command:" << parser.commandId();
                     }
                 }
+
+                if (isPendingNormalConvert
+                        && !reconcileRejectedOptimisticConvert(
+                            parser.commandId(), parser.authoritativePayload())) {
+                    qWarning()
+                        << "[TupNetProjectManagerHandler::handlePackage()]"
+                        << "Failed optimistic Convert could not be reconciled locally."
+                        << "Command:" << parser.commandId();
+                }
                 break;
 
             case TupCommandResultParser::Invalid:
@@ -1422,6 +1538,7 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
             emit transformRestoreRequestFinished(pendingTransformRestoreOriginalCommandId);
 
         provisionalCreatedObjectIds.remove(parser.commandId());
+        pendingConvertContexts.remove(parser.commandId());
         updateAuthoritativeModifiedState();
 
         snapshotReconciliationCommands.remove(parser.commandId());
@@ -2174,6 +2291,98 @@ bool TupNetProjectManagerHandler::applyAuthoritativeConvertResult(
     return true;
 }
 
+bool TupNetProjectManagerHandler::reconcileRejectedOptimisticConvert(
+    const QString &commandId, const QString &authoritativePayload)
+{
+    const QString normalizedCommandId = commandId.trimmed();
+    if (normalizedCommandId.isEmpty() || !pendingConvertContexts.contains(normalizedCommandId))
+        return false;
+
+    if (!authoritativePayload.trimmed().isEmpty()
+            && applyAuthoritativeConvertResult(normalizedCommandId, authoritativePayload)) {
+        return true;
+    }
+
+    const PendingConvertContext context = pendingConvertContexts.value(normalizedCommandId);
+    if (!project || context.objectId.trimmed().isEmpty()
+            || context.sourceRepresentation.trimmed().isEmpty()
+            || context.targetRepresentation.trimmed().isEmpty()) {
+        return false;
+    }
+
+    TupScene *scene = project->sceneAt(context.sceneIndex);
+    TupFrame *frame = nullptr;
+    if (scene) {
+        const TupProject::Mode spaceMode = static_cast<TupProject::Mode>(context.spaceMode);
+        if (spaceMode == TupProject::FRAMES_MODE) {
+            TupLayer *layer = scene->layerAt(context.layerIndex);
+            frame = layer ? layer->frameAt(context.frameIndex) : nullptr;
+        } else {
+            TupBackground *background = scene->sceneBackground();
+            if (background) {
+                if (spaceMode == TupProject::VECTOR_STATIC_BG_MODE)
+                    frame = background->vectorStaticFrame();
+                else if (spaceMode == TupProject::VECTOR_DYNAMIC_BG_MODE)
+                    frame = background->vectorDynamicFrame();
+                else if (spaceMode == TupProject::VECTOR_FG_MODE)
+                    frame = background->vectorForegroundFrame();
+            }
+        }
+    }
+
+    TupGraphicObject *object = frame ? frame->graphicById(context.objectId) : nullptr;
+    if (!object)
+        return false;
+
+    QString snapshotError;
+    const QString currentRepresentation =
+        TupItemConverter::representationSnapshot(object, &snapshotError);
+    if (!snapshotError.isEmpty())
+        return false;
+
+    if (!representationsEquivalent(currentRepresentation, context.targetRepresentation)) {
+#ifdef TUP_DEBUG
+        qWarning()
+            << "[TupNetProjectManagerHandler::reconcileRejectedOptimisticConvert()]"
+            << "Current representation no longer matches the optimistic target;"
+            << "leaving the newer representation untouched."
+            << "Command:" << normalizedCommandId;
+#endif
+        return true;
+    }
+
+    TupProjectRequest restoreRequest = TupRequestBuilder::createItemRequest(
+        context.sceneIndex,
+        context.layerIndex,
+        context.frameIndex,
+        context.itemIndex,
+        context.position,
+        static_cast<TupProject::Mode>(context.spaceMode),
+        static_cast<TupLibraryObject::ObjectType>(context.itemType),
+        TupProjectRequest::Convert,
+        QStringLiteral("path"),
+        context.sourceRepresentation.toUtf8(),
+        QString(),
+        QString(),
+        context.objectId);
+
+    if (!restoreRequest.isValid())
+        return false;
+
+    restoreRequest.setExternal(true);
+
+#ifdef TUP_DEBUG
+    qWarning()
+        << "[TupNetProjectManagerHandler::reconcileRejectedOptimisticConvert()]"
+        << "Restoring exact pre-Convert representation after rejected optimistic command."
+        << "Command:" << normalizedCommandId
+        << "object_id:" << context.objectId;
+#endif
+
+    emitRequest(&restoreRequest, false);
+    return true;
+}
+
 bool TupNetProjectManagerHandler::applyAuthoritativeEditNodesResult(
     const QString &commandId, const QString &authoritativePayload)
 {
@@ -2465,6 +2674,7 @@ void TupNetProjectManagerHandler::closeConnection()
     if (commandTracker)
         commandTracker->clear();
     convertRestoreContexts.clear();
+    pendingConvertContexts.clear();
     editNodesRestoreContexts.clear();
     transformRestoreContexts.clear();
     snapshotRecoveryRevision = -1;

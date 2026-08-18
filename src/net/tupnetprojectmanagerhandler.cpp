@@ -2113,8 +2113,26 @@ bool TupNetProjectManagerHandler::applyAuthoritativeConvertResult(
     TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
     if (project && !itemResponse->getObjectId().trimmed().isEmpty()) {
         TupScene *scene = project->sceneAt(itemResponse->getSceneIndex());
-        TupLayer *layer = scene ? scene->layerAt(itemResponse->getLayerIndex()) : nullptr;
-        TupFrame *frame = layer ? layer->frameAt(itemResponse->getFrameIndex()) : nullptr;
+        TupFrame *frame = nullptr;
+
+        if (scene) {
+            const TupProject::Mode spaceMode = itemResponse->spaceMode();
+            if (spaceMode == TupProject::FRAMES_MODE) {
+                TupLayer *layer = scene->layerAt(itemResponse->getLayerIndex());
+                frame = layer ? layer->frameAt(itemResponse->getFrameIndex()) : nullptr;
+            } else {
+                TupBackground *background = scene->sceneBackground();
+                if (background) {
+                    if (spaceMode == TupProject::VECTOR_STATIC_BG_MODE)
+                        frame = background->vectorStaticFrame();
+                    else if (spaceMode == TupProject::VECTOR_DYNAMIC_BG_MODE)
+                        frame = background->vectorDynamicFrame();
+                    else if (spaceMode == TupProject::VECTOR_FG_MODE)
+                        frame = background->vectorForegroundFrame();
+                }
+            }
+        }
+
         TupGraphicObject *object = frame
             ? frame->graphicById(itemResponse->getObjectId().trimmed())
             : nullptr;

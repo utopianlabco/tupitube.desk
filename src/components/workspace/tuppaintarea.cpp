@@ -607,6 +607,17 @@ void TupPaintArea::itemResponse(TupItemResponse *response)
         switch(response->getAction()) {
             case TupProjectRequest::Transform:
               {
+                  const bool targetsCurrentFrame =
+                      response->getSceneIndex() == guiScene->currentSceneIndex()
+                      && response->getLayerIndex() == guiScene->currentLayerIndex()
+                      && response->getFrameIndex() == guiScene->currentFrameIndex();
+
+                  if (response->external()
+                      && spaceMode == TupProject::FRAMES_MODE
+                      && targetsCurrentFrame) {
+                      guiScene->drawCurrentPhotogram();
+                  }
+
                   viewport()->update();
               }
             break;

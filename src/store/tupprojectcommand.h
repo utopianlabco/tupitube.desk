@@ -60,6 +60,7 @@ class TUPITUBE_EXPORT TupProjectCommand : public QUndoCommand
         bool succeeded() const;
         QString errorCode() const;
         QString commandId() const;
+        bool reconcileCreatedObjectId(const QString &authoritativeObjectId);
         bool isItemConvert() const;
         bool isItemEditNodes() const;
         bool isItemTransform() const;

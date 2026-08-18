@@ -109,6 +109,7 @@ class TUPITUBE_EXPORT TupProjectManager : public QObject
         void advanceAuthoritativeTransformRestore(const QString &commandId, bool undoRestore);
         void finishAuthoritativeTransformRestore(const QString &commandId);
         void markAuthoritativeRestoreConflict(const QString &commandId, bool undoRestore);
+        void reconcileAuthoritativeCreatedObjectId(const QString &commandId, const QString &objectId);
 
     signals:
         void responsed(TupProjectResponse *reponse);

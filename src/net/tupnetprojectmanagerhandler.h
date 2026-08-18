@@ -137,6 +137,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void transformRestoreStackAdvanceRequested(const QString &commandId, bool undoRestore);
         void transformRestoreRequestFinished(const QString &commandId);
         void authoritativeRestoreConflict(const QString &commandId, bool undoRestore);
+        void authoritativeCreatedObjectIdAssigned(const QString &commandId, const QString &objectId);
 
     public slots:
         void requestAuthoritativeConvertRestore(const QString &commandId, bool undoRestore);

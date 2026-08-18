@@ -333,6 +333,22 @@ QString TupProjectCommand::commandId() const
     return response ? response->getCommandId() : QString();
 }
 
+bool TupProjectCommand::reconcileCreatedObjectId(const QString &authoritativeObjectId)
+{
+    if (!response || response->getPart() != TupProjectRequest::Item
+            || response->originalAction() != TupProjectRequest::Add) {
+        return false;
+    }
+
+    TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+    const QString normalizedObjectId = authoritativeObjectId.trimmed();
+    if (normalizedObjectId.isEmpty() || itemResponse->getItemType() == TupLibraryObject::Svg)
+        return false;
+
+    itemResponse->setObjectId(normalizedObjectId);
+    return true;
+}
+
 bool TupProjectCommand::isItemConvert() const
 {
     return response

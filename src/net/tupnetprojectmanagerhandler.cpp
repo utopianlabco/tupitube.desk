@@ -2041,6 +2041,8 @@ bool TupNetProjectManagerHandler::reconcileAuthoritativeCreatedObjectId(
         return false;
     }
 
+    emit authoritativeCreatedObjectIdAssigned(commandId, authoritativeObjectId);
+
     TupScene *scene = project->sceneAt(itemResponse->getSceneIndex());
     if (!scene)
         return false;

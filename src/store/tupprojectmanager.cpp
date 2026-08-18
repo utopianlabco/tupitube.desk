@@ -144,6 +144,8 @@ void TupProjectManager::setHandler(TupAbstractProjectHandler *pHandler, bool net
                 this, SLOT(finishAuthoritativeTransformRestore(const QString &)));
         connect(handler, SIGNAL(authoritativeRestoreConflict(const QString &, bool)),
                 this, SLOT(markAuthoritativeRestoreConflict(const QString &, bool)));
+        connect(handler, SIGNAL(authoritativeCreatedObjectIdAssigned(const QString &, const QString &)),
+                this, SLOT(reconcileAuthoritativeCreatedObjectId(const QString &, const QString &)));
     }
 
     isNetworked = networked;
@@ -689,6 +691,29 @@ void TupProjectManager::markAuthoritativeRestoreConflict(
             command->setUndoBlocked(true);
         else
             command->setRedoBlocked(true);
+        return;
+    }
+}
+
+void TupProjectManager::reconcileAuthoritativeCreatedObjectId(
+    const QString &commandId, const QString &objectId)
+{
+    if (!undoStack)
+        return;
+
+    const QString normalizedCommandId = commandId.trimmed();
+    const QString normalizedObjectId = objectId.trimmed();
+    if (normalizedCommandId.isEmpty() || normalizedObjectId.isEmpty())
+        return;
+
+    for (int index = 0; index < undoStack->count(); ++index) {
+        const TupProjectCommand *constCommand =
+            dynamic_cast<const TupProjectCommand *>(undoStack->command(index));
+        if (!constCommand || constCommand->commandId() != normalizedCommandId)
+            continue;
+
+        TupProjectCommand *command = const_cast<TupProjectCommand *>(constCommand);
+        command->reconcileCreatedObjectId(normalizedObjectId);
         return;
     }
 }

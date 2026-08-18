@@ -1202,14 +1202,9 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
         switch (parser.status()) {
             case TupCommandResultParser::Committed: {
                 status = QStringLiteral("committed");
+                bool convertAuthoritativeApplied = !isPendingConvertRestore;
                 bool editNodesAuthoritativeApplied = !isPendingEditNodesRestore;
                 bool transformAuthoritativeApplied = !isPendingTransformRestore;
-
-                if (isPendingConvertRestore) {
-                    emit convertRestoreStackAdvanceRequested(
-                        pendingRestoreOriginalCommandId,
-                        pendingRestoreMode == static_cast<int>(TupProjectResponse::Undo));
-                }
 
                 if (!parser.authoritativePayload().trimmed().isEmpty()) {
                     if (parser.eventType() == QStringLiteral("item.created")) {
@@ -1224,8 +1219,12 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                         }
                     } else if (parser.eventType() == QStringLiteral("item.converted")
                             && !snapshotReconciliationCommands.contains(parser.commandId())) {
-                        if (!applyAuthoritativeConvertResult(
-                                parser.commandId(), parser.authoritativePayload())) {
+                        const bool convertApplied = applyAuthoritativeConvertResult(
+                            parser.commandId(), parser.authoritativePayload());
+                        if (isPendingConvertRestore)
+                            convertAuthoritativeApplied = convertApplied;
+
+                        if (!convertApplied) {
                             qWarning()
                                 << "[TupNetProjectManagerHandler::handlePackage()]"
                                 << "Unable to apply authoritative Convert result."
@@ -1252,6 +1251,12 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                                 << "Command:" << parser.commandId();
                         }
                     }
+                }
+
+                if (isPendingConvertRestore && convertAuthoritativeApplied) {
+                    emit convertRestoreStackAdvanceRequested(
+                        pendingRestoreOriginalCommandId,
+                        pendingRestoreMode == static_cast<int>(TupProjectResponse::Undo));
                 }
 
                 if (isPendingEditNodesRestore && editNodesAuthoritativeApplied) {

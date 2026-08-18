@@ -37,6 +37,7 @@
 #include "tuplayer.h"
 #include "tupframe.h"
 #include "tupgraphicobject.h"
+#include "tupbackground.h"
 #include "tupitemconverter.h"
 
 #include <QStringList>
@@ -2050,11 +2051,27 @@ bool TupNetProjectManagerHandler::reconcileAuthoritativeCreatedObjectId(
     if (!scene)
         return false;
 
-    TupLayer *layer = scene->layerAt(itemResponse->getLayerIndex());
-    if (!layer)
-        return false;
+    TupFrame *frame = nullptr;
+    const TupProject::Mode spaceMode = itemResponse->spaceMode();
+    if (spaceMode == TupProject::FRAMES_MODE) {
+        TupLayer *layer = scene->layerAt(itemResponse->getLayerIndex());
+        if (!layer)
+            return false;
 
-    TupFrame *frame = layer->frameAt(itemResponse->getFrameIndex());
+        frame = layer->frameAt(itemResponse->getFrameIndex());
+    } else {
+        TupBackground *background = scene->sceneBackground();
+        if (!background)
+            return false;
+
+        if (spaceMode == TupProject::VECTOR_STATIC_BG_MODE)
+            frame = background->vectorStaticFrame();
+        else if (spaceMode == TupProject::VECTOR_DYNAMIC_BG_MODE)
+            frame = background->vectorDynamicFrame();
+        else if (spaceMode == TupProject::VECTOR_FG_MODE)
+            frame = background->vectorForegroundFrame();
+    }
+
     if (!frame)
         return false;
 

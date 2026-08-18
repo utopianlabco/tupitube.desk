@@ -216,7 +216,17 @@ bool TupCommandExecutor::createItem(TupItemResponse *response)
                         if (response->getMode() == TupProjectResponse::Do) {
                             QGraphicsItem *item = frame->createItem(point, xml);
                             if (item) {
-                                response->setItemIndex(frame->indexOf(item));
+                                const int createdIndex = frame->indexOf(item);
+                                response->setItemIndex(createdIndex);
+
+                                TupGraphicObject *createdObject = frame->graphicAt(createdIndex);
+                                if (createdObject) {
+                                    const QString requestedObjectId = response->getObjectId().trimmed();
+                                    if (!requestedObjectId.isEmpty())
+                                        createdObject->setObjectId(requestedObjectId);
+
+                                    response->setObjectId(createdObject->objectId());
+                                }
                             } else {
                                 #ifdef TUP_DEBUG
                                     qDebug() << "[TupCommandExecutor::createItem()] - Error: QGraphicsItem object is invalid!";

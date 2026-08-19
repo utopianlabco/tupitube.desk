@@ -485,7 +485,9 @@ void TupNetProjectManagerHandler::handleProjectRequest(const TupProjectRequest *
     // Preserve the existing optimistic local execution behavior.
     emit sendCommand(request, true);
 
-    socket->send(request->getXml());
+    QString outboundXml = request->getXml();
+
+    socket->send(outboundXml);
 }
 
 void TupNetProjectManagerHandler::requestAuthoritativeConvertRestore(
@@ -1556,12 +1558,16 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                         pendingTransformRestoreMode == static_cast<int>(TupProjectResponse::Undo));
                 }
 
-                if (isPendingUngroup
-                        && !reconcileRejectedOptimisticUngroup(parser.commandId())) {
-                    qWarning()
-                        << "[TupNetProjectManagerHandler::handlePackage()]"
-                        << "Rejected optimistic Ungroup could not be reconciled locally."
-                        << "Command:" << parser.commandId();
+                if (isPendingUngroup) {
+                    if (!reconcileRejectedOptimisticUngroup(parser.commandId())) {
+                        qWarning()
+                            << "[TupNetProjectManagerHandler::handlePackage()]"
+                            << "Rejected optimistic Ungroup could not be reconciled locally."
+                            << "Command:" << parser.commandId();
+                    } else {
+                        emit authoritativeRestoreConflict(parser.commandId(), true);
+                        emit authoritativeRestoreConflict(parser.commandId(), false);
+                    }
                 }
                 break;
 
@@ -1609,12 +1615,16 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                     }
                 }
 
-                if (isPendingUngroup
-                        && !reconcileRejectedOptimisticUngroup(parser.commandId())) {
-                    qWarning()
-                        << "[TupNetProjectManagerHandler::handlePackage()]"
-                        << "Failed optimistic Ungroup could not be reconciled locally."
-                        << "Command:" << parser.commandId();
+                if (isPendingUngroup) {
+                    if (!reconcileRejectedOptimisticUngroup(parser.commandId())) {
+                        qWarning()
+                            << "[TupNetProjectManagerHandler::handlePackage()]"
+                            << "Failed optimistic Ungroup could not be reconciled locally."
+                            << "Command:" << parser.commandId();
+                    } else {
+                        emit authoritativeRestoreConflict(parser.commandId(), true);
+                        emit authoritativeRestoreConflict(parser.commandId(), false);
+                    }
                 }
                 break;
 

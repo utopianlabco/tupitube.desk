@@ -602,7 +602,8 @@ bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
 
     if (response->getMode() == TupProjectResponse::Do) {
         if (response->getPart() == TupProjectRequest::Item
-                && response->originalAction() == TupProjectRequest::Add) {
+                && (response->originalAction() == TupProjectRequest::Add
+                    || response->originalAction() == TupProjectRequest::Group)) {
             TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
             if (itemResponse->getItemType() != TupLibraryObject::Svg
                     && !itemResponse->getCommandId().trimmed().isEmpty()
@@ -1306,7 +1307,8 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                 bool transformAuthoritativeApplied = !isPendingTransformRestore;
 
                 if (!parser.authoritativePayload().trimmed().isEmpty()) {
-                    if (parser.eventType() == QStringLiteral("item.created")) {
+                    if (parser.eventType() == QStringLiteral("item.created")
+                            || parser.eventType() == QStringLiteral("item.grouped")) {
                         if (!reconcileAuthoritativeCreatedObjectId(
                                 parser.commandId(), parser.authoritativePayload())) {
 #ifdef TUP_DEBUG
@@ -2151,7 +2153,8 @@ bool TupNetProjectManagerHandler::reconcileAuthoritativeCreatedObjectId(
 
     TupProjectResponse *response = parser.getResponse();
     if (!response || response->getPart() != TupProjectRequest::Item
-            || response->originalAction() != TupProjectRequest::Add) {
+            || (response->originalAction() != TupProjectRequest::Add
+                && response->originalAction() != TupProjectRequest::Group)) {
         return false;
     }
 

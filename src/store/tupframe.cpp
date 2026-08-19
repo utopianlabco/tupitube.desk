@@ -54,6 +54,7 @@
 #include <QGraphicsView>
 #include <QCursor>
 #include <QSvgRenderer>
+#include <algorithm>
 
 TupFrame::TupFrame()
 {
@@ -602,49 +603,107 @@ void TupFrame::insertSvg(int position, TupSvgItem *item, const QString &label)
     zLevelIndex++;
 }
 
-int TupFrame::createItemGroup(int position, QList<int> group)
+int TupFrame::createItemGroup(int position, const QList<int> &group,
+                                  const QString &groupObjectId)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupFrame::createItemGroup()]";
     #endif
 
-    int zBase = static_cast<int> (this->item(position)->zValue());
-    TupItemGroup *itemGroup = new TupItemGroup;
+    if (group.size() < 2 || position < 0 || position >= graphics.size())
+        return -1;
 
-    foreach (int index, group) {
-        QGraphicsItem *item = this->item(index);
-        item->setOpacity(1.0);
-        itemGroup->addToGroup(item);
+    QList<int> positions = group;
+    std::sort(positions.begin(), positions.end());
+    positions.erase(std::unique(positions.begin(), positions.end()), positions.end());
+    if (positions.size() < 2 || positions.first() < 0 || positions.last() >= graphics.size())
+        return -1;
+
+    const int zBase = graphics.at(position)->itemZValue();
+    QList<TupGraphicObject *> groupedObjects;
+    for (int index : positions) {
+        TupGraphicObject *object = graphics.at(index);
+        if (!object || !object->item())
+            return -1;
+        groupedObjects << object;
     }
 
-    int size = group.size()-1;
-    for (int i=size;i>=0;i--)
-         removeGraphicAt(group.at(i));
+    TupItemGroup *itemGroup = new TupItemGroup;
+    for (TupGraphicObject *object : groupedObjects) {
+        QGraphicsItem *child = object->item();
+        child->setOpacity(1.0);
+        itemGroup->addToGroup(
+            child, object->objectId(), object->objectName(), object);
+    }
+
+    for (int i = positions.size() - 1; i >= 0; --i)
+        removeGraphicAt(positions.at(i));
 
     QGraphicsItem *block = qgraphicsitem_cast<QGraphicsItem *>(itemGroup);
     block->setZValue(zBase);
-    insertItem(position, block, "group");
+
+    TupGraphicObject *groupObject = new TupGraphicObject(block, this);
+    groupObject->setObjectName(QStringLiteral("group"));
+    if (!groupObjectId.trimmed().isEmpty())
+        groupObject->setObjectId(groupObjectId);
+    insertObject(position, groupObject, QStringLiteral("group"));
+
+    for (TupGraphicObject *childObject : groupedObjects) {
+        if (childObject)
+            childObject->setParent(groupObject);
+    }
 
     return position;
 }
 
-QList<QGraphicsItem *> TupFrame::splitGroup(int position)
+QList<TupGraphicObject *> TupFrame::splitGroup(int position)
 {
-    QList<QGraphicsItem *> items;
-    QGraphicsItem *object = qgraphicsitem_cast<TupItemGroup *>(item(position));
+    QList<TupGraphicObject *> objects;
+    if (position < 0 || position >= graphics.size())
+        return objects;
 
-    if (object) {
-        if (TupItemGroup *group = qgraphicsitem_cast<TupItemGroup *>(item(position))) {
-            removeGraphicAt(position);
-            items = group->childItems();
-            foreach (QGraphicsItem *child, group->childItems()) {
-                     group->removeFromGroup(child);
-                     addItem("path", child);
-            }
+    TupGraphicObject *groupObject = graphics.at(position);
+    TupItemGroup *group = groupObject
+        ? qgraphicsitem_cast<TupItemGroup *>(groupObject->item())
+        : nullptr;
+    if (!group)
+        return objects;
+
+    const QList<QGraphicsItem *> children = group->childItems();
+    if (!removeGraphicAt(position))
+        return objects;
+
+    int insertPosition = position;
+    for (QGraphicsItem *child : children) {
+        if (!child)
+            continue;
+
+        group->removeFromGroup(child);
+
+        TupGraphicObject *childObject = group->childGraphicObject(child);
+        if (!childObject) {
+            childObject = new TupGraphicObject(child, this);
+            const QString objectId = group->childObjectId(child).trimmed();
+            if (!objectId.isEmpty())
+                childObject->setObjectId(objectId);
+            childObject->setObjectName(group->childObjectName(child));
+        } else {
+            childObject->setFrame(this);
+            childObject->setParent(this);
         }
+
+        QString label = childObject->objectName();
+        if (label.isEmpty())
+            label = QStringLiteral("path");
+
+        insertObject(insertPosition, childObject, label);
+        objects << childObject;
+        ++insertPosition;
     }
 
-    return items;
+    delete group;
+    delete groupObject;
+    return objects;
 }
 
 void TupFrame::replaceItem(int position, QGraphicsItem *item)

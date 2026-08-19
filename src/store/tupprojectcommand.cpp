@@ -336,7 +336,8 @@ QString TupProjectCommand::commandId() const
 bool TupProjectCommand::reconcileCreatedObjectId(const QString &authoritativeObjectId)
 {
     if (!response || response->getPart() != TupProjectRequest::Item
-            || response->originalAction() != TupProjectRequest::Add) {
+            || (response->originalAction() != TupProjectRequest::Add
+                && response->originalAction() != TupProjectRequest::Group)) {
         return false;
     }
 
@@ -452,6 +453,21 @@ QString TupProjectCommand::authoritativeEventPayload() const
             itemResponse->getItemType(), TupProjectRequest::Transform,
             targetSnapshot, sourceSnapshot, response->getCommandId(),
             QString(), itemResponse->getObjectId());
+        return request.getXml();
+    }
+
+    if (response->originalAction() == TupProjectRequest::Group
+            || response->originalAction() == TupProjectRequest::Ungroup) {
+        if (itemResponse->getObjectId().trimmed().isEmpty())
+            return QString();
+
+        const TupProjectRequest request = TupRequestBuilder::createItemRequest(
+            itemResponse->getSceneIndex(), itemResponse->getLayerIndex(),
+            itemResponse->getFrameIndex(), itemResponse->getItemIndex(),
+            itemResponse->position(), itemResponse->spaceMode(),
+            itemResponse->getItemType(), response->originalAction(),
+            response->getArg().toString(), response->getData(),
+            response->getCommandId(), QString(), itemResponse->getObjectId());
         return request.getXml();
     }
 

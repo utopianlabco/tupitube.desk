@@ -39,6 +39,9 @@
 #include "tupabstractserializable.h"
 
 #include <QGraphicsItemGroup>
+#include <QHash>
+
+class TupGraphicObject;
 
 class TUPITUBE_EXPORT TupItemGroup: public TupAbstractSerializable, public QGraphicsItemGroup
 {
@@ -47,6 +50,13 @@ class TUPITUBE_EXPORT TupItemGroup: public TupAbstractSerializable, public QGrap
         ~TupItemGroup();
 
         void addToGroup(QGraphicsItem *item);
+        void addToGroup(QGraphicsItem *item, const QString &objectId,
+                        const QString &objectName, TupGraphicObject *object = nullptr);
+        void setChildMetadata(QGraphicsItem *item, const QString &objectId,
+                              const QString &objectName = QString());
+        QString childObjectId(QGraphicsItem *item) const;
+        QString childObjectName(QGraphicsItem *item) const;
+        TupGraphicObject *childGraphicObject(QGraphicsItem *item) const;
         virtual void fromXml(const QString &xml);
         virtual QDomElement toXml(QDomDocument &doc) const;
         void recoverChilds();
@@ -54,6 +64,9 @@ class TUPITUBE_EXPORT TupItemGroup: public TupAbstractSerializable, public QGrap
 
     private:
         QList<QGraphicsItem *> children;
+        QHash<QGraphicsItem *, QString> childObjectIds;
+        QHash<QGraphicsItem *, QString> childObjectNames;
+        QHash<QGraphicsItem *, TupGraphicObject *> childObjects;
 };
 
 #endif

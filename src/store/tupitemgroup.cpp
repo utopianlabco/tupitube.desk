@@ -34,6 +34,7 @@
 
 #include "tupitemgroup.h"
 #include "tupserializer.h"
+#include "tupgraphicobject.h"
 
 TupItemGroup::TupItemGroup(QGraphicsItem *parent) : QGraphicsItemGroup(parent)
 {
@@ -45,8 +46,53 @@ TupItemGroup::~TupItemGroup()
 
 void TupItemGroup::addToGroup(QGraphicsItem *item)
 {
-    children << item;
+    if (!item)
+        return;
+
+    if (!children.contains(item))
+        children << item;
     QGraphicsItemGroup::addToGroup(item);
+}
+
+void TupItemGroup::addToGroup(QGraphicsItem *item, const QString &objectId,
+                              const QString &objectName, TupGraphicObject *object)
+{
+    if (!item)
+        return;
+
+    setChildMetadata(item, objectId, objectName);
+    if (object)
+        childObjects.insert(item, object);
+    addToGroup(item);
+}
+
+void TupItemGroup::setChildMetadata(QGraphicsItem *item, const QString &objectId,
+                                    const QString &objectName)
+{
+    if (!item)
+        return;
+
+    const QString normalizedObjectId = objectId.trimmed();
+    if (!normalizedObjectId.isEmpty())
+        childObjectIds.insert(item, normalizedObjectId);
+
+    if (!objectName.isEmpty())
+        childObjectNames.insert(item, objectName);
+}
+
+QString TupItemGroup::childObjectId(QGraphicsItem *item) const
+{
+    return childObjectIds.value(item);
+}
+
+QString TupItemGroup::childObjectName(QGraphicsItem *item) const
+{
+    return childObjectNames.value(item);
+}
+
+TupGraphicObject *TupItemGroup::childGraphicObject(QGraphicsItem *item) const
+{
+    return childObjects.value(item, nullptr);
 }
 
 void TupItemGroup::recoverChilds()
@@ -79,7 +125,20 @@ QDomElement TupItemGroup::toXml(QDomDocument &doc) const
     int total = children.count();
     for(int i=0; i<total; i++) {
         QGraphicsItem *item = children.at(i);
-        root.appendChild(dynamic_cast<TupAbstractSerializable *>(item)->toXml(doc));
+        TupAbstractSerializable *serializable = dynamic_cast<TupAbstractSerializable *>(item);
+        if (!serializable)
+            continue;
+
+        QDomElement child = serializable->toXml(doc);
+        const QString objectId = childObjectIds.value(item).trimmed();
+        if (!objectId.isEmpty())
+            child.setAttribute(QStringLiteral("object_id"), objectId);
+
+        const QString objectName = childObjectNames.value(item);
+        if (!objectName.isEmpty())
+            child.setAttribute(QStringLiteral("object_name"), objectName);
+
+        root.appendChild(child);
     }
 
     /*

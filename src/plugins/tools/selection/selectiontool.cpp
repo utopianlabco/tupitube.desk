@@ -834,11 +834,13 @@ void SelectionTool::applyGroupAction(SelectionSettings::Group action)
         int total = selectedObjects.count();
         if (total > 1) {
             QString items = "(";
+            QStringList objectIds;
             int i = 1;
             int position = -1; 
             foreach (QGraphicsItem *item, selectedObjects) {
                 int index = frame->indexOf(item);
-                if (index > -1) {
+                const QString objectId = scene->objectId(item).trimmed();
+                if (index > -1 && !objectId.isEmpty()) {
                     if (i == 1) {
                         position = index;
                     } else {
@@ -848,11 +850,13 @@ void SelectionTool::applyGroupAction(SelectionSettings::Group action)
                     items += QString::number(index); 
                     if (i < total)
                         items += ", ";
+                    objectIds << objectId;
                 } else {
                     #ifdef TUP_DEBUG
                         qDebug() << "[SelectionTool::applyGroupAction()] - "
-                                    "Fatal Error: Index of item is invalid! -> -1";
+                                    "Fatal Error: Group target has no stable identity.";
                     #endif
+                    return;
                 }
                 i++;
             }
@@ -864,7 +868,8 @@ void SelectionTool::applyGroupAction(SelectionSettings::Group action)
             TupProjectRequest event = TupRequestBuilder::createItemRequest(scene->currentSceneIndex(),
                                       currentLayer, currentFrame,
                                       position, QPointF(), scene->getSpaceContext(),
-                                      TupLibraryObject::Item, TupProjectRequest::Group, items);
+                                      TupLibraryObject::Item, TupProjectRequest::Group, items,
+                                      objectIds.join(QStringLiteral("\n")).toUtf8());
             emit requested(&event);
         } else if (total == 1) {
             nodeManagers.clear();
@@ -881,13 +886,17 @@ void SelectionTool::applyGroupAction(SelectionSettings::Group action)
                 if (qgraphicsitem_cast<TupItemGroup *> (item)) {
                     noAction = false;
                     int itemIndex = getCurrentFrame()->indexOf(item);
+                    const QString objectId = scene->objectId(item).trimmed();
+                    if (itemIndex < 0 || objectId.isEmpty())
+                        return;
 
                     TupProjectRequest event = TupRequestBuilder::createItemRequest(
                                               scene->currentSceneIndex(),
                                               currentLayer, currentFrame,
                                               itemIndex, QPointF(),
                                               scene->getSpaceContext(), TupLibraryObject::Item,
-                                              TupProjectRequest::Ungroup);
+                                              TupProjectRequest::Ungroup, QString(), QByteArray(),
+                                              QString(), QString(), objectId);
                     emit requested(&event);
                 }
             }

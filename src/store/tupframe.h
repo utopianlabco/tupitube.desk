@@ -124,8 +124,9 @@ class TUPITUBE_EXPORT TupFrame : public QObject, public TupAbstractSerializable
         TupSvgItem *svgAt(int position) const; 
         QGraphicsItem *item(int position) const;
        
-        int createItemGroup(int position, QList<int> group);
-        QList<QGraphicsItem *> splitGroup(int position);
+        int createItemGroup(int position, const QList<int> &group,
+                            const QString &groupObjectId = QString());
+        QList<TupGraphicObject *> splitGroup(int position);
              
         TupLayer *parentLayer() const;
         TupScene *parentScene() const;

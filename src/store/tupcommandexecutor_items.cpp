@@ -54,6 +54,7 @@
 #include "tupbackground.h"
 
 #include <QGraphicsItem>
+#include <algorithm>
 
 bool TupCommandExecutor::createItem(TupItemResponse *response)
 {
@@ -515,86 +516,176 @@ bool TupCommandExecutor::moveItem(TupItemResponse *response)
     return false;
 }
 
+static TupFrame *groupingFrame(TupScene *scene, TupProject::Mode mode,
+                               int layerIndex, int frameIndex)
+{
+    if (!scene)
+        return nullptr;
+
+    if (mode == TupProject::FRAMES_MODE) {
+        TupLayer *layer = scene->layerAt(layerIndex);
+        return layer ? layer->frameAt(frameIndex) : nullptr;
+    }
+
+    TupBackground *bg = scene->sceneBackground();
+    if (!bg)
+        return nullptr;
+
+    if (mode == TupProject::VECTOR_STATIC_BG_MODE)
+        return bg->vectorStaticFrame();
+    if (mode == TupProject::VECTOR_FG_MODE)
+        return bg->vectorForegroundFrame();
+    if (mode == TupProject::VECTOR_DYNAMIC_BG_MODE)
+        return bg->vectorDynamicFrame();
+
+    return nullptr;
+}
+
+static QStringList groupedObjectIds(const QByteArray &data)
+{
+    QStringList objectIds;
+    const QStringList values = QString::fromUtf8(data).split(
+        QLatin1Char('\n'), Qt::SkipEmptyParts);
+    for (const QString &value : values) {
+        const QString objectId = value.trimmed();
+        if (!objectId.isEmpty() && !objectIds.contains(objectId))
+            objectIds << objectId;
+    }
+    return objectIds;
+}
+
+static QList<int> groupedObjectPositions(TupFrame *frame, const QStringList &objectIds)
+{
+    QList<int> positions;
+    if (!frame || objectIds.isEmpty())
+        return positions;
+
+    for (const QString &objectId : objectIds) {
+        const int index = frame->graphicIndexById(objectId);
+        if (index < 0)
+            return QList<int>();
+        positions << index;
+    }
+
+    std::sort(positions.begin(), positions.end());
+    positions.erase(std::unique(positions.begin(), positions.end()), positions.end());
+    return positions;
+}
+
+static QString groupedPositionsArgument(TupFrame *frame,
+                                        const QList<TupGraphicObject *> &objects)
+{
+    QStringList indexes;
+    for (TupGraphicObject *object : objects) {
+        if (!object)
+            continue;
+        const int index = frame->indexOf(object);
+        if (index >= 0)
+            indexes << QString::number(index);
+    }
+    return QStringLiteral("(") + indexes.join(QStringLiteral(" , ")) + QStringLiteral(")");
+}
+
+static QStringList groupedIds(const QList<TupGraphicObject *> &objects)
+{
+    QStringList objectIds;
+    for (TupGraphicObject *object : objects) {
+        if (!object)
+            continue;
+        const QString objectId = object->objectId().trimmed();
+        if (!objectId.isEmpty())
+            objectIds << objectId;
+    }
+    return objectIds;
+}
+
 bool TupCommandExecutor::groupItems(TupItemResponse *response)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupCommandExecutor::groupItems()]";
     #endif
 
-    int sceneIndex = response->getSceneIndex();
-    int layerIndex = response->getLayerIndex();
-    int frameIndex = response->getFrameIndex();
-    int itemIndex = response->getItemIndex();
-    TupProject::Mode mode = response->spaceMode();
-    QString strList = response->getArg().toString();
+    if (!response)
+        return false;
+
+    const int sceneIndex = response->getSceneIndex();
+    const int layerIndex = response->getLayerIndex();
+    const int frameIndex = response->getFrameIndex();
+    const TupProject::Mode mode = response->spaceMode();
+
+    if (mode == TupProject::FRAMES_MODE
+            && !validateIndices(sceneIndex, layerIndex, frameIndex)) {
+        return false;
+    }
+    if (mode != TupProject::FRAMES_MODE && !validateIndices(sceneIndex))
+        return false;
 
     TupScene *scene = project->sceneAt(sceneIndex);
-    
-    if (scene) {
-        if (mode == TupProject::FRAMES_MODE) {
-            TupLayer *layer = scene->layerAt(layerIndex);
-            if (layer) {
-                TupFrame *frame = layer->frameAt(frameIndex);
-                if (frame) {
-                    QString::const_iterator itr = strList.constBegin();
-                    QList<int> positions = TupSvg2Qt::parseIntList(++itr);
+    TupFrame *frame = groupingFrame(scene, mode, layerIndex, frameIndex);
+    if (!frame)
+        return false;
 
-                    // qSort(positions.begin(), positions.end());
-                    std::sort(positions.begin(), positions.end()); 
+    if (response->getMode() == TupProjectResponse::Undo) {
+        int groupIndex = response->getItemIndex();
+        const QString groupObjectId = response->getObjectId().trimmed();
+        if (!groupObjectId.isEmpty())
+            groupIndex = frame->graphicIndexById(groupObjectId);
+        if (groupIndex < 0)
+            return false;
 
-                    int position = frame->createItemGroup(itemIndex, positions);
-                    response->setItemIndex(position);
-                
-                    emit responsed(response);
-                    return true;
-                }
-            }
-        } else {
-            TupBackground *bg = scene->sceneBackground();
-            if (bg) {
-                TupFrame *frame = nullptr;
-                if (mode == TupProject::VECTOR_STATIC_BG_MODE) {
-                    frame = bg->vectorStaticFrame();
-                } else if (mode == TupProject::VECTOR_FG_MODE) {
-                    frame = bg->vectorForegroundFrame();
-                } else if (mode == TupProject::VECTOR_DYNAMIC_BG_MODE) {
-                    frame = bg->vectorDynamicFrame();
-                } else {
-                    #ifdef TUP_DEBUG
-                        qDebug() << "[TupCommandExecutor::groupItems()] - Error: Invalid mode!";
-                    #endif                    
-                    return false;
-                }
+        const QList<TupGraphicObject *> objects = frame->splitGroup(groupIndex);
+        if (objects.isEmpty())
+            return false;
 
-                if (frame) {
-                    QString::const_iterator itr = strList.constBegin();
-                    QList<int> positions = TupSvg2Qt::parseIntList(++itr);
+        response->setItemIndex(groupIndex);
+        response->setArg(groupedPositionsArgument(frame, objects));
+        response->setData(groupedIds(objects).join(QStringLiteral("\n")).toUtf8());
+        emit responsed(response);
+        return true;
+    }
 
-                    // qSort(positions.begin(), positions.end());
-                    std::sort(positions.begin(), positions.end());
+    QStringList objectIds = groupedObjectIds(response->getData());
+    QList<int> positions;
 
-                    int position = frame->createItemGroup(itemIndex, positions);
-                    response->setItemIndex(position);
+    if (!objectIds.isEmpty()) {
+        positions = groupedObjectPositions(frame, objectIds);
+        if (positions.size() != objectIds.size())
+            return false;
+    } else {
+        QString strList = response->getArg().toString();
+        if (strList.trimmed().isEmpty())
+            return false;
 
-                    emit responsed(response);
-                    return true;
-                } else {
-                    #ifdef TUP_DEBUG
-                        qDebug() << "[TupCommandExecutor::groupItems()] - Error: Invalid background frame!";
-                    #endif 
-                    return false;
-                }
+        QString::const_iterator itr = strList.constBegin();
+        positions = TupSvg2Qt::parseIntList(++itr);
+        std::sort(positions.begin(), positions.end());
+        positions.erase(std::unique(positions.begin(), positions.end()), positions.end());
+        if (positions.size() < 2)
+            return false;
 
-            } else {
-                #ifdef TUP_DEBUG
-                    qDebug() << "[TupCommandExecutor::groupItems()] - Error: Invalid background data structure!";
-                #endif
+        for (int index : positions) {
+            TupGraphicObject *object = frame->graphicAt(index);
+            if (!object || object->objectId().trimmed().isEmpty())
                 return false;
-            }
+            objectIds << object->objectId().trimmed();
         }
     }
-    
-    return false;
+
+    const int position = positions.first();
+    const int resultPosition = frame->createItemGroup(
+        position, positions, response->getObjectId());
+    if (resultPosition < 0)
+        return false;
+
+    TupGraphicObject *groupObject = frame->graphicAt(resultPosition);
+    if (!groupObject)
+        return false;
+
+    response->setItemIndex(resultPosition);
+    response->setObjectId(groupObject->objectId());
+    response->setData(objectIds.join(QStringLiteral("\n")).toUtf8());
+    emit responsed(response);
+    return true;
 }
 
 bool TupCommandExecutor::ungroupItems(TupItemResponse *response)
@@ -603,93 +694,71 @@ bool TupCommandExecutor::ungroupItems(TupItemResponse *response)
         qDebug() << "[TupCommandExecutor::ungroupItems()]";
     #endif
 
-    int sceneIndex = response->getSceneIndex();
-    int layerIndex = response->getLayerIndex();
-    int frameIndex = response->getFrameIndex();
-    int itemIndex = response->getItemIndex();
-    TupProject::Mode mode = response->spaceMode();
-    
+    if (!response)
+        return false;
+
+    const int sceneIndex = response->getSceneIndex();
+    const int layerIndex = response->getLayerIndex();
+    const int frameIndex = response->getFrameIndex();
+    const TupProject::Mode mode = response->spaceMode();
+
+    if (mode == TupProject::FRAMES_MODE
+            && !validateIndices(sceneIndex, layerIndex, frameIndex)) {
+        return false;
+    }
+    if (mode != TupProject::FRAMES_MODE && !validateIndices(sceneIndex))
+        return false;
+
     TupScene *scene = project->sceneAt(sceneIndex);
-    if (scene) {
-        if (mode == TupProject::FRAMES_MODE) {
-            TupLayer *layer = scene->layerAt(layerIndex);
-            if (layer) {
-                TupFrame *frame = layer->frameAt(frameIndex);
-                if (frame) {
-                    QString strItems = "";
-                    QList<QGraphicsItem *> items = frame->splitGroup(itemIndex);
-                    foreach (QGraphicsItem *item, items) {
-                         if (frame->indexOf(item) != -1) {
-                             if (strItems.isEmpty())
-                                 strItems += "("+ QString::number(frame->indexOf(item));
-                             else
-                                 strItems += " , "+ QString::number(frame->indexOf(item));
-                         } else {
-                             #ifdef TUP_DEBUG
-                                 qDebug() << "[TupCommandExecutor::ungroupItems()] - Error: Item wasn't found at frame!";
-                             #endif
-                         }
-                    }
-                    strItems+= ")";
-                    response->setArg(strItems);
-                    emit responsed(response);
+    TupFrame *frame = groupingFrame(scene, mode, layerIndex, frameIndex);
+    if (!frame)
+        return false;
 
-                    return true;
-                }
-            }
-        } else {
-            TupBackground *bg = scene->sceneBackground();
-            if (bg) {
-                TupFrame *frame = nullptr;
-                if (mode == TupProject::VECTOR_STATIC_BG_MODE) {
-                    frame = bg->vectorStaticFrame();
-                } else if (mode == TupProject::VECTOR_FG_MODE) {
-                    frame = bg->vectorForegroundFrame();
-                } else if (mode == TupProject::VECTOR_DYNAMIC_BG_MODE) {
-                    frame = bg->vectorDynamicFrame();
-                } else {
-                    #ifdef TUP_DEBUG
-                        qDebug() << "[TupCommandExecutor::ungroupItems()] - Error: Invalid mode!";
-                    #endif
-                    return false;
-                }
+    if (response->getMode() == TupProjectResponse::Undo) {
+        const QStringList objectIds = groupedObjectIds(response->getData());
+        const QList<int> positions = groupedObjectPositions(frame, objectIds);
+        if (positions.size() < 2 || positions.size() != objectIds.size())
+            return false;
 
-                if (frame) {
-                    QString strItems = "";
-                    QList<QGraphicsItem *> items = frame->splitGroup(itemIndex);
-                    foreach (QGraphicsItem *item, items) {
-                         if (frame->indexOf(item) != -1) {
-                             if (strItems.isEmpty())
-                                 strItems += "("+ QString::number(frame->indexOf(item));
-                             else
-                                 strItems += " , "+ QString::number(frame->indexOf(item));
-                         } else {
-                             #ifdef TUP_DEBUG
-                                 qDebug() << "[TupCommandExecutor::ungroupItems()] - Error: Item wasn't found at static/dynamic frame!";
-                             #endif
-                         }
-                    }
-                    strItems+= ")";
-                    response->setArg(strItems);
-                    emit responsed(response);
-                    return true;
-                } else {
-                    #ifdef TUP_DEBUG
-                        qDebug() << "[TupCommandExecutor::ungroupItems()] - Error: Invalid background frame!";
-                    #endif
-                    return false;
-                }
+        const int resultPosition = frame->createItemGroup(
+            positions.first(), positions, response->getObjectId());
+        if (resultPosition < 0)
+            return false;
 
-            } else {
-                #ifdef TUP_DEBUG
-                    qDebug() << "[TupCommandExecutor::ungroupItems()] - Error: Invalid background data structure!";
-                #endif
-                return false;
-            }
-        }
+        TupGraphicObject *groupObject = frame->graphicAt(resultPosition);
+        if (!groupObject)
+            return false;
+
+        response->setItemIndex(resultPosition);
+        response->setObjectId(groupObject->objectId());
+        emit responsed(response);
+        return true;
     }
 
-    return false;
+    int groupIndex = response->getItemIndex();
+    QString groupObjectId = response->getObjectId().trimmed();
+    if (!groupObjectId.isEmpty())
+        groupIndex = frame->graphicIndexById(groupObjectId);
+    if (groupIndex < 0)
+        return false;
+
+    TupGraphicObject *groupObject = frame->graphicAt(groupIndex);
+    if (!groupObject)
+        return false;
+    if (groupObjectId.isEmpty()) {
+        groupObjectId = groupObject->objectId().trimmed();
+        response->setObjectId(groupObjectId);
+    }
+
+    const QList<TupGraphicObject *> objects = frame->splitGroup(groupIndex);
+    if (objects.isEmpty())
+        return false;
+
+    response->setItemIndex(groupIndex);
+    response->setArg(groupedPositionsArgument(frame, objects));
+    response->setData(groupedIds(objects).join(QStringLiteral("\n")).toUtf8());
+    emit responsed(response);
+    return true;
 }
 
 static TupFrame *conversionFrame(TupScene *scene, TupProject::Mode mode,

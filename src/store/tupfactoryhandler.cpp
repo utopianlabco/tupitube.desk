@@ -346,6 +346,25 @@ bool TupFactoryHandler::parse()
             } else if (tag == "gradient") {
                 gradient = TupSerializer::createGradient( attributes());
             }
+
+            if (tag == "path" || tag == "rect" || tag == "ellipse"
+                    || tag == "text" || tag == "line" || tag == "symbol"
+                    || tag == "group") {
+                TupItemGroup *metadataGroup = nullptr;
+                if (tag == "group") {
+                    if (groups.size() > 1)
+                        metadataGroup = groups.at(groups.size() - 2);
+                } else if (addToGroup && !groups.isEmpty()) {
+                    metadataGroup = groups.last();
+                }
+
+                if (metadataGroup && !objects.isEmpty()) {
+                    metadataGroup->setChildMetadata(
+                        objects.last(),
+                        attributes().value("object_id").toString(),
+                        attributes().value("object_name").toString());
+                }
+            }
         } else if (isEndElement()) { // Ending Tag
             if (tag == "path") {
                 if (addToGroup)

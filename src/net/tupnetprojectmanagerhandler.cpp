@@ -484,6 +484,7 @@ void TupNetProjectManagerHandler::handleProjectRequest(const TupProjectRequest *
 
     // Preserve the existing optimistic local execution behavior.
     emit sendCommand(request, true);
+
     socket->send(request->getXml());
 }
 
@@ -611,6 +612,58 @@ bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
                 provisionalCreatedObjectIds.insert(
                     itemResponse->getCommandId(),
                     itemResponse->getObjectId().trimmed());
+            }
+        }
+
+        if (response->getPart() == TupProjectRequest::Item
+                && response->originalAction() == TupProjectRequest::Group) {
+            TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+            const QString commandId = itemResponse->getCommandId().trimmed();
+            const QString groupObjectId = itemResponse->getObjectId().trimmed();
+            const QByteArray memberObjectIds = itemResponse->getData();
+            if (!commandId.isEmpty() && !groupObjectId.isEmpty()
+                    && !memberObjectIds.trimmed().isEmpty()) {
+                PendingGroupContext context;
+                context.sceneIndex = itemResponse->getSceneIndex();
+                context.layerIndex = itemResponse->getLayerIndex();
+                context.frameIndex = itemResponse->getFrameIndex();
+                context.itemIndex = itemResponse->getItemIndex();
+                context.position = itemResponse->position();
+                context.spaceMode = static_cast<int>(itemResponse->spaceMode());
+                context.itemType = static_cast<int>(itemResponse->getItemType());
+                context.groupObjectId = groupObjectId;
+                context.memberObjectIds = memberObjectIds;
+                pendingGroupContexts.insert(commandId, context);
+            }
+        }
+
+
+        if (response->getPart() == TupProjectRequest::Item
+                && response->originalAction() == TupProjectRequest::Ungroup) {
+            TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+            const QString commandId = itemResponse->getCommandId().trimmed();
+            const QString groupObjectId = itemResponse->getObjectId().trimmed();
+            const QString memberObjectIds = itemResponse->getData().trimmed();
+            if (!commandId.isEmpty() && !groupObjectId.isEmpty()
+                    && !memberObjectIds.isEmpty()) {
+                PendingUngroupContext context;
+                context.sceneIndex = itemResponse->getSceneIndex();
+                context.layerIndex = itemResponse->getLayerIndex();
+                context.frameIndex = itemResponse->getFrameIndex();
+                context.itemIndex = itemResponse->getItemIndex();
+                context.position = itemResponse->position();
+                context.spaceMode = static_cast<int>(itemResponse->spaceMode());
+                context.itemType = static_cast<int>(itemResponse->getItemType());
+                context.groupObjectId = groupObjectId;
+                context.memberObjectIds = memberObjectIds;
+                pendingUngroupContexts.insert(commandId, context);
+            } else {
+                qWarning()
+                    << "[TupNetProjectManagerHandler::commandExecuted()]"
+                    << "Unable to capture optimistic Ungroup context."
+                    << "Command:" << commandId
+                    << "group object_id:" << groupObjectId
+                    << "members:" << memberObjectIds;
             }
         }
 
@@ -1298,6 +1351,10 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
             && !pendingTransformRestoreOriginalCommandId.isEmpty();
         const bool isPendingNormalConvert =
             pendingConvertContexts.contains(parser.commandId()) && !isPendingConvertRestore;
+        const bool isPendingNormalGroup =
+            pendingGroupContexts.contains(parser.commandId());
+        const bool isPendingUngroup =
+            pendingUngroupContexts.contains(parser.commandId());
 
         switch (parser.status()) {
             case TupCommandResultParser::Committed: {
@@ -1473,6 +1530,18 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                         << "Command:" << parser.commandId();
                 }
 
+                if (isPendingNormalGroup) {
+                    if (!reconcileRejectedOptimisticGroup(parser.commandId())) {
+                        qWarning()
+                            << "[TupNetProjectManagerHandler::handlePackage()]"
+                            << "Rejected optimistic Group could not be reconciled locally."
+                            << "Command:" << parser.commandId();
+                    } else {
+                        emit authoritativeRestoreConflict(parser.commandId(), true);
+                        emit authoritativeRestoreConflict(parser.commandId(), false);
+                    }
+                }
+
                 if (isPendingEditNodesRestore
                         && parser.errorCode() == QStringLiteral("edit_nodes_restore_conflict")) {
                     emit authoritativeRestoreConflict(
@@ -1485,6 +1554,14 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                     emit authoritativeRestoreConflict(
                         pendingTransformRestoreOriginalCommandId,
                         pendingTransformRestoreMode == static_cast<int>(TupProjectResponse::Undo));
+                }
+
+                if (isPendingUngroup
+                        && !reconcileRejectedOptimisticUngroup(parser.commandId())) {
+                    qWarning()
+                        << "[TupNetProjectManagerHandler::handlePackage()]"
+                        << "Rejected optimistic Ungroup could not be reconciled locally."
+                        << "Command:" << parser.commandId();
                 }
                 break;
 
@@ -1519,6 +1596,26 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                         << "Failed optimistic Convert could not be reconciled locally."
                         << "Command:" << parser.commandId();
                 }
+
+                if (isPendingNormalGroup) {
+                    if (!reconcileRejectedOptimisticGroup(parser.commandId())) {
+                        qWarning()
+                            << "[TupNetProjectManagerHandler::handlePackage()]"
+                            << "Failed optimistic Group could not be reconciled locally."
+                            << "Command:" << parser.commandId();
+                    } else {
+                        emit authoritativeRestoreConflict(parser.commandId(), true);
+                        emit authoritativeRestoreConflict(parser.commandId(), false);
+                    }
+                }
+
+                if (isPendingUngroup
+                        && !reconcileRejectedOptimisticUngroup(parser.commandId())) {
+                    qWarning()
+                        << "[TupNetProjectManagerHandler::handlePackage()]"
+                        << "Failed optimistic Ungroup could not be reconciled locally."
+                        << "Command:" << parser.commandId();
+                }
                 break;
 
             case TupCommandResultParser::Invalid:
@@ -1541,6 +1638,8 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
 
         provisionalCreatedObjectIds.remove(parser.commandId());
         pendingConvertContexts.remove(parser.commandId());
+        pendingGroupContexts.remove(parser.commandId());
+        pendingUngroupContexts.remove(parser.commandId());
         updateAuthoritativeModifiedState();
 
         snapshotReconciliationCommands.remove(parser.commandId());
@@ -2386,6 +2485,187 @@ bool TupNetProjectManagerHandler::reconcileRejectedOptimisticConvert(
     return true;
 }
 
+bool TupNetProjectManagerHandler::reconcileRejectedOptimisticGroup(
+    const QString &commandId)
+{
+    const QString normalizedCommandId = commandId.trimmed();
+    if (normalizedCommandId.isEmpty()
+            || !pendingGroupContexts.contains(normalizedCommandId)
+            || !project) {
+        return false;
+    }
+
+    const PendingGroupContext context =
+        pendingGroupContexts.value(normalizedCommandId);
+    if (context.groupObjectId.trimmed().isEmpty()
+            || context.memberObjectIds.trimmed().isEmpty()) {
+        return false;
+    }
+
+    TupScene *scene = project->sceneAt(context.sceneIndex);
+    TupFrame *frame = nullptr;
+    if (scene) {
+        const TupProject::Mode spaceMode =
+            static_cast<TupProject::Mode>(context.spaceMode);
+        if (spaceMode == TupProject::FRAMES_MODE) {
+            TupLayer *layer = scene->layerAt(context.layerIndex);
+            frame = layer ? layer->frameAt(context.frameIndex) : nullptr;
+        } else {
+            TupBackground *background = scene->sceneBackground();
+            if (background) {
+                if (spaceMode == TupProject::VECTOR_STATIC_BG_MODE)
+                    frame = background->vectorStaticFrame();
+                else if (spaceMode == TupProject::VECTOR_DYNAMIC_BG_MODE)
+                    frame = background->vectorDynamicFrame();
+                else if (spaceMode == TupProject::VECTOR_FG_MODE)
+                    frame = background->vectorForegroundFrame();
+            }
+        }
+    }
+
+    if (!frame)
+        return false;
+
+    if (!frame->graphicById(context.groupObjectId)) {
+#ifdef TUP_DEBUG
+        qWarning()
+            << "[TupNetProjectManagerHandler::reconcileRejectedOptimisticGroup()]"
+            << "Optimistic Group is no longer present; no local rollback is needed."
+            << "Command:" << normalizedCommandId
+            << "group object_id:" << context.groupObjectId;
+#endif
+        return true;
+    }
+
+    TupProjectRequest restoreRequest = TupRequestBuilder::createItemRequest(
+        context.sceneIndex,
+        context.layerIndex,
+        context.frameIndex,
+        context.itemIndex,
+        context.position,
+        static_cast<TupProject::Mode>(context.spaceMode),
+        static_cast<TupLibraryObject::ObjectType>(context.itemType),
+        TupProjectRequest::Ungroup,
+        QString(),
+        context.memberObjectIds,
+        QString(),
+        QString(),
+        context.groupObjectId);
+
+    if (!restoreRequest.isValid())
+        return false;
+
+    restoreRequest.setExternal(true);
+
+#ifdef TUP_DEBUG
+    qWarning()
+        << "[TupNetProjectManagerHandler::reconcileRejectedOptimisticGroup()]"
+        << "Rolling back rejected optimistic Group locally."
+        << "Command:" << normalizedCommandId
+        << "group object_id:" << context.groupObjectId
+        << "members:" << QString::fromUtf8(context.memberObjectIds);
+#endif
+
+    emitRequest(&restoreRequest, false);
+    return true;
+}
+
+bool TupNetProjectManagerHandler::reconcileRejectedOptimisticUngroup(
+    const QString &commandId)
+{
+    const QString normalizedCommandId = commandId.trimmed();
+    if (normalizedCommandId.isEmpty()
+            || !pendingUngroupContexts.contains(normalizedCommandId)) {
+        return false;
+    }
+
+    const PendingUngroupContext context =
+        pendingUngroupContexts.value(normalizedCommandId);
+    if (!project || context.groupObjectId.trimmed().isEmpty()
+            || context.memberObjectIds.trimmed().isEmpty()) {
+        return false;
+    }
+
+    TupScene *scene = project->sceneAt(context.sceneIndex);
+    TupFrame *frame = nullptr;
+    if (scene) {
+        const TupProject::Mode spaceMode =
+            static_cast<TupProject::Mode>(context.spaceMode);
+        if (spaceMode == TupProject::FRAMES_MODE) {
+            TupLayer *layer = scene->layerAt(context.layerIndex);
+            frame = layer ? layer->frameAt(context.frameIndex) : nullptr;
+        } else {
+            TupBackground *background = scene->sceneBackground();
+            if (background) {
+                if (spaceMode == TupProject::VECTOR_STATIC_BG_MODE)
+                    frame = background->vectorStaticFrame();
+                else if (spaceMode == TupProject::VECTOR_DYNAMIC_BG_MODE)
+                    frame = background->vectorDynamicFrame();
+                else if (spaceMode == TupProject::VECTOR_FG_MODE)
+                    frame = background->vectorForegroundFrame();
+            }
+        }
+    }
+
+    if (!frame)
+        return false;
+
+    // If the group already exists again, rollback is already satisfied.
+    if (frame->graphicById(context.groupObjectId))
+        return true;
+
+    const QStringList memberIds =
+        context.memberObjectIds.split(QLatin1Char('\n'), Qt::SkipEmptyParts);
+    if (memberIds.isEmpty())
+        return false;
+
+    for (const QString &memberId : memberIds) {
+        if (!frame->graphicById(memberId.trimmed())) {
+#ifdef TUP_DEBUG
+            qWarning()
+                << "[TupNetProjectManagerHandler::reconcileRejectedOptimisticUngroup()]"
+                << "A former group member is no longer present;"
+                << "leaving newer local state untouched."
+                << "Command:" << normalizedCommandId
+                << "Missing member:" << memberId;
+#endif
+            return true;
+        }
+    }
+
+    TupProjectRequest restoreRequest = TupRequestBuilder::createItemRequest(
+        context.sceneIndex,
+        context.layerIndex,
+        context.frameIndex,
+        context.itemIndex,
+        context.position,
+        static_cast<TupProject::Mode>(context.spaceMode),
+        static_cast<TupLibraryObject::ObjectType>(context.itemType),
+        TupProjectRequest::Group,
+        QString(),
+        context.memberObjectIds.toUtf8(),
+        QString(),
+        QString(),
+        context.groupObjectId);
+
+    if (!restoreRequest.isValid())
+        return false;
+
+    restoreRequest.setExternal(true);
+
+#ifdef TUP_DEBUG
+    qWarning()
+        << "[TupNetProjectManagerHandler::reconcileRejectedOptimisticUngroup()]"
+        << "Restoring rejected optimistic Ungroup locally."
+        << "Command:" << normalizedCommandId
+        << "group object_id:" << context.groupObjectId
+        << "members:" << context.memberObjectIds;
+#endif
+
+    emitRequest(&restoreRequest, false);
+    return true;
+}
+
 bool TupNetProjectManagerHandler::applyAuthoritativeEditNodesResult(
     const QString &commandId, const QString &authoritativePayload)
 {
@@ -2678,6 +2958,8 @@ void TupNetProjectManagerHandler::closeConnection()
         commandTracker->clear();
     convertRestoreContexts.clear();
     pendingConvertContexts.clear();
+    pendingGroupContexts.clear();
+    pendingUngroupContexts.clear();
     editNodesRestoreContexts.clear();
     transformRestoreContexts.clear();
     snapshotRecoveryRevision = -1;

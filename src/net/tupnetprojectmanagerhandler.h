@@ -184,6 +184,33 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
             QString targetRepresentation;
         };
 
+        struct PendingGroupContext
+        {
+            int sceneIndex = -1;
+            int layerIndex = -1;
+            int frameIndex = -1;
+            int itemIndex = -1;
+            QPointF position;
+            int spaceMode = 0;
+            int itemType = 0;
+            QString groupObjectId;
+            QByteArray memberObjectIds;
+        };
+
+
+        struct PendingUngroupContext
+        {
+            int sceneIndex = -1;
+            int layerIndex = -1;
+            int frameIndex = -1;
+            int itemIndex = -1;
+            QPointF position;
+            int spaceMode = 0;
+            int itemType = 0;
+            QString groupObjectId;
+            QString memberObjectIds;
+        };
+
         struct EditNodesRestoreContext
         {
             int sceneIndex = -1;
@@ -226,6 +253,9 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         bool reconcileRejectedOptimisticConvert(
             const QString &commandId,
             const QString &authoritativePayload);
+        bool reconcileRejectedOptimisticGroup(const QString &commandId);
+        bool reconcileRejectedOptimisticUngroup(
+            const QString &commandId);
         bool applyAuthoritativeEditNodesResult(
             const QString &commandId,
             const QString &authoritativePayload);
@@ -282,6 +312,8 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         QHash<QString, QString> provisionalCreatedObjectIds;
         QHash<QString, ConvertRestoreContext> convertRestoreContexts;
         QHash<QString, PendingConvertContext> pendingConvertContexts;
+        QHash<QString, PendingGroupContext> pendingGroupContexts;
+        QHash<QString, PendingUngroupContext> pendingUngroupContexts;
         QHash<QString, EditNodesRestoreContext> editNodesRestoreContexts;
         QHash<QString, TransformRestoreContext> transformRestoreContexts;
         TupProjectListDialog *dialog;

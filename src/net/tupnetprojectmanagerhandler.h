@@ -136,6 +136,8 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void editNodesRestoreRequestFinished(const QString &commandId);
         void transformRestoreStackAdvanceRequested(const QString &commandId, bool undoRestore);
         void transformRestoreRequestFinished(const QString &commandId);
+        void groupRestoreStackAdvanceRequested(const QString &commandId, bool undoRestore);
+        void groupRestoreRequestFinished(const QString &commandId);
         void authoritativeRestoreConflict(const QString &commandId, bool undoRestore);
         void authoritativeCreatedObjectIdAssigned(const QString &commandId, const QString &objectId);
 
@@ -143,6 +145,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void requestAuthoritativeConvertRestore(const QString &commandId, bool undoRestore);
         void requestAuthoritativeEditNodesRestore(const QString &commandId, bool undoRestore);
         void requestAuthoritativeTransformRestore(const QString &commandId, bool undoRestore);
+        void requestAuthoritativeGroupRestore(const QString &commandId, bool undoRestore);
         void sendExportImageRequest(int frameIndex, int sceneIndex, const QString &title, const QString &topics, const QString &description);
         void updateStoryboardRequest(TupStoryboard *storyboard, int sceneIndex);
         void postStoryboardRequest(int sceneIndex);
@@ -211,6 +214,26 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
             QString memberObjectIds;
         };
 
+        struct GroupRestoreContext
+        {
+            int sceneIndex = -1;
+            int layerIndex = -1;
+            int frameIndex = -1;
+            int itemIndex = -1;
+            QPointF position;
+            int spaceMode = 0;
+            int itemType = 0;
+            int originalAction = 0;
+            QString groupObjectId;
+            QByteArray memberObjectIds;
+        };
+
+        struct PendingGroupRestoreRequest
+        {
+            QString originalCommandId;
+            bool undoRestore = false;
+        };
+
         struct EditNodesRestoreContext
         {
             int sceneIndex = -1;
@@ -260,6 +283,12 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
             const QString &commandId,
             const QString &authoritativePayload);
         bool applyAuthoritativeTransformResult(
+            const QString &commandId,
+            const QString &authoritativePayload);
+        bool applyAuthoritativeGroupRestoreResult(
+            const QString &commandId,
+            const QString &authoritativePayload);
+        void updateGroupRestoreContextFromPayload(
             const QString &commandId,
             const QString &authoritativePayload);
         void handleProjectEvent(const QString &package);
@@ -314,6 +343,8 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         QHash<QString, PendingConvertContext> pendingConvertContexts;
         QHash<QString, PendingGroupContext> pendingGroupContexts;
         QHash<QString, PendingUngroupContext> pendingUngroupContexts;
+        QHash<QString, GroupRestoreContext> groupRestoreContexts;
+        QHash<QString, PendingGroupRestoreRequest> pendingGroupRestoreRequests;
         QHash<QString, EditNodesRestoreContext> editNodesRestoreContexts;
         QHash<QString, TransformRestoreContext> transformRestoreContexts;
         TupProjectListDialog *dialog;

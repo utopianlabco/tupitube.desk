@@ -589,6 +589,57 @@ void TupNetProjectManagerHandler::requestAuthoritativeTransformRestore(const QSt
     socket->send(request.getXml());
 }
 
+void TupNetProjectManagerHandler::requestAuthoritativeGroupRestore(
+    const QString &commandId, bool undoRestore)
+{
+    const QString normalizedCommandId = commandId.trimmed();
+    if (normalizedCommandId.isEmpty()
+            || !groupRestoreContexts.contains(normalizedCommandId)
+            || !socket
+            || socket->state() != QAbstractSocket::ConnectedState) {
+        emit groupRestoreRequestFinished(normalizedCommandId);
+        return;
+    }
+
+    const GroupRestoreContext context = groupRestoreContexts.value(normalizedCommandId);
+    const bool originalWasGroup = context.originalAction == TupProjectRequest::Group;
+    const bool originalWasUngroup = context.originalAction == TupProjectRequest::Ungroup;
+    if (!originalWasGroup && !originalWasUngroup) {
+        emit groupRestoreRequestFinished(normalizedCommandId);
+        return;
+    }
+
+    const int action = undoRestore
+        ? (originalWasGroup ? TupProjectRequest::Ungroup : TupProjectRequest::Group)
+        : (originalWasGroup ? TupProjectRequest::Group : TupProjectRequest::Ungroup);
+
+    TupProjectRequest request = TupRequestBuilder::createItemRequest(
+        context.sceneIndex,
+        context.layerIndex,
+        context.frameIndex,
+        context.itemIndex,
+        context.position,
+        static_cast<TupProject::Mode>(context.spaceMode),
+        static_cast<TupLibraryObject::ObjectType>(context.itemType),
+        action,
+        QString(),
+        context.memberObjectIds,
+        QString(),
+        QString(),
+        context.groupObjectId);
+
+    if (!request.isValid() || !commandTracker || !commandTracker->track(request)) {
+        emit groupRestoreRequestFinished(normalizedCommandId);
+        return;
+    }
+
+    PendingGroupRestoreRequest pending;
+    pending.originalCommandId = normalizedCommandId;
+    pending.undoRestore = undoRestore;
+    pendingGroupRestoreRequests.insert(request.getCommandId(), pending);
+    socket->send(request.getXml());
+}
+
 bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
 {
     if (collaborationState != CollaborationState::Connected
@@ -636,6 +687,20 @@ bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
                 context.groupObjectId = groupObjectId;
                 context.memberObjectIds = memberObjectIds;
                 pendingGroupContexts.insert(commandId, context);
+
+                GroupRestoreContext restoreContext;
+                restoreContext.sceneIndex = context.sceneIndex;
+                restoreContext.layerIndex = context.layerIndex;
+                restoreContext.frameIndex = context.frameIndex;
+                restoreContext.itemIndex = context.itemIndex;
+                restoreContext.position = context.position;
+                restoreContext.spaceMode = context.spaceMode;
+                restoreContext.itemType = context.itemType;
+                restoreContext.originalAction = TupProjectRequest::Group;
+                restoreContext.groupObjectId = context.groupObjectId;
+                restoreContext.memberObjectIds = context.memberObjectIds;
+                if (!response->external())
+                    groupRestoreContexts.insert(commandId, restoreContext);
             }
         }
 
@@ -659,6 +724,20 @@ bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
                 context.groupObjectId = groupObjectId;
                 context.memberObjectIds = memberObjectIds;
                 pendingUngroupContexts.insert(commandId, context);
+
+                GroupRestoreContext restoreContext;
+                restoreContext.sceneIndex = context.sceneIndex;
+                restoreContext.layerIndex = context.layerIndex;
+                restoreContext.frameIndex = context.frameIndex;
+                restoreContext.itemIndex = context.itemIndex;
+                restoreContext.position = context.position;
+                restoreContext.spaceMode = context.spaceMode;
+                restoreContext.itemType = context.itemType;
+                restoreContext.originalAction = TupProjectRequest::Ungroup;
+                restoreContext.groupObjectId = context.groupObjectId;
+                restoreContext.memberObjectIds = context.memberObjectIds.toUtf8();
+                if (!response->external())
+                    groupRestoreContexts.insert(commandId, restoreContext);
             } else {
                 qWarning()
                     << "[TupNetProjectManagerHandler::commandExecuted()]"
@@ -1357,6 +1436,10 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
             pendingGroupContexts.contains(parser.commandId());
         const bool isPendingUngroup =
             pendingUngroupContexts.contains(parser.commandId());
+        const bool isPendingGroupRestore =
+            pendingGroupRestoreRequests.contains(parser.commandId());
+        const PendingGroupRestoreRequest pendingGroupRestore =
+            pendingGroupRestoreRequests.value(parser.commandId());
 
         switch (parser.status()) {
             case TupCommandResultParser::Committed: {
@@ -1364,9 +1447,21 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                 bool convertAuthoritativeApplied = !isPendingConvertRestore;
                 bool editNodesAuthoritativeApplied = !isPendingEditNodesRestore;
                 bool transformAuthoritativeApplied = !isPendingTransformRestore;
+                bool groupRestoreAuthoritativeApplied = !isPendingGroupRestore;
 
                 if (!parser.authoritativePayload().trimmed().isEmpty()) {
-                    if (parser.eventType() == QStringLiteral("item.created")
+                    if (isPendingGroupRestore
+                            && (parser.eventType() == QStringLiteral("item.grouped")
+                                || parser.eventType() == QStringLiteral("item.ungrouped"))) {
+                        groupRestoreAuthoritativeApplied = applyAuthoritativeGroupRestoreResult(
+                            parser.commandId(), parser.authoritativePayload());
+                        if (!groupRestoreAuthoritativeApplied) {
+                            qWarning()
+                                << "[TupNetProjectManagerHandler::handlePackage()]"
+                                << "Unable to apply authoritative Group/Ungroup restore result."
+                                << "Command:" << parser.commandId();
+                        }
+                    } else if (parser.eventType() == QStringLiteral("item.created")
                             || parser.eventType() == QStringLiteral("item.grouped")) {
                         if (!reconcileAuthoritativeCreatedObjectId(
                                 parser.commandId(), parser.authoritativePayload())) {
@@ -1429,6 +1524,22 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                     emit transformRestoreStackAdvanceRequested(
                         pendingTransformRestoreOriginalCommandId,
                         pendingTransformRestoreMode == static_cast<int>(TupProjectResponse::Undo));
+                }
+
+                if (isPendingGroupRestore && groupRestoreAuthoritativeApplied) {
+                    updateGroupRestoreContextFromPayload(
+                        pendingGroupRestore.originalCommandId,
+                        parser.authoritativePayload());
+                    emit groupRestoreStackAdvanceRequested(
+                        pendingGroupRestore.originalCommandId,
+                        pendingGroupRestore.undoRestore);
+                }
+
+                if (!isPendingGroupRestore
+                        && (parser.eventType() == QStringLiteral("item.grouped")
+                            || parser.eventType() == QStringLiteral("item.ungrouped"))) {
+                    updateGroupRestoreContextFromPayload(
+                        parser.commandId(), parser.authoritativePayload());
                 }
 
                 if (parser.committedRevision() > 0) {
@@ -1530,6 +1641,12 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                         << "[TupNetProjectManagerHandler::handlePackage()]"
                         << "Rejected optimistic Convert could not be reconciled locally."
                         << "Command:" << parser.commandId();
+                }
+
+                if (isPendingGroupRestore) {
+                    emit authoritativeRestoreConflict(
+                        pendingGroupRestore.originalCommandId,
+                        pendingGroupRestore.undoRestore);
                 }
 
                 if (isPendingNormalGroup) {
@@ -1645,7 +1762,10 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
             emit editNodesRestoreRequestFinished(pendingEditNodesRestoreOriginalCommandId);
         if (isPendingTransformRestore)
             emit transformRestoreRequestFinished(pendingTransformRestoreOriginalCommandId);
+        if (isPendingGroupRestore)
+            emit groupRestoreRequestFinished(pendingGroupRestore.originalCommandId);
 
+        pendingGroupRestoreRequests.remove(parser.commandId());
         provisionalCreatedObjectIds.remove(parser.commandId());
         pendingConvertContexts.remove(parser.commandId());
         pendingGroupContexts.remove(parser.commandId());
@@ -2676,6 +2796,68 @@ bool TupNetProjectManagerHandler::reconcileRejectedOptimisticUngroup(
     return true;
 }
 
+bool TupNetProjectManagerHandler::applyAuthoritativeGroupRestoreResult(
+    const QString &commandId, const QString &authoritativePayload)
+{
+    if (commandId.trimmed().isEmpty() || authoritativePayload.trimmed().isEmpty())
+        return false;
+
+    TupRequestParser parser;
+    if (!parser.parse(authoritativePayload.trimmed()))
+        return false;
+
+    TupProjectResponse *response = parser.getResponse();
+    if (!response || response->getPart() != TupProjectRequest::Item
+            || (response->originalAction() != TupProjectRequest::Group
+                && response->originalAction() != TupProjectRequest::Ungroup)
+            || response->getCommandId() != commandId) {
+        return false;
+    }
+
+    TupProjectRequest request = TupRequestBuilder::fromResponse(response, true);
+    request.setExternal(true);
+    emitRequest(&request, false);
+    return true;
+}
+
+void TupNetProjectManagerHandler::updateGroupRestoreContextFromPayload(
+    const QString &commandId, const QString &authoritativePayload)
+{
+    const QString normalizedCommandId = commandId.trimmed();
+    if (normalizedCommandId.isEmpty() || authoritativePayload.trimmed().isEmpty())
+        return;
+
+    TupRequestParser parser;
+    if (!parser.parse(authoritativePayload.trimmed()))
+        return;
+
+    TupProjectResponse *response = parser.getResponse();
+    if (!response || response->getPart() != TupProjectRequest::Item
+            || (response->originalAction() != TupProjectRequest::Group
+                && response->originalAction() != TupProjectRequest::Ungroup)) {
+        return;
+    }
+
+    TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+    GroupRestoreContext context = groupRestoreContexts.value(normalizedCommandId);
+    context.sceneIndex = itemResponse->getSceneIndex();
+    context.layerIndex = itemResponse->getLayerIndex();
+    context.frameIndex = itemResponse->getFrameIndex();
+    context.itemIndex = itemResponse->getItemIndex();
+    context.position = itemResponse->position();
+    context.spaceMode = static_cast<int>(itemResponse->spaceMode());
+    context.itemType = static_cast<int>(itemResponse->getItemType());
+    if (context.originalAction != TupProjectRequest::Group
+            && context.originalAction != TupProjectRequest::Ungroup) {
+        context.originalAction = response->originalAction();
+    }
+    context.groupObjectId = itemResponse->getObjectId().trimmed();
+    context.memberObjectIds = itemResponse->getData();
+
+    if (!context.groupObjectId.isEmpty() && !context.memberObjectIds.trimmed().isEmpty())
+        groupRestoreContexts.insert(normalizedCommandId, context);
+}
+
 bool TupNetProjectManagerHandler::applyAuthoritativeEditNodesResult(
     const QString &commandId, const QString &authoritativePayload)
 {
@@ -2866,6 +3048,12 @@ void TupNetProjectManagerHandler::retryTimedOutCommands()
 
             commandTracker->complete(commandId);
 
+            if (pendingGroupRestoreRequests.contains(commandId)) {
+                const PendingGroupRestoreRequest pending =
+                    pendingGroupRestoreRequests.take(commandId);
+                emit groupRestoreRequestFinished(pending.originalCommandId);
+            }
+
             emit commandResultReceived(
                 commandId,
                 QStringLiteral("failed"),
@@ -2882,6 +3070,11 @@ void TupNetProjectManagerHandler::retryTimedOutCommands()
                 << commandId;
 
             commandTracker->complete(commandId);
+            if (pendingGroupRestoreRequests.contains(commandId)) {
+                const PendingGroupRestoreRequest pending =
+                    pendingGroupRestoreRequests.take(commandId);
+                emit groupRestoreRequestFinished(pending.originalCommandId);
+            }
             continue;
         }
 
@@ -2970,6 +3163,8 @@ void TupNetProjectManagerHandler::closeConnection()
     pendingConvertContexts.clear();
     pendingGroupContexts.clear();
     pendingUngroupContexts.clear();
+    groupRestoreContexts.clear();
+    pendingGroupRestoreRequests.clear();
     editNodesRestoreContexts.clear();
     transformRestoreContexts.clear();
     snapshotRecoveryRevision = -1;

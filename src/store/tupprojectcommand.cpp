@@ -375,6 +375,20 @@ bool TupProjectCommand::isItemTransform() const
     return !itemResponse->getObjectId().trimmed().isEmpty();
 }
 
+bool TupProjectCommand::isItemGroup() const
+{
+    return response
+        && response->getPart() == TupProjectRequest::Item
+        && response->originalAction() == TupProjectRequest::Group;
+}
+
+bool TupProjectCommand::isItemUngroup() const
+{
+    return response
+        && response->getPart() == TupProjectRequest::Item
+        && response->originalAction() == TupProjectRequest::Ungroup;
+}
+
 bool TupProjectCommand::isUndoBlocked() const
 {
     return undoBlocked;

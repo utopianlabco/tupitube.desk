@@ -108,6 +108,8 @@ class TUPITUBE_EXPORT TupProjectManager : public QObject
         void finishAuthoritativeEditNodesRestore(const QString &commandId);
         void advanceAuthoritativeTransformRestore(const QString &commandId, bool undoRestore);
         void finishAuthoritativeTransformRestore(const QString &commandId);
+        void advanceAuthoritativeGroupRestore(const QString &commandId, bool undoRestore);
+        void finishAuthoritativeGroupRestore(const QString &commandId);
         void markAuthoritativeRestoreConflict(const QString &commandId, bool undoRestore);
         void reconcileAuthoritativeCreatedObjectId(const QString &commandId, const QString &objectId);
 
@@ -127,6 +129,7 @@ class TUPITUBE_EXPORT TupProjectManager : public QObject
         QString pendingConvertRestoreCommandId;
         QString pendingEditNodesRestoreCommandId;
         QString pendingTransformRestoreCommandId;
+        QString pendingGroupRestoreCommandId;
 
         TupProject *project;
         QUndoStack *undoStack;

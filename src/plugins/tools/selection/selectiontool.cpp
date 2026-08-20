@@ -1520,9 +1520,11 @@ void SelectionTool::clearSelection()
 
     if (activeSelection) {
         if (!nodeManagers.isEmpty()) {
+            const QList<QGraphicsItem *> sceneItems = scene ? scene->items() : QList<QGraphicsItem *>();
             foreach (NodeManager *nodeManager, nodeManagers) {
-                nodeManager->parentItem()->setSelected(false);
-                nodeManagers.removeAll(nodeManager);
+                QGraphicsItem *parentItem = nodeManager ? nodeManager->parentItem() : nullptr;
+                if (parentItem && sceneItems.contains(parentItem))
+                    parentItem->setSelected(false);
             }
             nodeManagers.clear();
         }

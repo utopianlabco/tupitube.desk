@@ -1963,12 +1963,45 @@ void TupNetProjectManagerHandler::handleProjectEvent(const QString &package)
             << "Command:" << causedBy
             << "Revision:" << revision;
 #endif
+        if (pendingGroupRestoreRequests.contains(causedBy)) {
+            const PendingGroupRestoreRequest pendingGroupRestore =
+                pendingGroupRestoreRequests.value(causedBy);
+
+            if (eventType != QStringLiteral("item.grouped")
+                    && eventType != QStringLiteral("item.ungrouped")) {
+                qCritical()
+                    << "[TupNetProjectManagerHandler::handleProjectEvent()]"
+                    << "Pending Group/Ungroup restore was confirmed by an unexpected event type."
+                    << "Command:" << causedBy
+                    << "Event type:" << eventType;
+                requestProjectSync(true);
+                return;
+            }
+
+            if (!applyAuthoritativeGroupRestoreResult(causedBy, payloadXml)) {
+                qCritical()
+                    << "[TupNetProjectManagerHandler::handleProjectEvent()]"
+                    << "Unable to apply authoritative Group/Ungroup restore during recovery."
+                    << "Command:" << causedBy;
+                requestProjectSync(true);
+                return;
+            }
+
+            updateGroupRestoreContextFromPayload(
+                pendingGroupRestore.originalCommandId, payloadXml);
+            emit groupRestoreStackAdvanceRequested(
+                pendingGroupRestore.originalCommandId,
+                pendingGroupRestore.undoRestore);
+            emit groupRestoreRequestFinished(
+                pendingGroupRestore.originalCommandId);
+            pendingGroupRestoreRequests.remove(causedBy);
+        }
+
         lastObservedProjectRevision = revision;
         lastObservedEventIndex = eventIndex;
 
-        // The authoritative event proves that this optimistic local command
-        // was durably committed. Complete it through the same local lifecycle
-        // used by command_result so it is not resent after recovery and any
+        // The authoritative event proves that this local command was durably
+        // committed. Complete it so it is not resent after recovery and any
         // dependent commands can be released by the coordinator.
         commandTracker->complete(causedBy);
         updateAuthoritativeModifiedState();

@@ -1963,6 +1963,41 @@ void TupNetProjectManagerHandler::handleProjectEvent(const QString &package)
             << "Command:" << causedBy
             << "Revision:" << revision;
 #endif
+        const QString pendingCommandXml = commandTracker->commandXml(causedBy);
+        const int pendingConvertRestoreMode =
+            convertRestoreModeFromRequestXml(pendingCommandXml);
+        const QString pendingConvertRestoreOriginalCommandId =
+            convertRestoreOriginalCommandIdFromRequestXml(pendingCommandXml);
+        const bool isPendingConvertRestore = pendingConvertRestoreMode >= 0
+            && !pendingConvertRestoreOriginalCommandId.isEmpty();
+
+        if (isPendingConvertRestore) {
+            if (eventType != QStringLiteral("item.converted")) {
+                qCritical()
+                    << "[TupNetProjectManagerHandler::handleProjectEvent()]"
+                    << "Pending Convert restore was confirmed by an unexpected event type."
+                    << "Command:" << causedBy
+                    << "Event type:" << eventType;
+                requestProjectSync(true);
+                return;
+            }
+
+            if (!applyAuthoritativeConvertResult(causedBy, payloadXml)) {
+                qCritical()
+                    << "[TupNetProjectManagerHandler::handleProjectEvent()]"
+                    << "Unable to apply authoritative Convert restore during recovery."
+                    << "Command:" << causedBy;
+                requestProjectSync(true);
+                return;
+            }
+
+            emit convertRestoreStackAdvanceRequested(
+                pendingConvertRestoreOriginalCommandId,
+                pendingConvertRestoreMode == static_cast<int>(TupProjectResponse::Undo));
+            emit convertRestoreRequestFinished(
+                pendingConvertRestoreOriginalCommandId);
+        }
+
         if (pendingGroupRestoreRequests.contains(causedBy)) {
             const PendingGroupRestoreRequest pendingGroupRestore =
                 pendingGroupRestoreRequests.value(causedBy);

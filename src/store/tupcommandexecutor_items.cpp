@@ -433,7 +433,19 @@ bool TupCommandExecutor::moveItem(TupItemResponse *response)
     int layerIndex = response->getLayerIndex();
     int frameIndex = response->getFrameIndex();
     int objectIndex = response->getItemIndex();
-    int action = response->getArg().toInt();
+    const QString actionArgument = response->getArg().toString().trimmed();
+    const QString restorePrefix = QStringLiteral("restore_z:");
+    const bool authoritativeZRestore = actionArgument.startsWith(restorePrefix);
+
+    const int action = authoritativeZRestore ? 0 : actionArgument.toInt();
+
+    bool restoreZLevelOk = false;
+    const int authoritativeTargetZLevel = authoritativeZRestore
+        ? actionArgument.mid(restorePrefix.size()).toInt(&restoreZLevelOk)
+        : 0;
+    if (authoritativeZRestore && !restoreZLevelOk)
+        return false;
+
     TupLibraryObject::ObjectType type = response->getItemType();
     TupProject::Mode mode = response->spaceMode();
 
@@ -488,7 +500,27 @@ bool TupCommandExecutor::moveItem(TupItemResponse *response)
                 return false;
         }
 
-        if (response->getMode() == TupProjectResponse::Undo) {
+        if (authoritativeZRestore) {
+            if (response->getMode() != TupProjectResponse::Do
+                    || type == TupLibraryObject::Svg
+                    || response->getObjectId().trimmed().isEmpty()) {
+                return false;
+            }
+
+            #ifdef TUP_DEBUG
+                qDebug() << "[TupCommandExecutor::moveItem()] - Authoritative z-level restore ->"
+                         << authoritativeTargetZLevel;
+            #endif
+
+            // The action parameter is only needed by restoreItemZLevel() for
+            // legacy SVG index recovery. Authoritative restore requests are
+            // native-object operations and resolve the target by object_id.
+            if (!frame->restoreItemZLevel(
+                    type, objectIndex, TupFrame::MoveOneLevelBack,
+                    authoritativeTargetZLevel)) {
+                return false;
+            }
+        } else if (response->getMode() == TupProjectResponse::Undo) {
             bool ok = false;
             const int targetZLevel = QString::fromUtf8(response->getData()).toInt(&ok);
             if (!ok) {

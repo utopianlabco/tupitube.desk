@@ -837,6 +837,10 @@ bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
         && response->getPart() == TupProjectRequest::Item
         && response->originalAction() == TupProjectRequest::EditNodes;
 
+    const bool moveUndoOrRedo = undoOrRedo
+        && response->getPart() == TupProjectRequest::Item
+        && response->originalAction() == TupProjectRequest::Move;
+
     TupProjectRequest request;
     if (editNodesUndoOrRedo) {
         TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
@@ -869,6 +873,51 @@ bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
             QString(),
             QString(),
             itemResponse->getObjectId());
+    } else if (moveUndoOrRedo) {
+        TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+        const QString objectId = itemResponse->getObjectId().trimmed();
+        TupFrame *frame = resolveNativeItemFrame(project, itemResponse);
+        TupGraphicObject *object = frame ? frame->graphicById(objectId) : nullptr;
+
+        if (itemResponse->getItemType() == TupLibraryObject::Svg
+                || objectId.isEmpty() || !object) {
+            qWarning()
+                << "[TupNetProjectManagerHandler::commandExecuted()]"
+                << "Move Undo/Redo cannot build an authoritative z-level restore request."
+                << "Command:" << response->getCommandId()
+                << "object_id:" << objectId
+                << "Item type:" << itemResponse->getItemType();
+            return false;
+        }
+
+        const int targetZLevel = object->itemZValue();
+        const int currentIndex = frame->graphicIndexById(objectId);
+        if (currentIndex < 0)
+            return false;
+
+        #ifdef TUP_DEBUG
+            qDebug()
+                << "[TupNetProjectManagerHandler::commandExecuted()]"
+                << "Sending authoritative Move z-level restore."
+                << "Command:" << response->getCommandId()
+                << "object_id:" << objectId
+                << "Target z-level:" << targetZLevel;
+        #endif
+
+        request = TupRequestBuilder::createItemRequest(
+            itemResponse->getSceneIndex(),
+            itemResponse->getLayerIndex(),
+            itemResponse->getFrameIndex(),
+            currentIndex,
+            itemResponse->position(),
+            itemResponse->spaceMode(),
+            itemResponse->getItemType(),
+            TupProjectRequest::Move,
+            QStringLiteral("restore_z:%1").arg(targetZLevel),
+            QByteArray(),
+            QString(),
+            QString(),
+            objectId);
     } else {
         request = TupRequestBuilder::fromResponse(response, false);
     }

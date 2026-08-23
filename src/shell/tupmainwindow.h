@@ -254,6 +254,7 @@ class TupMainWindow : public TabbedMainWindow
         QString m_filename;
         QString activeRecoveryDir;
         bool lastSave;
+        bool recoveryExitPending = false;
         PendingCloseAction pendingCloseAction;
 
     private:

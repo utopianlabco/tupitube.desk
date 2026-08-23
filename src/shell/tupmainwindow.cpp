@@ -1562,22 +1562,35 @@ bool TupMainWindow::storeProcedure()
 
         QMessageBox msgBox(this);
         msgBox.setWindowTitle(tr("Project Save Failed"));
-        if (!recoveryPathAfterSave.isEmpty()
+        const bool recoveryCreated = !recoveryPathAfterSave.isEmpty()
                 && recoveryPathAfterSave != recoveryPathBeforeSave
-                && QDir(recoveryPathAfterSave).exists()) {
-            msgBox.setIcon(QMessageBox::Warning);
+                && QDir(recoveryPathAfterSave).exists();
+
+        if (recoveryCreated) {
+            msgBox.setIcon(QMessageBox::Critical);
             msgBox.setText(tr("The normal .tup file could not be created, but TupiTube preserved a recovery copy of your project."));
             msgBox.setInformativeText(tr("Recovery copy:<br/><b>%1</b><br/><br/>"
-                                         "Your project is still open with unsaved changes. If TupiTube is restarted, it will offer to recover this project automatically.")
+                                         "TupiTube must restart before you continue editing. "
+                                         "On the next start, it will offer to recover this project automatically.")
                                       .arg(recoveryPathAfterSave));
+            msgBox.setStandardButtons(QMessageBox::NoButton);
+            msgBox.addButton(tr("Exit TupiTube"), QMessageBox::AcceptRole);
+            msgBox.exec();
+
+            // Package generation failed after the unpacked project had been
+            // serialized and a validated recovery snapshot was created. Do not
+            // allow this compromised session to continue editing. The queued
+            // close avoids re-entering closeEvent() from inside the save stack.
+            recoveryExitPending = true;
+            QTimer::singleShot(0, this, SLOT(close()));
         } else {
             msgBox.setIcon(QMessageBox::Critical);
             msgBox.setText(tr("The project could not be saved."));
             msgBox.setInformativeText(tr("Your project is still open with its unsaved changes. "
                                          "Please check the destination, available disk space, and write permissions, then try again."));
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.exec();
         }
-        msgBox.setStandardButtons(QMessageBox::Ok);
-        msgBox.exec();
 
         return false;
     }
@@ -1674,12 +1687,12 @@ void TupMainWindow::closeEvent(QCloseEvent *event)
         qDebug() << "[TupMainWindow::closeEvent(QCloseEvent)]";
     #endif
 
-    if (pendingCloseAction != NoPendingClose) {
+    if (!recoveryExitPending && pendingCloseAction != NoPendingClose) {
         event->ignore();
         return;
     }
 
-    if (cancelChanges(ExitApplicationAfterSave)) {
+    if (!recoveryExitPending && cancelChanges(ExitApplicationAfterSave)) {
         event->ignore();
         return;
     } else {

@@ -33,24 +33,23 @@
  ***************************************************************************/
 
 #include "tbackupdialog.h"
-#include "tconfig.h"
-#include "tapplicationproperties.h"
 #include "tseparator.h"
-#include "talgorithm.h"
 #include "tosd.h"
 
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QToolButton>
-#include <QPushButton>
+#include <QDir>
 #include <QFileDialog>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QPushButton>
+#include <QStandardPaths>
+#include <QToolButton>
+#include <QVBoxLayout>
 
-TBackupDialog::TBackupDialog(const QString &path, const QString &project, QWidget *parent) : QDialog(parent)
+TBackupDialog::TBackupDialog(const QString &project, QWidget *parent) : QDialog(parent),
+                                                                       pathLine(nullptr),
+                                                                       projectName(project)
 {
     setModal(true);
-
-    sourcePath = path;
-    projectName = project;
     setupGUI();
 }
 
@@ -65,11 +64,16 @@ void TBackupDialog::setupGUI()
 
     QVBoxLayout *layout = new QVBoxLayout(this);
 
-    QString msg = tr("There was an issue while saving your project.<br/>"
-                     "Please, select a folder to try to recover it.");
+    QString msg = tr("TupiTube could not create the normal project package or its automatic recovery copy for <b>%1</b>.<br/>"
+                     "Choose another folder where TupiTube can preserve an unpacked recovery snapshot.")
+                  .arg(projectName);
     QLabel *label = new QLabel(msg);
+    label->setWordWrap(true);
 
-    destPath = QDir::homePath();
+    destPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    if (destPath.isEmpty())
+        destPath = QDir::homePath();
+
     pathLine = new QLineEdit(destPath);
 
     QToolButton *openButton = new QToolButton;
@@ -82,13 +86,11 @@ void TBackupDialog::setupGUI()
     filePathLayout->addWidget(pathLine);
     filePathLayout->addWidget(openButton);
 
-    QPushButton *backupButton = new QPushButton(tr("Make Backup"));
-    layout->addWidget(backupButton);
-    connect(backupButton, SIGNAL(clicked()), this, SLOT(makeBackup()));
+    QPushButton *backupButton = new QPushButton(tr("Preserve Recovery Copy"));
+    connect(backupButton, SIGNAL(clicked()), this, SLOT(acceptDirectory()));
 
     QPushButton *closeButton = new QPushButton(tr("Cancel"));
-    layout->addWidget(closeButton);
-    connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
+    connect(closeButton, SIGNAL(clicked()), this, SLOT(reject()));
 
     QHBoxLayout *buttonLayout = new QHBoxLayout;
     buttonLayout->addWidget(backupButton, 1, Qt::AlignHCenter);
@@ -98,114 +100,37 @@ void TBackupDialog::setupGUI()
     layout->addLayout(filePathLayout);
     layout->addWidget(new TSeparator);
     layout->addLayout(buttonLayout);
-
-    setAttribute(Qt::WA_DeleteOnClose, true);
 }
 
 void TBackupDialog::chooseDirectory()
 {
-    destPath = QFileDialog::getExistingDirectory(this, tr("Choose a directory..."), QDir::homePath(),
-                                                 QFileDialog::ShowDirsOnly
-                                                 | QFileDialog::DontResolveSymlinks);
-    if (!destPath.isEmpty())
+    QString path = QFileDialog::getExistingDirectory(this, tr("Choose a directory..."), pathLine->text(),
+                                                      QFileDialog::ShowDirsOnly
+                                                      | QFileDialog::DontResolveSymlinks);
+    if (!path.isEmpty()) {
+        destPath = path;
         pathLine->setText(destPath);
+    }
 }
 
-void TBackupDialog::makeBackup()
+void TBackupDialog::acceptDirectory()
 {
-    destPath = pathLine->text();
+    destPath = pathLine->text().trimmed();
+    if (destPath.isEmpty()) {
+        TOsd::self()->display(TOsd::Error, tr("Please, choose a recovery folder."));
+        return;
+    }
+
     QDir dir(destPath);
-
-    if (!dir.exists(destPath)) {
-        if (!dir.mkpath(destPath)) {
-            #ifdef TUP_DEBUG
-                qDebug() << "TBackupDialog::makeProjectBackup() - Fatal Error:  -> " + destPath;
-            #endif
-            TOsd::self()->display(TOsd::Error, tr("Folder doesn't exist. Please, pick one!"));
-            return;
-        }
+    if (!dir.exists() && !dir.mkpath(".")) {
+        TOsd::self()->display(TOsd::Error, tr("The recovery folder cannot be created."));
+        return;
     }
 
-    destPath += QString("/" + projectName + ".bck");
-    TCONFIG->beginGroup("General");
-    TCONFIG->setValue("RecoveryDir", destPath);
-    TCONFIG->sync();
-
-    if (makeProjectBackup(sourcePath, destPath)) {
-        #ifdef TUP_DEBUG
-            qDebug() << "TBackupDialog::makeProjectBackup() - Backup was made successfully!";
-        #endif
-        QDialog::accept();
-    } else {
-        #ifdef TUP_DEBUG
-            qDebug() << "TBackupDialog::makeProjectBackup() - Fatal Error: backup copy has failed!";
-        #endif
-        QDialog::rejected();
-    }
+    accept();
 }
 
-bool TBackupDialog::makeProjectBackup(const QString &sourceFolder, const QString &destFolder)
+QString TBackupDialog::selectedDirectory() const
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "TBackupDialog::makeProjectBackup() - source path: " + sourceFolder;
-        qDebug() << "TBackupDialog::makeProjectBackup() - dest path: " + destFolder;
-    #endif
-
-    bool success = false;
-    QDir sourceDir(sourceFolder);
-
-    if (!sourceDir.exists()) {
-        #ifdef TUP_DEBUG
-            qDebug() << "TBackupDialog::makeProjectBackup() - Fatal Error: source folder doesn't exist -> " + sourceFolder;
-        #endif
-        return false;
-    }
-
-    QDir destDir(destFolder);
-    if (!destDir.exists()) {
-        if (!destDir.mkpath(destFolder)) {
-            #ifdef TUP_DEBUG
-                qDebug() << "TBackupDialog::makeProjectBackup() - Fatal Error:  -> " + destFolder;
-            #endif
-            return false;
-        }
-    }
-
-    QStringList files = sourceDir.entryList(QDir::Files);
-    for(int i = 0; i < files.count(); i++) {
-        QString srcName = sourceFolder + QDir::separator() + files[i];
-        QString destName = destFolder + QDir::separator() + files[i];
-        #ifdef TUP_DEBUG
-            qDebug() << "TBackupDialog::makeProjectBackup() - Copying item -> " << srcName << " at " << destName;
-        #endif
-        if (QFile::exists(destName))
-            QFile::remove(destName);
-        success = QFile::copy(srcName, destName);
-        if (!success) {
-            #ifdef TUP_DEBUG
-                qDebug() << "TBackupDialog::makeProjectBackup() - Error: can't copy item -> " + srcName;
-            #endif
-            return false;
-        }
-    }
-
-    files.clear();
-    files = sourceDir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
-    for(int i = 0; i < files.count(); i++) {
-        QString srcName = sourceFolder + QDir::separator() + files[i];
-        QString destName = destFolder + QDir::separator() + files[i];
-        success = makeProjectBackup(srcName, destName);
-        if (!success) {
-            #ifdef TUP_DEBUG
-                qDebug() << "TBackupDialog::makeProjectBackup() - Error: can't copy item (recursive) -> " + srcName;
-            #endif
-            return false;
-        }
-    }
-
-    #ifdef TUP_DEBUG
-        qDebug() << "TBackupDialog::makeProjectBackup() - Project backup was made successfully!";
-    #endif
-
-    return true;
+    return destPath;
 }

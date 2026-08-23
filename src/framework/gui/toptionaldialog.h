@@ -50,6 +50,7 @@ class T_GUI_EXPORT TOptionalDialog : public QDialog
 
     public:
         enum Result {Accepted = 0, Cancelled, Discarded};
+        enum ButtonMode {IconButtons = 0, TextButtons};
         TOptionalDialog(const QString &text, const QString &title = QString(),
                 bool showAgainBox = true, bool showDiscardButton = false,
                 bool showPolicyButton = false, QWidget *parent = nullptr);
@@ -57,6 +58,9 @@ class T_GUI_EXPORT TOptionalDialog : public QDialog
 
         bool shownAgain();
         TOptionalDialog::Result getResult();
+        void setButtonMode(ButtonMode mode);
+        void setAcceptText(const QString &text);
+        void setCancelText(const QString &text);
 
     private slots:
         void callAcceptAction();
@@ -67,11 +71,17 @@ class T_GUI_EXPORT TOptionalDialog : public QDialog
     private:
         void setButtonsPanel(bool showAgainBox, bool showDiscardButton,
                              bool showPolicyButton);
+        void updateButtonPresentation();
 
         QBoxLayout *mainLayout;
         QHBoxLayout *buttonLayout;
         QCheckBox *checkBox;
+        QPushButton *cancelButton;
+        QPushButton *okButton;
         Result result;
+        ButtonMode buttonMode;
+        QString acceptText;
+        QString cancelText;
 };
 
 #endif

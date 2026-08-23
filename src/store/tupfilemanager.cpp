@@ -43,8 +43,13 @@
 #include "tbackupdialog.h"
 #include "tosd.h"
 
+#include <QDateTime>
 #include <QDir>
-#include <QMessageBox>
+#include <QFileInfo>
+#include <QSaveFile>
+#include <QSettings>
+#include <QSet>
+#include <QStandardPaths>
 
 TupFileManager::TupFileManager() : QObject()
 {
@@ -52,6 +57,177 @@ TupFileManager::TupFileManager() : QObject()
 
 TupFileManager::~TupFileManager()
 {
+}
+
+bool TupFileManager::writeTextFile(const QString &fileName, const QString &content)
+{
+    QSaveFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+#ifdef TUP_DEBUG
+        qWarning() << "[TupFileManager::writeTextFile()] - Error: Can't open file ->" << fileName
+                   << "Error:" << file.errorString();
+#endif
+        return false;
+    }
+
+    QTextStream stream(&file);
+    stream << content;
+    stream.flush();
+    if (stream.status() != QTextStream::Ok) {
+#ifdef TUP_DEBUG
+        qWarning() << "[TupFileManager::writeTextFile()] - Error while writing ->" << fileName;
+#endif
+        file.cancelWriting();
+        return false;
+    }
+
+    if (!file.commit()) {
+#ifdef TUP_DEBUG
+        qWarning() << "[TupFileManager::writeTextFile()] - Error committing ->" << fileName
+                   << "Error:" << file.errorString();
+#endif
+        return false;
+    }
+
+    return true;
+}
+
+QString TupFileManager::managedRecoveryRoot() const
+{
+    QString root = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    if (root.isEmpty())
+        root = QDir::homePath();
+    return QDir(root).filePath("TupiTube Recovery");
+}
+
+bool TupFileManager::copyRecoveryTree(const QString &sourceFolder, const QString &destFolder,
+                                      bool skipRecoveryManifest)
+{
+    QDir sourceDir(sourceFolder);
+    if (!sourceDir.exists())
+        return false;
+
+    QDir destDir(destFolder);
+    if (!destDir.exists() && !QDir().mkpath(destFolder))
+        return false;
+
+    const QFileInfoList entries = sourceDir.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries,
+                                                           QDir::Name | QDir::DirsFirst);
+    for (const QFileInfo &entry : entries) {
+        if (skipRecoveryManifest && entry.fileName() == "recovery.ini")
+            continue;
+
+        const QString sourcePath = entry.absoluteFilePath();
+        const QString destPath = QDir(destFolder).filePath(entry.fileName());
+        if (entry.isDir()) {
+            if (!copyRecoveryTree(sourcePath, destPath, skipRecoveryManifest))
+                return false;
+        } else if (entry.isFile()) {
+            if (QFile::exists(destPath) && !QFile::remove(destPath))
+                return false;
+            if (!QFile::copy(sourcePath, destPath))
+                return false;
+        }
+    }
+
+    return true;
+}
+
+bool TupFileManager::validateProjectDirectory(const QString &projectPath, QString *error) const
+{
+    const QString projectFile = QDir(projectPath).filePath("project.tpp");
+    const QString libraryFile = QDir(projectPath).filePath("library.tpl");
+    const QStringList scenes = QDir(projectPath).entryList(QStringList() << "scene*.tps",
+                                                            QDir::Files | QDir::Readable,
+                                                            QDir::Name);
+
+    QStringList requiredFiles;
+    requiredFiles << projectFile << libraryFile;
+    for (const QString &scene : scenes)
+        requiredFiles << QDir(projectPath).filePath(scene);
+
+    if (scenes.isEmpty()) {
+        if (error)
+            *error = tr("No scene files were found in the recovery snapshot.");
+        return false;
+    }
+
+    for (const QString &fileName : requiredFiles) {
+        QFile file(fileName);
+        if (!file.exists() || !file.open(QIODevice::ReadOnly | QIODevice::Text) || file.size() == 0) {
+            if (error)
+                *error = tr("Recovery file is missing or empty: %1").arg(fileName);
+            return false;
+        }
+
+        QDomDocument doc;
+        if (!doc.setContent(QString::fromLocal8Bit(file.readAll()))) {
+            if (error)
+                *error = tr("Recovery XML is invalid: %1").arg(fileName);
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool TupFileManager::createRecoverySnapshot(const QString &sourceFolder, const QString &recoveryRoot,
+                                            const QString &projectName, const QString &originalFileName,
+                                            QString *recoveryPath)
+{
+    if (!QDir().mkpath(recoveryRoot))
+        return false;
+
+    const QString stamp = QDateTime::currentDateTimeUtc().toString("yyyyMMdd-HHmmss");
+    QString baseName = projectName + "-recovery-" + stamp;
+    QString finalPath = QDir(recoveryRoot).filePath(baseName + ".bck");
+    int suffix = 1;
+    while (QFileInfo::exists(finalPath)) {
+        finalPath = QDir(recoveryRoot).filePath(baseName + "-" + QString::number(suffix) + ".bck");
+        ++suffix;
+    }
+
+    const QString tempPath = finalPath + ".partial";
+    QDir tempDir(tempPath);
+    if (tempDir.exists() && !tempDir.removeRecursively())
+        return false;
+    if (!QDir().mkpath(tempPath))
+        return false;
+
+    if (!copyRecoveryTree(sourceFolder, tempPath)) {
+        QDir(tempPath).removeRecursively();
+        return false;
+    }
+
+    QSettings manifest(QDir(tempPath).filePath("recovery.ini"), QSettings::IniFormat);
+    manifest.setValue("Recovery/FormatVersion", 1);
+    manifest.setValue("Recovery/ProjectName", projectName);
+    manifest.setValue("Recovery/OriginalFile", originalFileName);
+    manifest.setValue("Recovery/CreatedUtc", QDateTime::currentDateTimeUtc().toString(Qt::ISODate));
+    manifest.sync();
+    if (manifest.status() != QSettings::NoError) {
+        QDir(tempPath).removeRecursively();
+        return false;
+    }
+
+    QString validationError;
+    if (!validateProjectDirectory(tempPath, &validationError)) {
+#ifdef TUP_DEBUG
+        qWarning() << "[TupFileManager::createRecoverySnapshot()] - Validation failed ->" << validationError;
+#endif
+        QDir(tempPath).removeRecursively();
+        return false;
+    }
+
+    QDir rootDir(recoveryRoot);
+    if (!rootDir.rename(QFileInfo(tempPath).fileName(), QFileInfo(finalPath).fileName())) {
+        QDir(tempPath).removeRecursively();
+        return false;
+    }
+
+    if (recoveryPath)
+        *recoveryPath = finalPath;
+    return true;
 }
 
 bool TupFileManager::save(const QString &fileName, TupProject *project)
@@ -271,83 +447,76 @@ bool TupFileManager::save(const QString &fileName, TupProject *project)
             qDebug() << "[TupFileManager::save()] - source files path -> " << projectDir.path();
         #endif
 
-        // Save project
-        QFile projectFile(projectDir.path() + "/project.tpp");
-
-        if (projectFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        // Save project atomically so a failed write never truncates the last valid cache file.
+        QDomDocument doc;
+        project->setProjectName(filename);
+        doc.appendChild(project->toXml(doc));
+        const QString projectFileName = projectDir.path() + "/project.tpp";
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupFileManager::save()] - Saving config file (TPP)";
+        #endif
+        if (!writeTextFile(projectFileName, doc.toString())) {
             #ifdef TUP_DEBUG
-                qDebug() << "[TupFileManager::save()] - Saving config file (TPP)";
+                qWarning() << "[TupFileManager::save()] - Error: Can't safely write file -> " << projectFileName;
             #endif
-            QTextStream ts(&projectFile);
-            QDomDocument doc;
-            project->setProjectName(filename);
-            doc.appendChild(project->toXml(doc));
-            ts << doc.toString();
-            projectFile.close();
-        } else {
-            #ifdef TUP_DEBUG
-                qWarning() << "[TupFileManager::save()] - "
-                              "Error: Can't create file -> " << projectDir.path() << "/project.tpp";
-            #endif
-
             return false;
         }
     }
 
-    // Save scenes
+    // Save scenes atomically. Remove stale scene files only after all current scenes
+    // have been written successfully, preventing old scene*.tps files from leaking
+    // into a later package when the project scene count decreases.
     {
         int totalScenes = project->getScenes().size();
-        int index = 0;
-        QDomDocument doc;
-        QString scenePath;
+        QSet<QString> expectedSceneFiles;
 
-        for (int i=0; i<totalScenes; i++) {
+        for (int i = 0; i < totalScenes; ++i) {
+            QDomDocument doc;
             doc.appendChild(project->getScenes().at(i)->toXml(doc));
-            scenePath = projectDir.path() + "/scene" + QString::number(index) + ".tps";
+            const QString sceneName = "scene" + QString::number(i) + ".tps";
+            const QString scenePath = projectDir.path() + "/" + sceneName;
+            expectedSceneFiles.insert(sceneName);
+
             #ifdef TUP_DEBUG
                 qDebug() << "[TupFileManager::save()] - Saving scene file " << i;
                 qDebug() << "[TupFileManager::save()] - Scene file -> " << scenePath;
             #endif
-            QFile sceneFile(scenePath);
-            if (sceneFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-                #ifdef TUP_DEBUG
-                    qDebug() << "[TupFileManager::save()] - Capturing stream...";
-                #endif
-                QTextStream st(&sceneFile);
-                st << doc.toString();
-                index += 1;
-                doc.clear();
-                sceneFile.close();
-            } else {
-                #ifdef TUP_DEBUG
-                    qWarning() << "[TupFileManager::save()] - Error: Can't create file -> " << scenePath;
-                #endif
 
+            if (!writeTextFile(scenePath, doc.toString())) {
+                #ifdef TUP_DEBUG
+                    qWarning() << "[TupFileManager::save()] - Error: Can't safely write file -> " << scenePath;
+                #endif
                 return false;
+            }
+        }
+
+        const QStringList existingSceneFiles = projectDir.entryList(QStringList() << "scene*.tps",
+                                                                     QDir::Files, QDir::Name);
+        for (const QString &sceneFile : existingSceneFiles) {
+            if (!expectedSceneFiles.contains(sceneFile)) {
+                const QString stalePath = projectDir.filePath(sceneFile);
+                if (!QFile::remove(stalePath)) {
+                    #ifdef TUP_DEBUG
+                        qWarning() << "[TupFileManager::save()] - Error: Can't remove stale scene file -> " << stalePath;
+                    #endif
+                    return false;
+                }
             }
         }
     }
 
     {
-         // Save library
-         QFile library(projectDir.path() + "/library.tpl");
-
-         if (library.open(QIODevice::WriteOnly | QIODevice::Text)) {
+         // Save library atomically.
+         QDomDocument doc;
+         doc.appendChild(project->getLibrary()->toXml(doc));
+         const QString libraryFileName = projectDir.path() + "/library.tpl";
+         #ifdef TUP_DEBUG
+             qDebug() << "[TupFileManager::save()] - Saving library file (TPL)";
+         #endif
+         if (!writeTextFile(libraryFileName, doc.toString())) {
              #ifdef TUP_DEBUG
-                 qDebug() << "[TupFileManager::save()] - Saving library file (TPL)";
+                 qWarning() << "[TupFileManager::save()] - Error: Can't safely write file -> " << libraryFileName;
              #endif
-             QTextStream ts(&library);
-             QDomDocument doc;
-             doc.appendChild(project->getLibrary()->toXml(doc));
-
-             ts << doc.toString();
-             library.close();
-         } else {
-             #ifdef TUP_DEBUG
-                 qWarning() << "[TupFileManager::save()] - "
-                               "Error: Can't create file -> " << projectDir.path() << "/library.tpl";
-             #endif
-
              return false;
          }
     }
@@ -369,48 +538,97 @@ bool TupFileManager::save(const QString &fileName, TupProject *project)
             #endif
 
             QApplication::restoreOverrideCursor();
-            QPair<int, int> dimension = TAlgorithm::screenDimension();
-            int screenWidth = dimension.first;
-            int screenHeight = dimension.second;
 
-            TBackupDialog *dialog = new TBackupDialog(projectDir.path(), filename);
-            dialog->show();
+            // Package creation can fail under severe memory pressure even after
+            // the complete unpacked project has been serialized successfully.
+            // Preserve that validated directory as an independent recovery snapshot.
+            QString recoveryPath;
+            bool recovered = createRecoverySnapshot(projectDir.path(), managedRecoveryRoot(),
+                                                      filename, fileName, &recoveryPath);
 
-            int result = dialog->exec();
-            if (result == QDialog::Accepted) {
-                TCONFIG->beginGroup("General");
-                QString path = TCONFIG->value("RecoveryDir").toString();
-                TCONFIG->sync();
-
-                QMessageBox msgBox;
-                msgBox.setWindowTitle(tr("Information"));
-                msgBox.setIcon(QMessageBox::Information);
-                msgBox.setText(tr("A copy of your project was successfully saved at:<br/><b>%1</b>").arg(path));
-                msgBox.setInformativeText(tr("Please, contact TupiTube's developer team to recovery it. "
-                                             "<b>https://www.tupitube.com</b>"));
-                msgBox.setStandardButtons(QMessageBox::Ok);
-                msgBox.show();
-                msgBox.move(static_cast<int> ((screenWidth - msgBox.width()) / 2),
-                            static_cast<int> ((screenHeight - msgBox.height()) / 2));
-                msgBox.exec();
-            } else if (result == QDialog::Rejected) {
-                QMessageBox msgBox;
-                msgBox.setWindowTitle(tr("Information"));
-                msgBox.setIcon(QMessageBox::Critical);
-                msgBox.setText(tr("Sorry, the project <b>%1.tup</b> couldn't be recovered.<br/>"
-                                  "Please, try to backup your animation files often.").arg(filename));
-                msgBox.setStandardButtons(QMessageBox::Ok);
-                msgBox.show();
-                msgBox.move(static_cast<int> ((screenWidth - msgBox.width()) / 2),
-                            static_cast<int> ((screenHeight - msgBox.height()) / 2));
-                msgBox.exec();
+            if (!recovered) {
+                TBackupDialog dialog(filename);
+                if (dialog.exec() == QDialog::Accepted) {
+                    recovered = createRecoverySnapshot(projectDir.path(), dialog.selectedDirectory(),
+                                                       filename, fileName, &recoveryPath);
+                }
             }
 
+            if (recovered) {
+                TCONFIG->beginGroup("General");
+                TCONFIG->setValue("RecoveryDir", recoveryPath);
+                TCONFIG->sync();
+            }
+
+            // The main window owns the user-facing save-failure message. This
+            // keeps all save failures (serialization, permissions, packaging)
+            // on one consistent modal path while preserving RecoveryDir when a
+            // package failure produced a validated recovery snapshot.
+
+            // A recovery snapshot is not a successful normal save. The caller
+            // must keep the project dirty/open so the user can retry.
             return false;
         }
     }
 
     return ok;
+}
+
+bool TupFileManager::loadProjectDirectory(const QString &projectPath, TupProject *project)
+{
+    QDir projectDir(projectPath);
+    QString validationError;
+    if (!validateProjectDirectory(projectPath, &validationError)) {
+#ifdef TUP_DEBUG
+        qWarning() << "[TupFileManager::loadProjectDirectory()] - Invalid project directory ->" << validationError;
+#endif
+        return false;
+    }
+
+    const QString projectConfigPath = projectDir.filePath("project.tpp");
+    QFile pfile(projectConfigPath);
+    if (!pfile.open(QIODevice::ReadOnly | QIODevice::Text))
+        return false;
+    project->fromXml(QString::fromLocal8Bit(pfile.readAll()));
+    pfile.close();
+
+    project->setDataDir(projectPath);
+
+    const QString libraryPath = projectDir.filePath("library.tpl");
+    if (!project->loadLibrary(libraryPath)) {
+        TOsd::self()->display(TOsd::Error, tr("Library file is corrupted!"));
+        return false;
+    }
+
+    scenesLabels.clear();
+    const QStringList scenes = projectDir.entryList(QStringList() << "scene*.tps",
+                                                     QDir::Readable | QDir::Files, QDir::Name);
+    int index = 0;
+    for (const QString &sceneFileName : scenes) {
+        const QString scenePath = projectDir.filePath(sceneFileName);
+        QFile file(scenePath);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+            return false;
+
+        const QString xml = QString::fromLocal8Bit(file.readAll());
+        QDomDocument doc;
+        if (!doc.setContent(xml))
+            return false;
+
+        const QDomElement root = doc.documentElement();
+        const QString sceneName = root.attribute("name");
+        scenesLabels << sceneName;
+        project->createScene(sceneName, index, true)->fromXml(xml);
+        ++index;
+    }
+
+    if (project->scenesCount() > 0) {
+        const QColor sceneBgColor = project->sceneAt(0)->getBgColor();
+        project->setCurrentBgColor(sceneBgColor);
+    }
+
+    project->setOpen(true);
+    return true;
 }
 
 bool TupFileManager::load(const QString &fileName, TupProject *project)
@@ -420,135 +638,58 @@ bool TupFileManager::load(const QString &fileName, TupProject *project)
     #endif
 
     TupPackageHandler packageHandler;
-    if (packageHandler.importPackage(fileName)) {
-        QDir projectDir(packageHandler.importedProjectPath());
-        QString projectConfigPath = projectDir.path() + "/project.tpp";
-        QFile pfile(projectConfigPath);
-
-        if (pfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            int size = pfile.size();
-            if (size == 0) {
-                #ifdef TUP_DEBUG
-                    qWarning() << "[TupFileManager::load()] - Fatal Error: Project file (TPP) has size ZERO! ->" << projectConfigPath;
-                #endif
-                TOsd::self()->display(TOsd::Error, tr("Can't open project config file!"));
-
-                return false;
-            }
-
-            project->fromXml(QString::fromLocal8Bit(pfile.readAll()));
-            pfile.close();
-        } else {
-            #ifdef TUP_DEBUG
-                qWarning() << "[TupFileManager::load()] - Error while open .tpp file. Name ->" << pfile.fileName();
-                qWarning() << "[TupFileManager::load()] - Path ->" << projectDir.path();
-                qWarning() << "[TupFileManager::load()] - Error Description ->" << pfile.errorString();
-            #endif
-
-            return false;
-        }
-
-        project->setDataDir(packageHandler.importedProjectPath());
-
-        // Loading library assets
-        QString libraryPath = projectDir.path() + "/library.tpl";
-        QFile libraryFile(libraryPath);
-        if (!libraryFile.exists()) {
-            #ifdef TUP_DEBUG
-                qWarning() << "[TupFileManager::load()] - Fatal Error: Library file (TPL) doesn't exist! ->" << libraryPath;
-            #endif
-            TOsd::self()->display(TOsd::Error, tr("Can't find library file!"));
-
-            return false;
-        }
-
-        if (!project->loadLibrary(libraryPath)) {
-            #ifdef TUP_DEBUG
-                qWarning() << "[TupFileManager::load()] - Fatal Error: Library file (TPL) is corrupted! ->" << libraryPath;
-            #endif
-            TOsd::self()->display(TOsd::Error, tr("Library file is corrupted!"));
-
-            return false;
-        }
-
-        QStringList scenes = projectDir.entryList(QStringList() << "*.tps", QDir::Readable | QDir::Files);
-        QFile *file;
-        QDomDocument doc;
-        QString xml;
-        QDomElement root;
-
+    if (!packageHandler.importPackage(fileName)) {
         #ifdef TUP_DEBUG
-            qDebug() << "[TupFileManager::load()] - scenes.count() ->" << scenes.count();
+            qDebug() << "[TupFileManager::load()] - Error: Can't import package ->" << fileName;
         #endif
-
-        if (scenes.count() > 0) {
-            int index = 0;
-            foreach (QString scenePath, scenes) {
-                scenePath = projectDir.path() + "/" + scenePath;
-                file = new QFile(scenePath);
-					 
-                if (file->open(QIODevice::ReadOnly | QIODevice::Text)) {
-                    int size = file->size();
-                    if (size == 0) {
-                        #ifdef TUP_DEBUG
-                            qWarning() << "[TupFileManager::load()] - Fatal Error: Scene file (TPS) has size ZERO! ->" << scenePath;
-                        #endif
-                        TOsd::self()->display(TOsd::Error, tr("Can't open scene config file!"));
-
-                        return false;
-                    }
-
-                    xml = QString::fromLocal8Bit(file->readAll());
-                    if (!doc.setContent(xml)) {
-                        #ifdef TUP_DEBUG
-                            qWarning() << "[TupFileManager::load()] - Fatal Error: Can't open XML scene file! ->" << scenePath;
-                        #endif
-                        TOsd::self()->display(TOsd::Error, tr("Can't load scene config file!"));
-
-                        return false;
-                    }
-
-                    root = doc.documentElement();
-                    QString sceneName = root.attribute("name");
-                    scenesLabels << sceneName;
-                    project->createScene(sceneName, index, true)->fromXml(xml);
-                    index += 1;
-                    doc.clear();
-                    file->close();
-                    delete file;
-                } else {
-                    #ifdef TUP_DEBUG
-                        qWarning() << "[TupFileManager::load()] - Error: Can't open TPS file ->" << scenePath;
-                    #endif
-                    TOsd::self()->display(TOsd::Error, tr("Can't read scene config file!"));
-
-                    return false;
-                }
-            }
-
-            // Update project's current bgcolor from first scene
-            if (project->scenesCount() > 0) {
-                QColor sceneBgColor = project->sceneAt(0)->getBgColor();
-                project->setCurrentBgColor(sceneBgColor);
-            }
-
-            project->setOpen(true);
-
-            return true;
-        } else {
-            #ifdef TUP_DEBUG
-                qDebug() << "[TupFileManager::load()] - Error: No scene files found (*.tps)";
-            #endif
-
-            return false;
-        }
+        return false;
     }
 
+    return loadProjectDirectory(packageHandler.importedProjectPath(), project);
+}
+
+bool TupFileManager::loadRecovery(const QString &recoveryPath, TupProject *project)
+{
     #ifdef TUP_DEBUG
-        qDebug() << "[TupFileManager::load()] - Error: Can't import package ->" << fileName;
+        qDebug() << "[TupFileManager::loadRecovery()] - recoveryPath ->" << recoveryPath;
     #endif
 
-    return false;
+    QString validationError;
+    if (!validateProjectDirectory(recoveryPath, &validationError)) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupFileManager::loadRecovery()] - Invalid recovery snapshot ->" << validationError;
+        #endif
+        return false;
+    }
+
+    QSettings manifest(QDir(recoveryPath).filePath("recovery.ini"), QSettings::IniFormat);
+    QString projectName = manifest.value("Recovery/ProjectName").toString().trimmed();
+    if (projectName.isEmpty()) {
+        QFile projectFile(QDir(recoveryPath).filePath("project.tpp"));
+        if (!projectFile.open(QIODevice::ReadOnly | QIODevice::Text))
+            return false;
+        QDomDocument doc;
+        if (!doc.setContent(QString::fromLocal8Bit(projectFile.readAll())))
+            return false;
+        projectName = doc.documentElement().attribute("name").trimmed();
+    }
+    if (projectName.isEmpty())
+        return false;
+
+    // Restore into the normal cache location so all existing local-mode asset
+    // and Save As code continues to operate on its expected data directory.
+    const QString cachePath = CACHE_DIR + projectName;
+    QDir cacheDir(cachePath);
+    if (cacheDir.exists() && !cacheDir.removeRecursively())
+        return false;
+    if (!QDir().mkpath(cachePath))
+        return false;
+    if (!copyRecoveryTree(recoveryPath, cachePath, true)) {
+        QDir(cachePath).removeRecursively();
+        return false;
+    }
+
+    return loadProjectDirectory(cachePath, project);
 }
 
 bool TupFileManager::createImageProject(const QString &projectCode, const QString &imgPath, TupProject *project)

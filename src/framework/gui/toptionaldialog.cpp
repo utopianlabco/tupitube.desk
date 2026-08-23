@@ -41,7 +41,16 @@
 
 TOptionalDialog::TOptionalDialog(const QString &text,const QString &title,
                                  bool showAgainBox, bool showDiscardButton,
-                                 bool showPolicyButton, QWidget *parent) : QDialog(parent)
+                                 bool showPolicyButton, QWidget *parent) : QDialog(parent),
+    mainLayout(nullptr),
+    buttonLayout(nullptr),
+    checkBox(nullptr),
+    cancelButton(nullptr),
+    okButton(nullptr),
+    result(Cancelled),
+    buttonMode(IconButtons),
+    acceptText(tr("Accept")),
+    cancelText(tr("Cancel"))
 {
     setStyleSheet(TAppTheme::themeStyles());
 
@@ -79,8 +88,8 @@ void TOptionalDialog::setButtonsPanel(bool showAgainBox, bool showDiscardButton,
         buttonLayout->addWidget(checkBox);
     }
 
-    QPushButton *cancelButton = new QPushButton(this);
-    cancelButton->setToolTip(tr("Cancel"));
+    cancelButton = new QPushButton(this);
+    cancelButton->setToolTip(cancelText);
     cancelButton->setMinimumWidth(60);
     cancelButton->setIcon(QIcon(THEME_DIR + "icons/close.png"));
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(callCancelAction()));
@@ -95,8 +104,8 @@ void TOptionalDialog::setButtonsPanel(bool showAgainBox, bool showDiscardButton,
         buttonLayout->addWidget(discardButton);
     }
 
-    QPushButton *okButton = new QPushButton(this);
-    okButton->setToolTip(tr("Accept"));
+    okButton = new QPushButton(this);
+    okButton->setToolTip(acceptText);
     okButton->setMinimumWidth(60);
     okButton->setIcon(QIcon(THEME_DIR + "icons/apply.png"));
     connect(okButton, SIGNAL(clicked()), this, SLOT(callAcceptAction()));
@@ -107,6 +116,9 @@ void TOptionalDialog::setButtonsPanel(bool showAgainBox, bool showDiscardButton,
 
 bool TOptionalDialog::shownAgain()
 {
+    if (!checkBox)
+        return true;
+
     return !checkBox->isChecked();
 }
 
@@ -131,6 +143,49 @@ void TOptionalDialog::callCancelAction()
 TOptionalDialog::Result TOptionalDialog::getResult()
 {
     return result;
+}
+
+void TOptionalDialog::setButtonMode(ButtonMode mode)
+{
+    buttonMode = mode;
+    updateButtonPresentation();
+}
+
+void TOptionalDialog::setAcceptText(const QString &text)
+{
+    acceptText = text;
+    updateButtonPresentation();
+}
+
+void TOptionalDialog::setCancelText(const QString &text)
+{
+    cancelText = text;
+    updateButtonPresentation();
+}
+
+void TOptionalDialog::updateButtonPresentation()
+{
+    if (cancelButton) {
+        cancelButton->setToolTip(cancelText);
+        if (buttonMode == TextButtons) {
+            cancelButton->setIcon(QIcon());
+            cancelButton->setText(cancelText);
+        } else {
+            cancelButton->setText(QString());
+            cancelButton->setIcon(QIcon(THEME_DIR + "icons/close.png"));
+        }
+    }
+
+    if (okButton) {
+        okButton->setToolTip(acceptText);
+        if (buttonMode == TextButtons) {
+            okButton->setIcon(QIcon());
+            okButton->setText(acceptText);
+        } else {
+            okButton->setText(QString());
+            okButton->setIcon(QIcon(THEME_DIR + "icons/apply.png"));
+        }
+    }
 }
 
 void TOptionalDialog::openPrivacyPolicyLink()

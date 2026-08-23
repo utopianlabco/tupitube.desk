@@ -81,6 +81,7 @@
 #include <QDesktopServices>
 #include <QFileOpenEvent>
 #include <QTabBar>
+#include <QTimer>
 
 TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
                              TabbedMainWindow(winKey, AnimationView), m_projectManager(nullptr),
@@ -268,8 +269,87 @@ TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
     lastSave = false;
     pendingCloseAction = NoPendingClose;
 
-    if (!sourceFile.isEmpty())
+    if (!sourceFile.isEmpty()) {
         openProject(sourceFile);
+    } else {
+        // Recovery is offered only after normal startup initialization completes.
+        QTimer::singleShot(0, this, SLOT(checkForRecoveryProject()));
+    }
+}
+
+void TupMainWindow::checkForRecoveryProject()
+{
+    if (m_projectManager->isOpen())
+        return;
+
+    TCONFIG->beginGroup("General");
+    const QString recoveryPath = TCONFIG->value("RecoveryDir", "").toString().trimmed();
+    if (recoveryPath.isEmpty())
+        return;
+
+    QDir recoveryDir(recoveryPath);
+    if (!recoveryDir.exists()) {
+        TCONFIG->setValue("RecoveryDir", "");
+        TCONFIG->sync();
+        return;
+    }
+
+    TOptionalDialog dialog(tr("TupiTube preserved a project after a previous save failure.")
+                           + "<br/><br/>"
+                           + tr("Would you like to recover it now?")
+                           + "<br/><br/><b>" + recoveryPath + "</b>",
+                           tr("Recover Unsaved Project"), false, false, false, this);
+    dialog.setButtonMode(TOptionalDialog::TextButtons);
+    dialog.setAcceptText(tr("Recover Project"));
+    dialog.setCancelText(tr("Not Now"));
+    dialog.setModal(true);
+    dialog.move(static_cast<int> ((screenWidth - dialog.sizeHint().width()) / 2),
+                static_cast<int> ((screenHeight - dialog.sizeHint().height()) / 2));
+    dialog.exec();
+
+    if (dialog.getResult() != TOptionalDialog::Accepted)
+        return;
+
+    m_projectManager->setHandler(new TupLocalProjectManagerHandler, false);
+    TupFileManager fileManager;
+    if (!fileManager.loadRecovery(recoveryPath, m_projectManager->getProject())) {
+        QMessageBox::critical(this, tr("Recovery Failed"),
+                              tr("The recovery snapshot could not be loaded. TupiTube will keep it available for another recovery attempt."));
+        return;
+    }
+
+    isNetworked = false;
+    activeRecoveryDir = recoveryPath;
+    m_filename.clear();
+    requestType = OpenLocalProject;
+    projectName = m_projectManager->getProject()->getName();
+    author = m_projectManager->getProject()->getAuthor();
+    if (author.isEmpty())
+        author = "Anonymous";
+
+    setWindowTitle(appTitle + " - " + projectName + " " + tr("[ recovered | save required ]"));
+    enableToolViews(true);
+    setMenuItemsContext(true);
+    setUpdatesEnabled(true);
+
+    m_exposureSheet->updateFramesState();
+    m_timeLine->updateFramesState();
+    m_exposureSheet->updateSceneAudioButtons();
+    m_timeLine->updateSceneAudioButtons();
+    m_exposureSheet->updateLayerOpacity(0, 0);
+    m_exposureSheet->initLayerVisibility();
+    m_timeLine->initLayerVisibility();
+    m_colorPalette->setBgColor(m_projectManager->getSceneBgColor(0));
+
+    setWorkSpace();
+    m_libraryWidget->updateSoundItems();
+
+    // setWorkSpace() clears the modified flag for a normal open. A recovered
+    // snapshot must remain dirty until a fresh .tup save succeeds.
+    m_projectManager->setModificationStatus(true);
+
+    TOsd::self()->display(TOsd::Warning,
+                          tr("Recovered project opened. Please save it to a new .tup file."));
 }
 
 void TupMainWindow::showNewsMessage()
@@ -277,6 +357,16 @@ void TupMainWindow::showNewsMessage()
     #ifdef TUP_DEBUG
         qDebug() << "[TupMainWindow::showNewsMessage()]";
     #endif
+
+    TCONFIG->beginGroup("General");
+    const QString recoveryPath = TCONFIG->value("RecoveryDir", "").toString().trimmed();
+    if (!recoveryPath.isEmpty() && QDir(recoveryPath).exists()) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[TupMainWindow::showNewsMessage()] - Skipping news message while recovery is pending ->"
+                     << recoveryPath;
+        #endif
+        return;
+    }
 
     TImageDialog *msgDialog = new TImageDialog(msgUrl, msgImageName, this);
     msgDialog->show();
@@ -663,7 +753,8 @@ bool TupMainWindow::cancelChanges(PendingCloseAction action)
                 }
 
                 lastSave = false;
-                saveProject();
+                if (!saveProject())
+                    return true;
                 return false;
             case QMessageBox::DestructiveRole:
                 return true;
@@ -784,6 +875,9 @@ void TupMainWindow::resetUI()
         commandCoordinator->clear();
 
     m_filename = QString();
+    // Detach the in-memory project from any recovery snapshot. The persistent
+    // RecoveryDir marker is cleared only after a verified successful .tup save.
+    activeRecoveryDir.clear();
 
     enableToolViews(false);
     setUpdatesEnabled(true);
@@ -1406,7 +1500,25 @@ bool TupMainWindow::storeProcedure()
     connect(m_projectManager, SIGNAL(soundPathsChanged()),
             m_libraryWidget, SLOT(updateCurrentSoundPath()));
 
+    TCONFIG->beginGroup("General");
+    const QString recoveryPathBeforeSave = TCONFIG->value("RecoveryDir").toString();
+    TCONFIG->sync();
+
     if (m_projectManager->saveProject(m_filename)) {
+        if (!activeRecoveryDir.isEmpty()) {
+            QDir recoveryDir(activeRecoveryDir);
+            if (recoveryDir.exists() && !recoveryDir.removeRecursively()) {
+                #ifdef TUP_DEBUG
+                    qWarning() << "[TupMainWindow::storeProcedure()] - Warning: Can't remove completed recovery snapshot ->"
+                               << activeRecoveryDir;
+                #endif
+            }
+            TCONFIG->beginGroup("General");
+            TCONFIG->setValue("RecoveryDir", "");
+            TCONFIG->sync();
+            activeRecoveryDir.clear();
+        }
+
         updateRecentProjectList();
 
         TOsd::self()->display(TOsd::Info, tr("Project <b>%1</b> saved").arg(projectName));
@@ -1436,9 +1548,37 @@ bool TupMainWindow::storeProcedure()
         disconnect(m_projectManager, SIGNAL(projectPathChanged()),
                    this, SLOT(updateSoundsPath()));
         disconnect(m_projectManager, SIGNAL(soundPathsChanged()),
-                   m_libraryWidget, SLOT(updateSoundPlayer()));
+                   m_libraryWidget, SLOT(updateCurrentSoundPath()));
 
+        m_actionManager->enable("save_project", true);
+        m_actionManager->enable("save_project_as", true);
+        if (isSaveDialogOpen)
+            isSaveDialogOpen = false;
         QApplication::restoreOverrideCursor();
+
+        TCONFIG->beginGroup("General");
+        const QString recoveryPathAfterSave = TCONFIG->value("RecoveryDir").toString();
+        TCONFIG->sync();
+
+        QMessageBox msgBox(this);
+        msgBox.setWindowTitle(tr("Project Save Failed"));
+        if (!recoveryPathAfterSave.isEmpty()
+                && recoveryPathAfterSave != recoveryPathBeforeSave
+                && QDir(recoveryPathAfterSave).exists()) {
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.setText(tr("The normal .tup file could not be created, but TupiTube preserved a recovery copy of your project."));
+            msgBox.setInformativeText(tr("Recovery copy:<br/><b>%1</b><br/><br/>"
+                                         "Your project is still open with unsaved changes. If TupiTube is restarted, it will offer to recover this project automatically.")
+                                      .arg(recoveryPathAfterSave));
+        } else {
+            msgBox.setIcon(QMessageBox::Critical);
+            msgBox.setText(tr("The project could not be saved."));
+            msgBox.setInformativeText(tr("Your project is still open with its unsaved changes. "
+                                         "Please check the destination, available disk space, and write permissions, then try again."));
+        }
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.exec();
+
         return false;
     }
 

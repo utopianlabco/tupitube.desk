@@ -32,7 +32,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#ifndef TUPFILEMANAGER_H 
+#ifndef TUPFILEMANAGER_H
 #define TUPFILEMANAGER_H
 
 #include "tglobal.h"
@@ -51,6 +51,7 @@ class TUPITUBE_EXPORT TupFileManager : public QObject
 
         virtual bool save(const QString &filename, TupProject *project);
         virtual bool load(const QString &filename, TupProject *project);
+        bool loadRecovery(const QString &recoveryPath, TupProject *project);
 
         virtual bool createImageProject(const QString &projectCode, const QString &imgPath,
                                         TupProject *project);
@@ -60,6 +61,17 @@ class TUPITUBE_EXPORT TupFileManager : public QObject
     signals:
         void projectPathChanged();
         void soundPathsChanged();
+
+    private:
+        bool writeTextFile(const QString &fileName, const QString &content);
+        bool copyRecoveryTree(const QString &sourceFolder, const QString &destFolder,
+                              bool skipRecoveryManifest = false);
+        bool createRecoverySnapshot(const QString &sourceFolder, const QString &recoveryRoot,
+                                    const QString &projectName, const QString &originalFileName,
+                                    QString *recoveryPath);
+        bool validateProjectDirectory(const QString &projectPath, QString *error = nullptr) const;
+        bool loadProjectDirectory(const QString &projectPath, TupProject *project);
+        QString managedRecoveryRoot() const;
 
     public:
         QList<QString> scenesLabels;

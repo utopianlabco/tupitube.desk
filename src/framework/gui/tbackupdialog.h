@@ -42,28 +42,29 @@
 
 /**
  * @class TBackupDialog
+ *
+ * Fallback location chooser used only when TupiTube cannot create its
+ * automatic recovery snapshot in the managed recovery directory.
  */
-
 class T_GUI_EXPORT TBackupDialog : public QDialog
 {
     Q_OBJECT
 
     public:
-        TBackupDialog(const QString &path, const QString &project, QWidget *parent = nullptr);
+        TBackupDialog(const QString &project, QWidget *parent = nullptr);
         ~TBackupDialog();
+
+        QString selectedDirectory() const;
 
     private slots:
         void chooseDirectory();
-        void makeBackup();
+        void acceptDirectory();
 
     private:
         void setupGUI();
-        bool makeProjectBackup(const QString &sourceFolder, const QString &destFolder);
 
         QLineEdit *pathLine;
-
         QString projectName;
-        QString sourcePath;
         QString destPath;
 };
 

@@ -227,6 +227,7 @@ class TupMainWindow : public TabbedMainWindow
         void importPapagayoLipSync();
         void hideTopPanels();
         void showNewsMessage();
+        void checkForRecoveryProject();
         void setUpdateFlag(bool flag);
         void checkTimeLineVisibility(bool visible);
         void checkExposureVisibility(bool visible);
@@ -251,6 +252,7 @@ class TupMainWindow : public TabbedMainWindow
         QString appTitle;
         TupProjectManager *m_projectManager;
         QString m_filename;
+        QString activeRecoveryDir;
         bool lastSave;
         PendingCloseAction pendingCloseAction;
 

@@ -1575,14 +1575,18 @@ bool TupMainWindow::storeProcedure()
                                       .arg(recoveryPathAfterSave));
             msgBox.setStandardButtons(QMessageBox::NoButton);
             msgBox.addButton(tr("Exit TupiTube"), QMessageBox::AcceptRole);
-            msgBox.exec();
 
             // Package generation failed after the unpacked project had been
-            // serialized and a validated recovery snapshot was created. Do not
-            // allow this compromised session to continue editing. The queued
-            // close avoids re-entering closeEvent() from inside the save stack.
-            recoveryExitPending = true;
-            QTimer::singleShot(0, this, SLOT(close()));
+            // serialized and a validated recovery snapshot was created. Every
+            // way of dismissing this blocking dialog, including its title-bar X,
+            // must take the same terminal path. Queue the main-window close from
+            // the dialog's finished signal so the close cannot depend on which
+            // QMessageBox exit path ended exec().
+            connect(&msgBox, &QMessageBox::finished, this, [this](int) {
+                recoveryExitPending = true;
+                QTimer::singleShot(0, this, SLOT(close()));
+            });
+            msgBox.exec();
         } else {
             msgBox.setIcon(QMessageBox::Critical);
             msgBox.setText(tr("The project could not be saved."));

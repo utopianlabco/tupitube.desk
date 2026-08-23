@@ -37,6 +37,12 @@
 #include "quazipfile.h"
 #include "JlCompress.h"
 
+#include <QFile>
+#include <QFileInfo>
+#include <QDir>
+#include <QSaveFile>
+#include <QUuid>
+
 TupPackageHandler::TupPackageHandler()
 {
 }
@@ -52,7 +58,7 @@ bool TupPackageHandler::makePackage(const QString &projectPath, const QString &p
         qWarning() << "[TupPackageHandler::makePackage()] - packagePath -> " << packagePath;
     #endif
 
-    if (!QFile::exists(projectPath)) {        
+    if (!QFile::exists(projectPath)) {
         #ifdef TUP_DEBUG
             qWarning() << "[TupPackageHandler::makePackage()] - "
                           "Project path doesn't exist -> " << projectPath;
@@ -61,10 +67,129 @@ bool TupPackageHandler::makePackage(const QString &projectPath, const QString &p
         return false;
     }
 
+    // Never let the compressor write directly over the last valid package.
+    // Build and validate an independent temporary archive first, then copy it
+    // through QSaveFile so the destination is replaced only by commit().
+    QFileInfo packageInfo(packagePath);
+    const QString packageDirPath = packageInfo.absolutePath();
+    QDir packageDir(packageDirPath);
+    if (!packageDir.exists()) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupPackageHandler::makePackage()] - "
+                          "Package directory doesn't exist -> " << packageDirPath;
+        #endif
+
+        return false;
+    }
+
+    const QString tempPackagePath = packageDir.filePath(
+                packageInfo.fileName() + ".partial-" +
+                QUuid::createUuid().toString(QUuid::WithoutBraces));
+
     #ifdef TUP_DEBUG
         qDebug() << "[TupPackageHandler::makePackage()] - Calling JlCompress library...";
+        qDebug() << "[TupPackageHandler::makePackage()] - Temporary package -> " << tempPackagePath;
     #endif
-    return JlCompress::compressDir(packagePath, projectPath, true);
+
+    if (!JlCompress::compressDir(tempPackagePath, projectPath, true)) {
+        QFile::remove(tempPackagePath);
+        return false;
+    }
+
+    QFileInfo tempInfo(tempPackagePath);
+    if (!tempInfo.exists() || tempInfo.size() <= 0) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupPackageHandler::makePackage()] - "
+                          "Temporary package is missing or empty -> " << tempPackagePath;
+        #endif
+
+        QFile::remove(tempPackagePath);
+        return false;
+    }
+
+    QuaZip zipChecker(tempPackagePath);
+    if (!zipChecker.open(QuaZip::mdUnzip) || !zipChecker.goToFirstFile()) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupPackageHandler::makePackage()] - "
+                          "Temporary package validation failed -> " << tempPackagePath;
+        #endif
+
+        zipChecker.close();
+        QFile::remove(tempPackagePath);
+        return false;
+    }
+    zipChecker.close();
+
+    QFile tempPackage(tempPackagePath);
+    if (!tempPackage.open(QIODevice::ReadOnly)) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupPackageHandler::makePackage()] - "
+                          "Can't open temporary package -> " << tempPackagePath;
+        #endif
+
+        QFile::remove(tempPackagePath);
+        return false;
+    }
+
+    QSaveFile destination(packagePath);
+    destination.setDirectWriteFallback(false);
+    if (!destination.open(QIODevice::WriteOnly)) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupPackageHandler::makePackage()] - "
+                          "Can't open destination safely -> " << packagePath
+                       << "Error:" << destination.errorString();
+        #endif
+
+        tempPackage.close();
+        QFile::remove(tempPackagePath);
+        return false;
+    }
+
+    const qint64 bufferSize = 1024 * 1024;
+    while (!tempPackage.atEnd()) {
+        const QByteArray chunk = tempPackage.read(bufferSize);
+        if (chunk.isEmpty() && tempPackage.error() != QFile::NoError) {
+            #ifdef TUP_DEBUG
+                qWarning() << "[TupPackageHandler::makePackage()] - "
+                              "Error reading temporary package -> " << tempPackagePath
+                           << "Error:" << tempPackage.errorString();
+            #endif
+
+            destination.cancelWriting();
+            tempPackage.close();
+            QFile::remove(tempPackagePath);
+            return false;
+        }
+
+        if (destination.write(chunk) != chunk.size()) {
+            #ifdef TUP_DEBUG
+                qWarning() << "[TupPackageHandler::makePackage()] - "
+                              "Error writing destination package -> " << packagePath
+                           << "Error:" << destination.errorString();
+            #endif
+
+            destination.cancelWriting();
+            tempPackage.close();
+            QFile::remove(tempPackagePath);
+            return false;
+        }
+    }
+
+    tempPackage.close();
+
+    if (!destination.commit()) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupPackageHandler::makePackage()] - "
+                          "Error committing destination package -> " << packagePath
+                       << "Error:" << destination.errorString();
+        #endif
+
+        QFile::remove(tempPackagePath);
+        return false;
+    }
+
+    QFile::remove(tempPackagePath);
+    return true;
 }
 
 bool TupPackageHandler::importPackage(const QString &packagePath, const QString &tempFolder)

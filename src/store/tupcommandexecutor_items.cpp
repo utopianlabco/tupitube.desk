@@ -443,37 +443,18 @@ bool TupCommandExecutor::moveItem(TupItemResponse *response)
 
     if (mode != TupProject::FRAMES_MODE && !validateIndices(sceneIndex))
         return true;
-
-    if (response->getMode() == TupProjectResponse::Undo) {
-        // SQA: Recalculate the variable values based on the action code 
-        // objectIndex = ???;
-        // action = ???;
-    }
     
     TupScene *scene = project->sceneAt(sceneIndex);
     
     if (scene) {
+        TupFrame *frame = nullptr;
         if (mode == TupProject::FRAMES_MODE) {
             TupLayer *layer = scene->layerAt(layerIndex);
-            if (layer) {
-                TupFrame *frame = layer->frameAt(frameIndex);
-                if (frame) {
-                    if (type != TupLibraryObject::Svg) {
-                        objectIndex = resolveItemIndex(frame, response);
-                        if (objectIndex < 0)
-                            return false;
-                    }
-
-                    if (frame->moveItem(type, objectIndex, action)) {
-                        emit responsed(response);
-                        return true;
-                    }
-                }
-            } 
+            if (layer)
+                frame = layer->frameAt(frameIndex);
         } else {
             TupBackground *bg = scene->sceneBackground();
             if (bg) {
-                TupFrame *frame = nullptr;
                 if (mode == TupProject::VECTOR_STATIC_BG_MODE) {
                     frame = bg->vectorStaticFrame();
                 } else if (mode == TupProject::VECTOR_FG_MODE) {
@@ -486,24 +467,6 @@ bool TupCommandExecutor::moveItem(TupItemResponse *response)
                     #endif
                     return false;
                 }
-
-                if (frame) {
-                    if (type != TupLibraryObject::Svg) {
-                        objectIndex = resolveItemIndex(frame, response);
-                        if (objectIndex < 0)
-                            return false;
-                    }
-
-                    if (frame->moveItem(type, objectIndex, action)) {
-                        emit responsed(response);
-                        return true;
-                    }
-                } else {                    
-                    #ifdef TUP_DEBUG
-                        qDebug() << "[TupCommandExecutor::moveItem()] - Error: Invalid background frame!";
-                    #endif
-                    return false;
-                }
             } else {
                 #ifdef TUP_DEBUG
                     qDebug() << "[TupCommandExecutor::moveItem()] - Error: Invalid background data structure!";
@@ -511,6 +474,55 @@ bool TupCommandExecutor::moveItem(TupItemResponse *response)
                 return false;
             }
         }
+
+        if (!frame) {
+            #ifdef TUP_DEBUG
+                qDebug() << "[TupCommandExecutor::moveItem()] - Error: Invalid target frame!";
+            #endif
+            return false;
+        }
+
+        if (type != TupLibraryObject::Svg) {
+            objectIndex = resolveItemIndex(frame, response);
+            if (objectIndex < 0)
+                return false;
+        }
+
+        if (response->getMode() == TupProjectResponse::Undo) {
+            bool ok = false;
+            const int targetZLevel = QString::fromUtf8(response->getData()).toInt(&ok);
+            if (!ok) {
+                #ifdef TUP_DEBUG
+                    qWarning() << "[TupCommandExecutor::moveItem()] - Error: Missing original z-level snapshot";
+                #endif
+                return false;
+            }
+
+            if (!frame->restoreItemZLevel(type, objectIndex, action, targetZLevel))
+                return false;
+        } else {
+            if (response->getMode() == TupProjectResponse::Do) {
+                int originalZLevel = -1;
+                if (type == TupLibraryObject::Svg) {
+                    TupSvgItem *item = frame->svgAt(objectIndex);
+                    if (!item)
+                        return false;
+                    originalZLevel = static_cast<int>(item->zValue());
+                } else {
+                    TupGraphicObject *object = frame->graphicAt(objectIndex);
+                    if (!object)
+                        return false;
+                    originalZLevel = object->itemZValue();
+                }
+                response->setData(QByteArray::number(originalZLevel));
+            }
+
+            if (!frame->moveItem(type, objectIndex, action))
+                return false;
+        }
+
+        emit responsed(response);
+        return true;
     }
 
     return false;

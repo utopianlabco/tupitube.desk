@@ -101,6 +101,8 @@ class TUPITUBE_EXPORT TupFrame : public QObject, public TupAbstractSerializable
 
         void replaceItem(int position, QGraphicsItem *item);
         bool moveItem(TupLibraryObject::ObjectType frameType, int currentPosition, int action);
+        bool restoreItemZLevel(TupLibraryObject::ObjectType objectType, int currentPosition,
+                               int action, int targetZLevel);
       
         bool removeGraphic(int position);
         bool removeGraphicAt(int position);

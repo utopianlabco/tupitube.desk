@@ -755,38 +755,44 @@ bool TupFrame::moveItem(TupLibraryObject::ObjectType objectType, int currentInde
     if ((svg.size() + graphics.size()) == 1)
         return true;
 
-    // Calculate zMin based on frame type
-    // Z-Level ranges (ZLAYER_LIMIT = 10000):
-    // VectorDynamicBg (0):  0 - 9,999
-    // RasterDynamicBg (1):  10,000 - 19,999  
-    // VectorStaticBg (2):   20,000 - 29,999
-    // RasterStaticBg (3):   30,000 - 39,999
-    // Regular Layer N:      (BG_LAYERS + N) * ZLAYER_LIMIT
+    // Use the frame's current item z-values as the ordering domain.
+    // Background/foreground rendering can translate their z-values away from
+    // the construction-time zLevelIndex range, so fixed frame-type offsets
+    // are not reliable once the frame is displayed.
     int zMin = 0;
-    switch (type) {
-        case VectorDynamicBg:
-            zMin = 0;
-            break;
-        case RasterDynamicBg:
-            zMin = ZLAYER_LIMIT;
-            break;
-        case VectorStaticBg:
-            zMin = ZLAYER_LIMIT * 2;
-            break;
-        case RasterStaticBg:
-            zMin = ZLAYER_LIMIT * 3;
-            break;
-        case VectorForeground:
-            zMin = 0;  // Foreground uses special z-level handling
-            break;
-        case Regular:
-        default:
-            zMin = (BG_LAYERS + layer->layerIndex()) * ZLAYER_LIMIT;
-            break;
+    int zMax = 0;
+    bool hasZLevel = false;
+
+    for (TupGraphicObject *object : graphics) {
+        if (!object)
+            continue;
+        const int zLevel = object->itemZValue();
+        if (!hasZLevel) {
+            zMin = zLevel;
+            zMax = zLevel;
+            hasZLevel = true;
+        } else {
+            zMin = qMin(zMin, zLevel);
+            zMax = qMax(zMax, zLevel);
+        }
     }
 
-    // zMax is always zLevelIndex - 1 (the highest used zValue in this frame)
-    int zMax = zLevelIndex - 1;
+    for (TupSvgItem *item : svg) {
+        if (!item)
+            continue;
+        const int zLevel = static_cast<int>(item->zValue());
+        if (!hasZLevel) {
+            zMin = zLevel;
+            zMax = zLevel;
+            hasZLevel = true;
+        } else {
+            zMin = qMin(zMin, zLevel);
+            zMax = qMax(zMax, zLevel);
+        }
+    }
+
+    if (!hasZLevel)
+        return true;
 
     #ifdef TUP_DEBUG
         qDebug() << "[TupFrame::moveItem()] - zMin:" << zMin << "zMax:" << zMax << "zLevelIndex:" << zLevelIndex;
@@ -1169,6 +1175,112 @@ bool TupFrame::moveItem(TupLibraryObject::ObjectType objectType, int currentInde
         qDebug() << "[TupFrame::moveItem()] - Warning: Reached end of switch without returning";
     #endif
     
+    return false;
+}
+
+bool TupFrame::restoreItemZLevel(TupLibraryObject::ObjectType objectType,
+                                 int currentIndex, int action, int targetZLevel)
+{
+    if ((svg.size() + graphics.size()) <= 1)
+        return true;
+
+    int zMin = 0;
+    int zMax = 0;
+    bool hasZLevel = false;
+
+    for (TupGraphicObject *object : graphics) {
+        if (!object)
+            continue;
+        const int zLevel = object->itemZValue();
+        if (!hasZLevel) {
+            zMin = zLevel;
+            zMax = zLevel;
+            hasZLevel = true;
+        } else {
+            zMin = qMin(zMin, zLevel);
+            zMax = qMax(zMax, zLevel);
+        }
+    }
+
+    for (TupSvgItem *item : svg) {
+        if (!item)
+            continue;
+        const int zLevel = static_cast<int>(item->zValue());
+        if (!hasZLevel) {
+            zMin = zLevel;
+            zMax = zLevel;
+            hasZLevel = true;
+        } else {
+            zMin = qMin(zMin, zLevel);
+            zMax = qMax(zMax, zLevel);
+        }
+    }
+
+    if (!hasZLevel)
+        return true;
+    if (targetZLevel < zMin || targetZLevel > zMax)
+        return false;
+
+    if (objectType == TupLibraryObject::Svg) {
+        int movedZLevel = targetZLevel;
+        switch (MoveItemType(action)) {
+            case MoveBack:
+                movedZLevel = zMin;
+                break;
+            case MoveToFront:
+                movedZLevel = zMax;
+                break;
+            case MoveOneLevelBack:
+                movedZLevel = targetZLevel - 1;
+                break;
+            case MoveOneLevelToFront:
+                movedZLevel = targetZLevel + 1;
+                break;
+        }
+
+        for (int i = 0; i < svg.size(); ++i) {
+            TupSvgItem *item = svg.at(i);
+            if (item && static_cast<int>(item->zValue()) == movedZLevel) {
+                currentIndex = i;
+                break;
+            }
+        }
+    }
+
+    TupGraphicObject *graphicObject = nullptr;
+    TupSvgItem *svgItem = nullptr;
+    if (objectType == TupLibraryObject::Svg) {
+        svgItem = svgAt(currentIndex);
+        if (!svgItem)
+            return false;
+    } else {
+        graphicObject = graphicAt(currentIndex);
+        if (!graphicObject)
+            return false;
+    }
+
+    const int maxSteps = svg.size() + graphics.size();
+    for (int step = 0; step <= maxSteps; ++step) {
+        int currentZLevel = objectType == TupLibraryObject::Svg
+            ? static_cast<int>(svgItem->zValue())
+            : graphicObject->itemZValue();
+
+        if (currentZLevel == targetZLevel)
+            return true;
+
+        currentIndex = objectType == TupLibraryObject::Svg
+            ? indexOf(svgItem)
+            : indexOf(graphicObject);
+        if (currentIndex < 0)
+            return false;
+
+        const int restoreAction = currentZLevel < targetZLevel
+            ? MoveOneLevelToFront
+            : MoveOneLevelBack;
+        if (!moveItem(objectType, currentIndex, restoreAction))
+            return false;
+    }
+
     return false;
 }
 

@@ -721,6 +721,35 @@ void TupMainWindow::newProject()
 
 bool TupMainWindow::cancelChanges(PendingCloseAction action)
 {
+    if (isNetworked) {
+        const int pendingCount = netProjectManager
+            ? netProjectManager->pendingCommandCount()
+            : 0;
+
+        if (pendingCount > 0) {
+            if (action != NoPendingClose)
+                pendingCloseAction = action;
+
+#ifdef TUP_DEBUG
+            qWarning() << "[TupMainWindow::cancelChanges()] Collaborative close deferred."
+                       << "Pending commands:" << pendingCount
+                       << "Action:" << static_cast<int>(action);
+#endif
+
+            TOsd::self()->display(
+                TOsd::Warning,
+                tr("Waiting for %1 collaborative edit(s) to be confirmed by the server...")
+                    .arg(pendingCount));
+            return true;
+        }
+
+        // Collaborative edits that have no pending local commands are already
+        // durable in the server-authoritative history. The saved revision is an
+        // explicit checkpoint only, so closing must not offer Save/Discard for
+        // already committed collaborative work.
+        return false;
+    }
+
     if (m_projectManager->projectWasModified()) {
         QMessageBox msgBox;
         msgBox.setStyleSheet(uiStyleSheet);
@@ -740,18 +769,6 @@ bool TupMainWindow::cancelChanges(PendingCloseAction action)
         int ret = msgBox.exec();
         switch (ret) {
             case QMessageBox::AcceptRole:
-                if (isNetworked && action != NoPendingClose) {
-                    pendingCloseAction = action;
-                    lastSave = true;
-                    if (!saveProject()) {
-                        pendingCloseAction = NoPendingClose;
-                        lastSave = false;
-                    }
-                    // Network saves are asynchronous. Prevent the caller from
-                    // closing until the server acknowledges success or failure.
-                    return true;
-                }
-
                 lastSave = false;
                 if (!saveProject())
                     return true;
@@ -1037,6 +1054,8 @@ void TupMainWindow::setupCollaborativeProject(TupProjectManagerParams *params)
                 this, SLOT(completeRecoverySnapshotUi()));
         connect(netProjectManager, SIGNAL(collaborationRecoveryFinished()),
                 this, SLOT(collaborationRecoveryFinished()));
+        connect(netProjectManager, SIGNAL(pendingCommandCountChanged(int)),
+                this, SLOT(collaborativePendingCommandCountChanged(int)));
 
         connect(netProjectManager, SIGNAL(savingSuccessful()), this, SLOT(netProjectSaved()));
         connect(netProjectManager, SIGNAL(savingFailed()), this, SLOT(netProjectSaveFailed()));
@@ -2304,27 +2323,42 @@ void TupMainWindow::handleCollaborativeAuthenticationFailure()
 
 void TupMainWindow::netProjectSaved()
 {
-    m_projectManager->setModificationStatus(false);
+    // The project_saved metadata from the server is the authority for
+    // saved_revision and therefore for collaborative modified state.
+    // A generic save notification must not clear pending-command state.
     QApplication::restoreOverrideCursor();
-
-    PendingCloseAction action = pendingCloseAction;
-    pendingCloseAction = NoPendingClose;
-
-    if (action == CloseProjectAfterSave) {
-        closeProject();
-    } else if (action == ExitApplicationAfterSave) {
-        // Re-enter closeEvent now that the authoritative save succeeded.
-        close();
-    }
 }
 
 void TupMainWindow::netProjectSaveFailed()
 {
-    // Keep the project open and dirty so the user can retry. A failed
-    // Save-on-close must cancel the deferred close instead of tearing down UI.
-    pendingCloseAction = NoPendingClose;
+    // Explicit collaborative Save is only a checkpoint request. Failure does
+    // not affect command durability and must not alter deferred close state.
     lastSave = false;
     QApplication::restoreOverrideCursor();
+}
+
+void TupMainWindow::collaborativePendingCommandCountChanged(int pendingCount)
+{
+    if (!isNetworked || pendingCount > 0 || pendingCloseAction == NoPendingClose)
+        return;
+
+    const PendingCloseAction action = pendingCloseAction;
+    pendingCloseAction = NoPendingClose;
+
+#ifdef TUP_DEBUG
+    qDebug() << "[TupMainWindow::collaborativePendingCommandCountChanged()]"
+             << "Collaborative commands reconciled. Completing deferred close."
+             << "Action:" << static_cast<int>(action);
+#endif
+
+    // Finish the close on the next event-loop turn. This avoids tearing down
+    // the network handler re-entrantly while it is still completing the
+    // command_result or recovery event that reduced the pending count to zero.
+    if (action == CloseProjectAfterSave) {
+        QTimer::singleShot(0, this, SLOT(closeProject()));
+    } else if (action == ExitApplicationAfterSave) {
+        QTimer::singleShot(0, this, SLOT(close()));
+    }
 }
 
 void TupMainWindow::notifyChatMessage(int messageType)

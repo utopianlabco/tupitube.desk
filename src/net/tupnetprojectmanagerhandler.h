@@ -111,6 +111,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void updateCollaboratorStatus(const QString &login, int state);
         void setCollaborators(const QStringList &users);
         void closeConnection();
+        int pendingCommandCount();
 
     signals:
         void projectPathChanged();
@@ -124,6 +125,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void recoverySnapshotUiReady();
         void collaborationRecoveryFinished();
         void authoritativeModifiedStateChanged(bool modified);
+        void pendingCommandCountChanged(int pendingCount);
         void authenticationFailed();
         void newMessageReceived(int messageType);
         void commandResultReceived(const QString &commandId,
@@ -297,6 +299,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void handleProjectSyncResponse(const QString &package);
         void finishCollaborationRecovery();
         void updateAuthoritativeModifiedState();
+        void notifyPendingCommandCountChanged();
         void startHeartbeat();
         void stopHeartbeat();
         void scheduleReconnect(int delayMs);

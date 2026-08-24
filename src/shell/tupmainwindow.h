@@ -238,6 +238,7 @@ class TupMainWindow : public TabbedMainWindow
         void prepareRecoverySnapshot();
         void completeRecoverySnapshotUi();
         void collaborationRecoveryFinished();
+        void collaborativePendingCommandCountChanged(int pendingCount);
         void updateColorPanelStatus(bool flag);
         void updatePenPanelStatus(bool flag);
         void updateLibraryPanelStatus(bool flag);

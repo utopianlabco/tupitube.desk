@@ -481,6 +481,7 @@ void TupNetProjectManagerHandler::handleProjectRequest(const TupProjectRequest *
             << request->getCommandId();
         return;
     }
+    notifyPendingCommandCountChanged();
 
     // Preserve the existing optimistic local execution behavior.
     emit sendCommand(request, true);
@@ -527,6 +528,7 @@ void TupNetProjectManagerHandler::requestAuthoritativeConvertRestore(
         return;
     }
 
+    notifyPendingCommandCountChanged();
     socket->send(request.getXml());
 }
 
@@ -567,6 +569,7 @@ void TupNetProjectManagerHandler::requestAuthoritativeEditNodesRestore(
         return;
     }
 
+    notifyPendingCommandCountChanged();
     socket->send(request.getXml());
 }
 
@@ -586,6 +589,7 @@ void TupNetProjectManagerHandler::requestAuthoritativeTransformRestore(const QSt
     if (!request.isValid() || !commandTracker || !commandTracker->track(request)) {
         emit transformRestoreRequestFinished(id); return;
     }
+    notifyPendingCommandCountChanged();
     socket->send(request.getXml());
 }
 
@@ -632,6 +636,7 @@ void TupNetProjectManagerHandler::requestAuthoritativeGroupRestore(
         emit groupRestoreRequestFinished(normalizedCommandId);
         return;
     }
+    notifyPendingCommandCountChanged();
 
     PendingGroupRestoreRequest pending;
     pending.originalCommandId = normalizedCommandId;
@@ -934,6 +939,7 @@ bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
                 << request.getCommandId();
             return false;
         }
+        notifyPendingCommandCountChanged();
         socket->send(request.getXml());
     }
 
@@ -1804,6 +1810,7 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
 
         if (commandTracker)
             commandTracker->complete(parser.commandId());
+        notifyPendingCommandCountChanged();
 
         if (isPendingConvertRestore)
             emit convertRestoreRequestFinished(pendingRestoreOriginalCommandId);
@@ -2088,6 +2095,7 @@ void TupNetProjectManagerHandler::handleProjectEvent(const QString &package)
         // committed. Complete it so it is not resent after recovery and any
         // dependent commands can be released by the coordinator.
         commandTracker->complete(causedBy);
+        notifyPendingCommandCountChanged();
         updateAuthoritativeModifiedState();
         snapshotReconciliationCommands.remove(causedBy);
         if (snapshotReconciliationCommands.isEmpty())
@@ -2216,6 +2224,16 @@ void TupNetProjectManagerHandler::finishCollaborationRecovery()
     updateAuthoritativeModifiedState();
     emit collaborationRecoveryFinished();
     QApplication::restoreOverrideCursor();
+}
+
+int TupNetProjectManagerHandler::pendingCommandCount()
+{
+    return commandTracker ? commandTracker->pendingCount() : 0;
+}
+
+void TupNetProjectManagerHandler::notifyPendingCommandCountChanged()
+{
+    emit pendingCommandCountChanged(pendingCommandCount());
 }
 
 void TupNetProjectManagerHandler::updateAuthoritativeModifiedState()
@@ -3164,6 +3182,7 @@ void TupNetProjectManagerHandler::retryTimedOutCommands()
                 << "Retries:" << retries;
 
             commandTracker->complete(commandId);
+            notifyPendingCommandCountChanged();
 
             if (pendingGroupRestoreRequests.contains(commandId)) {
                 const PendingGroupRestoreRequest pending =
@@ -3187,6 +3206,7 @@ void TupNetProjectManagerHandler::retryTimedOutCommands()
                 << commandId;
 
             commandTracker->complete(commandId);
+            notifyPendingCommandCountChanged();
             if (pendingGroupRestoreRequests.contains(commandId)) {
                 const PendingGroupRestoreRequest pending =
                     pendingGroupRestoreRequests.take(commandId);

@@ -16,12 +16,14 @@ win32 {
 INSTALLS += target 
 target.path = /plugins/
 
-HEADERS += tweener.h \
+HEADERS += \
            configurator.h \
+           rotation_tweener.h \
            rotationsettings.h
 
-SOURCES += tweener.cpp \
+SOURCES += \
            configurator.cpp \
+           rotation_tweener.cpp \
            rotationsettings.cpp
 
 FRAMEWORK_DIR = "../../../framework"

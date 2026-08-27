@@ -16,11 +16,13 @@ win32 {
 INSTALLS += target 
 target.path = /plugins/
 
-HEADERS += tweener.h \
+HEADERS += \
+           color_tweener.h \
            configurator.h \
            colorsettings.h
 
-SOURCES += tweener.cpp \
+SOURCES += \
+           color_tweener.cpp \
            configurator.cpp \
            colorsettings.cpp
 

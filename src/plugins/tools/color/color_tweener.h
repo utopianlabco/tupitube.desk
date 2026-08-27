@@ -32,34 +32,27 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#ifndef SCALETWEENER_H
-#define SCALETWEENER_H
+#ifndef COLORTWEENER_H
+#define COLORTWEENER_H
 
 #include "tglobal.h"
 #include "tuptoolplugin.h"
-#include "scalesettings.h"
-#include "tupprojectresponse.h"
+#include "colorsettings.h"
 #include "configurator.h"
-
-#include <QPointF>
-#include <QKeySequence>
-#include <QGraphicsView>
-#include <QDomDocument>
-#include <QDir>
 
 /**
  * @author Gustav Gonzalez 
  * 
 */
 
-class TUPITUBE_PLUGIN Tweener : public TupToolPlugin
+class TUPITUBE_PLUGIN ColorTweener : public TupToolPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "co.utopianlab.tupi.TupToolInterface" FILE "scaletool.json")
+    Q_PLUGIN_METADATA(IID "co.utopianlab.tupi.TupToolInterface" FILE "coloringtool.json")
 
     public:
-        Tweener();
-        virtual ~Tweener();
+        ColorTweener();
+        virtual ~ColorTweener();
 
         virtual void init(TupGraphicsScene *scene);
         virtual QList<TAction::ActionId> keys() const;
@@ -68,7 +61,8 @@ class TUPITUBE_PLUGIN Tweener : public TupToolPlugin
         virtual void release(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *scene);
 
         virtual QMap<TAction::ActionId, TAction *>actions() const;
-        TAction * getAction(TAction::ActionId toolId);
+        virtual TAction * getAction(TAction::ActionId toolId);
+
         int toolType() const;
         virtual QWidget *configurator();
 
@@ -86,15 +80,14 @@ class TUPITUBE_PLUGIN Tweener : public TupToolPlugin
         void tweenRemoved();
 
     private slots:
+        void setCurrentTween(const QString &name);
         void setSelection();
-        void setPropertiesMode();
+        void setPropertiesMode(); 
         void updateMode(TupToolPlugin::Mode mode);
+        void updateStartPoint(int index);
         void applyReset();
         void applyTween();
         void removeTween(const QString &name);
-        void updateStartPoint(int index);
-        void setCurrentTween(const QString &name);
-        void updateOriginPoint(const QPointF &point);
 
     private:
         void setupActions();
@@ -102,9 +95,8 @@ class TUPITUBE_PLUGIN Tweener : public TupToolPlugin
         void clearSelection();
         void disableSelection();
         void removeTweenFromProject(const QString &name);
-        QTransform initialStep();
 
-        QMap<TAction::ActionId, TAction *> scaleActions;
+        QMap<TAction::ActionId, TAction *> colorActions;
         Configurator *configPanel;
 
         TupGraphicsScene *scene;
@@ -115,14 +107,8 @@ class TUPITUBE_PLUGIN Tweener : public TupToolPlugin
         int initLayer;
         int initScene;
 
-        QPointF origin;
-        double initialXScaleFactor;
-        double initialYScaleFactor;
-
         TupToolPlugin::Mode mode;
         TupToolPlugin::EditMode editMode;
-
-        int baseZValue;
 };
 
 #endif

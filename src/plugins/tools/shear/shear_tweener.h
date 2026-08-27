@@ -32,135 +32,103 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#ifndef POSITIONTWEENER_H
-#define POSITIONTWEENER_H
+#ifndef SHEARTWEENER_H
+#define SHEARTWEENER_H
 
 #include "tglobal.h"
 #include "tuptoolplugin.h"
+#include "shearsettings.h"
 #include "tupprojectresponse.h"
-#include "tnodegroup.h"
 #include "configurator.h"
-#include "tupellipseitem.h"
-#include "tuplineitem.h"
-#include "taction.h"
+#include "target.h"
 
 #include <QPointF>
 #include <QKeySequence>
-#include <QGraphicsPathItem>
-#include <QPainterPath>
-#include <QGraphicsLineItem>
 #include <QGraphicsView>
 #include <QDomDocument>
-#include <QDir>
 
-class TUPITUBE_PLUGIN Tweener : public TupToolPlugin
+/**
+ * @author Gustav Gonzalez 
+ * 
+*/
+
+class TUPITUBE_PLUGIN ShearTweener : public TupToolPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "co.utopianlab.tupi.TupToolInterface" FILE "motiontool.json")
+    Q_PLUGIN_METADATA(IID "co.utopianlab.tupi.TupToolInterface" FILE "sheartool.json")
 
     public:
-        Tweener();
-        virtual ~Tweener();
+        ShearTweener();
+        virtual ~ShearTweener();
+
         virtual void init(TupGraphicsScene *scene);
 
         virtual QList<TAction::ActionId> keys() const;
         virtual void press(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *scene);
         virtual void move(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *scene);
         virtual void release(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *scene);
-        virtual void updateScene(TupGraphicsScene *scene);
+
         virtual QMap<TAction::ActionId, TAction *>actions() const;
         TAction * getAction(TAction::ActionId toolId);
-        virtual QWidget *configurator();
-        virtual void aboutToChangeTool();
-        virtual void saveConfig();
-
         int toolType() const;
+        virtual QWidget *configurator();
+
         void aboutToChangeScene(TupGraphicsScene *scene);
+        virtual void aboutToChangeTool();
+
+        virtual void updateScene(TupGraphicsScene *scene);
+        virtual void saveConfig();
 
         virtual void sceneResponse(const TupSceneResponse *event);
         virtual void layerResponse(const TupLayerResponse *event);
         virtual void frameResponse(const TupFrameResponse *event);
-        virtual void itemResponse(const TupItemResponse *event);
-
-        virtual TupToolPlugin::Mode currentMode();
-        virtual TupToolPlugin::EditMode currentEditMode();
 
         void resizeNode(qreal scaleFactor);
         void updateZoomFactor(qreal scaleFactor);
-        void updatePos(QPointF pos);
-
-    protected:
-        virtual void keyPressEvent(QKeyEvent *event);
-        virtual void keyReleaseEvent(QKeyEvent *event);
 
     signals:
         void tweenRemoved();
 
     private slots:
+        void setSelection();
+        void setPropertiesMode();
+        void updateMode(TupToolPlugin::Mode mode);
         void applyReset();
         void applyTween();
         void removeTween(const QString &name);
-        void setTweenPath();
-        void setSelection();
-        void setEditEnv();
-        void updateMode(TupToolPlugin::Mode mode);
-        void updateStartFrame(int index);
+        void updateInitFrame(int index);
         void setCurrentTween(const QString &name);
-        void updateTweenPoints();
-
-        void updatePathThickness(int thickness);
-        void updatePathColor(const QColor &color);
-
-    public slots:
-        void updatePath();
+        void updateOriginPoint(const QPointF &point);
 
     private:
-        int framesCount();
         void setupActions();
-        QString pathToCoords();
+        int framesCount();
         void clearSelection();
         void disableSelection();
+        void addTarget();
         void removeTweenFromProject(const QString &name);
-        void resetGUI();
-        void removeTweenPoints();
-        void paintTweenPoints();
-        void updateTweenPath();
-        void setGuideLine(const QColor &pathColor, const QPointF &initPoint);
+        QTransform initialStep();
 
-        QMap<TAction::ActionId, TAction *> posActions;
+        QMap<TAction::ActionId, TAction *> shearActions;
         Configurator *configPanel;
 
         TupGraphicsScene *scene;
-        QGraphicsPathItem *linePath;
-        TupLineItem *guideLine;
-
-        QList<QPainterPath> doList;
-        QList<QPainterPath> undoList;
-
         QList<QGraphicsItem *> objects;
 
         TupItemTweener *currentTween;
-        TNodeGroup *nodesGroup;
-        qreal realFactor;
-
-        bool isPathInScene;
         int initFrame;
         int initLayer;
         int initScene;
+        int framesTotal;
+
+        QPointF origin;
+        Target *target;
+        qreal realFactor;
 
         TupToolPlugin::Mode mode;
         TupToolPlugin::EditMode editMode;
 
-        QPointF itemObjectReference;
-        QPointF pathOffset;
-        QPointF firstNode;
-        QPointF objectPos;
-        QList<TupEllipseItem *> dots;
-
         int baseZValue;
-        bool lineStraightMode;
-        QPointF currentPoint;
-        QPointF lastPoint;
 };
 
 #endif

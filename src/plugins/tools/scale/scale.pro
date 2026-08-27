@@ -16,12 +16,14 @@ win32 {
 INSTALLS += target 
 target.path = /plugins/
 
-HEADERS += tweener.h \
+HEADERS += \
            configurator.h \
+           scale_tweener.h \
            scalesettings.h 
 
-SOURCES += tweener.cpp \
+SOURCES += \
            configurator.cpp \
+           scale_tweener.cpp \
            scalesettings.cpp
 
 FRAMEWORK_DIR = "../../../framework"

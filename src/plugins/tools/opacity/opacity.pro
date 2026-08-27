@@ -16,12 +16,14 @@ win32 {
 INSTALLS += target 
 target.path = /plugins/
 
-HEADERS += tweener.h \
+HEADERS += \
            configurator.h \
+           opacity_tweener.h \
            opacitysettings.h
 
-SOURCES += tweener.cpp \
+SOURCES += \
            configurator.cpp \
+           opacity_tweener.cpp \
            opacitysettings.cpp
 
 FRAMEWORK_DIR = "../../../framework"

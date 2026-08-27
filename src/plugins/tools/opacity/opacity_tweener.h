@@ -32,27 +32,29 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#ifndef COLORINGTWEENER_H
-#define COLORINGTWEENER_H
+#ifndef OPACITYTWEENER_H
+#define OPACITYTWEENER_H
 
 #include "tglobal.h"
-#include "tuptoolplugin.h"
-#include "colorsettings.h"
 #include "configurator.h"
+#include "taction.h"
+#include "tuptoolplugin.h"
+#include "opacitysettings.h"
+#include "tupprojectresponse.h"
 
 /**
  * @author Gustav Gonzalez 
  * 
 */
 
-class TUPITUBE_PLUGIN Tweener : public TupToolPlugin
+class TUPITUBE_PLUGIN OpacityTweener : public TupToolPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "co.utopianlab.tupi.TupToolInterface" FILE "coloringtool.json")
+    Q_PLUGIN_METADATA(IID "co.utopianlab.tupi.TupToolInterface" FILE "opacitytool.json")
 
     public:
-        Tweener();
-        virtual ~Tweener();
+        OpacityTweener();
+        virtual ~OpacityTweener();
 
         virtual void init(TupGraphicsScene *scene);
         virtual QList<TAction::ActionId> keys() const;
@@ -61,8 +63,7 @@ class TUPITUBE_PLUGIN Tweener : public TupToolPlugin
         virtual void release(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *scene);
 
         virtual QMap<TAction::ActionId, TAction *>actions() const;
-        virtual TAction * getAction(TAction::ActionId toolId);
-
+        TAction * getAction(TAction::ActionId toolId);
         int toolType() const;
         virtual QWidget *configurator();
 
@@ -96,7 +97,7 @@ class TUPITUBE_PLUGIN Tweener : public TupToolPlugin
         void disableSelection();
         void removeTweenFromProject(const QString &name);
 
-        QMap<TAction::ActionId, TAction *> colorActions;
+        QMap<TAction::ActionId, TAction *> opacityActions;
         Configurator *configPanel;
 
         TupGraphicsScene *scene;

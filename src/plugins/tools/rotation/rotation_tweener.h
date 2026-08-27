@@ -54,14 +54,14 @@
  * 
 */
 
-class TUPITUBE_PLUGIN Tweener : public TupToolPlugin
+class TUPITUBE_PLUGIN RotationTweener : public TupToolPlugin
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "co.utopianlab.tupi.TupToolInterface" FILE "rotationtool.json")
 
     public:
-        Tweener();
-        virtual ~Tweener();
+        RotationTweener();
+        virtual ~RotationTweener();
 
         virtual void init(TupGraphicsScene *scene);
 

@@ -32,7 +32,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#include "tweener.h"
+#include "motion_tweener.h"
 #include "tconfig.h"
 #include "tosd.h"
 #include "tupsvg2qt.h"
@@ -55,7 +55,7 @@
 
 #include <QMessageBox>
 
-Tweener::Tweener() : TupToolPlugin()
+MotionTweener::MotionTweener() : TupToolPlugin()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::Tweener()]";
@@ -74,12 +74,12 @@ Tweener::Tweener() : TupToolPlugin()
     initScene = 0;
 }
 
-Tweener::~Tweener()
+MotionTweener::~MotionTweener()
 {
 }
 
 // This method initialize the context of the plugin
-void Tweener::init(TupGraphicsScene *gScene)
+void MotionTweener::init(TupGraphicsScene *gScene)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::init()] - isPathInScene ->" << isPathInScene;
@@ -126,7 +126,7 @@ void Tweener::init(TupGraphicsScene *gScene)
     configPanel->initStartCombo(total, scene->currentFrameIndex());
 }
 
-void Tweener::updateStartFrame(int index)
+void MotionTweener::updateStartFrame(int index)
 {
     #ifdef TUP_DEBUG
        qDebug() << "[Motion Tweener::updateStartFrame()]";
@@ -145,7 +145,7 @@ void Tweener::updateStartFrame(int index)
 }
 
 // This method returns the plugin name
-QList<TAction::ActionId> Tweener::keys() const
+QList<TAction::ActionId> MotionTweener::keys() const
 {
     return QList<TAction::ActionId>() << TAction::Motion;
 }
@@ -155,7 +155,7 @@ QList<TAction::ActionId> Tweener::keys() const
   depending on the active mode: Selecting an object or Creating a path  
 */
 
-void Tweener::press(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
+void MotionTweener::press(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::press()] -> Motion";
@@ -184,7 +184,7 @@ void Tweener::press(const TupInputDeviceInformation *input, TupBrushManager *bru
 
 // This method is executed while the mouse is pressed and on movement
 
-void Tweener::move(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
+void MotionTweener::move(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
 {
     Q_UNUSED(input)
     Q_UNUSED(brushManager)
@@ -196,7 +196,7 @@ void Tweener::move(const TupInputDeviceInformation *input, TupBrushManager *brus
   on the active mode: Selecting an object or Creating a path
 */
 
-void Tweener::release(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
+void MotionTweener::release(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::release()]";
@@ -333,7 +333,7 @@ void Tweener::release(const TupInputDeviceInformation *input, TupBrushManager *b
     }
 }
 
-void Tweener::setGuideLine(const QColor &pathColor, const QPointF &initPoint)
+void MotionTweener::setGuideLine(const QColor &pathColor, const QPointF &initPoint)
 {
     guideLine = new TupLineItem();
     QPen guidePen;
@@ -345,7 +345,7 @@ void Tweener::setGuideLine(const QColor &pathColor, const QPointF &initPoint)
     guideLine->setLine(QLineF(initPoint, initPoint));
 }
 
-void Tweener::updateTweenPath()
+void MotionTweener::updateTweenPath()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::updateTweenPath()]";
@@ -366,26 +366,26 @@ void Tweener::updateTweenPath()
 
 // This method returns the list of actions defined in this plugin
 
-QMap<TAction::ActionId, TAction *> Tweener::actions() const
+QMap<TAction::ActionId, TAction *> MotionTweener::actions() const
 {
     return posActions;
 }
 
-TAction * Tweener::getAction(TAction::ActionId toolId)
+TAction * MotionTweener::getAction(TAction::ActionId toolId)
 {
     return posActions[toolId];
 }
 
 // This method returns the list of actions defined in this plugin
 
-int Tweener::toolType() const
+int MotionTweener::toolType() const
 {
     return TupToolInterface::Tweener;
 }
 
 // This method returns the tool panel associated to this plugin
 
-QWidget *Tweener::configurator()
+QWidget *MotionTweener::configurator()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::configurator()]";
@@ -415,7 +415,7 @@ QWidget *Tweener::configurator()
 
 // This method is called when there's a change on/of scene
 
-void Tweener::aboutToChangeScene(TupGraphicsScene *scene)
+void MotionTweener::aboutToChangeScene(TupGraphicsScene *scene)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::aboutToChangeScene()] - Scene index ->" << scene->currentSceneIndex();
@@ -426,7 +426,7 @@ void Tweener::aboutToChangeScene(TupGraphicsScene *scene)
 
 // This method is called when this plugin is off
 
-void Tweener::aboutToChangeTool()
+void MotionTweener::aboutToChangeTool()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::aboutToChangeTool()]";
@@ -435,7 +435,7 @@ void Tweener::aboutToChangeTool()
     resetGUI();
 }
 
-void Tweener::resetGUI()
+void MotionTweener::resetGUI()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::resetGUI()]";
@@ -464,7 +464,7 @@ void Tweener::resetGUI()
 
 // This method defines the actions contained in this plugin
 
-void Tweener::setupActions()
+void MotionTweener::setupActions()
 {
     /*
     #ifdef TUP_DEBUG
@@ -487,7 +487,7 @@ void Tweener::setupActions()
 
 // This method initializes the "Create path" mode
 
-void Tweener::setTweenPath()
+void MotionTweener::setTweenPath()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::setTweenPath()]";
@@ -525,7 +525,7 @@ void Tweener::setTweenPath()
 
 // This method initializes the "Select object" mode
 
-void Tweener::setSelection()
+void MotionTweener::setSelection()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::setSelection()]";
@@ -570,7 +570,7 @@ void Tweener::setSelection()
 
 // This method transforms the path created into a QString representation
 
-QString Tweener::pathToCoords()
+QString MotionTweener::pathToCoords()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::pathToCoords()]";
@@ -630,7 +630,7 @@ QString Tweener::pathToCoords()
 
 // This method resets this plugin
 
-void Tweener::applyReset()
+void MotionTweener::applyReset()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::applyReset()]";
@@ -669,7 +669,7 @@ void Tweener::applyReset()
 
 // This method applies to the project, the Tween created from this plugin
 
-void Tweener::applyTween()
+void MotionTweener::applyTween()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::applyTween()]";
@@ -704,12 +704,19 @@ void Tweener::applyTween()
             }
 
             QString route = pathToCoords();
+            QString objectId;
+            if (type == TupLibraryObject::Item) {
+                TupGraphicObject *graphicObject = scene->currentFrame()->graphicAt(objectIndex);
+                if (graphicObject)
+                    objectId = graphicObject->objectId();
+            }
+
             TupProjectRequest request = TupRequestBuilder::createItemRequest(
                                         initScene, initLayer, initFrame,
                                         objectIndex,
                                         QPointF(), scene->getSpaceContext(), type,
                                         TupProjectRequest::SetTween,
-                                        configPanel->tweenToXml(initScene, initLayer, initFrame, point, route));
+                                        configPanel->tweenToXml(initScene, initLayer, initFrame, point, route), QByteArray(), QString(), QString(), objectId);
             emit requested(&request);
         }
     } else { // Tween already exists
@@ -777,12 +784,20 @@ void Tweener::applyTween()
             }
 
             QString route = pathToCoords();
+            QString objectId;
+            if (type == TupLibraryObject::Item
+                    && initFrame == currentTween->getInitFrame()) {
+                TupGraphicObject *graphicObject = frame->graphicAt(objectIndex);
+                if (graphicObject)
+                    objectId = graphicObject->objectId();
+            }
+
             TupProjectRequest request = TupRequestBuilder::createItemRequest(
                                         initScene, initLayer, initFrame,
                                         objectIndex,
                                         QPointF(), scene->getSpaceContext(), type,
                                         TupProjectRequest::SetTween,
-                                        configPanel->tweenToXml(initScene, initLayer, initFrame, point, route));
+                                        configPanel->tweenToXml(initScene, initLayer, initFrame, point, route), QByteArray(), QString(), QString(), objectId);
             emit requested(&request);
        }
 
@@ -837,7 +852,7 @@ void Tweener::applyTween()
   and disables edition mode for nodes
 */
 
-void Tweener::updatePath()
+void MotionTweener::updatePath()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::updatePath()]";
@@ -874,13 +889,13 @@ void Tweener::updatePath()
 
 // This method saves the settings of this plugin
 
-void Tweener::saveConfig()
+void MotionTweener::saveConfig()
 {
 }
 
 /* This method updates the workspace when the plugin changes the scene */
 
-void Tweener::updateScene(TupGraphicsScene *scene)
+void MotionTweener::updateScene(TupGraphicsScene *scene)
 {
     mode = configPanel->mode();
 
@@ -942,7 +957,7 @@ void Tweener::updateScene(TupGraphicsScene *scene)
     }
 }
 
-void Tweener::updateMode(TupToolPlugin::Mode currentMode)
+void MotionTweener::updateMode(TupToolPlugin::Mode currentMode)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::updateMode()] - currentMode ->" << currentMode;
@@ -954,7 +969,7 @@ void Tweener::updateMode(TupToolPlugin::Mode currentMode)
         setEditEnv();
 }
 
-void Tweener::removeTweenFromProject(const QString &name)
+void MotionTweener::removeTweenFromProject(const QString &name)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::removeTweenFromProject()] - name ->" << name;
@@ -988,7 +1003,7 @@ void Tweener::removeTweenFromProject(const QString &name)
     }
 }
 
-void Tweener::removeTween(const QString &name)
+void MotionTweener::removeTween(const QString &name)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::removeTween()] - tween name ->" << name;
@@ -1002,7 +1017,7 @@ void Tweener::removeTween(const QString &name)
         setCurrentTween(tweenName);
 }
 
-void Tweener::setCurrentTween(const QString &name)
+void MotionTweener::setCurrentTween(const QString &name)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::setCurrentTween()] - tween name ->" << name;
@@ -1014,7 +1029,7 @@ void Tweener::setCurrentTween(const QString &name)
         configPanel->setCurrentTween(currentTween);
 }
 
-void Tweener::setEditEnv()
+void MotionTweener::setEditEnv()
 {
     if (!currentTween) {
         #ifdef TUP_DEBUG
@@ -1093,7 +1108,7 @@ void Tweener::setEditEnv()
     }
 }
 
-int Tweener::framesCount()
+int MotionTweener::framesCount()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::framesCount()]";
@@ -1109,7 +1124,7 @@ int Tweener::framesCount()
 
 /* This method clear selection */
 
-void Tweener::clearSelection()
+void MotionTweener::clearSelection()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::clearSelection()]";
@@ -1127,7 +1142,7 @@ void Tweener::clearSelection()
 
 // This method disables object selection
 
-void Tweener::disableSelection()
+void MotionTweener::disableSelection()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::disableSelection()]";
@@ -1142,7 +1157,7 @@ void Tweener::disableSelection()
     }
 }
 
-void Tweener::sceneResponse(const TupSceneResponse *response)
+void MotionTweener::sceneResponse(const TupSceneResponse *response)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::sceneResponse()]";
@@ -1157,7 +1172,7 @@ void Tweener::sceneResponse(const TupSceneResponse *response)
         init(scene);
 }
 
-void Tweener::layerResponse(const TupLayerResponse *response)
+void MotionTweener::layerResponse(const TupLayerResponse *response)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::layerResponse()]";
@@ -1167,7 +1182,7 @@ void Tweener::layerResponse(const TupLayerResponse *response)
         init(scene);
 }
 
-void Tweener::frameResponse(const TupFrameResponse *response)
+void MotionTweener::frameResponse(const TupFrameResponse *response)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::frameResponse()] - index ->" << response->getFrameIndex();
@@ -1203,7 +1218,7 @@ void Tweener::frameResponse(const TupFrameResponse *response)
     }
 }
 
-void Tweener::itemResponse(const TupItemResponse *response)
+void MotionTweener::itemResponse(const TupItemResponse *response)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::itemResponse()] - index ->" << response->getItemIndex();
@@ -1317,17 +1332,17 @@ void Tweener::itemResponse(const TupItemResponse *response)
     }
 }
 
-TupToolPlugin::Mode Tweener::currentMode()
+TupToolPlugin::Mode MotionTweener::currentMode()
 {
     return mode;
 }
 
-TupToolPlugin::EditMode Tweener::currentEditMode()
+TupToolPlugin::EditMode MotionTweener::currentEditMode()
 {
     return editMode;
 }
 
-void Tweener::removeTweenPoints()
+void MotionTweener::removeTweenPoints()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::removeTweenPoints()]";
@@ -1339,7 +1354,7 @@ void Tweener::removeTweenPoints()
     dots.clear();
 }
 
-void Tweener::paintTweenPoints()
+void MotionTweener::paintTweenPoints()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::paintTweenPoints()]";
@@ -1368,7 +1383,7 @@ void Tweener::paintTweenPoints()
     }
 }
 
-void Tweener::updateTweenPoints()
+void MotionTweener::updateTweenPoints()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::updateTweenPoints()]";
@@ -1378,19 +1393,19 @@ void Tweener::updateTweenPoints()
     paintTweenPoints();
 }
 
-void Tweener::resizeNode(qreal scaleFactor)
+void MotionTweener::resizeNode(qreal scaleFactor)
 {
     realFactor = scaleFactor;
     if (nodesGroup)
         nodesGroup->resizeNodes(scaleFactor);
 }
 
-void Tweener::updateZoomFactor(qreal scaleFactor)
+void MotionTweener::updateZoomFactor(qreal scaleFactor)
 {
     realFactor = scaleFactor;
 }
 
-void Tweener::updatePathThickness(int thickness)
+void MotionTweener::updatePathThickness(int thickness)
 {
     if (linePath) {
         QPen pen = linePath->pen();
@@ -1399,7 +1414,7 @@ void Tweener::updatePathThickness(int thickness)
     }
 }
 
-void Tweener::updatePathColor(const QColor &color)
+void MotionTweener::updatePathColor(const QColor &color)
 {
     if (linePath) {
         QPen pen = linePath->pen();
@@ -1408,10 +1423,10 @@ void Tweener::updatePathColor(const QColor &color)
     }
 }
 
-void Tweener::keyPressEvent(QKeyEvent *event)
+void MotionTweener::keyPressEvent(QKeyEvent *event)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[Tweener::keyPressEvent()] - key ->" << event->key();
+        qDebug() << "[Motion Tweener::keyPressEvent()] - key ->" << event->key();
     #endif
 
     if (editMode == TupToolPlugin::Properties) {
@@ -1423,10 +1438,10 @@ void Tweener::keyPressEvent(QKeyEvent *event)
     }
 }
 
-void Tweener::keyReleaseEvent(QKeyEvent *event)
+void MotionTweener::keyReleaseEvent(QKeyEvent *event)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[Tweener::keyReleaseEvent()] - key ->" << event->key();
+        qDebug() << "[Motion Tweener::keyReleaseEvent()] - key ->" << event->key();
     #endif
 
     if (editMode == TupToolPlugin::Properties) {
@@ -1438,12 +1453,12 @@ void Tweener::keyReleaseEvent(QKeyEvent *event)
     }
 }
 
-void Tweener::updatePos(QPointF pos)
+void MotionTweener::updatePos(QPointF pos)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[Tweener::updatePos()] - pos ->" << pos;
-        qDebug() << "[Tweener::updatePos()] - currentPoint.x() ->" << currentPoint.x();
-        qDebug() << "[Tweener::updatePos()] - currentPoint.y() ->" << currentPoint.y();
+        qDebug() << "[Motion Tweener::updatePos()] - pos ->" << pos;
+        qDebug() << "[Motion Tweener::updatePos()] - currentPoint.x() ->" << currentPoint.x();
+        qDebug() << "[Motion Tweener::updatePos()] - currentPoint.y() ->" << currentPoint.y();
     #endif
 
     if (editMode == TupToolPlugin::Selection)

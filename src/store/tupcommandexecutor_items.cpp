@@ -1246,8 +1246,30 @@ bool TupCommandExecutor::setTween(TupItemResponse *response)
             if (frame) {
                 TupItemTweener *tween = new TupItemTweener();
                 tween->fromXml(xml);
-                tween->setZLevel(itemIndex);
+
                 if (itemType == TupLibraryObject::Item) {
+                    const QString objectId = response->getObjectId().trimmed();
+                    if (!objectId.isEmpty()) {
+                        itemIndex = resolveItemIndex(frame, response);
+                        if (itemIndex < 0) {
+                            delete tween;
+                            return false;
+                        }
+                    } else {
+                        // Legacy compatibility is required until tween-start
+                        // relocation becomes one atomic object-id-preserving
+                        // domain operation. The existing relocation path still
+                        // emits Add -> Remove -> SetTween and cannot safely
+                        // reuse an object_id across those committed revisions.
+                        #ifdef TUP_DEBUG
+                            qWarning() << "[TupCommandExecutor::setTween()] - "
+                                          "Native tween request has no object_id; "
+                                          "using legacy positional lookup ->"
+                                       << itemIndex;
+                        #endif
+                    }
+
+                    tween->setZLevel(itemIndex);
                     TupGraphicObject *object = frame->graphicAt(itemIndex);
                     if (object) {
                         object->addTween(tween);
@@ -1257,9 +1279,11 @@ bool TupCommandExecutor::setTween(TupItemResponse *response)
                             qDebug() << "[TupCommandExecutor::setTween()] - Error: Invalid graphic index -> "
                                      << itemIndex;
                         #endif
+                        delete tween;
                         return false;
                     }
                 } else {
+                    tween->setZLevel(itemIndex);
                     TupSvgItem *svg = frame->svgAt(itemIndex); 
                     if (svg) {
                         svg->addTween(tween);

@@ -32,62 +32,67 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#include "tweener.h"
+#include "color_tweener.h"
+
 #include "taction.h"
 #include "tosd.h"
 #include "tupinputdeviceinformation.h"
 #include "tupbrushmanager.h"
 #include "tupgraphicsscene.h"
 #include "tupgraphicobject.h"
-#include "tupsvgitem.h"
 #include "tuppathitem.h"
+#include "tupellipseitem.h"
+#include "tuplineitem.h"
+#include "tuprectitem.h"
 #include "tuppixmapitem.h"
+#include "tupsvgitem.h"
 #include "tupitemtweener.h"
 #include "tuprequestbuilder.h"
 #include "tupprojectrequest.h"
 #include "tuplibraryobject.h"
 #include "tupscene.h"
 #include "tuplayer.h"
+#include "tupprojectresponse.h"
+#include "tupgraphiclibraryitem.h"
+#include "tuptextitem.h"
 #include "talgorithm.h"
 
 #include <QMessageBox>
+#include <QPointF>
+#include <QKeySequence>
+#include <QGraphicsView>
+#include <QDomDocument>
 #include <QDir>
 
-Tweener::Tweener(): TupToolPlugin()
+ColorTweener::ColorTweener() : TupToolPlugin()
 {
     setupActions();
-
     configPanel = nullptr;
-    framesTotal = 1;
-    target = nullptr;
 }
 
-Tweener::~Tweener()
+ColorTweener::~ColorTweener()
 {
+    delete configPanel;
+    delete scene;
+    delete currentTween;
 }
 
 /* This method initializes the plugin */
 
-void Tweener::init(TupGraphicsScene *gScene)
+void ColorTweener::init(TupGraphicsScene *gScene)
 {
     scene = gScene;
     objects.clear();
 
-    if (target) {
-        scene->removeItem(target);
-        target = nullptr;
-    }
-
     mode = TupToolPlugin::View;
     editMode = TupToolPlugin::None;
-    baseZValue = ZLAYER_BASE + (scene->currentScene()->layersCount() * ZLAYER_LIMIT);
     initFrame = scene->currentFrameIndex();
     initLayer = scene->currentLayerIndex();
     initScene = scene->currentSceneIndex();
 
     configPanel->resetUI();
 
-    QList<QString> tweenList = scene->currentScene()->getTweenNames(TupItemTweener::Shear);
+    QList<QString> tweenList = scene->currentScene()->getTweenNames(TupItemTweener::Coloring);
     if (tweenList.size() > 0) {
         configPanel->loadTweenList(tweenList);
         setCurrentTween(tweenList.at(0));
@@ -95,31 +100,31 @@ void Tweener::init(TupGraphicsScene *gScene)
         configPanel->activeButtonsPanel(false);
     }
 
-    framesTotal = framesCount();
-    configPanel->initStartCombo(framesTotal, initFrame);
+    int total = framesCount();
+    configPanel->initStartCombo(total, initFrame);
 }
 
-void Tweener::updateInitFrame(int index)
+void ColorTweener::updateStartPoint(int index)
 {
-     if ((initFrame != index) && (index >= 0))
+     if (initFrame != index && index >= 0)
          initFrame = index;
 }
 
 /* This method returns the plugin name */
 
-QList<TAction::ActionId> Tweener::keys() const
+QList<TAction::ActionId> ColorTweener::keys() const
 {
-    return QList<TAction::ActionId>() << TAction::Shear;
+    return QList<TAction::ActionId>() << TAction::Color;
 }
 
 /* This method makes an action when the mouse is pressed on the workspace 
  * depending on the active mode: Selecting an object or Creating a path  
 */
 
-void Tweener::press(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
+void ColorTweener::press(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[Tweener::press()]";
+        qDebug() << "[Color Tweener::press()]";
     #endif
 
     Q_UNUSED(input)
@@ -129,7 +134,7 @@ void Tweener::press(const TupInputDeviceInformation *input, TupBrushManager *bru
 
 /* This method is executed while the mouse is pressed and on movement */
 
-void Tweener::move(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
+void ColorTweener::move(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
 {
     Q_UNUSED(input)
     Q_UNUSED(brushManager)
@@ -140,32 +145,31 @@ void Tweener::move(const TupInputDeviceInformation *input, TupBrushManager *brus
  * on the active mode: Selecting an object or Creating a path
 */
 
-void Tweener::release(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
+void ColorTweener::release(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[Tweener::release()]";
+        qDebug() << "[Color Tweener::release()]";
     #endif
 
-    Q_UNUSED(input);
-    Q_UNUSED(brushManager);
+    Q_UNUSED(input)
+    Q_UNUSED(brushManager)
 
     if (gScene->currentFrameIndex() == initFrame) {
         if (editMode == TupToolPlugin::Selection) {
             #ifdef TUP_DEBUG
-                qDebug() << "Shear Tweener::release() - Tracing selection mode";
+                qDebug() << "[Color Tweener::release()] - Tracing selection mode";
             #endif
             if (gScene->selectedItems().size() > 0) {
                 #ifdef TUP_DEBUG
-                    qDebug() << "Shear Tweener::release() - selection size -> " << gScene->selectedItems().size();
+                    qDebug() << "[Color Tweener::release()] - selection size -> " << gScene->selectedItems().size();
                 #endif
                 objects = gScene->selectedItems();
                 foreach (QGraphicsItem *item, objects) {
                     QString tip = item->toolTip();
-                    if (tip.contains(tr("Shear"))) {
+                    if (tip.contains(tr("Coloring"))) {                        
                         QPair<int, int> dimension = TAlgorithm::screenDimension();
                         int screenWidth = dimension.first;
                         int screenHeight = dimension.second;
-
                         QMessageBox msgBox;
                         msgBox.setWindowTitle(tr("Warning"));
                         msgBox.setIcon(QMessageBox::Warning);
@@ -182,55 +186,85 @@ void Tweener::release(const TupInputDeviceInformation *input, TupBrushManager *b
                         return;
                     }
                 }
+
+                foreach (QGraphicsItem *item, objects) {
+                    if (TupGraphicLibraryItem *libraryItem = qgraphicsitem_cast<TupGraphicLibraryItem *>(item)) {
+                        if (libraryItem->type() == TupLibraryObject::Image) {
+                            clearSelection();
+                            TOsd::self()->display(TOsd::Warning, tr("Coloring Tween can't be applied to raster images"));
+                            return;
+                         }
+                    }
+
+                    if (qgraphicsitem_cast<TupSvgItem *>(item)) {
+                        clearSelection();
+                        TOsd::self()->display(TOsd::Warning, tr("Coloring Tween can't be applied to SVG files"));
+                        return;
+                    }
+                }
+
+                QGraphicsItem *item = objects.at(0);
+                QColor color = QColor(255, 255, 255); // White
+                if (TupTextItem *text = qgraphicsitem_cast<TupTextItem *>(item)) {
+                    color = text->defaultTextColor();
+                } else if (TupPathItem *path = qgraphicsitem_cast<TupPathItem *>(item)) {
+                    color = path->pen().color();
+                } else if (TupEllipseItem *ellipse = qgraphicsitem_cast<TupEllipseItem *>(item)) {
+                    color = ellipse->pen().color();
+                } else if (TupLineItem *line = qgraphicsitem_cast<TupLineItem *>(item)) {
+                    color = line->pen().color();
+                } else if (TupRectItem *rect = qgraphicsitem_cast<TupRectItem *>(item)) {
+                    color = rect->pen().color();
+                }
+
+                configPanel->setInitialColor(color);
+
                 #ifdef TUP_DEBUG
-                    qDebug() << "Shear Tweener::release() - Notifying selection...";
+                    qDebug() << "[Color Tweener::release()] - Notifying selection...";
                 #endif
                 configPanel->notifySelection(true);
-                QGraphicsItem *item = objects.at(0);
-                QRectF rect = item->sceneBoundingRect();
-                origin = rect.center();
-            } else {
-                #ifdef TUP_DEBUG
-                    qDebug() << "Shear Tweener::release() - Selection mode: no items selected";
-                #endif
             }
+        } else {
+            #ifdef TUP_DEBUG
+                qDebug() << "[Color Tweener::release()] - Selection mode: no items selected";
+            #endif
         }
     }
 }
 
 /* This method returns the list of actions defined in this plugin */
 
-QMap<TAction::ActionId, TAction *> Tweener::actions() const
+QMap<TAction::ActionId, TAction *> ColorTweener::actions() const
 {
-    return shearActions;
+    return colorActions;
 }
 
-TAction * Tweener::getAction(TAction::ActionId toolId)
+TAction * ColorTweener::getAction(TAction::ActionId toolId)
 {
-    return shearActions[toolId];
+    return colorActions[toolId];
 }
 
 /* This method returns the list of actions defined in this plugin */
 
-int Tweener::toolType() const
+int ColorTweener::toolType() const
 {
     return TupToolInterface::Tweener;
 }
 
 /* This method returns the tool panel associated to this plugin */
 
-QWidget *Tweener::configurator()
+QWidget *ColorTweener::configurator()
 {
     if (!configPanel) {
         mode = TupToolPlugin::View;
 
         configPanel = new Configurator;
-        connect(configPanel, SIGNAL(initFrameChanged(int)), this, SLOT(updateInitFrame(int)));
+        connect(configPanel, SIGNAL(startingPointChanged(int)), this, SLOT(updateStartPoint(int)));
         connect(configPanel, SIGNAL(clickedApplyTween()), this, SLOT(applyTween()));
         connect(configPanel, SIGNAL(clickedSelect()), this, SLOT(setSelection()));
+        connect(configPanel, SIGNAL(clickedDefineProperties()), this, SLOT(setPropertiesMode()));
         connect(configPanel, SIGNAL(clickedResetInterface()), this, SLOT(applyReset()));
         connect(configPanel, SIGNAL(setMode(TupToolPlugin::Mode)), this, SLOT(updateMode(TupToolPlugin::Mode)));
-        connect(configPanel, SIGNAL(clickedDefineProperties()), this, SLOT(setPropertiesMode()));
         connect(configPanel, SIGNAL(getTweenData(const QString &)), this, SLOT(setCurrentTween(const QString &)));
         connect(configPanel, SIGNAL(clickedRemoveTween(const QString &)), this, SLOT(removeTween(const QString &)));
     } 
@@ -239,94 +273,77 @@ QWidget *Tweener::configurator()
 }
 
 /* This method is called when there's a change on/of scene */
-void Tweener::aboutToChangeScene(TupGraphicsScene *)
+void ColorTweener::aboutToChangeScene(TupGraphicsScene *)
 {
 }
 
 /* This method is called when this plugin is off */
-
-void Tweener::aboutToChangeTool()
+void ColorTweener::aboutToChangeTool()
 {
-    if (editMode == TupToolPlugin::Selection) {
-        clearSelection();
-        disableSelection();
-
-        return;
-    }
-
-    if (editMode == TupToolPlugin::Properties) {
-        scene->removeItem(target);
-        target = nullptr;
-    }
 }
 
 /* This method defines the actions contained in this plugin */
-
-void Tweener::setupActions()
+void ColorTweener::setupActions()
 {
-    realFactor = 1;
-    QString name = tr("Shear Tween");
-    QString shortcut = tr("Shift+H");
+    QString name = tr("Coloring Tween");
+    QString shortcut = tr("Shift+C");
 
-    TAction *action = new TAction(QPixmap(ICONS_DIR + "shear_tween.png"), name, this);
+    TAction *action = new TAction(QPixmap(ICONS_DIR + "coloring_tween.png"), name, this);
     action->setCursor(QCursor(kAppProp->themeDir() + "cursors/tweener.png", 0, 0));
     action->setShortcut(QKeySequence(shortcut));
     action->setToolTip(name + " - " + shortcut);
-    action->setActionId(TAction::Shear);
+    action->setActionId(TAction::Color);
 
-    shearActions.insert(TAction::Shear, action);
+    colorActions.insert(TAction::Color, action);
 }
 
 /* This method saves the settings of this plugin */
-
-void Tweener::saveConfig()
+void ColorTweener::saveConfig()
 {
 }
 
 /* This method updates the workspace when the plugin changes the scene */
-
-void Tweener::updateScene(TupGraphicsScene *scene)
-{ 
+void ColorTweener::updateScene(TupGraphicsScene *gScene)
+{
     mode = configPanel->mode();
 
     if (mode == TupToolPlugin::Add) {
-        int total = framesCount();
+       int total = framesCount();
 
-        if (editMode == TupToolPlugin::Properties) {
-            if (total > configPanel->startComboSize()) {
-                configPanel->activateMode(TupToolPlugin::Selection);
-                clearSelection();
-                setSelection();
-            }
-        } else if (editMode == TupToolPlugin::Selection) {
-            if (scene->currentFrameIndex() != initFrame)
-                clearSelection();
-            initFrame = scene->currentFrameIndex();
-            setSelection();
-        }
+       if (editMode == TupToolPlugin::Properties) {
+           if (total > configPanel->startComboSize()) {
+               configPanel->activateMode(TupToolPlugin::Selection);
+               clearSelection();
+               setSelection();
+           }
+       } else if (editMode == TupToolPlugin::Selection) {
+           if (gScene->currentFrameIndex() != initFrame)
+               clearSelection();
+           initFrame = gScene->currentFrameIndex();
+           setSelection();
+       }
 
-        if (configPanel->startComboSize() < total) {
-            configPanel->initStartCombo(total, initFrame);
-        } else {
-            if (scene->currentFrameIndex() != initFrame)
-                configPanel->setStartFrame(scene->currentFrameIndex());
-        }
+       if (configPanel->startComboSize() < total) {
+           configPanel->initStartCombo(total, initFrame);
+       } else {
+           if (gScene->currentFrameIndex() != initFrame)
+               configPanel->setStartFrame(gScene->currentFrameIndex());
+       }
     } else {
-        if (scene->currentFrameIndex() != initFrame)
-            configPanel->setStartFrame(scene->currentFrameIndex());
+        if (gScene->currentFrameIndex() != initFrame)
+            configPanel->setStartFrame(gScene->currentFrameIndex());
     }
 }
 
-void Tweener::setCurrentTween(const QString &name)
+void ColorTweener::setCurrentTween(const QString &name)
 {
     TupScene *sceneData = scene->currentScene();
-    currentTween = sceneData->tween(name, TupItemTweener::Shear);
-
+    currentTween = sceneData->tween(name, TupItemTweener::Coloring);
     if (currentTween)
         configPanel->setCurrentTween(currentTween);
 }
 
-int Tweener::framesCount()
+int ColorTweener::framesCount()
 {
     int total = 1;
     TupLayer *layer = scene->currentScene()->layerAt(scene->currentLayerIndex());
@@ -337,8 +354,7 @@ int Tweener::framesCount()
 }
 
 /* This method clears selection */
-
-void Tweener::clearSelection()
+void ColorTweener::clearSelection()
 {
     if (objects.size() > 0) {
         foreach (QGraphicsItem *item, objects) {
@@ -351,8 +367,7 @@ void Tweener::clearSelection()
 }
 
 /* This method disables object selection */
-
-void Tweener::disableSelection()
+void ColorTweener::disableSelection()
 {
     foreach (QGraphicsView *view, scene->views()) {
         view->setDragMode (QGraphicsView::NoDrag);
@@ -363,46 +378,59 @@ void Tweener::disableSelection()
     }
 }
 
-/* This method initializes the "Select object" mode */
-
-void Tweener::setSelection()
+void ColorTweener::setSelection()
 {
-    if (target)
-        scene->removeItem(target);
-
     editMode = TupToolPlugin::Selection;
+
+    /*
+    int bottomBoundary = ZLAYER_BASE + (initLayer*ZLAYER_LIMIT);
+    int topBoundary = bottomBoundary + ZLAYER_LIMIT;
+    foreach (QGraphicsView * view, scene->views()) {
+             view->setDragMode(QGraphicsView::RubberBandDrag);
+             foreach (QGraphicsItem *item, view->scene()->items()) {
+                      if ((item->zValue() >= bottomBoundary) && (item->zValue() < topBoundary) && (item->toolTip().length()==0))
+                          item->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+             }
+    }
+    */
 
     scene->enableItemsForSelection();
     foreach (QGraphicsView *view, scene->views())
         view->setDragMode(QGraphicsView::RubberBandDrag);
-
     // When Object selection is enabled, previous selection is set
     if (objects.size() > 0) {
         foreach (QGraphicsItem *item, objects) {
             item->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
             item->setSelected(true);
         }
+        QGraphicsItem *item = objects.at(0);
+        QColor color = QColor();
+        if (TupTextItem *text = qgraphicsitem_cast<TupTextItem *>(item)) {
+            color = text->defaultTextColor();
+        } else if (TupPathItem *path = qgraphicsitem_cast<TupPathItem *>(item)) {
+            color = path->pen().color();
+        } else if (TupEllipseItem *ellipse = qgraphicsitem_cast<TupEllipseItem *>(item)) {
+            color = ellipse->pen().color();
+        } else if (TupLineItem *line = qgraphicsitem_cast<TupLineItem *>(item)) {
+            color = line->pen().color();
+        } else if (TupRectItem *rect = qgraphicsitem_cast<TupRectItem *>(item)) {
+            color = rect->pen().color();
+        }
+        configPanel->setInitialColor(color);
         configPanel->notifySelection(true);
     }
 }
 
-void Tweener::setPropertiesMode()
+void ColorTweener::setPropertiesMode()
 {
     editMode = TupToolPlugin::Properties;
     disableSelection();
-
-    addTarget();
 }
 
 /* This method resets this plugin */
 
-void Tweener::applyReset()
+void ColorTweener::applyReset()
 {
-    if ((mode == TupToolPlugin::Edit || mode == TupToolPlugin::Add) && editMode == TupToolPlugin::Properties) {
-        scene->removeItem(target);
-        target = nullptr;
-    }
-
     disableSelection();
     clearSelection();
 
@@ -416,7 +444,7 @@ void Tweener::applyReset()
 
 /* This method applies to the project, the Tween created from this plugin */
 
-void Tweener::applyTween()
+void ColorTweener::applyTween()
 {
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
@@ -427,30 +455,34 @@ void Tweener::applyTween()
     }
 
     // Tween is new
-    if (!scene->tweenExists(name, TupItemTweener::Shear)) {
+    if (!scene->tweenExists(name, TupItemTweener::Coloring)) {
         initFrame = scene->currentFrameIndex();
         initLayer = scene->currentLayerIndex();
         initScene = scene->currentSceneIndex();
 
         foreach (QGraphicsItem *item, objects) {
             TupLibraryObject::ObjectType type = TupLibraryObject::Item;
-            int objectIndex = scene->currentFrame()->indexOf(item);
-            QPointF pos = item->mapFromParent(origin);
+            int objectIndex = -1;
 
             if (TupSvgItem *svg = qgraphicsitem_cast<TupSvgItem *>(item)) {
                 type = TupLibraryObject::Svg;
                 objectIndex = scene->currentFrame()->indexOf(svg);
             } else {
-                if (qgraphicsitem_cast<TupPathItem *>(item))
-                    pos = origin;
+                objectIndex = scene->currentFrame()->indexOf(item);
+            }
+
+            QString objectId;
+            if (type == TupLibraryObject::Item) {
+                TupGraphicObject *graphicObject = scene->currentFrame()->graphicAt(objectIndex);
+                if (graphicObject)
+                    objectId = graphicObject->objectId();
             }
 
             TupProjectRequest request = TupRequestBuilder::createItemRequest(
-                                        initScene, initLayer,
-                                        initFrame,objectIndex,
-                                        QPointF(), scene->getSpaceContext(), type,
-                                        TupProjectRequest::SetTween,
-                                        configPanel->tweenToXml(initScene, initLayer, initFrame, pos));
+                                        initScene, initLayer, initFrame,
+                                        objectIndex, QPointF(), scene->getSpaceContext(),
+                                        type, TupProjectRequest::SetTween,
+                                        configPanel->tweenToXml(initScene, initLayer, initFrame), QByteArray(), QString(), QString(), objectId);
             emit requested(&request);
         }
     } else { // Tween already exists
@@ -463,18 +495,17 @@ void Tweener::applyTween()
 
         foreach (QGraphicsItem *item, objects) {
             TupLibraryObject::ObjectType type = TupLibraryObject::Item;
-            TupScene *sceneData = scene->currentScene();
-            TupLayer *layer = sceneData->layerAt(currentTween->getInitLayer());
+            TupScene *tupScene = scene->currentScene();
+            TupLayer *layer = tupScene->layerAt(initLayer);
             TupFrame *frame = layer->frameAt(currentTween->getInitFrame());
-            int objectIndex = frame->indexOf(item);
-
-            QRectF rect = item->sceneBoundingRect();
-            QPointF origin = item->mapFromParent(rect.center());
-
+            int objectIndex = -1;
             TupSvgItem *svg = qgraphicsitem_cast<TupSvgItem *>(item);
+
             if (svg) {
                 type = TupLibraryObject::Svg;
-                objectIndex = scene->currentFrame()->indexOf(svg);
+                objectIndex = frame->indexOf(svg);
+            } else {
+                objectIndex = frame->indexOf(item);
             }
 
             if (initFrame != currentTween->getInitFrame()) {
@@ -486,7 +517,8 @@ void Tweener::applyTween()
 
                 TupProjectRequest request = TupRequestBuilder::createItemRequest(initScene, initLayer, initFrame,
                                                                                  0, item->pos(), scene->getSpaceContext(),
-                                                                                 type, TupProjectRequest::Add, dom.toString());
+                                                                                 type, TupProjectRequest::Add,
+                                                                                 dom.toString());
                 emit requested(&request);
 
                 request = TupRequestBuilder::createItemRequest(initScene, initLayer,
@@ -504,16 +536,21 @@ void Tweener::applyTween()
                     objectIndex = frame->svgItemsCount() - 1;
                     newList.append(frame->svgAt(objectIndex));
                 }
+            }
 
-                newList.append(frame->graphicAt(objectIndex)->item());
+            QString objectId;
+            if (type == TupLibraryObject::Item
+                    && initFrame == currentTween->getInitFrame()) {
+                TupGraphicObject *graphicObject = frame->graphicAt(objectIndex);
+                if (graphicObject)
+                    objectId = graphicObject->objectId();
             }
 
             TupProjectRequest request = TupRequestBuilder::createItemRequest(
                                         initScene, initLayer, initFrame,
-                                        objectIndex,
-                                        QPointF(), scene->getSpaceContext(),
+                                        objectIndex, QPointF(), scene->getSpaceContext(),
                                         type, TupProjectRequest::SetTween,
-                                        configPanel->tweenToXml(initScene, initLayer, initFrame, origin));
+                                        configPanel->tweenToXml(initScene, initLayer, initFrame), QByteArray(), QString(), QString(), objectId);
             emit requested(&request);
         }
 
@@ -521,17 +558,18 @@ void Tweener::applyTween()
             objects = newList;
     }
 
+    int total = initFrame + configPanel->totalSteps();
     int framesNumber = framesCount();
-    int total = initFrame + configPanel->totalSteps() - 1;
     int layersCount = scene->currentScene()->layersCount();
     TupProjectRequest request;
 
-    if (total > framesNumber) {
-        for (int i = framesNumber; i <= total; i++) {
-             for (int j = 0; j < layersCount; j++) {
-                 request = TupRequestBuilder::createFrameRequest(initScene, j, i, TupProjectRequest::Add, tr("Frame"));
-                 emit requested(&request);
-             }
+    if (total >= framesNumber) {
+        for (int i = framesNumber; i < total; i++) {
+            for (int j = 0; j < layersCount; j++) {
+                request = TupRequestBuilder::createFrameRequest(initScene, j, i,
+                                                                TupProjectRequest::Add, tr("Frame"));
+                emit requested(&request);
+            }
         }
     }
 
@@ -548,25 +586,23 @@ void Tweener::applyTween()
     QApplication::restoreOverrideCursor();
 }
 
-void Tweener::removeTweenFromProject(const QString &name)
+void ColorTweener::removeTweenFromProject(const QString &name)
 {
-    TupScene *sceneData = scene->currentScene();
-    bool removed = sceneData->removeTween(name, TupItemTweener::Shear);
+    TupScene *tupScene = scene->currentScene();
+    bool removed = tupScene->removeTween(name, TupItemTweener::Coloring);
     if (removed) {
         foreach (QGraphicsView * view, scene->views()) {
             foreach (QGraphicsItem *item, view->scene()->items()) {
                 QString tip = item->toolTip();
-                if (tip.compare("Tweens: " + tr("Shear")) == 0) {
+                if (tip.compare("Tweens: " + tr("Coloring")) == 0) {
                     item->setToolTip("");
-                    item->setTransform(initialStep());
                 } else {
-                    if (tip.contains(tr("Shear"))) {
-                        tip = tip.replace(tr("Shear") + ",", "");
-                        tip = tip.replace(tr("Shear"), "");
+                    if (tip.contains(tr("Coloring"))) {
+                        tip = tip.replace(tr("Coloring") + ",", "");
+                        tip = tip.replace(tr("Coloring"), "");
                         if (tip.endsWith(","))
                             tip.chop(1);
                         item->setToolTip(tip);
-                        item->setTransform(initialStep());
                     }
                 }
             }
@@ -574,75 +610,26 @@ void Tweener::removeTweenFromProject(const QString &name)
         emit tweenRemoved();
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "Tweener::removeTweenFromProject() - Shear tween couldn't be removed -> " + name;
+            qDebug() << "[Color Tweener::removeTweenFromProject()] - Coloring tween couldn't be removed -> " << name;
         #endif
     }
 }
 
-QTransform Tweener::initialStep()
-{
-    TupTweenerStep *step = currentTween->stepAt(0);
-    double shearX = step->verticalShear();
-    double shearY = step->horizontalShear();
-    QTransform transform;
-    transform.shear(shearX, shearY);
-
-    return transform;
-}
-
-void Tweener::removeTween(const QString &name)
+void ColorTweener::removeTween(const QString &name)
 {
     removeTweenFromProject(name);
     applyReset();
 
     QString tweenName = configPanel->getTweenNameFromList();
     if (!tweenName.isEmpty())
-        setCurrentTween(tweenName);
+            setCurrentTween(tweenName);
 }
 
-void Tweener::updateOriginPoint(const QPointF &point)
+void ColorTweener::updateMode(TupToolPlugin::Mode toolMode)
 {
-    origin = point;
-}
-
-void Tweener::addTarget()
-{
-    if (mode == TupToolPlugin::Add) {
-        target = new Target(origin, baseZValue);
-        connect(target, SIGNAL(positionUpdated(const QPointF &)), this, SLOT(updateOriginPoint(const QPointF &)));
-        scene->addItem(target);
-        target->resizeNode(realFactor);
-    } else {
-        if (mode == TupToolPlugin::Edit) {
-            if (!objects.isEmpty()) {
-                QGraphicsItem *item = objects.at(0);
-                if (currentTween) {
-                    origin = item->mapToParent(currentTween->transformOriginPoint());
-                    target = new Target(origin, baseZValue);
-                    connect(target, SIGNAL(positionUpdated(const QPointF &)), this, SLOT(updateOriginPoint(const QPointF &)));
-                    scene->addItem(target);
-                    target->resizeNode(realFactor);
-                } else {
-                    #ifdef TUP_DEBUG
-                        qDebug() << "Tweener::addTarget() - Current tween pointer is NULL!";
-                    #endif
-                }
-            } else {
-                #ifdef TUP_DEBUG
-                    qDebug() << "Tweener::addTarget() - No objects has been selected for the current tween!";
-                #endif
-            }
-        }
-    }
-}
-
-void Tweener::updateMode(TupToolPlugin::Mode currentMode)
-{
-    mode = currentMode;
+    mode = toolMode;
 
     if (mode == TupToolPlugin::Edit) {
-        editMode = TupToolPlugin::Properties;
-
         if (currentTween) {
             initScene = currentTween->getInitScene();
             initLayer = currentTween->getInitLayer();
@@ -653,56 +640,44 @@ void Tweener::updateMode(TupToolPlugin::Mode currentMode)
                                     + QString::number(initFrame) + "," + QString::number(initFrame);
 
                 TupProjectRequest request = TupRequestBuilder::createFrameRequest(initScene, initLayer, initFrame,
-                                                                                  TupProjectRequest::Select, selection);
+                                                                              TupProjectRequest::Select, selection);
                 emit requested(&request);
             }
 
-            if (objects.isEmpty()) {
-                objects = scene->currentScene()->getItemsFromTween(currentTween->getTweenName(), TupItemTweener::Shear);
-                origin = currentTween->transformOriginPoint();
-            }
+            if (objects.isEmpty())
+                objects = scene->currentScene()->getItemsFromTween(currentTween->getTweenName(), TupItemTweener::Coloring);
         } else {
             #ifdef TUP_DEBUG
-                qDebug() << "Tweener::updateMode() - Current tween pointer is NULL!";
+                qDebug() << "[Color Tweener::updateMode()] - Current tween pointer is NULL!";
             #endif
         }
     }
 }
 
-void Tweener::sceneResponse(const TupSceneResponse *event)
+void ColorTweener::sceneResponse(const TupSceneResponse *event)
 {
-    if (event->getAction() == TupProjectRequest::Remove) {
-        objects.clear();
-        configPanel->notifySelection(false);
-        configPanel->resetUI();
+    if ((event->getAction() == TupProjectRequest::Remove || event->getAction() == TupProjectRequest::Reset)
+        && (scene->currentSceneIndex() == event->getSceneIndex())) {
+        init(scene);
     }
+
+    if (event->getAction() == TupProjectRequest::Select)
+        init(scene);
 }
 
-void Tweener::layerResponse(const TupLayerResponse *event)
+void ColorTweener::layerResponse(const TupLayerResponse *event)
 {
     if (event->getAction() == TupProjectRequest::Remove)
         init(scene);
 }
 
-void Tweener::frameResponse(const TupFrameResponse *event)
+void ColorTweener::frameResponse(const TupFrameResponse *event)
 {
-    if (event->getAction() == TupProjectRequest::Remove && initLayer == event->getLayerIndex())
+    if (event->getAction() == TupProjectRequest::Remove && scene->currentLayerIndex() == event->getLayerIndex())
         init(scene);
 
     if (event->getAction() == TupProjectRequest::Select) {
         if (initLayer != event->getLayerIndex() || initScene != event->getSceneIndex())
             init(scene);
     }
-}
-
-void Tweener::resizeNode(qreal scaleFactor)
-{
-    realFactor = scaleFactor;
-    if (target)
-        target->resizeNode(scaleFactor);
-}
-
-void Tweener::updateZoomFactor(qreal scaleFactor)
-{
-    realFactor = scaleFactor;
 }

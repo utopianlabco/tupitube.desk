@@ -16,12 +16,14 @@ win32 {
 INSTALLS += target 
 target.path = /plugins/
 
-HEADERS += tweener.h \
+HEADERS += \
            configurator.h \
+           shear_tweener.h \
            shearsettings.h
 
-SOURCES += tweener.cpp \
+SOURCES += \
            configurator.cpp \
+           shear_tweener.cpp \
            shearsettings.cpp
 
 FRAMEWORK_DIR = "../../../framework"

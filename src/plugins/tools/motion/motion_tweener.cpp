@@ -1283,6 +1283,12 @@ void MotionTweener::itemResponse(const TupItemResponse *response)
         qDebug() << "[Motion Tweener::itemResponse()] - index ->" << response->getItemIndex();
     #endif
 
+    if (response->getAction() == TupProjectRequest::RemoveTween) {
+        currentTween = nullptr;
+        init(scene);
+        return;
+    }
+
     if (editMode == TupToolPlugin::Properties) {
         if (response->getAction() == TupProjectRequest::UpdateTweenPath) {
             if (response->getMode() == TupProjectResponse::Undo) {

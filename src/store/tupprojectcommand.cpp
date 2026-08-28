@@ -222,6 +222,10 @@ QString TupProjectCommand::actionString(int action) const
         {
             return "convert";
         }
+        case TupProjectRequest::RemoveTween:
+        {
+            return "remove tween";
+        }
     }
     
     return QString("Unknown");
@@ -601,6 +605,7 @@ QString TupProjectCommand::eventType() const
                 case TupProjectRequest::Group: return QStringLiteral("item.grouped");
                 case TupProjectRequest::Ungroup: return QStringLiteral("item.ungrouped");
                 case TupProjectRequest::SetTween: return QStringLiteral("item.tween-updated");
+                case TupProjectRequest::RemoveTween: return QStringLiteral("item.tween-removed");
                 case TupProjectRequest::UpdateTweenPath: return QStringLiteral("item.tween-path-updated");
                 case TupProjectRequest::AddRasterItem: return QStringLiteral("item.raster-item-added");
                 case TupProjectRequest::ClearRasterCanvas: return QStringLiteral("item.raster-canvas-cleared");
@@ -997,6 +1002,11 @@ bool TupProjectCommand::itemCommand()
             case TupProjectRequest::SetTween:
             {
                  return executeOperation([&]() { return executor->setTween(res); });
+            }
+            break;
+            case TupProjectRequest::RemoveTween:
+            {
+                 return executeOperation([&]() { return executor->removeTween(res); });
             }
             break;
             case TupProjectRequest::UpdateTweenPath:

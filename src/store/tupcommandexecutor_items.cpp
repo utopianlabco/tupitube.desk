@@ -54,6 +54,7 @@
 #include "tupbackground.h"
 
 #include <QGraphicsItem>
+#include <QDomDocument>
 #include <algorithm>
 
 bool TupCommandExecutor::createItem(TupItemResponse *response)
@@ -1224,6 +1225,29 @@ bool TupCommandExecutor::setPathItem(TupItemResponse *response)
     return false;
 }
 
+static int tweenIndexByNameAndType(const QList<TupItemTweener *> &tweens,
+                                   const QString &name,
+                                   TupItemTweener::Type type)
+{
+    for (int i = 0; i < tweens.count(); ++i) {
+        TupItemTweener *tween = tweens.at(i);
+        if (tween && tween->getTweenName() == name && tween->getType() == type)
+            return i;
+    }
+
+    return -1;
+}
+
+static QString tweenSnapshot(TupItemTweener *tween)
+{
+    if (!tween)
+        return QString();
+
+    QDomDocument document;
+    document.appendChild(tween->toXml(document));
+    return document.toString(0);
+}
+
 bool TupCommandExecutor::setTween(TupItemResponse *response)
 {    
     #ifdef TUP_DEBUG
@@ -1304,6 +1328,125 @@ bool TupCommandExecutor::setTween(TupItemResponse *response)
     }
     
     return false;
+}
+
+bool TupCommandExecutor::removeTween(TupItemResponse *response)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupCommandExecutor::removeTween()]";
+        SHOW_VAR(response)
+    #endif
+
+    if (!response)
+        return false;
+
+    const int sceneIndex = response->getSceneIndex();
+    const int layerIndex = response->getLayerIndex();
+    const int frameIndex = response->getFrameIndex();
+    const TupLibraryObject::ObjectType itemType = response->getItemType();
+    int itemIndex = response->getItemIndex();
+    const QString tweenName = response->getArg().toString();
+
+    bool typeOk = false;
+    const int tweenTypeValue = QString::fromUtf8(response->getData()).toInt(&typeOk);
+    if (tweenName.isEmpty() || !typeOk) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupCommandExecutor::removeTween()] - Invalid tween identity ->"
+                       << tweenName << response->getData();
+        #endif
+        return false;
+    }
+    const TupItemTweener::Type tweenType = static_cast<TupItemTweener::Type>(tweenTypeValue);
+
+    if (!validateIndices(sceneIndex, layerIndex, frameIndex))
+        return false;
+
+    TupScene *scene = project->sceneAt(sceneIndex);
+    TupLayer *layer = scene ? scene->layerAt(layerIndex) : nullptr;
+    TupFrame *frame = layer ? layer->frameAt(frameIndex) : nullptr;
+    if (!scene || !layer || !frame)
+        return false;
+
+    if (itemType == TupLibraryObject::Item) {
+        const QString objectId = response->getObjectId().trimmed();
+        if (objectId.isEmpty()) {
+            #ifdef TUP_DEBUG
+                qWarning() << "[TupCommandExecutor::removeTween()] - Native tween removal requires object_id";
+            #endif
+            return false;
+        }
+
+        itemIndex = resolveItemIndex(frame, response);
+        if (itemIndex < 0)
+            return false;
+
+        TupGraphicObject *object = frame->graphicAt(itemIndex);
+        if (!object)
+            return false;
+
+        if (response->getMode() == TupProjectResponse::Undo) {
+            const QString xml = response->getState();
+            if (xml.isEmpty())
+                return false;
+
+            TupItemTweener *tween = new TupItemTweener();
+            tween->fromXml(xml);
+            tween->setZLevel(itemIndex);
+            object->addTween(tween);
+            scene->addTweenObject(layerIndex, object);
+        } else {
+            QList<TupItemTweener *> tweens = object->tweensList();
+            const int tweenIndex = tweenIndexByNameAndType(tweens, tweenName, tweenType);
+            if (tweenIndex < 0)
+                return false;
+
+            if (response->getMode() == TupProjectResponse::Do) {
+                const QString xml = tweenSnapshot(tweens.at(tweenIndex));
+                if (xml.isEmpty())
+                    return false;
+                response->setState(xml);
+            }
+
+            object->removeTween(tweenIndex);
+            if (object->tweensList().isEmpty())
+                scene->removeTweenObject(layerIndex, object);
+        }
+    } else {
+        TupSvgItem *svg = frame->svgAt(itemIndex);
+        if (!svg)
+            return false;
+
+        if (response->getMode() == TupProjectResponse::Undo) {
+            const QString xml = response->getState();
+            if (xml.isEmpty())
+                return false;
+
+            TupItemTweener *tween = new TupItemTweener();
+            tween->fromXml(xml);
+            tween->setZLevel(itemIndex);
+            svg->addTween(tween);
+            scene->addTweenObject(layerIndex, svg);
+        } else {
+            QList<TupItemTweener *> tweens = svg->tweensList();
+            const int tweenIndex = tweenIndexByNameAndType(tweens, tweenName, tweenType);
+            if (tweenIndex < 0)
+                return false;
+
+            if (response->getMode() == TupProjectResponse::Do) {
+                const QString xml = tweenSnapshot(tweens.at(tweenIndex));
+                if (xml.isEmpty())
+                    return false;
+                response->setState(xml);
+            }
+
+            svg->removeTween(tweenIndex);
+            if (svg->tweensList().isEmpty())
+                scene->removeTweenObject(layerIndex, svg);
+        }
+    }
+
+    emit responsed(response);
+    return true;
 }
 
 bool TupCommandExecutor::updateTweenPath(TupItemResponse *response)

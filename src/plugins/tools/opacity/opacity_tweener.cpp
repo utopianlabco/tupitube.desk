@@ -515,9 +515,68 @@ void OpacityTweener::applyTween()
 void OpacityTweener::removeTweenFromProject(const QString &name)
 {
     TupScene *sceneData = scene->currentScene();
-    bool removed = sceneData->removeTween(name, TupItemTweener::Opacity);
+    TupItemTweener *tween = sceneData->tween(name, TupItemTweener::Opacity);
+    if (!tween) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[Opacity Tweener::removeTweenFromProject()] - Opacity tween couldn't be found -> " << name;
+        #endif
+        return;
+    }
 
-    if (removed) {
+    const int tweenScene = tween->getInitScene();
+    const int tweenLayer = tween->getInitLayer();
+    const int tweenFrame = tween->getInitFrame();
+    QList<QGraphicsItem *> tweenItems = sceneData->getItemsFromTween(name, TupItemTweener::Opacity);
+
+    TupLayer *layer = sceneData->layerAt(tweenLayer);
+    TupFrame *frame = layer ? layer->frameAt(tweenFrame) : nullptr;
+    if (!frame) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[Opacity Tweener::removeTweenFromProject()] - Invalid tween frame -> "
+                     << tweenScene << tweenLayer << tweenFrame;
+        #endif
+        return;
+    }
+
+    bool requestSent = false;
+    foreach (QGraphicsItem *item, tweenItems) {
+        TupLibraryObject::ObjectType type = TupLibraryObject::Item;
+        int objectIndex = -1;
+        QString objectId;
+
+        if (TupSvgItem *svg = qgraphicsitem_cast<TupSvgItem *>(item)) {
+            type = TupLibraryObject::Svg;
+            objectIndex = frame->indexOf(svg);
+        } else {
+            objectIndex = frame->indexOf(item);
+            TupGraphicObject *graphicObject = frame->graphicAt(objectIndex);
+            if (graphicObject)
+                objectId = graphicObject->objectId().trimmed();
+
+            if (objectId.isEmpty()) {
+                #ifdef TUP_DEBUG
+                    qWarning() << "[Opacity Tweener::removeTweenFromProject()] - "
+                                  "Native tween removal requires object_id at index ->"
+                               << objectIndex;
+                #endif
+                continue;
+            }
+        }
+
+        if (objectIndex < 0)
+            continue;
+
+        TupProjectRequest request = TupRequestBuilder::createItemRequest(
+                                    tweenScene, tweenLayer, tweenFrame,
+                                    objectIndex, QPointF(), scene->getSpaceContext(),
+                                    type, TupProjectRequest::RemoveTween, name,
+                                    QByteArray::number(static_cast<int>(TupItemTweener::Opacity)),
+                                    QString(), QString(), objectId);
+        emit requested(&request);
+        requestSent = true;
+    }
+
+    if (requestSent) {
         foreach (QGraphicsView * view, scene->views()) {
             foreach (QGraphicsItem *item, view->scene()->items()) {
                 QString tip = item->toolTip();
@@ -539,7 +598,7 @@ void OpacityTweener::removeTweenFromProject(const QString &name)
         emit tweenRemoved();
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "[Opacity Tweener::removeTweenFromProject()] - Opacity tween couldn't be removed -> " << name;
+            qDebug() << "[Opacity Tweener::removeTweenFromProject()] - No tween removal request was sent -> " << name;
         #endif
     }
 }

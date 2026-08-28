@@ -5,7 +5,7 @@ TARGET = tupicoloringtool
 
 unix {
     !include(../../../../global_variables.pri) {
-        error("color.pro: Run ./configure first!")
+        error("coloring.pro: Run ./configure first!")
     }
 }
 
@@ -17,14 +17,14 @@ INSTALLS += target
 target.path = /plugins/
 
 HEADERS += \
-           color_tweener.h \
+           coloring_tweener.h \
            configurator.h \
-           colorsettings.h
+           coloringsettings.h
 
 SOURCES += \
-           color_tweener.cpp \
+           coloring_tweener.cpp \
            configurator.cpp \
-           colorsettings.cpp
+           coloringsettings.cpp
 
 FRAMEWORK_DIR = "../../../framework"
 include($$FRAMEWORK_DIR/framework.pri)

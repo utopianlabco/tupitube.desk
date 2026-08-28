@@ -32,12 +32,12 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#ifndef COLORTWEENER_H
-#define COLORTWEENER_H
+#ifndef COLORINGTWEENER_H
+#define COLORINGTWEENER_H
 
 #include "tglobal.h"
 #include "tuptoolplugin.h"
-#include "colorsettings.h"
+#include "coloringsettings.h"
 #include "configurator.h"
 
 /**
@@ -45,14 +45,14 @@
  * 
 */
 
-class TUPITUBE_PLUGIN ColorTweener : public TupToolPlugin
+class TUPITUBE_PLUGIN ColoringTweener : public TupToolPlugin
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "co.utopianlab.tupi.TupToolInterface" FILE "coloringtool.json")
 
     public:
-        ColorTweener();
-        virtual ~ColorTweener();
+        ColoringTweener();
+        virtual ~ColoringTweener();
 
         virtual void init(TupGraphicsScene *scene);
         virtual QList<TAction::ActionId> keys() const;

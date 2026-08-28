@@ -32,7 +32,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#include "color_tweener.h"
+#include "coloring_tweener.h"
 
 #include "taction.h"
 #include "tosd.h"
@@ -64,13 +64,13 @@
 #include <QDomDocument>
 #include <QDir>
 
-ColorTweener::ColorTweener() : TupToolPlugin()
+ColoringTweener::ColoringTweener() : TupToolPlugin()
 {
     setupActions();
     configPanel = nullptr;
 }
 
-ColorTweener::~ColorTweener()
+ColoringTweener::~ColoringTweener()
 {
     delete configPanel;
     delete scene;
@@ -79,7 +79,7 @@ ColorTweener::~ColorTweener()
 
 /* This method initializes the plugin */
 
-void ColorTweener::init(TupGraphicsScene *gScene)
+void ColoringTweener::init(TupGraphicsScene *gScene)
 {
     scene = gScene;
     objects.clear();
@@ -104,7 +104,7 @@ void ColorTweener::init(TupGraphicsScene *gScene)
     configPanel->initStartCombo(total, initFrame);
 }
 
-void ColorTweener::updateStartPoint(int index)
+void ColoringTweener::updateStartPoint(int index)
 {
      if (initFrame != index && index >= 0)
          initFrame = index;
@@ -112,7 +112,7 @@ void ColorTweener::updateStartPoint(int index)
 
 /* This method returns the plugin name */
 
-QList<TAction::ActionId> ColorTweener::keys() const
+QList<TAction::ActionId> ColoringTweener::keys() const
 {
     return QList<TAction::ActionId>() << TAction::Color;
 }
@@ -121,7 +121,7 @@ QList<TAction::ActionId> ColorTweener::keys() const
  * depending on the active mode: Selecting an object or Creating a path  
 */
 
-void ColorTweener::press(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
+void ColoringTweener::press(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Color Tweener::press()]";
@@ -134,7 +134,7 @@ void ColorTweener::press(const TupInputDeviceInformation *input, TupBrushManager
 
 /* This method is executed while the mouse is pressed and on movement */
 
-void ColorTweener::move(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
+void ColoringTweener::move(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
 {
     Q_UNUSED(input)
     Q_UNUSED(brushManager)
@@ -145,7 +145,7 @@ void ColorTweener::move(const TupInputDeviceInformation *input, TupBrushManager 
  * on the active mode: Selecting an object or Creating a path
 */
 
-void ColorTweener::release(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
+void ColoringTweener::release(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *gScene)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Color Tweener::release()]";
@@ -234,26 +234,26 @@ void ColorTweener::release(const TupInputDeviceInformation *input, TupBrushManag
 
 /* This method returns the list of actions defined in this plugin */
 
-QMap<TAction::ActionId, TAction *> ColorTweener::actions() const
+QMap<TAction::ActionId, TAction *> ColoringTweener::actions() const
 {
     return colorActions;
 }
 
-TAction * ColorTweener::getAction(TAction::ActionId toolId)
+TAction * ColoringTweener::getAction(TAction::ActionId toolId)
 {
     return colorActions[toolId];
 }
 
 /* This method returns the list of actions defined in this plugin */
 
-int ColorTweener::toolType() const
+int ColoringTweener::toolType() const
 {
     return TupToolInterface::Tweener;
 }
 
 /* This method returns the tool panel associated to this plugin */
 
-QWidget *ColorTweener::configurator()
+QWidget *ColoringTweener::configurator()
 {
     if (!configPanel) {
         mode = TupToolPlugin::View;
@@ -273,17 +273,17 @@ QWidget *ColorTweener::configurator()
 }
 
 /* This method is called when there's a change on/of scene */
-void ColorTweener::aboutToChangeScene(TupGraphicsScene *)
+void ColoringTweener::aboutToChangeScene(TupGraphicsScene *)
 {
 }
 
 /* This method is called when this plugin is off */
-void ColorTweener::aboutToChangeTool()
+void ColoringTweener::aboutToChangeTool()
 {
 }
 
 /* This method defines the actions contained in this plugin */
-void ColorTweener::setupActions()
+void ColoringTweener::setupActions()
 {
     QString name = tr("Coloring Tween");
     QString shortcut = tr("Shift+C");
@@ -298,12 +298,12 @@ void ColorTweener::setupActions()
 }
 
 /* This method saves the settings of this plugin */
-void ColorTweener::saveConfig()
+void ColoringTweener::saveConfig()
 {
 }
 
 /* This method updates the workspace when the plugin changes the scene */
-void ColorTweener::updateScene(TupGraphicsScene *gScene)
+void ColoringTweener::updateScene(TupGraphicsScene *gScene)
 {
     mode = configPanel->mode();
 
@@ -335,7 +335,7 @@ void ColorTweener::updateScene(TupGraphicsScene *gScene)
     }
 }
 
-void ColorTweener::setCurrentTween(const QString &name)
+void ColoringTweener::setCurrentTween(const QString &name)
 {
     TupScene *sceneData = scene->currentScene();
     currentTween = sceneData->tween(name, TupItemTweener::Coloring);
@@ -343,7 +343,7 @@ void ColorTweener::setCurrentTween(const QString &name)
         configPanel->setCurrentTween(currentTween);
 }
 
-int ColorTweener::framesCount()
+int ColoringTweener::framesCount()
 {
     int total = 1;
     TupLayer *layer = scene->currentScene()->layerAt(scene->currentLayerIndex());
@@ -354,7 +354,7 @@ int ColorTweener::framesCount()
 }
 
 /* This method clears selection */
-void ColorTweener::clearSelection()
+void ColoringTweener::clearSelection()
 {
     if (objects.size() > 0) {
         foreach (QGraphicsItem *item, objects) {
@@ -367,7 +367,7 @@ void ColorTweener::clearSelection()
 }
 
 /* This method disables object selection */
-void ColorTweener::disableSelection()
+void ColoringTweener::disableSelection()
 {
     foreach (QGraphicsView *view, scene->views()) {
         view->setDragMode (QGraphicsView::NoDrag);
@@ -378,7 +378,7 @@ void ColorTweener::disableSelection()
     }
 }
 
-void ColorTweener::setSelection()
+void ColoringTweener::setSelection()
 {
     editMode = TupToolPlugin::Selection;
 
@@ -421,7 +421,7 @@ void ColorTweener::setSelection()
     }
 }
 
-void ColorTweener::setPropertiesMode()
+void ColoringTweener::setPropertiesMode()
 {
     editMode = TupToolPlugin::Properties;
     disableSelection();
@@ -429,7 +429,7 @@ void ColorTweener::setPropertiesMode()
 
 /* This method resets this plugin */
 
-void ColorTweener::applyReset()
+void ColoringTweener::applyReset()
 {
     disableSelection();
     clearSelection();
@@ -444,7 +444,7 @@ void ColorTweener::applyReset()
 
 /* This method applies to the project, the Tween created from this plugin */
 
-void ColorTweener::applyTween()
+void ColoringTweener::applyTween()
 {
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
@@ -586,7 +586,7 @@ void ColorTweener::applyTween()
     QApplication::restoreOverrideCursor();
 }
 
-void ColorTweener::removeTweenFromProject(const QString &name)
+void ColoringTweener::removeTweenFromProject(const QString &name)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Coloring Tweener::removeTweenFromProject()] - name ->" << name;
@@ -679,7 +679,7 @@ void ColorTweener::removeTweenFromProject(const QString &name)
     }
 }
 
-void ColorTweener::removeTween(const QString &name)
+void ColoringTweener::removeTween(const QString &name)
 {
     removeTweenFromProject(name);
     applyReset();
@@ -689,7 +689,7 @@ void ColorTweener::removeTween(const QString &name)
             setCurrentTween(tweenName);
 }
 
-void ColorTweener::updateMode(TupToolPlugin::Mode toolMode)
+void ColoringTweener::updateMode(TupToolPlugin::Mode toolMode)
 {
     mode = toolMode;
 
@@ -718,7 +718,7 @@ void ColorTweener::updateMode(TupToolPlugin::Mode toolMode)
     }
 }
 
-void ColorTweener::sceneResponse(const TupSceneResponse *event)
+void ColoringTweener::sceneResponse(const TupSceneResponse *event)
 {
     if ((event->getAction() == TupProjectRequest::Remove || event->getAction() == TupProjectRequest::Reset)
         && (scene->currentSceneIndex() == event->getSceneIndex())) {
@@ -729,13 +729,13 @@ void ColorTweener::sceneResponse(const TupSceneResponse *event)
         init(scene);
 }
 
-void ColorTweener::layerResponse(const TupLayerResponse *event)
+void ColoringTweener::layerResponse(const TupLayerResponse *event)
 {
     if (event->getAction() == TupProjectRequest::Remove)
         init(scene);
 }
 
-void ColorTweener::frameResponse(const TupFrameResponse *event)
+void ColoringTweener::frameResponse(const TupFrameResponse *event)
 {
     if (event->getAction() == TupProjectRequest::Remove && scene->currentLayerIndex() == event->getLayerIndex())
         init(scene);

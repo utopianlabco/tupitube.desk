@@ -14,7 +14,7 @@ SUBDIRS += common \
            scale \
            shear \
            opacity \
-           color \
+           coloring \
            papagayo \
            eyedropper
 

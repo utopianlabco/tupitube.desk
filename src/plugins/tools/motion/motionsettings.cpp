@@ -162,6 +162,14 @@ void MotionSettings::setParameters(const QString &name, int framesCount, int sta
 
     mode = TupToolPlugin::Add;
     input->setReadOnly(false);
+    input->setFrame(true);
+    input->setFocusPolicy(Qt::StrongFocus);
+    input->unsetCursor();
+    input->setStyleSheet(QString());
+    input->setToolTip(QString());
+    QFont nameFont = input->font();
+    nameFont.setBold(false);
+    input->setFont(nameFont);
     input->setText(name);
 
     activateMode(TupToolPlugin::Selection);
@@ -349,6 +357,14 @@ void MotionSettings::setEditMode()
 {
     mode = TupToolPlugin::Edit;
     input->setReadOnly(true);
+    input->setFrame(false);
+    input->setFocusPolicy(Qt::NoFocus);
+    input->setCursor(Qt::ArrowCursor);
+    input->setStyleSheet("QLineEdit { background: transparent; border: none; color: palette(text); }");
+    input->setToolTip(tr("Tween names cannot be changed after creation."));
+    QFont nameFont = input->font();
+    nameFont.setBold(true);
+    input->setFont(nameFont);
     applyButton->setToolTip(tr("Update Tween"));
     applyButton->setEnabled(true);
     remove->setIcon(QPixmap(kAppProp->themeDir() + "icons/close_properties.png"));

@@ -560,16 +560,80 @@ void ScaleTweener::applyTween()
 
 void ScaleTweener::removeTweenFromProject(const QString &name)
 {
-    TupScene *sceneData = scene->currentScene();
-    bool removed = sceneData->removeTween(name, TupItemTweener::Scale);
+    #ifdef TUP_DEBUG
+        qDebug() << "[Scale Tweener::removeTweenFromProject()] - name ->" << name;
+    #endif
 
-    if (removed) {
+    TupScene *sceneData = scene->currentScene();
+    TupItemTweener *tween = sceneData->tween(name, TupItemTweener::Scale);
+    if (!tween) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[Scale Tweener::removeTweenFromProject()] - Scale tween couldn't be found ->" << name;
+        #endif
+        return;
+    }
+
+    const QTransform resetTransform = initialStep();
+    const int tweenScene = tween->getInitScene();
+    const int tweenLayer = tween->getInitLayer();
+    const int tweenFrame = tween->getInitFrame();
+    QList<QGraphicsItem *> tweenItems = sceneData->getItemsFromTween(name, TupItemTweener::Scale);
+
+    TupLayer *layer = sceneData->layerAt(tweenLayer);
+    TupFrame *frame = layer ? layer->frameAt(tweenFrame) : nullptr;
+    if (!frame) {
+        #ifdef TUP_DEBUG
+            qDebug() << "[Scale Tweener::removeTweenFromProject()] - Invalid tween frame ->"
+                     << tweenScene << tweenLayer << tweenFrame;
+        #endif
+        return;
+    }
+
+    bool requestSent = false;
+    foreach (QGraphicsItem *item, tweenItems) {
+        TupLibraryObject::ObjectType type = TupLibraryObject::Item;
+        int objectIndex = -1;
+        QString objectId;
+
+        if (TupSvgItem *svg = qgraphicsitem_cast<TupSvgItem *>(item)) {
+            type = TupLibraryObject::Svg;
+            objectIndex = frame->indexOf(svg);
+        } else {
+            objectIndex = frame->indexOf(item);
+            TupGraphicObject *graphicObject = frame->graphicAt(objectIndex);
+            if (graphicObject)
+                objectId = graphicObject->objectId().trimmed();
+
+            if (objectId.isEmpty()) {
+                #ifdef TUP_DEBUG
+                    qWarning() << "[Scale Tweener::removeTweenFromProject()] - "
+                                  "Native tween removal requires object_id at index ->"
+                               << objectIndex;
+                #endif
+                continue;
+            }
+        }
+
+        if (objectIndex < 0)
+            continue;
+
+        TupProjectRequest request = TupRequestBuilder::createItemRequest(
+                                    tweenScene, tweenLayer, tweenFrame,
+                                    objectIndex, QPointF(), scene->getSpaceContext(),
+                                    type, TupProjectRequest::RemoveTween, name,
+                                    QByteArray::number(static_cast<int>(TupItemTweener::Scale)),
+                                    QString(), QString(), objectId);
+        emit requested(&request);
+        requestSent = true;
+    }
+
+    if (requestSent) {
         foreach (QGraphicsView * view, scene->views()) {
             foreach (QGraphicsItem *item, view->scene()->items()) {
                 QString tip = item->toolTip();
                 if (tip.compare("Tweens: " + tr("Scale")) == 0) {
                     item->setToolTip("");
-                    item->setTransform(initialStep());
+                    item->setTransform(resetTransform);
                 } else {
                     if (tip.contains(tr("Scale"))) {
                         tip = tip.replace(tr("Scale") + ",", "");
@@ -577,7 +641,7 @@ void ScaleTweener::removeTweenFromProject(const QString &name)
                         if (tip.endsWith(","))
                             tip.chop(1);
                         item->setToolTip(tip);
-                        item->setTransform(initialStep());
+                        item->setTransform(resetTransform);
                     }
                 }
             }
@@ -585,7 +649,7 @@ void ScaleTweener::removeTweenFromProject(const QString &name)
         emit tweenRemoved();
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "[ScaleTweener::removeTweenFromProject()] - Scale tween couldn't be removed -> " << name;
+            qDebug() << "[Scale Tweener::removeTweenFromProject()] - No tween removal request was sent ->" << name;
         #endif
     }
 }

@@ -68,6 +68,7 @@ MotionTweener::MotionTweener() : TupToolPlugin()
     linePath = nullptr;
     nodesGroup = nullptr;
     currentTween = nullptr;
+    localTweenOperation = false;
 
     initFrame = 0;
     initLayer = 0;
@@ -680,8 +681,11 @@ void MotionTweener::applyTween()
     QString name = configPanel->currentTweenName();
     if (name.length() == 0) {
         TOsd::self()->display(TOsd::Error, tr("Tween name is missing!"));
+        QApplication::restoreOverrideCursor();
         return;
     }
+
+    localTweenOperation = true;
 
     // Tween is new
     if (!scene->tweenExists(name, TupItemTweener::Motion)) {
@@ -720,12 +724,26 @@ void MotionTweener::applyTween()
             emit requested(&request);
         }
     } else { // Tween already exists
-        removeTweenFromProject(name);
+        if (!currentTween) {
+            localTweenOperation = false;
+            QApplication::restoreOverrideCursor();
+            return;
+        }
+
+        const int previousInitFrame = currentTween->getInitFrame();
+        const int previousInitLayer = currentTween->getInitLayer();
+        const int previousInitScene = currentTween->getInitScene();
+
+        // Updating an existing tween is one semantic SetTween operation.
+        // Remove the old local representation only so the replacement can be
+        // applied optimistically without generating a second authoritative
+        // RemoveTween command.
+        removeTweenLocally(name);
         QList<QGraphicsItem *> newList;
 
         initFrame = configPanel->startFrame();
-        initLayer = currentTween->getInitLayer();
-        initScene = currentTween->getInitScene();
+        initLayer = previousInitLayer;
+        initScene = previousInitScene;
 
         #ifdef TUP_DEBUG
             qDebug() << "[Motion Tweener::applyTween()] - initFrame -> " << initFrame;
@@ -735,7 +753,7 @@ void MotionTweener::applyTween()
             TupLibraryObject::ObjectType type = TupLibraryObject::Item;
             TupScene *sceneData = scene->currentScene();
             TupLayer *layer = sceneData->layerAt(initLayer);
-            TupFrame *frame = layer->frameAt(currentTween->getInitFrame());
+            TupFrame *frame = layer->frameAt(previousInitFrame);
             int objectIndex = frame->indexOf(item);
 
             /*
@@ -752,7 +770,7 @@ void MotionTweener::applyTween()
                 objectIndex = frame->indexOf(svg);
             }
 
-            if (initFrame != currentTween->getInitFrame()) {
+            if (initFrame != previousInitFrame) {
                 QDomDocument dom;
                 if (type == TupLibraryObject::Svg)
                     dom.appendChild(svg->toXml(dom));
@@ -765,9 +783,9 @@ void MotionTweener::applyTween()
                                             TupProjectRequest::Add, dom.toString());
                 emit requested(&request);
 
-                request = TupRequestBuilder::createItemRequest(currentTween->getInitScene(),
-                          currentTween->getInitLayer(),
-                          currentTween->getInitFrame(),
+                request = TupRequestBuilder::createItemRequest(previousInitScene,
+                          previousInitLayer,
+                          previousInitFrame,
                           objectIndex, QPointF(),
                           scene->getSpaceContext(), type,
                           TupProjectRequest::Remove);
@@ -786,7 +804,7 @@ void MotionTweener::applyTween()
             QString route = pathToCoords();
             QString objectId;
             if (type == TupLibraryObject::Item
-                    && initFrame == currentTween->getInitFrame()) {
+                    && initFrame == previousInitFrame) {
                 TupGraphicObject *graphicObject = frame->graphicAt(objectIndex);
                 if (graphicObject)
                     objectId = graphicObject->objectId();
@@ -826,6 +844,8 @@ void MotionTweener::applyTween()
                                                     TupProjectRequest::Select, selection);
     emit requested(&request);
 
+    localTweenOperation = false;
+    refreshTweenList();
     setCurrentTween(name);
     TOsd::self()->display(TOsd::Info, tr("Tween %1 applied!").arg(name));
 
@@ -969,6 +989,38 @@ void MotionTweener::updateMode(TupToolPlugin::Mode currentMode)
         setEditEnv();
 }
 
+void MotionTweener::removeTweenLocally(const QString &name)
+{
+    TupScene *sceneData = scene->currentScene();
+    bool removed = sceneData->removeTween(name, TupItemTweener::Motion);
+
+    if (removed) {
+        foreach (QGraphicsView *view, scene->views()) {
+            foreach (QGraphicsItem *item, view->scene()->items()) {
+                QString tip = item->toolTip();
+                if (tip.compare("Tweens: " + tr("Motion")) == 0) {
+                    item->setToolTip("");
+                } else if (tip.contains(tr("Motion"))) {
+                    tip = tip.replace(tr("Motion") + ",", "");
+                    tip = tip.replace(tr("Motion"), "");
+                    if (tip.endsWith(","))
+                        tip.chop(1);
+                    item->setToolTip(tip);
+                }
+            }
+        }
+        emit tweenRemoved();
+    }
+}
+
+void MotionTweener::refreshTweenList()
+{
+    QList<QString> tweenList = scene->currentScene()->getTweenNames(TupItemTweener::Motion);
+    configPanel->loadTweenList(tweenList);
+    if (tweenList.isEmpty())
+        currentTween = nullptr;
+}
+
 void MotionTweener::removeTweenFromProject(const QString &name)
 {
     #ifdef TUP_DEBUG
@@ -1068,8 +1120,11 @@ void MotionTweener::removeTween(const QString &name)
         qDebug() << "[Motion Tweener::removeTween()] - tween name ->" << name;
     #endif
 
+    localTweenOperation = true;
     removeTweenFromProject(name);
+    localTweenOperation = false;
     applyReset();
+    refreshTweenList();
 
     QString tweenName = configPanel->getTweenNameFromList();
     if (!tweenName.isEmpty())
@@ -1283,9 +1338,30 @@ void MotionTweener::itemResponse(const TupItemResponse *response)
         qDebug() << "[Motion Tweener::itemResponse()] - index ->" << response->getItemIndex();
     #endif
 
-    if (response->getAction() == TupProjectRequest::RemoveTween) {
-        currentTween = nullptr;
-        init(scene);
+    if (response->getAction() == TupProjectRequest::SetTween
+            || response->getAction() == TupProjectRequest::RemoveTween) {
+        if (localTweenOperation)
+            return;
+
+        QString affectedTweenName;
+        if (response->getAction() == TupProjectRequest::RemoveTween) {
+            affectedTweenName = response->getArg().toString().trimmed();
+        } else {
+            QDomDocument tweenDocument;
+            if (tweenDocument.setContent(response->getArg().toString()))
+                affectedTweenName = tweenDocument.documentElement().attribute(QStringLiteral("name")).trimmed();
+        }
+
+        const bool editingAffectedTween = configPanel->mode() == TupToolPlugin::Edit
+                && !affectedTweenName.isEmpty()
+                && configPanel->currentTweenName() == affectedTweenName;
+
+        if (editingAffectedTween) {
+            currentTween = nullptr;
+            init(scene);
+        } else {
+            refreshTweenList();
+        }
         return;
     }
 
@@ -1549,3 +1625,4 @@ void MotionTweener::updatePos(QPointF pos)
         }
     }
 }
+

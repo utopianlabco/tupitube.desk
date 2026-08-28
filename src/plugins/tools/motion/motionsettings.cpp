@@ -161,6 +161,7 @@ void MotionSettings::setParameters(const QString &name, int framesCount, int sta
     #endif
 
     mode = TupToolPlugin::Add;
+    input->setReadOnly(false);
     input->setText(name);
 
     activateMode(TupToolPlugin::Selection);
@@ -347,6 +348,7 @@ void MotionSettings::applyTween()
 void MotionSettings::setEditMode()
 {
     mode = TupToolPlugin::Edit;
+    input->setReadOnly(true);
     applyButton->setToolTip(tr("Update Tween"));
     applyButton->setEnabled(true);
     remove->setIcon(QPixmap(kAppProp->themeDir() + "icons/close_properties.png"));

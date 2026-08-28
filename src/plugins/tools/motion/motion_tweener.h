@@ -121,6 +121,8 @@ class TUPITUBE_PLUGIN MotionTweener : public TupToolPlugin
         void clearSelection();
         void disableSelection();
         void removeTweenFromProject(const QString &name);
+        void removeTweenLocally(const QString &name);
+        void refreshTweenList();
         void resetGUI();
         void removeTweenPoints();
         void paintTweenPoints();
@@ -159,6 +161,7 @@ class TUPITUBE_PLUGIN MotionTweener : public TupToolPlugin
 
         int baseZValue;
         bool lineStraightMode;
+        bool localTweenOperation;
         QPointF currentPoint;
         QPointF lastPoint;
 };

@@ -48,6 +48,7 @@ Configurator::Configurator(QWidget *parent) : QFrame(parent)
 
     currentMode = TupToolPlugin::View;
     selectionDone = false;
+    currentTween = nullptr;
     state = Manager;
 
     layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
@@ -84,9 +85,13 @@ void Configurator::loadTweenList(QList<QString> tweenList)
         qDebug() << "[Configurator::loadTweenList()]";
     #endif
 
+    // The tween manager is a view of the project model, not a second source
+    // of truth. Always replace its contents when the model changes.
+    tweenManager->resetUI();
     tweenManager->loadTweenList(tweenList);
-    if (tweenList.count() > 0)
-        activeButtonsPanel(true); 
+    currentTween = nullptr;
+
+    activeButtonsPanel(state == Manager && !tweenList.isEmpty());
 }
 
 void Configurator::setPropertiesPanel()
@@ -310,14 +315,7 @@ void Configurator::removeTween(const QString &name)
 
 QString Configurator::currentTweenName() const
 {
-    // SQA: if name has been changed... change the item at TweenManager!
-    QString oldName = tweenManager->currentTweenName();
-    QString newName = settingsPanel->currentTweenName();
-
-    if (oldName.compare(newName) != 0)
-        tweenManager->updateTweenName(newName);
-
-    return newName;
+    return settingsPanel->currentTweenName();
 }
 
 QString Configurator::getTweenNameFromList() const

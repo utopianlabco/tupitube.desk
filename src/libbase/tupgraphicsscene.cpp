@@ -71,6 +71,8 @@ TupGraphicsScene::TupGraphicsScene() : QGraphicsScene()
     onionSkin.next = 0;
     onionSkin.previous = 0;
     gTool = nullptr;
+    tupScene = nullptr;
+    background = nullptr;
     isDrawing = false;
     showWaterMark = false;
 
@@ -1466,32 +1468,44 @@ void TupGraphicsScene::setCurrentScene(TupScene *scene)
         qDebug() << "[TupGraphicsScene::setCurrentScene()]";
     #endif
 
-    if (scene) {
-        setCurrentFrame(0, 0);
-        if (gTool)
+    if (!scene) {
+        if (gTool && tupScene)
             gTool->aboutToChangeScene(this);
+
         qDeleteAll(lines);
         lines.clear();
 
-        // cleanWorkSpace();
-        tupScene = scene;
+        tupScene = nullptr;
+        background = nullptr;
+        framePosition.layer = -1;
+        framePosition.frame = -1;
+        return;
+    }
 
-        background = tupScene->sceneBackground();
+    setCurrentFrame(0, 0);
+    if (gTool && tupScene)
+        gTool->aboutToChangeScene(this);
+    qDeleteAll(lines);
+    lines.clear();
 
-        if (!background->rasterStaticBgIsNull())
-            rasterStaticBg->setPixmap(background->rasterStaticBackground());
+    // cleanWorkSpace();
+    tupScene = scene;
 
-        if (!background->rasterDynamicBgIsNull())
-            rasterDynamicBg->setPixmap(background->rasterDynamicExpandedImage());
+    background = tupScene->sceneBackground();
 
-        if (spaceContext == TupProject::FRAMES_MODE) {
-            drawCurrentPhotogram();
-        } else if (spaceContext == TupProject::VECTOR_FG_MODE) {
-            setVectorFgEnvironment();
-        } else {
-            clearWorkSpace();
-            drawSceneBackground(framePosition.frame);
-        }
+    if (!background->rasterStaticBgIsNull())
+        rasterStaticBg->setPixmap(background->rasterStaticBackground());
+
+    if (!background->rasterDynamicBgIsNull())
+        rasterDynamicBg->setPixmap(background->rasterDynamicExpandedImage());
+
+    if (spaceContext == TupProject::FRAMES_MODE) {
+        drawCurrentPhotogram();
+    } else if (spaceContext == TupProject::VECTOR_FG_MODE) {
+        setVectorFgEnvironment();
+    } else {
+        clearWorkSpace();
+        drawSceneBackground(framePosition.frame);
     }
 }
 

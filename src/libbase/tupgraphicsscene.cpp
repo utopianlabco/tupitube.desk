@@ -687,6 +687,7 @@ void TupGraphicsScene::addGraphicObject(TupGraphicObject *object, TupFrame::Fram
         }
 
         addItem(item);
+
     }
 }
 
@@ -861,12 +862,28 @@ void TupGraphicsScene::addTweeningObjects(int layerIndex, int photogram, double 
                      object->item()->setOpacity(stepItem->getOpacity());
                  }
 
-                 if (!onProcess && opacity < 1) {
-                     object->item()->setZValue(((BG_LAYERS + layerIndex) * ZLAYER_LIMIT) + tween->getZLevel());
-                     // Including object into the scene
+                 int level = tween->getZLevel();
+                 if (level > 0)
+                     level--;
+                 object->item()->setZValue(((BG_LAYERS + layerIndex) * ZLAYER_LIMIT) + level);
+
+                 // The current-frame pass normally adds the native item before
+                 // applying its first tween step. Recovery redraws must preserve
+                 // that invariant even if the item was detached while the old
+                 // project model was being cleared.
+                 if (object->item()->scene() != this)
                      addGraphicObject(object, TupFrame::Regular, 1.0, true);
+
+                 #ifdef TUP_DEBUG
+                     qWarning() << "  First tween item state - pos:" << object->item()->pos()
+                                << "opacity:" << object->item()->opacity()
+                                << "visible:" << object->item()->isVisible()
+                                << "z:" << object->item()->zValue()
+                                << "in scene:" << (object->item()->scene() == this);
+                 #endif
+
+                 if (!onProcess && opacity < 1)
                      object->item()->setOpacity(opacity);
-                 }
              // Processing photograms > tween init frame
              } else if ((origin < photogram) && (photogram < (origin + tween->getFrames()))) {
                  if (!onProcess)
@@ -1047,11 +1064,24 @@ void TupGraphicsScene::addSvgTweeningObjects(int layerIndex, int photogram, doub
                      object->setOpacity(stepItem->getOpacity());
                  }
 
-                 if (!onProcess && opacity < 1) {
-                     // Including object into the scene
+                 int level = tween->getZLevel();
+                 if (level > 0)
+                     level--;
+                 object->setZValue(((BG_LAYERS + layerIndex) * ZLAYER_LIMIT) + level);
+
+                 if (object->scene() != this)
                      addSvgObject(object, TupFrame::Regular, 1.0, true);
+
+                 #ifdef TUP_DEBUG
+                     qWarning() << "  First SVG tween item state - pos:" << object->pos()
+                                << "opacity:" << object->opacity()
+                                << "visible:" << object->isVisible()
+                                << "z:" << object->zValue()
+                                << "in scene:" << (object->scene() == this);
+                 #endif
+
+                 if (!onProcess && opacity < 1)
                      object->setOpacity(opacity);
-                 }
              // Processing photograms > tween init frame
              } else if ((origin < photogram) && (photogram < origin + tween->getFrames())) {
                  if (!onProcess)

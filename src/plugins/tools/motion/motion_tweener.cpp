@@ -54,6 +54,7 @@
 #include "talgorithm.h"
 
 #include <QMessageBox>
+#include <QTimer>
 
 MotionTweener::MotionTweener() : TupToolPlugin()
 {
@@ -983,6 +984,24 @@ void MotionTweener::updateScene(TupGraphicsScene *scene)
             setSelection();
         }
     } else {
+        // Snapshot recovery replaces the project model in place. If a local
+        // optimistic RemoveTween was rejected, currentTween is NULL after the
+        // local removal, but the authoritative snapshot may contain the tween
+        // again. Rebind the manager to the restored model during the first
+        // redraw after recovery.
+        if (!currentTween && scene->currentScene()) {
+            refreshTweenList();
+            if (currentTween) {
+                #ifdef TUP_DEBUG
+                    qDebug() << "[Motion Tweener::updateScene()] - Redrawing current photogram after snapshot tween rebind";
+                #endif
+                QTimer::singleShot(0, scene, [scene]() {
+                    scene->drawCurrentPhotogram();
+                });
+                return;
+            }
+        }
+
         if (scene->currentFrameIndex() != initFrame)
             configPanel->setStartFrame(scene->currentFrameIndex());
     }

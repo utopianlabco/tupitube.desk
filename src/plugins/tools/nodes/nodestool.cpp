@@ -42,6 +42,10 @@
 
 NodesTool::NodesTool(): keyboardMovePending(false)
 {
+    keyboardCommitTimer.setSingleShot(true);
+    keyboardCommitTimer.setInterval(180);
+    connect(&keyboardCommitTimer, SIGNAL(timeout()), this, SLOT(commitKeyboardMovement()));
+
     setupActions();
 }
 
@@ -55,8 +59,6 @@ void NodesTool::init(TupGraphicsScene *gScene)
     activeSelection = false;
     shiftEnabled = false;
     ctrlEnabled = false;
-    pressedArrowKeys.clear();
-    keyboardMovePending = false;
     scene = gScene;
 
     clearSelection();
@@ -722,7 +724,9 @@ void NodesTool::keyPressEvent(QKeyEvent *event)
                 item->moveBy(0, delta);
 
             keyboardMovePending = true;
-            QTimer::singleShot(0, this, SLOT(syncNodes()));
+            keyboardCommitTimer.start();
+            if (nodeGroup)
+                nodeGroup->syncNodesFromParent();
         } else {
             QPair<int, int> flags = TAction::setKeyAction(key, event->modifiers());
             if (flags.first != -1 && flags.second != -1)
@@ -737,8 +741,8 @@ void NodesTool::keyReleaseEvent(QKeyEvent *event)
         || (event->key() == Qt::Key_Right) || (event->key() == Qt::Key_Down)) {
         if (!event->isAutoRepeat()) {
             pressedArrowKeys.remove(event->key());
-            if (pressedArrowKeys.isEmpty())
-                commitKeyboardMovement();
+            if (keyboardMovePending)
+                keyboardCommitTimer.start();
         }
     }
 
@@ -750,8 +754,15 @@ void NodesTool::keyReleaseEvent(QKeyEvent *event)
 
 void NodesTool::commitKeyboardMovement()
 {
+    keyboardCommitTimer.stop();
+
     if (!keyboardMovePending || !scene || !activeSelection || !nodeGroup)
         return;
+
+    if (!pressedArrowKeys.isEmpty()) {
+        keyboardCommitTimer.start();
+        return;
+    }
 
     TupFrame *currentFrameData = getCurrentFrame();
     QGraphicsItem *item = nodeGroup->parentItem();
@@ -847,6 +858,10 @@ void NodesTool::updateZoomFactor(qreal scaleFactor)
 void NodesTool::clearSelection()
 {
     pressedArrowKeys.clear();
+    if (keyboardMovePending)
+        commitKeyboardMovement();
+
+    keyboardCommitTimer.stop();
     keyboardMovePending = false;
     if (scene && !scene->selectedItems().isEmpty())
         scene->clearSelection();

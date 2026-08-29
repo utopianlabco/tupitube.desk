@@ -107,6 +107,7 @@ class TUPITUBE_PLUGIN NodesTool : public TupToolPlugin
         void callForPlugin(int menu, int index);
 
     private slots:
+        void commitKeyboardMovement();
         void updateCurrentPath(int total);
         void resetPathHistory();
         void removeNodeFromPath(int index);
@@ -117,7 +118,6 @@ class TUPITUBE_PLUGIN NodesTool : public TupToolPlugin
         void setupActions();
         TupFrame* getCurrentFrame();
         void requestTransformation(QGraphicsItem *item, TupFrame *frame);
-        void commitKeyboardMovement();
         bool setPathNodes(QPointF coord, QList<QGraphicsItem *> currentSelection, int penWidth,
                           TupGraphicsScene *gScene);
         void addNode(QPointF coord, int penWidth, TupGraphicsScene *gScene);
@@ -136,6 +136,7 @@ class TUPITUBE_PLUGIN NodesTool : public TupToolPlugin
         bool ctrlEnabled;
         QSet<int> pressedArrowKeys;
         bool keyboardMovePending;
+        QTimer keyboardCommitTimer;
 
         QCursor targetCursor;
 

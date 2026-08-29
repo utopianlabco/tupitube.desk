@@ -1377,46 +1377,46 @@ void MotionTweener::itemResponse(const TupItemResponse *response)
                 && !affectedTweenName.isEmpty()
                 && configPanel->currentTweenName() == affectedTweenName;
 
-        if (editingAffectedTween) {
-            if (response->getAction() == TupProjectRequest::RemoveTween) {
-                QGraphicsItem *releasedItem = nullptr;
-                TupScene *sceneData = scene->currentScene();
-                TupLayer *layer = sceneData ? sceneData->layerAt(response->getLayerIndex()) : nullptr;
-                TupFrame *frame = layer ? layer->frameAt(response->getFrameIndex()) : nullptr;
+        if (response->getAction() == TupProjectRequest::RemoveTween) {
+            QGraphicsItem *releasedItem = nullptr;
+            TupScene *sceneData = scene->currentScene();
+            TupLayer *layer = sceneData ? sceneData->layerAt(response->getLayerIndex()) : nullptr;
+            TupFrame *frame = layer ? layer->frameAt(response->getFrameIndex()) : nullptr;
 
-                if (frame) {
-                    if (response->getItemType() == TupLibraryObject::Svg) {
-                        releasedItem = frame->svgAt(response->getItemIndex());
-                    } else {
-                        const QString objectId = response->getObjectId().trimmed();
-                        TupGraphicObject *graphicObject = objectId.isEmpty()
-                                ? nullptr
-                                : frame->graphicById(objectId);
-                        if (graphicObject)
-                            releasedItem = graphicObject->item();
-                    }
-                }
-
-                if (releasedItem) {
-                    QString tip = releasedItem->toolTip();
-                    if (tip.compare("Tweens: " + tr("Motion")) == 0) {
-                        releasedItem->setToolTip(QString());
-                    } else if (tip.contains(tr("Motion"))) {
-                        tip = tip.replace(tr("Motion") + ",", QString());
-                        tip = tip.replace("," + tr("Motion"), QString());
-                        tip = tip.replace(tr("Motion"), QString());
-                        if (tip.endsWith(","))
-                            tip.chop(1);
-                        releasedItem->setToolTip(tip);
-                    }
-
-                    if (releasedItem->toolTip().isEmpty()) {
-                        releasedItem->setFlag(QGraphicsItem::ItemIsSelectable, true);
-                        releasedItem->setFlag(QGraphicsItem::ItemIsMovable, true);
-                    }
+            if (frame) {
+                if (response->getItemType() == TupLibraryObject::Svg) {
+                    releasedItem = frame->svgAt(response->getItemIndex());
+                } else {
+                    const QString objectId = response->getObjectId().trimmed();
+                    TupGraphicObject *graphicObject = objectId.isEmpty()
+                            ? nullptr
+                            : frame->graphicById(objectId);
+                    if (graphicObject)
+                        releasedItem = graphicObject->item();
                 }
             }
 
+            if (releasedItem) {
+                QString tip = releasedItem->toolTip();
+                if (tip.compare("Tweens: " + tr("Motion")) == 0) {
+                    releasedItem->setToolTip(QString());
+                } else if (tip.contains(tr("Motion"))) {
+                    tip = tip.replace(tr("Motion") + ",", QString());
+                    tip = tip.replace("," + tr("Motion"), QString());
+                    tip = tip.replace(tr("Motion"), QString());
+                    if (tip.endsWith(","))
+                        tip.chop(1);
+                    releasedItem->setToolTip(tip);
+                }
+
+                if (releasedItem->toolTip().isEmpty()) {
+                    releasedItem->setFlag(QGraphicsItem::ItemIsSelectable, true);
+                    releasedItem->setFlag(QGraphicsItem::ItemIsMovable, true);
+                }
+            }
+        }
+
+        if (editingAffectedTween) {
             currentTween = nullptr;
             init(scene);
         } else {

@@ -269,6 +269,13 @@ void MotionConfigurator::editTween()
         qDebug() << "[MotionConfigurator::editTween()]";
     #endif
 
+    if (!currentTween) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[MotionConfigurator::editTween()] - Current tween is NULL!";
+        #endif
+        return;
+    }
+
     activeTweenManagerPanel(false);
 
     currentMode = TupToolPlugin::Edit;

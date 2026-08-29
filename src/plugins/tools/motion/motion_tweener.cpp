@@ -1027,9 +1027,19 @@ void MotionTweener::removeTweenLocally(const QString &name)
 void MotionTweener::refreshTweenList()
 {
     QList<QString> tweenList = scene->currentScene()->getTweenNames(TupItemTweener::Motion);
+    QString tweenName = configPanel->getTweenNameFromList();
+
     configPanel->loadTweenList(tweenList);
-    if (tweenList.isEmpty())
+
+    if (tweenList.isEmpty()) {
         currentTween = nullptr;
+        return;
+    }
+
+    if (!tweenList.contains(tweenName))
+        tweenName = tweenList.at(0);
+
+    setCurrentTween(tweenName);
 }
 
 void MotionTweener::removeTweenFromProject(const QString &name)

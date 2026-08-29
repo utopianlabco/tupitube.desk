@@ -52,7 +52,7 @@
 #include "tupprojectresponse.h"
 #include "tosd.h"
 
-SelectionTool::SelectionTool(): settingsPanel(nullptr)
+SelectionTool::SelectionTool(): settingsPanel(nullptr), keyboardMovePending(false)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[SelectionTool()]";
@@ -73,6 +73,8 @@ void SelectionTool::init(TupGraphicsScene *gScene)
 
     scene = gScene;
     targetIsIncluded = false;
+    pressedArrowKeys.clear();
+    keyboardMovePending = false;
 
     clearSelection();
     scene->clearSelection();
@@ -633,11 +635,10 @@ void SelectionTool::keyPressEvent(QKeyEvent *event)
             if (event->modifiers() == Qt::ControlModifier)
                 delta = 10;
 
-            selectedObjects = scene->selectedItems();
-            TupFrame *frame = getCurrentFrame();
+            if (!event->isAutoRepeat())
+                pressedArrowKeys.insert(event->key());
 
-            if (selectedObjects.count() > 1)
-                emit beginUndoMacro("Move Selection");
+            selectedObjects = scene->selectedItems();
 
             foreach (QGraphicsItem *item, selectedObjects) {
                 if (event->key() == Qt::Key_Left)
@@ -651,15 +652,13 @@ void SelectionTool::keyPressEvent(QKeyEvent *event)
 
                 if (event->key() == Qt::Key_Down)
                     item->moveBy(0, delta);
-
-                QTimer::singleShot(0, this, SLOT(syncNodes()));
-                requestTransformation(item, frame);
             }
 
-            if (selectedObjects.count() > 1)
-                emit endUndoMacro();
-
-            updateItemPosition();
+            if (!selectedObjects.isEmpty()) {
+                keyboardMovePending = true;
+                QTimer::singleShot(0, this, SLOT(syncNodes()));
+                updateItemPosition();
+            }
         }
     } else if (event->modifiers() == Qt::ControlModifier) {
         if (event->key() == Qt::Key_T) {
@@ -689,7 +688,15 @@ void SelectionTool::keyPressEvent(QKeyEvent *event)
 
 void SelectionTool::keyReleaseEvent(QKeyEvent *event)
 {
-    Q_UNUSED(event)
+    if ((event->key() == Qt::Key_Left) || (event->key() == Qt::Key_Up)
+        || (event->key() == Qt::Key_Right) || (event->key() == Qt::Key_Down)) {
+        if (!event->isAutoRepeat()) {
+            pressedArrowKeys.remove(event->key());
+            if (pressedArrowKeys.isEmpty())
+                commitKeyboardMovement();
+        }
+        return;
+    }
 
     if (key.compare("CONTROL") == 0) {
         settingsPanel->setProportionState(false);
@@ -699,6 +706,30 @@ void SelectionTool::keyReleaseEvent(QKeyEvent *event)
                 nodeManager->setProportion(false);
         }
     }
+}
+
+void SelectionTool::commitKeyboardMovement()
+{
+    if (!keyboardMovePending || !scene)
+        return;
+
+    selectedObjects = scene->selectedItems();
+    TupFrame *currentFrameData = getCurrentFrame();
+    if (!currentFrameData || selectedObjects.isEmpty()) {
+        keyboardMovePending = false;
+        return;
+    }
+
+    if (selectedObjects.count() > 1)
+        emit beginUndoMacro("Move Selection");
+
+    foreach (QGraphicsItem *item, selectedObjects)
+        requestTransformation(item, currentFrameData);
+
+    if (selectedObjects.count() > 1)
+        emit endUndoMacro();
+
+    keyboardMovePending = false;
 }
 
 bool SelectionTool::selectionIsActive()

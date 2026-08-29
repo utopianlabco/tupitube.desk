@@ -46,7 +46,7 @@
 
 #include <QDomDocument>
 
-TextTool::TextTool()
+TextTool::TextTool(): keyboardMovePending(false)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TextTool::TextTool()]";
@@ -101,6 +101,8 @@ void TextTool::init(TupGraphicsScene *gScene)
     configPanel->updateMode(TextConfigurator::Add);
 
     scene = gScene;
+    pressedArrowKeys.clear();
+    keyboardMovePending = false;
     clearSelection();
     scene->clearSelection();
     nodesManager = nullptr;
@@ -537,6 +539,8 @@ void TextTool::sceneResponse(const TupSceneResponse *response)
 
 void TextTool::removeManager()
 {
+    pressedArrowKeys.clear();
+    keyboardMovePending = false;
     if (nodesManager) {
         disconnect(nodesManager, SIGNAL(positionUpdated(const QPointF&)), this, SLOT(updatePositionRecord(const QPointF&)));
         disconnect(nodesManager, SIGNAL(rotationUpdated(int)), this, SLOT(updateRotationAngleRecord(int)));
@@ -878,7 +882,9 @@ void TextTool::keyPressEvent(QKeyEvent *event)
             if (event->modifiers() == Qt::ControlModifier)
                 delta = 10;
 
-            TupFrame *frame = getCurrentFrame();
+            if (!event->isAutoRepeat())
+                pressedArrowKeys.insert(event->key());
+
             QGraphicsItem *item = nodesManager->parentItem();
 
             if (event->key() == Qt::Key_Left)
@@ -893,10 +899,13 @@ void TextTool::keyPressEvent(QKeyEvent *event)
             if (event->key() == Qt::Key_Down)
                 item->moveBy(0, delta);
 
+            keyboardMovePending = true;
             QTimer::singleShot(0, this, SLOT(syncNodes()));
-            requestTransformation(item, frame);
 
-            updatePositionRecord(item->pos() + QPointF(item->boundingRect().size().width()/2, item->boundingRect().size().height()/2));
+            QPointF point = item->pos();
+            point += QPointF(item->boundingRect().size().width()/2,
+                             item->boundingRect().size().height()/2);
+            configPanel->updatePositionCoords(point.x(), point.y());
         }
     } else if (event->modifiers() == Qt::ControlModifier) {
         configPanel->setProportionState(true);
@@ -908,7 +917,15 @@ void TextTool::keyPressEvent(QKeyEvent *event)
 
 void TextTool::keyReleaseEvent(QKeyEvent *event)
 {
-    Q_UNUSED(event)
+    if ((event->key() == Qt::Key_Left) || (event->key() == Qt::Key_Up)
+        || (event->key() == Qt::Key_Right) || (event->key() == Qt::Key_Down)) {
+        if (!event->isAutoRepeat()) {
+            pressedArrowKeys.remove(event->key());
+            if (pressedArrowKeys.isEmpty())
+                commitKeyboardMovement();
+        }
+        return;
+    }
 
     if (key.compare("CONTROL") == 0) {
         configPanel->setProportionState(false);
@@ -918,8 +935,26 @@ void TextTool::keyReleaseEvent(QKeyEvent *event)
     }
 }
 
+void TextTool::commitKeyboardMovement()
+{
+    if (!keyboardMovePending || !scene || !activeSelection || !nodesManager)
+        return;
+
+    TupFrame *currentFrameData = getCurrentFrame();
+    QGraphicsItem *item = nodesManager->parentItem();
+    if (!currentFrameData || !item) {
+        keyboardMovePending = false;
+        return;
+    }
+
+    requestTransformation(item, currentFrameData);
+    keyboardMovePending = false;
+}
+
 void TextTool::clearSelection()
 {
+    pressedArrowKeys.clear();
+    keyboardMovePending = false;
     #ifdef TUP_DEBUG
         qDebug() << "[TextTool::clearSelection()]";
     #endif
@@ -984,7 +1019,7 @@ void TextTool::updatePositionRecord(const QPointF &point)
     #endif
 
     configPanel->updatePositionCoords(point.x(), point.y());
-    if (nodesManager)
+    if (nodesManager && !keyboardMovePending)
         requestTransformation(nodesManager->parentItem(), frame);
 }
 

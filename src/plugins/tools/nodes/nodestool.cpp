@@ -40,7 +40,7 @@
 
 #include <QMessageBox>
 
-NodesTool::NodesTool()
+NodesTool::NodesTool(): keyboardMovePending(false)
 {
     setupActions();
 }
@@ -55,6 +55,8 @@ void NodesTool::init(TupGraphicsScene *gScene)
     activeSelection = false;
     shiftEnabled = false;
     ctrlEnabled = false;
+    pressedArrowKeys.clear();
+    keyboardMovePending = false;
     scene = gScene;
 
     clearSelection();
@@ -702,7 +704,9 @@ void NodesTool::keyPressEvent(QKeyEvent *event)
             if (event->modifiers() == Qt::ControlModifier)
                 delta = 10;
 
-            TupFrame *frame = getCurrentFrame();
+            if (!event->isAutoRepeat())
+                pressedArrowKeys.insert(key);
+
             QGraphicsItem *item = nodeGroup->parentItem();
 
             if (key == Qt::Key_Left)
@@ -717,8 +721,8 @@ void NodesTool::keyPressEvent(QKeyEvent *event)
             if (key == Qt::Key_Down)
                 item->moveBy(0, delta);
 
+            keyboardMovePending = true;
             QTimer::singleShot(0, this, SLOT(syncNodes()));
-            requestTransformation(item, frame);
         } else {
             QPair<int, int> flags = TAction::setKeyAction(key, event->modifiers());
             if (flags.first != -1 && flags.second != -1)
@@ -729,12 +733,35 @@ void NodesTool::keyPressEvent(QKeyEvent *event)
 
 void NodesTool::keyReleaseEvent(QKeyEvent *event)
 {
-    Q_UNUSED(event)
+    if ((event->key() == Qt::Key_Left) || (event->key() == Qt::Key_Up)
+        || (event->key() == Qt::Key_Right) || (event->key() == Qt::Key_Down)) {
+        if (!event->isAutoRepeat()) {
+            pressedArrowKeys.remove(event->key());
+            if (pressedArrowKeys.isEmpty())
+                commitKeyboardMovement();
+        }
+    }
 
     shiftEnabled = false;
     ctrlEnabled = false;
 
     QApplication::restoreOverrideCursor();
+}
+
+void NodesTool::commitKeyboardMovement()
+{
+    if (!keyboardMovePending || !scene || !activeSelection || !nodeGroup)
+        return;
+
+    TupFrame *currentFrameData = getCurrentFrame();
+    QGraphicsItem *item = nodeGroup->parentItem();
+    if (!currentFrameData || !item) {
+        keyboardMovePending = false;
+        return;
+    }
+
+    requestTransformation(item, currentFrameData);
+    keyboardMovePending = false;
 }
 
 void NodesTool::setupActions()
@@ -819,6 +846,8 @@ void NodesTool::updateZoomFactor(qreal scaleFactor)
 
 void NodesTool::clearSelection()
 {
+    pressedArrowKeys.clear();
+    keyboardMovePending = false;
     if (scene && !scene->selectedItems().isEmpty())
         scene->clearSelection();
 

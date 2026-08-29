@@ -50,6 +50,7 @@
 #include <QList>
 #include <QGraphicsView>
 #include <QTimer>
+#include <QSet>
 #include <cmath>
 
 class TupItemResponse;
@@ -135,6 +136,7 @@ class TUPITUBE_PLUGIN SelectionTool : public TupToolPlugin
         void addNodeManager(QGraphicsItem *item);
         void selectItem(QGraphicsItem *item);
         void updateConvertToPathState();
+        void commitKeyboardMovement();
 
         SelectionSettings *settingsPanel;
         QMap<TAction::ActionId, TAction *> selectActions;
@@ -159,6 +161,8 @@ class TUPITUBE_PLUGIN SelectionTool : public TupToolPlugin
 
         bool targetIsIncluded;
         QString key;
+        QSet<int> pressedArrowKeys;
+        bool keyboardMovePending;
 
         int currentLayer;
         int currentFrame;

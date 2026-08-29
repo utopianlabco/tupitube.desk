@@ -64,6 +64,7 @@
 #include <QList>
 #include <QTimer>
 #include <QDir>
+#include <QSet>
 
 class TupItemResponse;
 class TupGraphicsScene;
@@ -116,6 +117,7 @@ class TUPITUBE_PLUGIN NodesTool : public TupToolPlugin
         void setupActions();
         TupFrame* getCurrentFrame();
         void requestTransformation(QGraphicsItem *item, TupFrame *frame);
+        void commitKeyboardMovement();
         bool setPathNodes(QPointF coord, QList<QGraphicsItem *> currentSelection, int penWidth,
                           TupGraphicsScene *gScene);
         void addNode(QPointF coord, int penWidth, TupGraphicsScene *gScene);
@@ -132,6 +134,8 @@ class TUPITUBE_PLUGIN NodesTool : public TupToolPlugin
 
         bool shiftEnabled;
         bool ctrlEnabled;
+        QSet<int> pressedArrowKeys;
+        bool keyboardMovePending;
 
         QCursor targetCursor;
 

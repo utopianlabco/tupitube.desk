@@ -46,6 +46,7 @@
 #include <QFontMetrics>
 #include <QKeySequence>
 #include <QGraphicsView>
+#include <QSet>
 
 class TUPITUBE_PLUGIN TextTool : public TupToolPlugin
 {
@@ -116,6 +117,7 @@ class TUPITUBE_PLUGIN TextTool : public TupToolPlugin
         void loadTextColor();
         TupFrame* getCurrentFrame();
         void requestTransformation(QGraphicsItem *item, TupFrame *frame);
+        void commitKeyboardMovement();
         TupFrame* frameAt(int sceneIndex, int layerIndex, int frameIndex);
 
         TupGraphicsScene *scene;
@@ -132,6 +134,8 @@ class TUPITUBE_PLUGIN TextTool : public TupToolPlugin
         NodeManager *nodesManager;
         bool activeSelection;
         QString key;
+        QSet<int> pressedArrowKeys;
+        bool keyboardMovePending;
 };
 
 #endif

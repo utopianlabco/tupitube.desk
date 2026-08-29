@@ -32,17 +32,15 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#include "scalesettings.h"
-#include "tuptweenerstep.h"
+#include "shear_settings.h"
 #include "tseparator.h"
 #include "tosd.h"
 
-#include <QDoubleSpinBox>
 #include <QDir>
 
-ScaleSettings::ScaleSettings(QWidget *parent) : QWidget(parent)
+ShearSettings::ShearSettings(QWidget *parent) : QWidget(parent)
 {
-    scaleAxes = TupItemTweener::XY;
+    shearAxes = TupItemTweener::XY;
     selectionDone = false;
     stepsCounter = 0;
 
@@ -89,11 +87,11 @@ ScaleSettings::ScaleSettings(QWidget *parent) : QWidget(parent)
     activateMode(TupToolPlugin::Selection);
 }
 
-ScaleSettings::~ScaleSettings()
+ShearSettings::~ShearSettings()
 {
 }
 
-void ScaleSettings::setInnerForm()
+void ShearSettings::setInnerForm()
 {
     innerPanel = new QWidget;
 
@@ -103,7 +101,7 @@ void ScaleSettings::setInnerForm()
     QLabel *startingLabel = new QLabel(tr("Starting at frame") + ": ");
     startingLabel->setAlignment(Qt::AlignVCenter);
 
-    initFrameSpin = new QSpinBox();
+    initFrameSpin = new QSpinBox;
     initFrameSpin->setEnabled(false);
     initFrameSpin->setMaximum(999);
     connect(initFrameSpin, SIGNAL(valueChanged(int)), this, SLOT(updateRangeFromInit(int)));
@@ -111,7 +109,7 @@ void ScaleSettings::setInnerForm()
     QLabel *endingLabel = new QLabel(tr("Ending at frame") + ": ");
     endingLabel->setAlignment(Qt::AlignVCenter);
 
-    endFrameSpin = new QSpinBox();
+    endFrameSpin = new QSpinBox;
     endFrameSpin->setEnabled(true);
     endFrameSpin->setValue(1);
     endFrameSpin->setMaximum(999);
@@ -143,7 +141,7 @@ void ScaleSettings::setInnerForm()
     comboAxes->addItem(tr("Width & Height"));
     comboAxes->addItem(tr("Only Width"));
     comboAxes->addItem(tr("Only Height"));
-    QLabel *axesLabel = new QLabel(tr("Scale in") + ": ");
+    QLabel *axesLabel = new QLabel(tr("Shear in") + ": ");
     axesLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     QHBoxLayout *axesLayout = new QHBoxLayout;
     axesLayout->setAlignment(Qt::AlignHCenter);
@@ -153,13 +151,13 @@ void ScaleSettings::setInnerForm()
     axesLayout->addWidget(comboAxes);
 
     comboFactor = new QDoubleSpinBox;
-    comboFactor->setDecimals(3);
-    comboFactor->setMinimum(0.0);
-    comboFactor->setMaximum(10);
-    comboFactor->setSingleStep(0.005);
-    comboFactor->setValue(1.100);
+    comboFactor->setMinimum(-9.0);
+    comboFactor->setMaximum(9.0);
+    comboFactor->setDecimals(2);
+    comboFactor->setSingleStep(0.05);
+    comboFactor->setValue(0.10);
 
-    QLabel *speedLabel = new QLabel(tr("Scaling Factor") + ": ");
+    QLabel *speedLabel = new QLabel(tr("Shear Factor") + ": ");
     speedLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     QHBoxLayout *speedLayout = new QHBoxLayout;
     speedLayout->setAlignment(Qt::AlignHCenter);
@@ -220,7 +218,7 @@ void ScaleSettings::setInnerForm()
     activeInnerForm(false);
 }
 
-void ScaleSettings::activeInnerForm(bool enable)
+void ShearSettings::activeInnerForm(bool enable)
 {
     if (enable && !innerPanel->isVisible()) {
         propertiesDone = true;
@@ -232,24 +230,22 @@ void ScaleSettings::activeInnerForm(bool enable)
 }
 
 // Adding new Tween
-void ScaleSettings::setParameters(const QString &name, int framesCount, int initFrame)
+void ShearSettings::setParameters(const QString &name, int framesCount, int initFrame)
 {
-    Q_UNUSED(framesCount);
-
     mode = TupToolPlugin::Add;
     input->setText(name);
 
+    initFrameSpin->setEnabled(false);
     activateMode(TupToolPlugin::Selection);
     apply->setToolTip(tr("Save Tween"));
     remove->setIcon(QPixmap(kAppProp->themeDir() + "icons/close.png"));
     remove->setToolTip(tr("Cancel Tween"));
 
-    initFrameSpin->setValue(initFrame + 1);
-    initFrameSpin->setEnabled(false);
+    initStartCombo(framesCount, initFrame);
 }
 
 // Editing new Tween
-void ScaleSettings::setParameters(TupItemTweener *currentTween)
+void ShearSettings::setParameters(TupItemTweener *currentTween)
 {
     setEditMode();
     activateMode(TupToolPlugin::Properties);
@@ -258,27 +254,20 @@ void ScaleSettings::setParameters(TupItemTweener *currentTween)
 
     initFrameSpin->setEnabled(true);
     initFrameSpin->setValue(currentTween->getInitFrame() + 1);
-
     endFrameSpin->setValue(currentTween->getInitFrame() + currentTween->getFrames());
 
     int end = endFrameSpin->value();
     updateRangeFromEnd(end);
 
-    comboAxes->setCurrentIndex(currentTween->tweenScaleAxes());
-    comboFactor->setValue(currentTween->tweenScaleFactor());
-
-    iterationsField->setValue(currentTween->tweenScaleIterations());
-
-    loopBox->setChecked(currentTween->tweenScaleLoop());
-    reverseLoopBox->setChecked(currentTween->tweenScaleReverseLoop());
+    comboAxes->setCurrentIndex(currentTween->tweenShearAxes());
+    comboFactor->setValue(currentTween->tweenShearFactor());
+    iterationsField->setValue(currentTween->tweenShearIterations());
+    loopBox->setChecked(currentTween->tweenShearLoop());
+    reverseLoopBox->setChecked(currentTween->tweenShearReverseLoop());
 }
 
-void ScaleSettings::initStartCombo(int framesCount, int currentIndex)
+void ShearSettings::initStartCombo(int framesCount, int currentIndex)
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "[ScaleSettings::initStartCombo()] - framesCount -> " << framesCount;
-    #endif
-
     initFrameSpin->clear();
     endFrameSpin->clear();
 
@@ -292,7 +281,7 @@ void ScaleSettings::initStartCombo(int framesCount, int currentIndex)
     iterationsField->setValue(framesCount);
 }
 
-void ScaleSettings::setStartFrame(int currentIndex)
+void ShearSettings::setStartFrame(int currentIndex)
 {
     initFrameSpin->setValue(currentIndex + 1);
     int end = endFrameSpin->value();
@@ -300,22 +289,22 @@ void ScaleSettings::setStartFrame(int currentIndex)
         endFrameSpin->setValue(currentIndex + 1);
 }
 
-int ScaleSettings::startFrame()
+int ShearSettings::startFrame()
 {
     return initFrameSpin->value() - 1;
 }
 
-int ScaleSettings::startComboSize()
+int ShearSettings::startComboSize()
 {
     return initFrameSpin->maximum();
 }
 
-int ScaleSettings::totalSteps()
+int ShearSettings::totalSteps()
 {
     return endFrameSpin->value() - (initFrameSpin->value() - 1);
 }
 
-void ScaleSettings::setEditMode()
+void ShearSettings::setEditMode()
 {
     mode = TupToolPlugin::Edit;
     apply->setToolTip(tr("Update Tween"));
@@ -323,7 +312,7 @@ void ScaleSettings::setEditMode()
     remove->setToolTip(tr("Close Tween Properties"));
 }
 
-void ScaleSettings::applyTween()
+void ShearSettings::applyTween()
 {
     if (!selectionDone) {
         TOsd::self()->display(TOsd::Warning, tr("You must select at least one object!"));
@@ -335,7 +324,7 @@ void ScaleSettings::applyTween()
         return;
     }
 
-    // SQA: Verify Tween is really well applied before call setEditMode!
+    // SQA: Verify whether tween is really well applied before call setEditMode!
     setEditMode();
 
     if (!initFrameSpin->isEnabled())
@@ -346,12 +335,12 @@ void ScaleSettings::applyTween()
     emit clickedApplyTween();
 }
 
-void ScaleSettings::notifySelection(bool flag)
+void ShearSettings::notifySelection(bool flag)
 {
     selectionDone = flag;
 }
 
-QString ScaleSettings::currentTweenName() const
+QString ShearSettings::currentTweenName() const
 {
     QString tweenName = input->text();
     if (tweenName.length() > 0)
@@ -360,7 +349,7 @@ QString ScaleSettings::currentTweenName() const
     return tweenName;
 }
 
-void ScaleSettings::emitOptionChanged(int option)
+void ShearSettings::emitOptionChanged(int option)
 {
     switch (option) {
         case 0:
@@ -382,104 +371,99 @@ void ScaleSettings::emitOptionChanged(int option)
     }
 }
 
-QString ScaleSettings::tweenToXml(int currentScene, int currentLayer, int currentFrame, QPointF point,
-                             double initialXScaleFactor, double initialYScaleFactor)
+QString ShearSettings::tweenToXml(int currentScene, int currentLayer, int currentFrame, QPointF point)
 {
     QDomDocument doc;
 
     QDomElement root = doc.createElement("tweening");
     root.setAttribute("name", currentTweenName());
-    root.setAttribute("type", TupItemTweener::Scale);
+    root.setAttribute("type", TupItemTweener::Shear);
     root.setAttribute("initFrame", currentFrame);
     root.setAttribute("initLayer", currentLayer);
     root.setAttribute("initScene", currentScene);
-
+   
     root.setAttribute("frames", stepsCounter);
-    root.setAttribute("initXScaleFactor", QString::number(initialXScaleFactor));
-    root.setAttribute("initYScaleFactor", QString::number(initialYScaleFactor));
     root.setAttribute("origin", QString::number(point.x()) + "," + QString::number(point.y()));
-    scaleAxes = TupItemTweener::TransformAxes(comboAxes->currentIndex());
-    root.setAttribute("scaleAxes", scaleAxes);
+    shearAxes = TupItemTweener::TransformAxes(comboAxes->currentIndex());
+    root.setAttribute("shearAxes", shearAxes);
 
     double factor = comboFactor->value();
-    root.setAttribute("scaleFactor", QString::number(factor));
+    root.setAttribute("shearFactor", QString::number(factor));
 
     int iterations = iterationsField->value();
     if (iterations == 0) {
         iterations = 1;
-        iterationsField->setValue(iterations);
+        iterationsField->setValue(1);
     }
-
-    root.setAttribute("scaleIterations", iterations);
+    root.setAttribute("shearIterations", iterations);
 
     bool loop = loopBox->isChecked();
     if (loop)
-        root.setAttribute("scaleLoop", "1");
+        root.setAttribute("shearLoop", "1");
     else
-        root.setAttribute("scaleLoop", "0");
+        root.setAttribute("shearLoop", "0");
 
     bool reverse = reverseLoopBox->isChecked();
     if (reverse)
-        root.setAttribute("scaleReverseLoop", "1");
+        root.setAttribute("shearReverseLoop", "1");
     else
-        root.setAttribute("scaleReverseLoop", "0");
+        root.setAttribute("shearReverseLoop", "0");
 
-    double factorX = 1.0;
-    double factorY = 1.0;
-    double scaleX = 1.0;
-    double scaleY = 1.0;
-    double lastScaleX = 1.0;
-    double lastScaleY = 1.0;
+    double factorX = 0;
+    double factorY = 0;
+    double shearX = 1.0;
+    double shearY = 1.0;
+    double lastShearX = 1.0;
+    double lastShearY = 1.0;
 
-    if (scaleAxes == TupItemTweener::XY) {
+    if (shearAxes == TupItemTweener::XY) {
         factorX = factor;
         factorY = factor;
-    } else if (scaleAxes == TupItemTweener::X) {
+    } else if (shearAxes == TupItemTweener::X) {
         factorX = factor;
     } else {
         factorY = factor;
     }
 
     int cycle = 1;
-    int reverseTop = (iterations * 2) - 2;
+    int reverseTop = (iterations*2)-2;
 
     for (int i=0; i < stepsCounter; i++) {
          if (cycle <= iterations) {
              if (cycle == 1) {
-                 scaleX = initialXScaleFactor;
-                 scaleY = initialYScaleFactor;
+                 shearX = 0;
+                 shearY = 0;
+                 lastShearX = 0;
+                 lastShearY = 0;
              } else {
-                 scaleX *= factorX;
-                 scaleY *= factorY;
-                 lastScaleX = scaleX;
-                 lastScaleY = scaleY;
+                 shearX += factorX;
+                 shearY += factorY;
+                 lastShearX = shearX;
+                 lastShearY = shearY;
              }
              cycle++;
          } else {
              // if repeat option is enabled
              if (loop) {
                  cycle = 2;
-                 scaleX = initialXScaleFactor;
-                 scaleY = initialYScaleFactor;
-                 lastScaleX = scaleX;
-                 lastScaleY = scaleY;
+                 shearX = 0;
+                 shearY = 0;
              } else if (reverse) { // if reverse option is enabled
-                 scaleX /= factorX;
-                 scaleY /= factorY;
-                 lastScaleX = scaleX;
-                 lastScaleY = scaleY;
+                 shearX -= factorX;
+                 shearY -= factorY;
+
                  if (cycle < reverseTop)
                      cycle++;
                  else
                      cycle = 1;
              } else { // If cycle is done and no loop and no reverse
-                 scaleX = lastScaleX;
-                 scaleY = lastScaleY;
+                 shearX = lastShearX;
+                 shearY = lastShearY;
              }
          }
 
          TupTweenerStep *step = new TupTweenerStep(i);
-         step->setScale(scaleX, scaleY);
+         step->setShear(shearX, shearY);
          root.appendChild(step->toXml(doc));
     }
 
@@ -488,12 +472,12 @@ QString ScaleSettings::tweenToXml(int currentScene, int currentLayer, int curren
     return doc.toString();
 }
 
-void ScaleSettings::activateMode(TupToolPlugin::EditMode mode)
+void ShearSettings::activateMode(TupToolPlugin::EditMode mode)
 {
     options->setCurrentIndex(mode);
 }
 
-void ScaleSettings::checkFramesRange()
+void ShearSettings::checkFramesRange()
 {
     int begin = initFrameSpin->value();
     int end = endFrameSpin->value();
@@ -518,7 +502,7 @@ void ScaleSettings::checkFramesRange()
         iterationsField->setValue(stepsCounter);
 }
 
-void ScaleSettings::updateLoopCheckbox(int state)
+void ShearSettings::updateLoopCheckbox(int state)
 {
     Q_UNUSED(state)
 
@@ -526,7 +510,7 @@ void ScaleSettings::updateLoopCheckbox(int state)
         loopBox->setChecked(false);
 }
 
-void ScaleSettings::updateReverseCheckbox(int state)
+void ShearSettings::updateReverseCheckbox(int state)
 {
     Q_UNUSED(state)
 
@@ -534,14 +518,14 @@ void ScaleSettings::updateReverseCheckbox(int state)
         reverseLoopBox->setChecked(false);
 }
 
-void ScaleSettings::updateRangeFromInit(int begin)
+void ShearSettings::updateRangeFromInit(int begin)
 {
     int end = endFrameSpin->value();
     stepsCounter = end - begin + 1;
     totalLabel->setText(tr("Frames Total") + ": " + QString::number(stepsCounter));
 }
 
-void ScaleSettings::updateRangeFromEnd(int end) 
+void ShearSettings::updateRangeFromEnd(int end)
 {
     int begin = initFrameSpin->value();
     stepsCounter = end - begin + 1;

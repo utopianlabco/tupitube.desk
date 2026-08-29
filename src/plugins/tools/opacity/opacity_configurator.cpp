@@ -32,23 +32,16 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#include "configurator.h"
+#include "opacity_configurator.h"
 #include "tapplicationproperties.h"
 #include "tseparator.h"
-#include "stepsviewer.h"
-#include "tuptweenerstep.h"
-#include "tosd.h"
-#include "tradiobuttongroup.h"
-#include "tresponsiveui.h"
 
-Configurator::Configurator(QWidget *parent) : QFrame(parent)
+OpacityConfigurator::OpacityConfigurator(QWidget *parent) : QFrame(parent)
 {
     framesCount = 1;
     currentFrame = 0;
 
     currentMode = TupToolPlugin::View;
-    selectionDone = false;
-    currentTween = nullptr;
     state = Manager;
 
     layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
@@ -56,9 +49,9 @@ Configurator::Configurator(QWidget *parent) : QFrame(parent)
 
     QLabel *toolTitle = new QLabel;
     toolTitle->setAlignment(Qt::AlignHCenter);
-    QPixmap pic(THEME_DIR + "icons/motion_tween.png");
-    toolTitle->setPixmap(pic.scaledToWidth(TResponsiveUI::fitTitleIconSize(), Qt::SmoothTransformation));
-    toolTitle->setToolTip(tr("Motion Tween Properties"));
+    QPixmap pic(THEME_DIR + "icons/opacity_tween.png");
+    toolTitle->setPixmap(pic.scaledToWidth(20, Qt::SmoothTransformation));
+    toolTitle->setToolTip(tr("Opacity Tween Properties"));
     layout->addWidget(toolTitle);
     layout->addWidget(new TSeparator(Qt::Horizontal));
 
@@ -75,100 +68,69 @@ Configurator::Configurator(QWidget *parent) : QFrame(parent)
     layout->addStretch(2);
 }
 
-Configurator::~Configurator()
+OpacityConfigurator::~OpacityConfigurator()
 {
 }
 
-void Configurator::loadTweenList(QList<QString> tweenList)
+void OpacityConfigurator::loadTweenList(QList<QString> tweenList)
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "[Configurator::loadTweenList()]";
-    #endif
-
-    // The tween manager is a view of the project model, not a second source
-    // of truth. Always replace its contents when the model changes.
-    tweenManager->resetUI();
     tweenManager->loadTweenList(tweenList);
-    currentTween = nullptr;
-
-    activeButtonsPanel(state == Manager && !tweenList.isEmpty());
+    if (tweenList.count() > 0)
+        activeButtonsPanel(true);
 }
 
-void Configurator::setPropertiesPanel()
+void OpacityConfigurator::setPropertiesPanel()
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "[Configurator::setPropertiesPanel()]";
-    #endif
+    settingsPanel = new OpacitySettings(this);
 
-    settingsPanel = new MotionSettings(this);
-
-    connect(settingsPanel, SIGNAL(startingFrameChanged(int)), this, SIGNAL(startingFrameChanged(int)));
-
+    connect(settingsPanel, SIGNAL(startingPointChanged(int)), this, SIGNAL(startingPointChanged(int)));
     connect(settingsPanel, SIGNAL(clickedSelect()), this, SIGNAL(clickedSelect()));
-    connect(settingsPanel, SIGNAL(clickedCreatePath()), this, SIGNAL(clickedCreatePath()));
-
+    connect(settingsPanel, SIGNAL(clickedDefineProperties()), this, SIGNAL(clickedDefineProperties()));
     connect(settingsPanel, SIGNAL(clickedApplyTween()), this, SLOT(applyItem()));
     connect(settingsPanel, SIGNAL(clickedResetTween()), this, SLOT(closeTweenProperties()));
-
-    connect(settingsPanel, SIGNAL(framesTotalChanged()), this, SIGNAL(framesTotalChanged()));
-    connect(settingsPanel, SIGNAL(pathThicknessChanged(int)), this, SIGNAL(pathThicknessChanged(int)));
-    connect(settingsPanel, SIGNAL(pathColorUpdated(QColor)), this, SIGNAL(pathColorUpdated(QColor)));
 
     settingsLayout->addWidget(settingsPanel);
 
     activePropertiesPanel(false);
 }
 
-void Configurator::activePropertiesPanel(bool enable)
+void OpacityConfigurator::activePropertiesPanel(bool enable)
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "[Configurator::activePropertiesPanel()] - enable flag -> " << enable;
-    #endif
-
-    settingsPanel->enableInitCombo(enable);
-
-    if (enable) {
+    if (enable)
         settingsPanel->show();
-    } else {
-        settingsPanel->clearData();
+    else
         settingsPanel->hide();
-    }
 }
 
-void Configurator::setTweenManagerPanel()
+void OpacityConfigurator::setCurrentTween(TupItemTweener *tween)
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "[Configurator::setTweenManagerPanel()]";
-    #endif
+    currentTween = tween;
+}
 
+void OpacityConfigurator::setTweenManagerPanel()
+{
     tweenManager = new TweenManager(this);
-
     connect(tweenManager, SIGNAL(addNewTween(const QString &)), this, SLOT(addTween(const QString &)));
     connect(tweenManager, SIGNAL(editCurrentTween(const QString &)), this, SLOT(editTween()));
     connect(tweenManager, SIGNAL(removeCurrentTween(const QString &)), this, SLOT(removeTween(const QString &)));
     connect(tweenManager, SIGNAL(getTweenData(const QString &)), this, SLOT(updateTweenData(const QString &)));
 
     settingsLayout->addWidget(tweenManager);
-
     state = Manager;
 }
 
-void Configurator::activeTweenManagerPanel(bool enable)
+void OpacityConfigurator::activeTweenManagerPanel(bool enable)
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "[Configurator::activeTweenManagerPanel()] - enable flag -> " << enable;
-    #endif
-
     if (enable)
         tweenManager->show();
-    else 
+    else
         tweenManager->hide();
 
     if (tweenManager->listSize() > 0)
         activeButtonsPanel(enable);
 }
 
-void Configurator::setButtonsPanel()
+void OpacityConfigurator::setButtonsPanel()
 {
     controlPanel = new ButtonsPanel(this);
     connect(controlPanel, SIGNAL(clickedEditTween()), this, SLOT(editTween()));
@@ -179,96 +141,67 @@ void Configurator::setButtonsPanel()
     activeButtonsPanel(false);
 }
 
-void Configurator::activeButtonsPanel(bool enable)
+void OpacityConfigurator::activeButtonsPanel(bool enable)
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "[Configurator::activeButtonsPanel()] - enable flag -> " << enable;
-    #endif
-
     if (enable)
         controlPanel->show();
     else
         controlPanel->hide();
 }
 
-void Configurator::initStartCombo(int frames, int frameIndex)
+void OpacityConfigurator::initStartCombo(int frames, int frameIndex)
 {
     framesCount = frames;
     currentFrame = frameIndex;
     settingsPanel->initStartCombo(framesCount, currentFrame);
 }
 
-void Configurator::setStartFrame(int currentIndex)
+void OpacityConfigurator::setStartFrame(int currentIndex)
 {
     currentFrame = currentIndex;
-    settingsPanel->setStartFrame(currentFrame);
+    settingsPanel->setStartFrame(currentIndex);
 }
 
-int Configurator::startFrame()
+int OpacityConfigurator::startFrame()
 {
     return settingsPanel->startFrame();
 }
 
-int Configurator::startComboSize()
+int OpacityConfigurator::startComboSize()
 {
     return settingsPanel->startComboSize();
 }
 
-void Configurator::updateSteps(const QGraphicsPathItem *path)
+QString OpacityConfigurator::tweenToXml(int currentScene, int currentLayer, int currentFrame)
 {
-    settingsPanel->updateSteps(path);
+    return settingsPanel->tweenToXml(currentScene, currentLayer, currentFrame);
 }
 
-QString Configurator::tweenToXml(int currentScene, int currentLayer, int currentFrame, QPointF point, QString &path)
-{
-    return settingsPanel->tweenToXml(currentScene, currentLayer, currentFrame, point, path);
-}
-
-int Configurator::totalSteps()
+int OpacityConfigurator::totalSteps()
 {
     return settingsPanel->totalSteps();
 }
 
-QList<QPointF> Configurator::tweenPoints()
-{
-    return settingsPanel->tweenPoints();
-}
-
-void Configurator::activateMode(TupToolPlugin::EditMode mode)
+void OpacityConfigurator::activateMode(TupToolPlugin::EditMode mode)
 {
     settingsPanel->activateMode(mode);
 }
 
-void Configurator::clearData()
+void OpacityConfigurator::addTween(const QString &name)
 {
-    settingsPanel->clearData();
-}
-
-void Configurator::addTween(const QString &name)
-{
-    #ifdef TUP_DEBUG
-        qDebug() << "[Configurator::addTween()] - Adding tween ->" << name;
-    #endif
-
-    emit clickedResetInterface();
+    activeTweenManagerPanel(false);
 
     currentMode = TupToolPlugin::Add;
-    settingsPanel->setParameters(name, framesCount, currentFrame);
-
-    activeTweenManagerPanel(false);
-    activePropertiesPanel(true);
-
     state = Properties;
+
+    settingsPanel->setParameters(name, framesCount, currentFrame);
+    activePropertiesPanel(true);
 
     emit setMode(currentMode);
 }
 
-void Configurator::editTween()
+void OpacityConfigurator::editTween()
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "[Configurator::editTween()]";
-    #endif
-
     activeTweenManagerPanel(false);
 
     currentMode = TupToolPlugin::Edit;
@@ -281,12 +214,45 @@ void Configurator::editTween()
     emit setMode(currentMode);
 }
 
-void Configurator::closeTweenProperties()
+void OpacityConfigurator::removeTween()
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "[Configurator::closeTweenProperties()]";
-    #endif
+    QString name = tweenManager->currentTweenName();
+    tweenManager->removeItemFromList();
 
+    removeTween(name);
+}
+
+void OpacityConfigurator::removeTween(const QString &name)
+{
+    if (tweenManager->listSize() == 0)
+        activeButtonsPanel(false);
+
+    emit clickedRemoveTween(name);
+}
+
+QString OpacityConfigurator::currentTweenName() const
+{
+    QString oldName = tweenManager->currentTweenName();
+    QString newName = settingsPanel->currentTweenName();
+
+    if (oldName.compare(newName) != 0)
+        tweenManager->updateTweenName(newName);
+
+    return newName;
+}
+
+QString OpacityConfigurator::getTweenNameFromList() const
+{
+    return tweenManager->currentTweenName();
+}
+
+void OpacityConfigurator::notifySelection(bool flag)
+{
+    settingsPanel->notifySelection(flag);
+}
+
+void OpacityConfigurator::closeTweenProperties()
+{
     if (currentMode == TupToolPlugin::Add)
         tweenManager->removeItemFromList();
 
@@ -295,47 +261,8 @@ void Configurator::closeTweenProperties()
     closeSettingsPanel();
 }
 
-void Configurator::removeTween()
+void OpacityConfigurator::closeSettingsPanel()
 {
-    QString name = tweenManager->currentTweenName();
-    tweenManager->removeItemFromList();
-
-    currentTween = nullptr;
-
-    removeTween(name);
-}
-
-void Configurator::removeTween(const QString &name)
-{
-    if (tweenManager->listSize() == 0)
-        activeButtonsPanel(false);
-
-    emit clickedRemoveTween(name);
-}
-
-QString Configurator::currentTweenName() const
-{
-    return settingsPanel->currentTweenName();
-}
-
-QString Configurator::getTweenNameFromList() const
-{
-    return tweenManager->currentTweenName();
-}
-
-void Configurator::notifySelection(bool flag)
-{
-    settingsPanel->notifySelection(flag);
-}
-
-void Configurator::closeSettingsPanel()
-{
-    #ifdef TUP_DEBUG
-        qDebug() << "[Configurator::closeSettingsPanel()]";
-    #endif
-
-    // settingsPanel->enableInitCombo(false);
-
     if (state == Properties) {
         activeTweenManagerPanel(true);
         activePropertiesPanel(false);
@@ -344,69 +271,25 @@ void Configurator::closeSettingsPanel()
     }
 }
 
-TupToolPlugin::Mode Configurator::mode()
+TupToolPlugin::Mode OpacityConfigurator::mode()
 {
     return currentMode;
 }
 
-void Configurator::applyItem()
+void OpacityConfigurator::applyItem()
 {
      currentMode = TupToolPlugin::Edit;
      emit clickedApplyTween();
 }
 
-void Configurator::resetUI()
+void OpacityConfigurator::resetUI()
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "[Configurator::resetUI()]";
-    #endif
-
     tweenManager->resetUI();
     closeSettingsPanel();
     settingsPanel->notifySelection(false);
 }
 
-void Configurator::updateTweenData(const QString &name)
+void OpacityConfigurator::updateTweenData(const QString &name)
 {
-    emit tweenDataRequested(name);
-}
-
-void Configurator::setCurrentTween(TupItemTweener *tween)
-{
-    currentTween = tween;
-}
-
-void Configurator::undoSegment(const QPainterPath path)
-{
-    settingsPanel->undoSegment(path);
-}
-
-void Configurator::redoSegment(const QPainterPath path)
-{
-    settingsPanel->redoSegment(path);
-}
-
-void Configurator::enableSaveOption(bool flag)
-{
-    settingsPanel->enableSaveOption(flag);
-}
-
-int Configurator::stepsTotal()
-{
-    return settingsPanel->stepsTotal();
-}
-
-void Configurator::updateSegments(const QPainterPath path)
-{
-    settingsPanel->updateSegments(path);
-}
-
-int Configurator::getPathThickness()
-{
-    return settingsPanel->getPathThickness();
-}
-
-QColor Configurator::getPathColor() const
-{
-    return settingsPanel->getPathColor();
+    emit getTweenData(name);
 }

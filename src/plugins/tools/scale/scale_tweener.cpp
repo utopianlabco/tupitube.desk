@@ -226,7 +226,7 @@ QWidget *ScaleTweener::configurator()
     if (!configPanel) {
         mode = TupToolPlugin::View;
 
-        configPanel = new Configurator;
+        configPanel = new ScaleConfigurator;
         connect(configPanel, SIGNAL(startingPointChanged(int)), this, SLOT(updateStartPoint(int)));
         connect(configPanel, SIGNAL(clickedApplyTween()), this, SLOT(applyTween()));
         connect(configPanel, SIGNAL(clickedSelect()), this, SLOT(setSelection()));

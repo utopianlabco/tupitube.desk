@@ -17,14 +17,14 @@ INSTALLS += target
 target.path = /plugins/
 
 HEADERS += \
-           configurator.h \
-           opacity_tweener.h \
-           opacitysettings.h
+           opacity_configurator.h \
+           opacity_settings.h \
+           opacity_tweener.h
 
 SOURCES += \
-           configurator.cpp \
-           opacity_tweener.cpp \
-           opacitysettings.cpp
+           opacity_configurator.cpp \
+           opacity_settings.cpp \
+           opacity_tweener.cpp
 
 FRAMEWORK_DIR = "../../../framework"
 include($$FRAMEWORK_DIR/framework.pri)

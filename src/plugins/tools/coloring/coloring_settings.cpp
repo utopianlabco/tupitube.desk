@@ -32,7 +32,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#include "coloringsettings.h"
+#include "coloring_settings.h"
 #include "tradiobuttongroup.h"
 #include "tupitemtweener.h"
 #include "timagebutton.h"

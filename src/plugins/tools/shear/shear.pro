@@ -17,14 +17,14 @@ INSTALLS += target
 target.path = /plugins/
 
 HEADERS += \
-           configurator.h \
-           shear_tweener.h \
-           shearsettings.h
+           shear_configurator.h \
+           shear_settings.h \
+           shear_tweener.h
 
 SOURCES += \
-           configurator.cpp \
-           shear_tweener.cpp \
-           shearsettings.cpp
+           shear_configurator.cpp \
+           shear_settings.cpp \
+           shear_tweener.cpp
 
 FRAMEWORK_DIR = "../../../framework"
 include($$FRAMEWORK_DIR/framework.pri)

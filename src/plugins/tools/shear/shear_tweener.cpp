@@ -224,7 +224,7 @@ QWidget *ShearTweener::configurator()
     if (!configPanel) {
         mode = TupToolPlugin::View;
 
-        configPanel = new Configurator;
+        configPanel = new ShearConfigurator;
         connect(configPanel, SIGNAL(initFrameChanged(int)), this, SLOT(updateInitFrame(int)));
         connect(configPanel, SIGNAL(clickedApplyTween()), this, SLOT(applyTween()));
         connect(configPanel, SIGNAL(clickedSelect()), this, SLOT(setSelection()));

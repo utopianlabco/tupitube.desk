@@ -37,8 +37,8 @@
 
 #include "tglobal.h"
 #include "tuptoolplugin.h"
-#include "coloringsettings.h"
-#include "configurator.h"
+#include "coloring_settings.h"
+#include "coloring_configurator.h"
 
 /**
  * @author Gustav Gonzalez 
@@ -97,7 +97,7 @@ class TUPITUBE_PLUGIN ColoringTweener : public TupToolPlugin
         void removeTweenFromProject(const QString &name);
 
         QMap<TAction::ActionId, TAction *> colorActions;
-        Configurator *configPanel;
+        ColoringConfigurator *configPanel;
 
         TupGraphicsScene *scene;
         QList<QGraphicsItem *> objects;

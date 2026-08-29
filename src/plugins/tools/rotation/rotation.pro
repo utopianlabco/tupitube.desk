@@ -17,14 +17,14 @@ INSTALLS += target
 target.path = /plugins/
 
 HEADERS += \
-           configurator.h \
-           rotation_tweener.h \
-           rotationsettings.h
+           rotation_configurator.h \
+           rotation_settings.h \
+           rotation_tweener.h
 
 SOURCES += \
-           configurator.cpp \
-           rotation_tweener.cpp \
-           rotationsettings.cpp
+           rotation_configurator.cpp \
+           rotation_settings.cpp \
+           rotation_tweener.cpp
 
 FRAMEWORK_DIR = "../../../framework"
 include($$FRAMEWORK_DIR/framework.pri)

@@ -37,9 +37,9 @@
 
 #include "tglobal.h"
 #include "tuptoolplugin.h"
-#include "scalesettings.h"
+#include "scale_settings.h"
 #include "tupprojectresponse.h"
-#include "configurator.h"
+#include "scale_configurator.h"
 
 #include <QPointF>
 #include <QKeySequence>
@@ -105,7 +105,7 @@ class TUPITUBE_PLUGIN ScaleTweener : public TupToolPlugin
         QTransform initialStep();
 
         QMap<TAction::ActionId, TAction *> scaleActions;
-        Configurator *configPanel;
+        ScaleConfigurator *configPanel;
 
         TupGraphicsScene *scene;
         QList<QGraphicsItem *> objects;

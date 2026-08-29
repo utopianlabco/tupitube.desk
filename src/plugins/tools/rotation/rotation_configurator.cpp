@@ -32,29 +32,27 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#include "configurator.h"
+#include "rotation_configurator.h"
 #include "tapplicationproperties.h"
 #include "tseparator.h"
-#include "tresponsiveui.h"
+#include "tosd.h"
 
-#include <QBoxLayout>
-
-Configurator::Configurator(QWidget *parent) : QFrame(parent)
+RotationConfigurator::RotationConfigurator(QWidget *parent) : QFrame(parent)
 {
     framesCount = 1;
     currentFrame = 0;
 
-    toolMode = TupToolPlugin::View;
-    state = Configurator::Manager;
+    currentMode = TupToolPlugin::View;
+    state = Manager;
 
     layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
     layout->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
 
     QLabel *toolTitle = new QLabel;
     toolTitle->setAlignment(Qt::AlignHCenter);
-    QPixmap pic(THEME_DIR + "icons/coloring_tween.png");
-    toolTitle->setPixmap(pic.scaledToWidth(TResponsiveUI::fitTitleIconSize(), Qt::SmoothTransformation));
-    toolTitle->setToolTip(tr("Coloring Tween Properties"));
+    QPixmap pic(THEME_DIR + "icons/rotation_tween.png");
+    toolTitle->setPixmap(pic.scaledToWidth(18, Qt::SmoothTransformation));
+    toolTitle->setToolTip(tr("Rotation Tween Properties"));
     layout->addWidget(toolTitle);
     layout->addWidget(new TSeparator(Qt::Horizontal));
 
@@ -71,30 +69,24 @@ Configurator::Configurator(QWidget *parent) : QFrame(parent)
     layout->addStretch(2);
 }
 
-Configurator::~Configurator()
+RotationConfigurator::~RotationConfigurator()
 {
-    delete layout;
-    delete settingsLayout;
-    delete settingsPanel;
-    delete tweenManager;
-    delete controlPanel;
-    delete currentTween;
 }
 
-void Configurator::loadTweenList(QList<QString> tweenList)
+void RotationConfigurator::loadTweenList(QList<QString> tweenList)
 {
     tweenManager->loadTweenList(tweenList);
     if (tweenList.count() > 0)
         activeButtonsPanel(true);
 }
 
-void Configurator::setPropertiesPanel()
+void RotationConfigurator::setPropertiesPanel()
 {
-    settingsPanel = new ColoringSettings(this);
+    settingsPanel = new RotationSettings(this);
 
     connect(settingsPanel, SIGNAL(startingPointChanged(int)), this, SIGNAL(startingPointChanged(int)));
     connect(settingsPanel, SIGNAL(clickedSelect()), this, SIGNAL(clickedSelect()));
-    connect(settingsPanel, SIGNAL(clickedDefineProperties()), this, SIGNAL(clickedDefineProperties()));
+    connect(settingsPanel, SIGNAL(clickedDefineAngle()), this, SIGNAL(clickedDefineAngle()));
     connect(settingsPanel, SIGNAL(clickedApplyTween()), this, SLOT(applyItem()));
     connect(settingsPanel, SIGNAL(clickedResetTween()), this, SLOT(closeTweenProperties()));
 
@@ -103,7 +95,7 @@ void Configurator::setPropertiesPanel()
     activePropertiesPanel(false);
 }
 
-void Configurator::activePropertiesPanel(bool enable)
+void RotationConfigurator::activePropertiesPanel(bool enable)
 {
     if (enable)
         settingsPanel->show();
@@ -111,12 +103,12 @@ void Configurator::activePropertiesPanel(bool enable)
         settingsPanel->hide();
 }
 
-void Configurator::setCurrentTween(TupItemTweener *lCurrentTween)
+void RotationConfigurator::setCurrentTween(TupItemTweener *tween)
 {
-    currentTween = lCurrentTween;
+    currentTween = tween;
 }
 
-void Configurator::setTweenManagerPanel()
+void RotationConfigurator::setTweenManagerPanel()
 {
     tweenManager = new TweenManager(this);
     connect(tweenManager, SIGNAL(addNewTween(const QString &)), this, SLOT(addTween(const QString &)));
@@ -125,10 +117,10 @@ void Configurator::setTweenManagerPanel()
     connect(tweenManager, SIGNAL(getTweenData(const QString &)), this, SLOT(updateTweenData(const QString &)));
 
     settingsLayout->addWidget(tweenManager);
-    state = Configurator::Manager;
+    state = Manager;
 }
 
-void Configurator::activeTweenManagerPanel(bool enable)
+void RotationConfigurator::activeTweenManagerPanel(bool enable)
 {
     if (enable)
         tweenManager->show();
@@ -139,7 +131,7 @@ void Configurator::activeTweenManagerPanel(bool enable)
         activeButtonsPanel(enable);
 }
 
-void Configurator::setButtonsPanel()
+void RotationConfigurator::setButtonsPanel()
 {
     controlPanel = new ButtonsPanel(this);
     connect(controlPanel, SIGNAL(clickedEditTween()), this, SLOT(editTween()));
@@ -150,7 +142,7 @@ void Configurator::setButtonsPanel()
     activeButtonsPanel(false);
 }
 
-void Configurator::activeButtonsPanel(bool enable)
+void RotationConfigurator::activeButtonsPanel(bool enable)
 {
     if (enable)
         controlPanel->show();
@@ -158,75 +150,72 @@ void Configurator::activeButtonsPanel(bool enable)
         controlPanel->hide();
 }
 
-void Configurator::initStartCombo(int lFramesCount, int lCurrentFrame)
+void RotationConfigurator::initStartCombo(int frames, int frameIndex)
 {
-    framesCount = lFramesCount;
-    currentFrame = lCurrentFrame;
-    settingsPanel->initStartCombo(lFramesCount, lCurrentFrame);
+    framesCount = frames;
+    currentFrame = frameIndex;
+    settingsPanel->initStartCombo(framesCount, currentFrame);
 }
 
-void Configurator::setStartFrame(int currentIndex)
+void RotationConfigurator::setStartFrame(int currentIndex)
 {
     currentFrame = currentIndex;
     settingsPanel->setStartFrame(currentIndex);
 }
 
-int Configurator::startFrame()
+int RotationConfigurator::startFrame()
 {
     return settingsPanel->startFrame();
 }
 
-int Configurator::startComboSize()
+int RotationConfigurator::startComboSize()
 {
     return settingsPanel->startComboSize();
 }
 
-QString Configurator::tweenToXml(int currentScene, int currentLayer, int currentFrame)
+QString RotationConfigurator::tweenToXml(int currentScene, int currentLayer, int currentFrame, QPointF point)
 {
-    return settingsPanel->tweenToXml(currentScene, currentLayer, currentFrame);
+    return settingsPanel->tweenToXml(currentScene, currentLayer, currentFrame, point);
 }
 
-int Configurator::totalSteps()
+int RotationConfigurator::totalSteps()
 {
     return settingsPanel->totalSteps();
 }
 
-void Configurator::activateMode(TupToolPlugin::EditMode mode)
+void RotationConfigurator::activateMode(TupToolPlugin::EditMode mode)
 {
     settingsPanel->activateMode(mode);
 }
 
-void Configurator::addTween(const QString &name)
+void RotationConfigurator::addTween(const QString &name)
 {
+    currentMode = TupToolPlugin::Add;
+    emit setMode(currentMode);
+
     activeTweenManagerPanel(false);
 
-    toolMode = TupToolPlugin::Add;
-    state = Configurator::Properties;
+    state = Properties;
 
     settingsPanel->setParameters(name, framesCount, currentFrame);
     activePropertiesPanel(true);
-
-    emit setMode(toolMode);
 }
 
-void Configurator::editTween()
+void RotationConfigurator::editTween()
 {
-    toolMode = TupToolPlugin::Edit;
-    emit setMode(toolMode);
+    currentMode = TupToolPlugin::Edit;
+    emit setMode(currentMode);
 
     activeTweenManagerPanel(false);
 
-    // mode = TupToolPlugin::Edit;
-    state = Configurator::Properties;
+    state = Properties;
 
     settingsPanel->notifySelection(true);
     settingsPanel->setParameters(currentTween);
     activePropertiesPanel(true);
-
-    // emit setMode(mode);
 }
 
-void Configurator::removeTween()
+void RotationConfigurator::removeTween()
 {
     QString name = tweenManager->currentTweenName();
     tweenManager->removeItemFromList();
@@ -234,7 +223,7 @@ void Configurator::removeTween()
     removeTween(name);
 }
 
-void Configurator::removeTween(const QString &name)
+void RotationConfigurator::removeTween(const QString &name)
 {
     if (tweenManager->listSize() == 0)
         activeButtonsPanel(false);
@@ -242,7 +231,7 @@ void Configurator::removeTween(const QString &name)
     emit clickedRemoveTween(name);
 }
 
-QString Configurator::currentTweenName() const
+QString RotationConfigurator::currentTweenName() const
 {
     QString oldName = tweenManager->currentTweenName();
     QString newName = settingsPanel->currentTweenName();
@@ -253,24 +242,19 @@ QString Configurator::currentTweenName() const
     return newName;
 }
 
-QString Configurator::getTweenNameFromList() const
+QString RotationConfigurator::getTweenNameFromList() const
 {
     return tweenManager->currentTweenName();
 }
 
-void Configurator::notifySelection(bool flag)
+void RotationConfigurator::notifySelection(bool flag)
 {
     settingsPanel->notifySelection(flag);
 }
 
-void Configurator::setInitialColor(QColor color)
+void RotationConfigurator::closeTweenProperties()
 {
-    settingsPanel->setInitialColor(color);
-}
-
-void Configurator::closeTweenProperties()
-{
-    if (toolMode == TupToolPlugin::Add)
+    if (currentMode == TupToolPlugin::Add)
         tweenManager->removeItemFromList();
 
     emit clickedResetInterface();
@@ -278,35 +262,35 @@ void Configurator::closeTweenProperties()
     closeSettingsPanel();
 }
 
-void Configurator::closeSettingsPanel()
+void RotationConfigurator::closeSettingsPanel()
 {
-    if (state == Configurator::Properties) {
+    if (state == Properties) {
         activeTweenManagerPanel(true);
         activePropertiesPanel(false);
-        toolMode = TupToolPlugin::View;
-        state = Configurator::Manager;
-    }
+        currentMode = TupToolPlugin::View;
+        state = Manager;
+    } 
 }
 
-TupToolPlugin::Mode Configurator::mode()
+TupToolPlugin::Mode RotationConfigurator::mode()
 {
-    return toolMode;
+    return currentMode;
 }
 
-void Configurator::applyItem()
+void RotationConfigurator::applyItem()
 {
-     toolMode = TupToolPlugin::Edit;
+     currentMode = TupToolPlugin::Edit;
      emit clickedApplyTween();
 }
 
-void Configurator::resetUI()
+void RotationConfigurator::resetUI()
 {
     tweenManager->resetUI();
     closeSettingsPanel();
     settingsPanel->notifySelection(false);
 }
 
-void Configurator::updateTweenData(const QString &name)
+void RotationConfigurator::updateTweenData(const QString &name)
 {
     emit getTweenData(name);
 }

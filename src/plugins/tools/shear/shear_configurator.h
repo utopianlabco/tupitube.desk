@@ -32,37 +32,42 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#ifndef CONFIGURATOR_H
-#define CONFIGURATOR_H
+#ifndef SHEAR_CONFIGURATOR_H
+#define SHEAR_CONFIGURATOR_H
 
 #include "tglobal.h"
-#include "scalesettings.h"
-#include "tupitemtweener.h"
+#include "shear_settings.h"
 #include "tweenmanager.h"
 #include "buttonspanel.h"
+#include "tupitemtweener.h"
 
+#include <QFrame>
+#include <QLabel>
 #include <QBoxLayout>
+#include <QGraphicsPathItem>
+#include <QListWidgetItem>
+
+class TupItemTweener;
 
 /**
  * @author Gustav Gonzalez 
 */
 
-class TUPITUBE_PLUGIN Configurator : public QFrame
+class TUPITUBE_PLUGIN ShearConfigurator : public QFrame
 {
     Q_OBJECT
 
     public:
         enum GuiState { Manager = 1, Properties };
 
-        Configurator(QWidget *parent = nullptr);
-        ~Configurator();
+        ShearConfigurator(QWidget *parent = nullptr);
+        ~ShearConfigurator();
 
         void loadTweenList(QList<QString> tweenList);
 
         void initStartCombo(int framesCount, int currentFrame);
         void setStartFrame(int currentIndex);
-        int startFrame();
-  
+
         int totalSteps();
         void activateMode(TupToolPlugin::EditMode mode);
         void activeButtonsPanel(bool enable);
@@ -70,12 +75,12 @@ class TUPITUBE_PLUGIN Configurator : public QFrame
         QString currentTweenName() const;
         QString getTweenNameFromList() const;
         void notifySelection(bool flag);
+        int startFrame();
         int startComboSize();
         void closeSettingsPanel();
         TupToolPlugin::Mode mode();
         void resetUI();
-        QString tweenToXml(int currentScene, int currentLayer, int currentFrame,
-                           QPointF point, double initialXScaleFactor, double initialYScaleFactor);
+        QString tweenToXml(int currentScene, int currentLayer, int currentFrame, QPointF point);
         
     private slots:
         void applyItem();
@@ -87,7 +92,7 @@ class TUPITUBE_PLUGIN Configurator : public QFrame
         void updateTweenData(const QString &name);
         
     signals:
-        void startingPointChanged(int index);
+        void initFrameChanged(int index);
         void clickedSelect();
         void clickedDefineProperties();
         void clickedRemoveTween(const QString &name);
@@ -105,7 +110,7 @@ class TUPITUBE_PLUGIN Configurator : public QFrame
 
         QBoxLayout *layout;
         QBoxLayout *settingsLayout;
-        ScaleSettings *settingsPanel;
+        ShearSettings *settingsPanel;
         TweenManager *tweenManager;
         ButtonsPanel *controlPanel;
 
@@ -115,7 +120,7 @@ class TUPITUBE_PLUGIN Configurator : public QFrame
         int currentFrame;
 
         TupToolPlugin::Mode currentMode;
-        Configurator::GuiState state;
+        ShearConfigurator::GuiState state;
 };
 
 #endif

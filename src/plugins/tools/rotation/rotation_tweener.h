@@ -37,9 +37,9 @@
 
 #include "tglobal.h"
 #include "tuptoolplugin.h"
-#include "rotationsettings.h"
+#include "rotation_settings.h"
 #include "tupprojectresponse.h"
-#include "configurator.h"
+#include "rotation_configurator.h"
 #include "target.h"
 
 #include <QPointF>
@@ -115,7 +115,7 @@ class TUPITUBE_PLUGIN RotationTweener : public TupToolPlugin
 
     private:
         QMap<TAction::ActionId, TAction *> rotateActions;
-        Configurator *configPanel;
+        RotationConfigurator *configPanel;
 
         TupGraphicsScene *scene;
         QList<QGraphicsItem *> objects;

@@ -395,7 +395,7 @@ QWidget *MotionTweener::configurator()
     if (!configPanel) {
         mode = TupToolPlugin::View;
 
-        configPanel = new Configurator;
+        configPanel = new MotionConfigurator;
         connect(configPanel, SIGNAL(startingFrameChanged(int)), this, SLOT(updateStartFrame(int)));
         connect(configPanel, SIGNAL(clickedCreatePath()), this, SLOT(setTweenPath()));
         connect(configPanel, SIGNAL(clickedSelect()), this, SLOT(setSelection()));

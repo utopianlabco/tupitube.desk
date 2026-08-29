@@ -37,9 +37,9 @@
 
 #include "tglobal.h"
 #include "tuptoolplugin.h"
-#include "shearsettings.h"
+#include "shear_settings.h"
 #include "tupprojectresponse.h"
-#include "configurator.h"
+#include "shear_configurator.h"
 #include "target.h"
 
 #include <QPointF>
@@ -110,7 +110,7 @@ class TUPITUBE_PLUGIN ShearTweener : public TupToolPlugin
         QTransform initialStep();
 
         QMap<TAction::ActionId, TAction *> shearActions;
-        Configurator *configPanel;
+        ShearConfigurator *configPanel;
 
         TupGraphicsScene *scene;
         QList<QGraphicsItem *> objects;

@@ -17,14 +17,14 @@ INSTALLS += target
 target.path = /plugins/
 
 HEADERS += \
-           configurator.h \
-           motion_tweener.h \
-           motionsettings.h
+           motion_configurator.h \
+           motion_settings.h \
+           motion_tweener.h
 		   
 SOURCES += \
-           configurator.cpp \
-           motion_tweener.cpp \
-           motionsettings.cpp
+           motion_configurator.cpp \
+           motion_settings.cpp \
+           motion_tweener.cpp
 
 FRAMEWORK_DIR = "../../../framework"
 include($$FRAMEWORK_DIR/framework.pri)

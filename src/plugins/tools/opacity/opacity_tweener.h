@@ -36,10 +36,10 @@
 #define OPACITYTWEENER_H
 
 #include "tglobal.h"
-#include "configurator.h"
+#include "opacity_configurator.h"
 #include "taction.h"
 #include "tuptoolplugin.h"
-#include "opacitysettings.h"
+#include "opacity_settings.h"
 #include "tupprojectresponse.h"
 
 /**
@@ -98,7 +98,7 @@ class TUPITUBE_PLUGIN OpacityTweener : public TupToolPlugin
         void removeTweenFromProject(const QString &name);
 
         QMap<TAction::ActionId, TAction *> opacityActions;
-        Configurator *configPanel;
+        OpacityConfigurator *configPanel;
 
         TupGraphicsScene *scene;
         QList<QGraphicsItem *> objects;

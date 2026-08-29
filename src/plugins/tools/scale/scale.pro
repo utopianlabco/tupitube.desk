@@ -17,14 +17,14 @@ INSTALLS += target
 target.path = /plugins/
 
 HEADERS += \
-           configurator.h \
-           scale_tweener.h \
-           scalesettings.h 
+           scale_configurator.h \
+           scale_settings.h \
+           scale_tweener.h
 
 SOURCES += \
-           configurator.cpp \
-           scale_tweener.cpp \
-           scalesettings.cpp
+           scale_configurator.cpp \
+           scale_settings.cpp \
+           scale_tweener.cpp
 
 FRAMEWORK_DIR = "../../../framework"
 include($$FRAMEWORK_DIR/framework.pri)

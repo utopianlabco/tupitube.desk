@@ -32,35 +32,34 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#ifndef COLORINGSETTINGS_H
-#define COLORINGSETTINGS_H
+#ifndef MOTION_SETTINGS_H
+#define MOTION_SETTINGS_H
 
 #include "tglobal.h"
 #include "tuptoolplugin.h"
-#include "tupitemtweener.h"
-#include "timagebutton.h"
 #include "tradiobuttongroup.h"
+#include "timagebutton.h"
+#include "stepsviewer.h"
 
-#include <QComboBox>
-#include <QSpinBox>
 #include <QWidget>
-#include <QCheckBox>
 #include <QLabel>
 #include <QLineEdit>
-#include <QPushButton>
+#include <QListWidget>
+#include <QSpinBox>
+#include <QBoxLayout>
+#include <QHeaderView>
+#include <QGraphicsPathItem>
 
-/**
- * @author Gustav Gonzalez 
-*/
+class TupItemTweener;
 
-class TUPITUBE_PLUGIN ColoringSettings : public QWidget
+class TUPITUBE_PLUGIN MotionSettings : public QWidget 
 {
     Q_OBJECT
 
     public:
-        enum FillTypes{InternalFill = 0, LineFill, AllFill};
-        ColoringSettings(QWidget *parent = nullptr);
-        ~ColoringSettings();
+        enum Mode { Selection = 0, Path};
+        MotionSettings(QWidget *parent = nullptr);
+        ~MotionSettings();
 
         void setParameters(const QString &name, int framesCount, int startFrame);
         void setParameters(TupItemTweener *currentTween);
@@ -68,77 +67,67 @@ class TUPITUBE_PLUGIN ColoringSettings : public QWidget
         void setStartFrame(int currentIndex);
         int startFrame();
 
+        void updateSteps(const QGraphicsPathItem *path);
+        QString tweenToXml(int currentScene, int currentLayer, int currentFrame, QPointF point, QString &path);
         int totalSteps();
-
-        QString currentTweenName() const;
-        void activatePropertiesMode(TupToolPlugin::EditMode mode);
+        QList<QPointF> tweenPoints();
+        void activateMode(TupToolPlugin::EditMode mode);
+        void clearData();
         void notifySelection(bool flag);
         int startComboSize();
-        void setInitialColor(QColor color);
-		void activateMode(TupToolPlugin::EditMode mode);
-        QString tweenToXml(int currentScene, int currentLayer, int currentFrame);
+        void enableInitCombo(bool enable);
+        QString currentTweenName() const;
+        void updateSegments(const QPainterPath path);
+
+        void undoSegment(const QPainterPath path);
+        void redoSegment(const QPainterPath path);
+        void enableSaveOption(bool flag);
+        int stepsTotal();
+
+        int getPathThickness();
+        QColor getPathColor() const;
 
     private slots:
-        void applyTween();
         void emitOptionChanged(int option);
-        void updateLoopCheckbox(int state);
-        void updateReverseCheckbox(int state);
-        void setInitialColor();
-        void setEndingColor();
-        void updateRangeFromInit(int begin);
-        void updateRangeFromEnd(int end);
+        void applyTween();
+        void updateTotalLabel(int total);
+        void setPathColor();
 
     signals:
+        void clickedCreatePath();
         void clickedSelect();
-        void clickedDefineProperties();
-        void clickedApplyTween();
         void clickedResetTween();
-        void startingPointChanged(int index);
+        void clickedApplyTween();
+        void startingFrameChanged(int);
+        void framesTotalChanged();
+        void pathThicknessChanged(int);
+        void pathColorUpdated(const QColor &);
         
     private:
         void setInnerForm();
         void activeInnerForm(bool enable);
         void setEditMode();
-        void checkFramesRange();
-        void updateColor(QColor color, QPushButton *colorButton);
-        QString labelColor(QColor color) const;
+        QGridLayout * pathSettingsPanel();
+        QColor setButtonColor(QPushButton *button, const QColor &currentColor) const;
 
-        QTabWidget *tabWidget;
-
-        QWidget *basicPanel;
-        QWidget *colorsPanel;
-
+        QWidget *innerPanel;
         QBoxLayout *layout;
+
+        QLabel *endingLabel;
+        QLineEdit *input;
+        TRadioButtonGroup *options;
+        StepsViewer *stepViewer;
+        QSpinBox *initSpinBox;
+        QLabel *totalLabel;
+        bool selectionDone;
         TupToolPlugin::Mode mode;
 
-        QLineEdit *input;
+        QColor pathColor;
+        QSpinBox *pathThickness;
+        QPushButton *pathColorButton;
 
-        QSpinBox *initFrame;
-        QSpinBox *endFrame;
-
-        TRadioButtonGroup *options;
-
-        QComboBox *fillTypeCombo;
-        QPushButton *initColorButton;
-        QColor initialColor;
-        QPushButton *endColorButton;
-        QColor endingColor;
-
-        QSpinBox *iterationsCombo;
-
-        QCheckBox *loopBox;
-        QCheckBox *reverseLoopBox;
-
-        QLabel *totalLabel;
-        int totalStepsCount;
-
-        bool selectionDone;
-        bool propertiesDone;
-
-        TImageButton *apply;
+        TImageButton *applyButton;
         TImageButton *remove;
-
-        TupItemTweener::FillType fillType;
 };
 
 #endif

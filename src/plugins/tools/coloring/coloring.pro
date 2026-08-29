@@ -17,14 +17,14 @@ INSTALLS += target
 target.path = /plugins/
 
 HEADERS += \
-           coloring_tweener.h \
-           configurator.h \
-           coloringsettings.h
+           coloring_configurator.h \
+           coloring_settings.h \
+           coloring_tweener.h
 
 SOURCES += \
-           coloring_tweener.cpp \
-           configurator.cpp \
-           coloringsettings.cpp
+           coloring_configurator.cpp \
+           coloring_settings.cpp \
+           coloring_tweener.cpp
 
 FRAMEWORK_DIR = "../../../framework"
 include($$FRAMEWORK_DIR/framework.pri)

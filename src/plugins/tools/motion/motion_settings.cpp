@@ -32,7 +32,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#include "motionsettings.h"
+#include "motion_settings.h"
 #include "tupitemtweener.h"
 #include "tuptweenerstep.h"
 #include "tosd.h"

@@ -39,7 +39,7 @@
 #include "tuptoolplugin.h"
 #include "tupprojectresponse.h"
 #include "tnodegroup.h"
-#include "configurator.h"
+#include "motion_configurator.h"
 #include "tupellipseitem.h"
 #include "tuplineitem.h"
 #include "taction.h"
@@ -130,7 +130,7 @@ class TUPITUBE_PLUGIN MotionTweener : public TupToolPlugin
         void setGuideLine(const QColor &pathColor, const QPointF &initPoint);
 
         QMap<TAction::ActionId, TAction *> posActions;
-        Configurator *configPanel;
+        MotionConfigurator *configPanel;
 
         TupGraphicsScene *scene;
         QGraphicsPathItem *linePath;

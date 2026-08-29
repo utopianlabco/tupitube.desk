@@ -32,26 +32,32 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#include "configurator.h"
+#include "scale_configurator.h"
 #include "tapplicationproperties.h"
 #include "tseparator.h"
+#include "tosd.h"
 
-Configurator::Configurator(QWidget *parent) : QFrame(parent)
+#include <QFrame>
+#include <QLabel>
+#include <QGraphicsPathItem>
+#include <QListWidgetItem>
+
+ScaleConfigurator::ScaleConfigurator(QWidget *parent) : QFrame(parent)
 {
     framesCount = 1;
     currentFrame = 0;
 
     currentMode = TupToolPlugin::View;
-    state = Manager;
+    state = ScaleConfigurator::Manager;
 
     layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
     layout->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
 
     QLabel *toolTitle = new QLabel;
     toolTitle->setAlignment(Qt::AlignHCenter);
-    QPixmap pic(THEME_DIR + "icons/opacity_tween.png");
+    QPixmap pic(THEME_DIR + "icons/scale_tween.png");
     toolTitle->setPixmap(pic.scaledToWidth(20, Qt::SmoothTransformation));
-    toolTitle->setToolTip(tr("Opacity Tween Properties"));
+    toolTitle->setToolTip(tr("Scale Tween Properties"));
     layout->addWidget(toolTitle);
     layout->addWidget(new TSeparator(Qt::Horizontal));
 
@@ -68,20 +74,20 @@ Configurator::Configurator(QWidget *parent) : QFrame(parent)
     layout->addStretch(2);
 }
 
-Configurator::~Configurator()
+ScaleConfigurator::~ScaleConfigurator()
 {
 }
 
-void Configurator::loadTweenList(QList<QString> tweenList)
+void ScaleConfigurator::loadTweenList(QList<QString> tweenList)
 {
     tweenManager->loadTweenList(tweenList);
     if (tweenList.count() > 0)
         activeButtonsPanel(true);
 }
 
-void Configurator::setPropertiesPanel()
+void ScaleConfigurator::setPropertiesPanel()
 {
-    settingsPanel = new OpacitySettings(this);
+    settingsPanel = new ScaleSettings(this);
 
     connect(settingsPanel, SIGNAL(startingPointChanged(int)), this, SIGNAL(startingPointChanged(int)));
     connect(settingsPanel, SIGNAL(clickedSelect()), this, SIGNAL(clickedSelect()));
@@ -94,7 +100,7 @@ void Configurator::setPropertiesPanel()
     activePropertiesPanel(false);
 }
 
-void Configurator::activePropertiesPanel(bool enable)
+void ScaleConfigurator::activePropertiesPanel(bool enable)
 {
     if (enable)
         settingsPanel->show();
@@ -102,12 +108,12 @@ void Configurator::activePropertiesPanel(bool enable)
         settingsPanel->hide();
 }
 
-void Configurator::setCurrentTween(TupItemTweener *tween)
+void ScaleConfigurator::setCurrentTween(TupItemTweener *tween)
 {
     currentTween = tween;
 }
 
-void Configurator::setTweenManagerPanel()
+void ScaleConfigurator::setTweenManagerPanel()
 {
     tweenManager = new TweenManager(this);
     connect(tweenManager, SIGNAL(addNewTween(const QString &)), this, SLOT(addTween(const QString &)));
@@ -116,21 +122,21 @@ void Configurator::setTweenManagerPanel()
     connect(tweenManager, SIGNAL(getTweenData(const QString &)), this, SLOT(updateTweenData(const QString &)));
 
     settingsLayout->addWidget(tweenManager);
-    state = Manager;
+    state = ScaleConfigurator::Manager;
 }
 
-void Configurator::activeTweenManagerPanel(bool enable)
+void ScaleConfigurator::activeTweenManagerPanel(bool enable)
 {
     if (enable)
-        tweenManager->show();
+       tweenManager->show();
     else
-        tweenManager->hide();
+       tweenManager->hide();
 
     if (tweenManager->listSize() > 0)
         activeButtonsPanel(enable);
 }
 
-void Configurator::setButtonsPanel()
+void ScaleConfigurator::setButtonsPanel()
 {
     controlPanel = new ButtonsPanel(this);
     connect(controlPanel, SIGNAL(clickedEditTween()), this, SLOT(editTween()));
@@ -141,58 +147,60 @@ void Configurator::setButtonsPanel()
     activeButtonsPanel(false);
 }
 
-void Configurator::activeButtonsPanel(bool enable)
+void ScaleConfigurator::activeButtonsPanel(bool enable)
 {
     if (enable)
-        controlPanel->show();
+       controlPanel->show();
     else
-        controlPanel->hide();
+       controlPanel->hide();
 }
 
-void Configurator::initStartCombo(int frames, int frameIndex)
+void ScaleConfigurator::initStartCombo(int frames, int frameIndex)
 {
     framesCount = frames;
     currentFrame = frameIndex;
     settingsPanel->initStartCombo(framesCount, currentFrame);
 }
 
-void Configurator::setStartFrame(int currentIndex)
+void ScaleConfigurator::setStartFrame(int currentIndex)
 {
     currentFrame = currentIndex;
     settingsPanel->setStartFrame(currentIndex);
 }
 
-int Configurator::startFrame()
+int ScaleConfigurator::startFrame()
 {
     return settingsPanel->startFrame();
 }
 
-int Configurator::startComboSize()
+int ScaleConfigurator::startComboSize()
 {
     return settingsPanel->startComboSize();
 }
 
-QString Configurator::tweenToXml(int currentScene, int currentLayer, int currentFrame)
+QString ScaleConfigurator::tweenToXml(int currentScene, int currentLayer, int currentFrame,
+                                 QPointF point, double initialXScaleFactor, double initialYScaleFactor)
 {
-    return settingsPanel->tweenToXml(currentScene, currentLayer, currentFrame);
+    return settingsPanel->tweenToXml(currentScene, currentLayer, currentFrame, point,
+                                     initialXScaleFactor, initialYScaleFactor);
 }
 
-int Configurator::totalSteps()
+int ScaleConfigurator::totalSteps()
 {
     return settingsPanel->totalSteps();
 }
 
-void Configurator::activateMode(TupToolPlugin::EditMode mode)
+void ScaleConfigurator::activateMode(TupToolPlugin::EditMode currentMode)
 {
-    settingsPanel->activateMode(mode);
+    settingsPanel->activateMode(currentMode);
 }
 
-void Configurator::addTween(const QString &name)
+void ScaleConfigurator::addTween(const QString &name)
 {
     activeTweenManagerPanel(false);
 
     currentMode = TupToolPlugin::Add;
-    state = Properties;
+    state = ScaleConfigurator::Properties;
 
     settingsPanel->setParameters(name, framesCount, currentFrame);
     activePropertiesPanel(true);
@@ -200,29 +208,29 @@ void Configurator::addTween(const QString &name)
     emit setMode(currentMode);
 }
 
-void Configurator::editTween()
+void ScaleConfigurator::editTween()
 {
+    currentMode = TupToolPlugin::Edit;
+    emit setMode(currentMode);
+
     activeTweenManagerPanel(false);
 
-    currentMode = TupToolPlugin::Edit;
-    state = Properties;
+    state = ScaleConfigurator::Properties;
 
     settingsPanel->notifySelection(true);
     settingsPanel->setParameters(currentTween);
     activePropertiesPanel(true);
-
-    emit setMode(currentMode);
 }
 
-void Configurator::removeTween()
+void ScaleConfigurator::removeTween()
 {
-    QString name = tweenManager->currentTweenName();
+    QString name =tweenManager->currentTweenName();
     tweenManager->removeItemFromList();
 
     removeTween(name);
 }
 
-void Configurator::removeTween(const QString &name)
+void ScaleConfigurator::removeTween(const QString &name)
 {
     if (tweenManager->listSize() == 0)
         activeButtonsPanel(false);
@@ -230,7 +238,7 @@ void Configurator::removeTween(const QString &name)
     emit clickedRemoveTween(name);
 }
 
-QString Configurator::currentTweenName() const
+QString ScaleConfigurator::currentTweenName() const
 {
     QString oldName = tweenManager->currentTweenName();
     QString newName = settingsPanel->currentTweenName();
@@ -241,55 +249,55 @@ QString Configurator::currentTweenName() const
     return newName;
 }
 
-QString Configurator::getTweenNameFromList() const
+QString ScaleConfigurator::getTweenNameFromList() const
 {
     return tweenManager->currentTweenName();
 }
 
-void Configurator::notifySelection(bool flag)
+void ScaleConfigurator::notifySelection(bool flag)
 {
     settingsPanel->notifySelection(flag);
 }
 
-void Configurator::closeTweenProperties()
+void ScaleConfigurator::closeTweenProperties()
 {
     if (currentMode == TupToolPlugin::Add)
-        tweenManager->removeItemFromList();
+       tweenManager->removeItemFromList();
 
     emit clickedResetInterface();
 
     closeSettingsPanel();
 }
 
-void Configurator::closeSettingsPanel()
+void ScaleConfigurator::closeSettingsPanel()
 {
-    if (state == Properties) {
+    if (state == ScaleConfigurator::Properties) {
         activeTweenManagerPanel(true);
         activePropertiesPanel(false);
         currentMode = TupToolPlugin::View;
-        state = Manager;
+        state = ScaleConfigurator::Manager;
     }
 }
 
-TupToolPlugin::Mode Configurator::mode()
+TupToolPlugin::Mode ScaleConfigurator::mode()
 {
     return currentMode;
 }
 
-void Configurator::applyItem()
+void ScaleConfigurator::applyItem()
 {
-     currentMode = TupToolPlugin::Edit;
-     emit clickedApplyTween();
+    currentMode = TupToolPlugin::Edit;
+    emit clickedApplyTween();
 }
 
-void Configurator::resetUI()
+void ScaleConfigurator::resetUI()
 {
     tweenManager->resetUI();
     closeSettingsPanel();
     settingsPanel->notifySelection(false);
 }
 
-void Configurator::updateTweenData(const QString &name)
+void ScaleConfigurator::updateTweenData(const QString &name)
 {
     emit getTweenData(name);
 }

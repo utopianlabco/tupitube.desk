@@ -32,93 +32,124 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#ifndef CONFIGURATOR_H
-#define CONFIGURATOR_H
+#ifndef MOTIONCONFIGURATOR_H
+#define MOTIONCONFIGURATOR_H
 
-#include "opacitysettings.h"
+#include "tglobal.h"
+#include "tuptoolplugin.h"
+#include "motion_settings.h"
 #include "tweenmanager.h"
 #include "buttonspanel.h"
 #include "tupitemtweener.h"
+#include "timagebutton.h"
 
 #include <QFrame>
 #include <QLabel>
+#include <QLineEdit>
+#include <QListWidget>
+#include <QListWidgetItem>
+#include <QComboBox>
 #include <QBoxLayout>
-#include <QListWidgetItem>
+#include <QHeaderView>
 #include <QGraphicsPathItem>
-#include <QListWidgetItem>
+#include <QMenu>
+#include <QAction>
 
-/**
- * @author Gustav Gonzalez 
-*/
+// class TupItemTweener;
 
-class TUPITUBE_PLUGIN Configurator : public QFrame
+class TUPITUBE_PLUGIN MotionConfigurator : public QFrame
 {
     Q_OBJECT
 
     public:
         enum GuiState { Manager = 1, Properties };
 
-        Configurator(QWidget *parent = nullptr);
-        ~Configurator();
+        MotionConfigurator(QWidget *parent = nullptr);
+        ~MotionConfigurator();
 
         void loadTweenList(QList<QString> tweenList);
+
+        void setPropertiesPanel();
+        void activePropertiesPanel(bool enable);
+
+        void setTweenManagerPanel();
+        void activeTweenManagerPanel(bool enable);
+
+        void setButtonsPanel();
+        void activeButtonsPanel(bool enable);
 
         void initStartCombo(int framesCount, int currentFrame);
         void setStartFrame(int currentIndex);
         int startFrame();
 
+        void updateSteps(const QGraphicsPathItem *path);
+        QString tweenToXml(int currentScene, int currentLayer, int currentFrame, QPointF point, QString &path);
         int totalSteps();
+        QList<QPointF> tweenPoints();
         void activateMode(TupToolPlugin::EditMode mode);
-        void activeButtonsPanel(bool enable);
-        void setCurrentTween(TupItemTweener *currentTween);
-        QString getTweenNameFromList() const;
+        void clearData();
         QString currentTweenName() const;
+        QString getTweenNameFromList() const;
         void notifySelection(bool flag);
         int startComboSize();
         void closeSettingsPanel();
         TupToolPlugin::Mode mode();
         void resetUI();
-        QString tweenToXml(int currentScene, int currentLayer, int currentFrame);
+        void setCurrentTween(TupItemTweener *currentTween);
+
+        void undoSegment(const QPainterPath path);
+        void redoSegment(const QPainterPath path);
+        int stepsTotal();
+        void updateSegments(const QPainterPath path);
+
+        void enableSaveOption(bool flag);
+        int getPathThickness();
+        QColor getPathColor() const;
+
+    public slots:
+        void editTween();
+        void closeTweenProperties();
         
     private slots:
         void applyItem();
         void addTween(const QString &name);
-        void editTween();
         void removeTween();
         void removeTween(const QString &name);
-        void closeTweenProperties();
         void updateTweenData(const QString &name);
         
     signals:
-        void startingPointChanged(int index);
+        void clickedCreatePath();
         void clickedSelect();
-        void clickedDefineProperties();
         void clickedRemoveTween(const QString &name);
         void setMode(TupToolPlugin::Mode mode);
-        void clickedApplyTween();
         void clickedResetInterface();
-        void getTweenData(const QString &name);
+        void clickedApplyTween();
+        void startingFrameChanged(int);
+        void tweenDataRequested(const QString &name);
+        void framesTotalChanged();
+
+        void pathThicknessChanged(int);
+        void pathColorUpdated(const QColor &color);
         
     private:
-        void setPropertiesPanel();
-        void activePropertiesPanel(bool enable);
-        void setTweenManagerPanel();
-        void activeTweenManagerPanel(bool enable);
-        void setButtonsPanel();
-
         QBoxLayout *layout;
         QBoxLayout *settingsLayout;
-        OpacitySettings *settingsPanel;
+        MotionSettings *settingsPanel;
         TweenManager *tweenManager;
         ButtonsPanel *controlPanel;
 
-        TupItemTweener *currentTween;
+        bool selectionDone;
+
+        TImageButton *removeButton;
+        TImageButton *editButton;
+
+        TupToolPlugin::Mode currentMode;
+        GuiState state;
 
         int framesCount;
         int currentFrame;
 
-        TupToolPlugin::Mode currentMode;
-        GuiState state;
+        TupItemTweener *currentTween;
 };
 
 #endif

@@ -1368,6 +1368,15 @@ void MotionTweener::itemResponse(const TupItemResponse *response)
                 && configPanel->currentTweenName() == affectedTweenName;
 
         if (editingAffectedTween) {
+            if (response->getAction() == TupProjectRequest::RemoveTween) {
+                foreach (QGraphicsItem *item, objects) {
+                    if (item) {
+                        item->setFlag(QGraphicsItem::ItemIsSelectable, true);
+                        item->setFlag(QGraphicsItem::ItemIsMovable, true);
+                    }
+                }
+            }
+
             currentTween = nullptr;
             init(scene);
         } else {

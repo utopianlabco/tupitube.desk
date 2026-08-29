@@ -846,6 +846,10 @@ bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
         && response->getPart() == TupProjectRequest::Item
         && response->originalAction() == TupProjectRequest::Move;
 
+    const bool removeTweenUndoOrRedo = undoOrRedo
+        && response->getPart() == TupProjectRequest::Item
+        && response->originalAction() == TupProjectRequest::RemoveTween;
+
     TupProjectRequest request;
     if (editNodesUndoOrRedo) {
         TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
@@ -878,6 +882,50 @@ bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
             QString(),
             QString(),
             itemResponse->getObjectId());
+    } else if (removeTweenUndoOrRedo) {
+        TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+        const bool undo = response->getMode() == TupProjectResponse::Undo;
+
+        if (undo) {
+            const QString tweenSnapshot = itemResponse->getState().trimmed();
+            if (tweenSnapshot.isEmpty()) {
+                qWarning()
+                    << "[TupNetProjectManagerHandler::commandExecuted()]"
+                    << "RemoveTween Undo has no tween snapshot."
+                    << "Command:" << response->getCommandId();
+                return false;
+            }
+
+            request = TupRequestBuilder::createItemRequest(
+                itemResponse->getSceneIndex(),
+                itemResponse->getLayerIndex(),
+                itemResponse->getFrameIndex(),
+                itemResponse->getItemIndex(),
+                itemResponse->position(),
+                itemResponse->spaceMode(),
+                itemResponse->getItemType(),
+                TupProjectRequest::SetTween,
+                tweenSnapshot,
+                QByteArray(),
+                QString(),
+                QString(),
+                itemResponse->getObjectId());
+        } else {
+            request = TupRequestBuilder::createItemRequest(
+                itemResponse->getSceneIndex(),
+                itemResponse->getLayerIndex(),
+                itemResponse->getFrameIndex(),
+                itemResponse->getItemIndex(),
+                itemResponse->position(),
+                itemResponse->spaceMode(),
+                itemResponse->getItemType(),
+                TupProjectRequest::RemoveTween,
+                itemResponse->getArg().toString(),
+                itemResponse->getData(),
+                QString(),
+                QString(),
+                itemResponse->getObjectId());
+        }
     } else if (moveUndoOrRedo) {
         TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
         const QString objectId = itemResponse->getObjectId().trimmed();

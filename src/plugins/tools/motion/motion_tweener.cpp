@@ -1377,7 +1377,10 @@ void MotionTweener::itemResponse(const TupItemResponse *response)
                 && !affectedTweenName.isEmpty()
                 && configPanel->currentTweenName() == affectedTweenName;
 
-        if (response->getAction() == TupProjectRequest::RemoveTween) {
+        const bool tweenWasRemoved = response->getAction() == TupProjectRequest::RemoveTween
+                && response->getMode() != TupProjectResponse::Undo;
+
+        if (tweenWasRemoved) {
             QGraphicsItem *releasedItem = nullptr;
             TupScene *sceneData = scene->currentScene();
             TupLayer *layer = sceneData ? sceneData->layerAt(response->getLayerIndex()) : nullptr;

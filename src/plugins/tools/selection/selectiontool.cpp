@@ -54,6 +54,10 @@
 
 SelectionTool::SelectionTool(): settingsPanel(nullptr), keyboardMovePending(false)
 {
+    keyboardCommitTimer.setSingleShot(true);
+    keyboardCommitTimer.setInterval(180);
+    connect(&keyboardCommitTimer, SIGNAL(timeout()), this, SLOT(commitKeyboardMovement()));
+
     #ifdef TUP_DEBUG
         qDebug() << "[SelectionTool()]";
     #endif
@@ -73,10 +77,11 @@ void SelectionTool::init(TupGraphicsScene *gScene)
 
     scene = gScene;
     targetIsIncluded = false;
-    pressedArrowKeys.clear();
-    keyboardMovePending = false;
 
     clearSelection();
+    pressedArrowKeys.clear();
+    keyboardCommitTimer.stop();
+    keyboardMovePending = false;
     scene->clearSelection();
     nodeZValue = ((BG_LAYERS + 1) * ZLAYER_LIMIT) + (scene->currentScene()->layersCount() * ZLAYER_LIMIT);
     if (scene->getSpaceContext() == TupProject::VECTOR_FG_MODE)
@@ -656,6 +661,7 @@ void SelectionTool::keyPressEvent(QKeyEvent *event)
 
             if (!selectedObjects.isEmpty()) {
                 keyboardMovePending = true;
+                keyboardCommitTimer.start();
                 QTimer::singleShot(0, this, SLOT(syncNodes()));
                 updateItemPosition();
             }
@@ -692,8 +698,8 @@ void SelectionTool::keyReleaseEvent(QKeyEvent *event)
         || (event->key() == Qt::Key_Right) || (event->key() == Qt::Key_Down)) {
         if (!event->isAutoRepeat()) {
             pressedArrowKeys.remove(event->key());
-            if (pressedArrowKeys.isEmpty())
-                commitKeyboardMovement();
+            if (keyboardMovePending)
+                keyboardCommitTimer.start();
         }
         return;
     }
@@ -710,8 +716,15 @@ void SelectionTool::keyReleaseEvent(QKeyEvent *event)
 
 void SelectionTool::commitKeyboardMovement()
 {
+    keyboardCommitTimer.stop();
+
     if (!keyboardMovePending || !scene)
         return;
+
+    if (!pressedArrowKeys.isEmpty()) {
+        keyboardCommitTimer.start();
+        return;
+    }
 
     selectedObjects = scene->selectedItems();
     TupFrame *currentFrameData = getCurrentFrame();
@@ -1545,6 +1558,13 @@ void SelectionTool::selectAll()
 
 void SelectionTool::clearSelection()
 {
+    pressedArrowKeys.clear();
+    if (keyboardMovePending)
+        commitKeyboardMovement();
+
+    keyboardCommitTimer.stop();
+    keyboardMovePending = false;
+
     #ifdef TUP_DEBUG
         qDebug() << "[SelectionTool::clearSelection()]";
     #endif

@@ -47,6 +47,7 @@
 #include <QKeySequence>
 #include <QGraphicsView>
 #include <QSet>
+#include <QTimer>
 
 class TUPITUBE_PLUGIN TextTool : public TupToolPlugin
 {
@@ -111,13 +112,13 @@ class TUPITUBE_PLUGIN TextTool : public TupToolPlugin
 
         void resetTextTransformations();
         void removeManager();
+        void commitKeyboardMovement();
 
     private:
         void setupActions();
         void loadTextColor();
         TupFrame* getCurrentFrame();
         void requestTransformation(QGraphicsItem *item, TupFrame *frame);
-        void commitKeyboardMovement();
         TupFrame* frameAt(int sceneIndex, int layerIndex, int frameIndex);
 
         TupGraphicsScene *scene;
@@ -136,6 +137,7 @@ class TUPITUBE_PLUGIN TextTool : public TupToolPlugin
         QString key;
         QSet<int> pressedArrowKeys;
         bool keyboardMovePending;
+        QTimer keyboardCommitTimer;
 };
 
 #endif

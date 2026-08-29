@@ -121,6 +121,7 @@ class TUPITUBE_PLUGIN SelectionTool : public TupToolPlugin
         void setItemScale(double xFactor, double yFactor);
         void enableProportion(bool flag);
         void resetItemTransformations();
+        void commitKeyboardMovement();
 
     private:
         void setupActions();
@@ -136,7 +137,6 @@ class TUPITUBE_PLUGIN SelectionTool : public TupToolPlugin
         void addNodeManager(QGraphicsItem *item);
         void selectItem(QGraphicsItem *item);
         void updateConvertToPathState();
-        void commitKeyboardMovement();
 
         SelectionSettings *settingsPanel;
         QMap<TAction::ActionId, TAction *> selectActions;
@@ -163,6 +163,7 @@ class TUPITUBE_PLUGIN SelectionTool : public TupToolPlugin
         QString key;
         QSet<int> pressedArrowKeys;
         bool keyboardMovePending;
+        QTimer keyboardCommitTimer;
 
         int currentLayer;
         int currentFrame;

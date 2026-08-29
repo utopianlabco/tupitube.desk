@@ -48,6 +48,10 @@
 
 TextTool::TextTool(): keyboardMovePending(false)
 {
+    keyboardCommitTimer.setSingleShot(true);
+    keyboardCommitTimer.setInterval(180);
+    connect(&keyboardCommitTimer, SIGNAL(timeout()), this, SLOT(commitKeyboardMovement()));
+
     #ifdef TUP_DEBUG
         qDebug() << "[TextTool::TextTool()]";
     #endif
@@ -101,9 +105,10 @@ void TextTool::init(TupGraphicsScene *gScene)
     configPanel->updateMode(TextConfigurator::Add);
 
     scene = gScene;
-    pressedArrowKeys.clear();
-    keyboardMovePending = false;
     clearSelection();
+    pressedArrowKeys.clear();
+    keyboardCommitTimer.stop();
+    keyboardMovePending = false;
     scene->clearSelection();
     nodesManager = nullptr;
 
@@ -540,6 +545,10 @@ void TextTool::sceneResponse(const TupSceneResponse *response)
 void TextTool::removeManager()
 {
     pressedArrowKeys.clear();
+    if (keyboardMovePending)
+        commitKeyboardMovement();
+
+    keyboardCommitTimer.stop();
     keyboardMovePending = false;
     if (nodesManager) {
         disconnect(nodesManager, SIGNAL(positionUpdated(const QPointF&)), this, SLOT(updatePositionRecord(const QPointF&)));
@@ -900,6 +909,7 @@ void TextTool::keyPressEvent(QKeyEvent *event)
                 item->moveBy(0, delta);
 
             keyboardMovePending = true;
+            keyboardCommitTimer.start();
             QTimer::singleShot(0, this, SLOT(syncNodes()));
 
             QPointF point = item->pos();
@@ -921,8 +931,8 @@ void TextTool::keyReleaseEvent(QKeyEvent *event)
         || (event->key() == Qt::Key_Right) || (event->key() == Qt::Key_Down)) {
         if (!event->isAutoRepeat()) {
             pressedArrowKeys.remove(event->key());
-            if (pressedArrowKeys.isEmpty())
-                commitKeyboardMovement();
+            if (keyboardMovePending)
+                keyboardCommitTimer.start();
         }
         return;
     }
@@ -937,8 +947,15 @@ void TextTool::keyReleaseEvent(QKeyEvent *event)
 
 void TextTool::commitKeyboardMovement()
 {
+    keyboardCommitTimer.stop();
+
     if (!keyboardMovePending || !scene || !activeSelection || !nodesManager)
         return;
+
+    if (!pressedArrowKeys.isEmpty()) {
+        keyboardCommitTimer.start();
+        return;
+    }
 
     TupFrame *currentFrameData = getCurrentFrame();
     QGraphicsItem *item = nodesManager->parentItem();
@@ -954,6 +971,10 @@ void TextTool::commitKeyboardMovement()
 void TextTool::clearSelection()
 {
     pressedArrowKeys.clear();
+    if (keyboardMovePending)
+        commitKeyboardMovement();
+
+    keyboardCommitTimer.stop();
     keyboardMovePending = false;
     #ifdef TUP_DEBUG
         qDebug() << "[TextTool::clearSelection()]";

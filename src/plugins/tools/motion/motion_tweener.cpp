@@ -66,6 +66,7 @@ MotionTweener::MotionTweener() : TupToolPlugin()
     isPathInScene = false;
     configPanel = nullptr;
     linePath = nullptr;
+    guideLine = nullptr;
     nodesGroup = nullptr;
     currentTween = nullptr;
     localTweenOperation = false;
@@ -89,17 +90,27 @@ void MotionTweener::init(TupGraphicsScene *gScene)
 
     doList.clear();
     undoList.clear();
-    dots.clear();
 
-    if (isPathInScene) {
-        if (linePath) {
-            gScene->removeItem(linePath);
-            delete linePath;
-            linePath = nullptr;
-        }
-
-        isPathInScene = false;
+    if (nodesGroup) {
+        nodesGroup->clear();
+        nodesGroup = nullptr;
     }
+
+    removeTweenPoints();
+
+    if (guideLine) {
+        gScene->removeItem(guideLine);
+        delete guideLine;
+        guideLine = nullptr;
+    }
+
+    if (linePath) {
+        gScene->removeItem(linePath);
+        delete linePath;
+        linePath = nullptr;
+    }
+
+    isPathInScene = false;
 
     scene = gScene;
     lineStraightMode = false;

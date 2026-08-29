@@ -313,6 +313,7 @@ TupNetProjectManagerHandler::TupNetProjectManagerHandler(QObject *parent) : TupA
     lastSavedProjectRevision = -1;
     lastObservedEventIndex = -1;
     recoverySnapshotLoaded = false;
+    authoritativeSnapshotRecoveryRequired = false;
     snapshotRecoveryRevision = -1;
     snapshotReconciliationCommands.clear();
     
@@ -1042,6 +1043,7 @@ void TupNetProjectManagerHandler::initialize(TupProjectManagerParams *parameters
     reconnecting = false;
     reconnectAttempts = 0;
     collaborationState = CollaborationState::Disconnected;
+    authoritativeSnapshotRecoveryRequired = false;
     snapshotRecoveryRevision = -1;
     snapshotReconciliationCommands.clear();
 
@@ -1271,7 +1273,7 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                        if (!currentProjectId.isEmpty()) {
                            if (recoveryWatchdogTimer)
                                recoveryWatchdogTimer->start(RECOVERY_SYNC_TIMEOUT_MS);
-                           requestProjectSync(false);
+                           requestProjectSync(authoritativeSnapshotRecoveryRequired);
                        } else {
                            qWarning() << "[TupNetProjectManagerHandler::handlePackage()] Cannot restore collaborative project: project identity is unknown.";
                            reconnecting = false;
@@ -1514,6 +1516,7 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
         }
 
         QString status;
+        bool forceAuthoritativeSnapshotRecovery = false;
         const QString pendingCommandXml = commandTracker
             ? commandTracker->commandXml(parser.commandId())
             : QString();
@@ -1710,6 +1713,7 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
 
             case TupCommandResultParser::Rejected:
                 status = QStringLiteral("rejected");
+                forceAuthoritativeSnapshotRecovery = true;
                 qWarning()
                     << "[TupNetProjectManagerHandler::handlePackage()]"
                     << "Command rejected:"
@@ -1793,6 +1797,7 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
 
             case TupCommandResultParser::Failed:
                 status = QStringLiteral("failed");
+                forceAuthoritativeSnapshotRecovery = true;
                 qWarning()
                     << "[TupNetProjectManagerHandler::handlePackage()]"
                     << "Command failed:"
@@ -1879,6 +1884,9 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
         snapshotReconciliationCommands.remove(parser.commandId());
         if (snapshotReconciliationCommands.isEmpty())
             snapshotRecoveryRevision = -1;
+
+        if (forceAuthoritativeSnapshotRecovery)
+            beginAuthoritativeCommandResultRecovery(parser.commandId(), status);
 
         emit commandResultReceived(
             parser.commandId(),
@@ -2176,6 +2184,60 @@ void TupNetProjectManagerHandler::handleProjectEvent(const QString &package)
     updateAuthoritativeModifiedState();
 }
 
+void TupNetProjectManagerHandler::beginAuthoritativeCommandResultRecovery(
+    const QString &commandId, const QString &status)
+{
+    authoritativeSnapshotRecoveryRequired = true;
+
+    if (collaborationState == CollaborationState::Recovering) {
+#ifdef TUP_DEBUG
+        qWarning()
+            << "[TupNetProjectManagerHandler::beginAuthoritativeCommandResultRecovery()]"
+            << "Authoritative snapshot recovery required after command result;"
+            << "current recovery will be escalated."
+            << "Command:" << commandId
+            << "Status:" << status;
+#endif
+        return;
+    }
+
+    if (collaborationState != CollaborationState::Connected
+            || !projectIsOpen || !socket
+            || socket->state() != QAbstractSocket::ConnectedState) {
+        qWarning()
+            << "[TupNetProjectManagerHandler::beginAuthoritativeCommandResultRecovery()]"
+            << "Cannot start authoritative command-result recovery in the current state."
+            << "Command:" << commandId
+            << "Status:" << status;
+        return;
+    }
+
+    collaborationState = CollaborationState::Recovering;
+    recoverySnapshotLoaded = false;
+    stopHeartbeat();
+
+    if (commandRetryTimer)
+        commandRetryTimer->stop();
+
+    if (recoveryWatchdogTimer)
+        recoveryWatchdogTimer->start(RECOVERY_SYNC_TIMEOUT_MS);
+
+#ifdef TUP_DEBUG
+    qWarning()
+        << "[TupNetProjectManagerHandler::beginAuthoritativeCommandResultRecovery()]"
+        << "Starting forced authoritative snapshot recovery after command result."
+        << "Command:" << commandId
+        << "Status:" << status
+        << "Revision:" << lastObservedProjectRevision
+        << "Index:" << lastObservedEventIndex
+        << "Remaining pending commands:"
+        << (commandTracker ? commandTracker->pendingCount() : 0);
+#endif
+
+    emit collaborationRecoveryStarted();
+    requestProjectSync(true);
+}
+
 void TupNetProjectManagerHandler::beginProjectEventGapRecovery()
 {
     // If recovery is already active, the current sync request owns the repair.
@@ -2339,6 +2401,17 @@ void TupNetProjectManagerHandler::handleProjectSyncResponse(const QString &packa
     lastSavedProjectRevision = savedRevision;
 
     if (mode == QStringLiteral("events")) {
+        if (authoritativeSnapshotRecoveryRequired) {
+#ifdef TUP_DEBUG
+            qWarning()
+                << "[TupNetProjectManagerHandler::handleProjectSyncResponse()]"
+                << "Event catch-up completed while an authoritative snapshot is required;"
+                << "escalating recovery.";
+#endif
+            requestProjectSync(true);
+            return;
+        }
+
         if (lastObservedProjectRevision != toRevision) {
             qWarning() << "[TupNetProjectManagerHandler::handleProjectSyncResponse()] Event catch-up incomplete."
                        << "Observed:" << lastObservedProjectRevision
@@ -2365,6 +2438,7 @@ void TupNetProjectManagerHandler::handleProjectSyncResponse(const QString &packa
         lastObservedProjectRevision = toRevision;
         lastObservedEventIndex = -1;
         recoverySnapshotLoaded = false;
+        authoritativeSnapshotRecoveryRequired = false;
 
         // The snapshot replaces the entire local project state, including any
         // optimistic mutations that were still awaiting an authoritative result.
@@ -3352,6 +3426,7 @@ void TupNetProjectManagerHandler::closeConnection()
     pendingGroupRestoreRequests.clear();
     editNodesRestoreContexts.clear();
     transformRestoreContexts.clear();
+    authoritativeSnapshotRecoveryRequired = false;
     snapshotRecoveryRevision = -1;
     snapshotReconciliationCommands.clear();
 

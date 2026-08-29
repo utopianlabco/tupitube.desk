@@ -294,6 +294,9 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
             const QString &commandId,
             const QString &authoritativePayload);
         void handleProjectEvent(const QString &package);
+        void beginAuthoritativeCommandResultRecovery(
+            const QString &commandId,
+            const QString &status);
         void beginProjectEventGapRecovery();
         void requestProjectSync(bool forceSnapshot = false);
         void handleProjectSyncResponse(const QString &package);
@@ -339,6 +342,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         qint64 lastSavedProjectRevision;
         int lastObservedEventIndex;
         bool recoverySnapshotLoaded;
+        bool authoritativeSnapshotRecoveryRequired;
         qint64 snapshotRecoveryRevision;
         QSet<QString> snapshotReconciliationCommands;
         QHash<QString, QString> provisionalCreatedObjectIds;

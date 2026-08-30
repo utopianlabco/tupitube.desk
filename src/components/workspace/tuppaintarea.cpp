@@ -1407,11 +1407,13 @@ void TupPaintArea::requestItemMovement(QAction *action)
 
 void TupPaintArea::prepareRecoverySnapshot()
 {
-    
-
     TupGraphicsScene *guiScene = graphicsScene();
     if (!guiScene)
         return;
+
+    recoverySceneIndex = guiScene->currentSceneIndex();
+    recoveryLayerIndex = guiScene->currentLayerIndex();
+    recoveryFrameIndex = guiScene->currentFrameIndex();
 
     // The authoritative snapshot replaces TupScene/TupLayer/TupFrame objects.
     // Detach the graphics scene before those model objects are deleted so no
@@ -1423,8 +1425,6 @@ void TupPaintArea::prepareRecoverySnapshot()
 
 void TupPaintArea::completeRecoverySnapshot()
 {
-    
-
     TupGraphicsScene *guiScene = graphicsScene();
     if (!guiScene)
         return;
@@ -1435,13 +1435,22 @@ void TupPaintArea::completeRecoverySnapshot()
         return;
     }
 
+    const int sceneIndex = qBound(0, recoverySceneIndex, project->scenesCount() - 1);
+
     // Bind the reconstructed model without painting it yet. The active tool
     // still owns state from the model that was replaced and must be rebound
     // by TupDocumentView before the authoritative frame is rendered.
-    setCurrentScene(0, false);
-    TupScene *scene = project->sceneAt(0);
-    if (scene && scene->layersCount() > 0)
-        guiScene->setCurrentFrame(0, 0);
+    setCurrentScene(sceneIndex, false);
+
+    TupScene *scene = project->sceneAt(sceneIndex);
+    if (scene && scene->layersCount() > 0) {
+        const int layerIndex = qBound(0, recoveryLayerIndex, scene->layersCount() - 1);
+        TupLayer *layer = scene->layerAt(layerIndex);
+        const int frameIndex = (layer && layer->framesCount() > 0)
+            ? qBound(0, recoveryFrameIndex, layer->framesCount() - 1)
+            : 0;
+        guiScene->setCurrentFrame(layerIndex, frameIndex);
+    }
 
     viewport()->update();
 }

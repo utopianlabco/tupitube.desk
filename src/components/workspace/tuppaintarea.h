@@ -207,6 +207,10 @@ class TUPITUBE_EXPORT TupPaintArea : public TupPaintAreaBase, public TupAbstract
 
         int screenWidth;
         int screenHeight;
+
+        int recoverySceneIndex = 0;
+        int recoveryLayerIndex = 0;
+        int recoveryFrameIndex = 0;
 };
 
 #endif

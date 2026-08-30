@@ -1654,10 +1654,23 @@ void TupDocumentView::prepareRecoverySnapshot()
 
 void TupDocumentView::completeRecoverySnapshot()
 {
-    
+    if (!paintArea)
+        return;
 
-    if (paintArea)
-        paintArea->completeRecoverySnapshot();
+    // First bind the fully reconstructed authoritative model without drawing.
+    // Tool plugins may retain pointers/state tied to the replaced scene/frame,
+    // so reinitialize the active tool against the new model before rendering.
+    paintArea->completeRecoverySnapshot();
+
+    TupGraphicsScene *scene = paintArea->graphicsScene();
+    if (!scene || !scene->currentScene())
+        return;
+
+    if (currentTool)
+        currentTool->init(scene);
+
+    // P-09 recovery lifecycle: model installed -> tool rebound -> one render.
+    paintArea->updatePaintArea();
 }
 
 void TupDocumentView::closeInterface()

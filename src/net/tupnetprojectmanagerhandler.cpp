@@ -1550,6 +1550,7 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
         switch (parser.status()) {
             case TupCommandResultParser::Committed: {
                 status = QStringLiteral("committed");
+
                 bool convertAuthoritativeApplied = !isPendingConvertRestore;
                 bool editNodesAuthoritativeApplied = !isPendingEditNodesRestore;
                 bool transformAuthoritativeApplied = !isPendingTransformRestore;

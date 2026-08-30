@@ -2224,14 +2224,20 @@ void TupMainWindow::completeRecoverySnapshotUi()
 
     // Rebind only after TupFileManager::load() has reconstructed the complete
     // project. This prevents stale pointers and partial scene/layer state.
-    if (animationTab) {
-        animationTab->completeRecoverySnapshot();
-        connectWidgetToManager(animationTab);
-    }
-
+    //
+    // Camera rendering uses TupGraphicObject::item() in its own QGraphicsScene.
+    // A QGraphicsItem can belong to only one scene, so camera recovery must run
+    // before the editor's final recovery render. The animation view is restored
+    // last so it deterministically owns the live editable items when recovery
+    // finishes.
     if (cameraWidget) {
         cameraWidget->completeRecoverySnapshot();
         connectWidgetToManager(cameraWidget);
+    }
+
+    if (animationTab) {
+        animationTab->completeRecoverySnapshot();
+        connectWidgetToManager(animationTab);
     }
 
     recoverySnapshotConsumersSuspended = false;

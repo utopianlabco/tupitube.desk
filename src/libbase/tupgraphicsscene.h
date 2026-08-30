@@ -64,7 +64,7 @@ class TUPITUBE_EXPORT TupGraphicsScene : public QGraphicsScene
 
         void setCurrentFrame(int layer, int frame);
         
-        void setCurrentScene(TupScene *currentScene);
+        void setCurrentScene(TupScene *currentScene, bool render = true);
         void drawCurrentPhotogram();
         
         void drawPhotogram(int photogram, bool drawContext, bool drawForeground = true);

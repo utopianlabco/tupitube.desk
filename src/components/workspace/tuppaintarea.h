@@ -83,7 +83,7 @@ class TUPITUBE_EXPORT TupPaintArea : public TupPaintAreaBase, public TupAbstract
         TupPaintArea(TupProject *project, QWidget *parent = nullptr);
         ~TupPaintArea();
 
-        void setCurrentScene(int index);
+        void setCurrentScene(int index, bool render = true);
         void setCurrentTool(TAction::ActionId tool);
         void paintBackground();
         void paintForeground();

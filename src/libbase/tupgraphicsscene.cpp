@@ -1492,7 +1492,7 @@ QString TupGraphicsScene::objectId(QGraphicsItem *item) const
     return object->objectId();
 }
 
-void TupGraphicsScene::setCurrentScene(TupScene *scene)
+void TupGraphicsScene::setCurrentScene(TupScene *scene, bool render)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupGraphicsScene::setCurrentScene()]";
@@ -1529,13 +1529,15 @@ void TupGraphicsScene::setCurrentScene(TupScene *scene)
     if (!background->rasterDynamicBgIsNull())
         rasterDynamicBg->setPixmap(background->rasterDynamicExpandedImage());
 
-    if (spaceContext == TupProject::FRAMES_MODE) {
-        drawCurrentPhotogram();
-    } else if (spaceContext == TupProject::VECTOR_FG_MODE) {
-        setVectorFgEnvironment();
-    } else {
-        clearWorkSpace();
-        drawSceneBackground(framePosition.frame);
+    if (render) {
+        if (spaceContext == TupProject::FRAMES_MODE) {
+            drawCurrentPhotogram();
+        } else if (spaceContext == TupProject::VECTOR_FG_MODE) {
+            setVectorFgEnvironment();
+        } else {
+            clearWorkSpace();
+            drawSceneBackground(framePosition.frame);
+        }
     }
 }
 

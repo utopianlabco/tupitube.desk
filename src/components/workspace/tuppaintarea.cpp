@@ -98,7 +98,7 @@ TupPaintArea::~TupPaintArea()
     delete graphicsScene();
 }
 
-void TupPaintArea::setCurrentScene(int index)
+void TupPaintArea::setCurrentScene(int index, bool render)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupPaintArea::setCurrentScene()] - Scene index ->" << index;
@@ -108,7 +108,7 @@ void TupPaintArea::setCurrentScene(int index)
         TupScene *scene = project->sceneAt(index);
         if (scene) {
             globalSceneIndex = index;
-            graphicsScene()->setCurrentScene(scene);
+            graphicsScene()->setCurrentScene(scene, render);
             #ifdef TUP_DEBUG
                 qDebug() << "[TupPaintArea::setCurrentScene()] - scene->getBgColor() ->" << scene->getBgColor().name();
             #endif
@@ -1435,12 +1435,13 @@ void TupPaintArea::completeRecoverySnapshot()
         return;
     }
 
-    setCurrentScene(0);
+    // Bind the reconstructed model without painting it yet. The active tool
+    // still owns state from the model that was replaced and must be rebound
+    // by TupDocumentView before the authoritative frame is rendered.
+    setCurrentScene(0, false);
     TupScene *scene = project->sceneAt(0);
-    if (scene && scene->layersCount() > 0) {
+    if (scene && scene->layersCount() > 0)
         guiScene->setCurrentFrame(0, 0);
-        updatePaintArea();
-    }
 
     viewport()->update();
 }

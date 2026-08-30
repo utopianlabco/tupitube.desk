@@ -534,6 +534,34 @@ void TupExposureSheet::setCurrentScene(int sceneIndex)
     }
 }
 
+void TupExposureSheet::restoreRecoverySelection(int sceneIndex, int layerIndex, int frameIndex)
+{
+    if (!scenesContainer || !scenesContainer->isExposureTableIndexValid(sceneIndex))
+        return;
+
+    setCurrentScene(sceneIndex);
+    TupExposureTable *table = scenesContainer->getExposureTable(sceneIndex);
+    if (!table || layerIndex < 0 || layerIndex >= table->layersCount())
+        return;
+
+    const int lastFrame = table->framesCountAtLayer(layerIndex) - 1;
+    if (lastFrame < 0)
+        return;
+
+    frameIndex = qBound(0, frameIndex, lastFrame);
+    const QString selection = QString::number(layerIndex) + "," + QString::number(layerIndex) + ","
+                              + QString::number(frameIndex) + "," + QString::number(frameIndex);
+
+    table->blockSignals(true);
+    table->selectFrame(layerIndex, frameIndex, selection);
+    table->blockSignals(false);
+    table->updateSceneView(layerIndex, frameIndex);
+
+    previousScene = sceneIndex;
+    previousLayer = layerIndex;
+    updateLayerOpacity(sceneIndex, layerIndex);
+}
+
 void TupExposureSheet::requestChangeScene(int sceneIndex)
 {
     #ifdef TUP_DEBUG

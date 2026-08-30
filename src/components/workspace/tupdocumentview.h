@@ -90,6 +90,8 @@ class Q_DECL_EXPORT TupDocumentView: public QMainWindow
         TupProject *currentProject();
         int currentFramesTotal();
         int currentSceneIndex();
+        int currentLayerIndex();
+        int currentFrameIndex();
         void setZoomPercent(const QString &percent);
         QSize workSpaceSize() const;
         void updateUsersOnLine(const QString &login, int state);

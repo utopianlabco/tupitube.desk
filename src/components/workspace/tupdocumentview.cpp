@@ -1936,6 +1936,22 @@ int TupDocumentView::currentSceneIndex()
     return -1; 
 }
 
+int TupDocumentView::currentLayerIndex()
+{
+    if (paintArea)
+        return paintArea->currentLayerIndex();
+
+    return -1;
+}
+
+int TupDocumentView::currentFrameIndex()
+{
+    if (paintArea)
+        return paintArea->currentFrameIndex();
+
+    return -1;
+}
+
 void TupDocumentView::updateBgColor(const QColor color)
 {
    if (!isNetworked) {

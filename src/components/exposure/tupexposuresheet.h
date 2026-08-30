@@ -64,6 +64,7 @@ class TUPITUBE_EXPORT TupExposureSheet : public TupModuleWidgetBase
         void updateLayerOpacity(int sceneIndex, int layerIndex);
         double getLayerOpacity(int sceneIndex, int layerIndex);
         void initLayerVisibility();
+        void restoreRecoverySelection(int sceneIndex, int layerIndex, int frameIndex);
 
     private:
         void createMenuForAFrame();

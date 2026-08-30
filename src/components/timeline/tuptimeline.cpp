@@ -208,6 +208,36 @@ void TupTimeLine::closeAllScenes()
     scenesContainer->removeAllScenes();
 }
 
+void TupTimeLine::restoreRecoverySelection(int sceneIndex, int layerIndex, int frameIndex)
+{
+    if (!scenesContainer || sceneIndex < 0 || sceneIndex >= scenesContainer->count())
+        return;
+
+    TupTimeLineTable *table = framesTable(sceneIndex);
+    if (!table || layerIndex < 0 || layerIndex >= table->layersCount())
+        return;
+
+    const int lastFrame = table->lastFrameByLayer(layerIndex);
+    if (lastFrame < 0)
+        return;
+
+    frameIndex = qBound(0, frameIndex, lastFrame);
+    const QString selection = QString::number(layerIndex) + "," + QString::number(layerIndex) + ","
+                              + QString::number(frameIndex) + "," + QString::number(frameIndex);
+
+    scenesContainer->blockSignals(true);
+    scenesContainer->setCurrentIndex(sceneIndex);
+    scenesContainer->blockSignals(false);
+
+    currentTable = table;
+    table->blockSignals(true);
+    table->selectFrame(layerIndex, frameIndex, selection);
+    table->blockSignals(false);
+
+    selectedLayer = layerIndex;
+    updateLayerOpacity(sceneIndex, layerIndex);
+}
+
 void TupTimeLine::sceneResponse(TupSceneResponse *response)
 {
     #ifdef TUP_DEBUG

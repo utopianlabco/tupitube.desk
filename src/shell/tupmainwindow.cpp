@@ -2237,6 +2237,15 @@ void TupMainWindow::completeRecoverySnapshotUi()
 
     if (animationTab) {
         animationTab->completeRecoverySnapshot();
+
+        const int sceneIndex = animationTab->currentSceneIndex();
+        const int layerIndex = animationTab->currentLayerIndex();
+        const int frameIndex = animationTab->currentFrameIndex();
+        if (m_exposureSheet)
+            m_exposureSheet->restoreRecoverySelection(sceneIndex, layerIndex, frameIndex);
+        if (m_timeLine)
+            m_timeLine->restoreRecoverySelection(sceneIndex, layerIndex, frameIndex);
+
         connectWidgetToManager(animationTab);
     }
 

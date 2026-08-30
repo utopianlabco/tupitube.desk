@@ -2241,10 +2241,19 @@ void TupMainWindow::completeRecoverySnapshotUi()
         const int sceneIndex = animationTab->currentSceneIndex();
         const int layerIndex = animationTab->currentLayerIndex();
         const int frameIndex = animationTab->currentFrameIndex();
-        if (m_exposureSheet)
+
+        // Snapshot reconstruction repopulates the project model directly, so
+        // historical item-added responses are not replayed to refresh derived
+        // frame occupancy decorations. Recompute them from the authoritative
+        // reconstructed model before restoring the local UI selection.
+        if (m_exposureSheet) {
+            m_exposureSheet->updateFramesState();
             m_exposureSheet->restoreRecoverySelection(sceneIndex, layerIndex, frameIndex);
-        if (m_timeLine)
+        }
+        if (m_timeLine) {
+            m_timeLine->updateFramesState();
             m_timeLine->restoreRecoverySelection(sceneIndex, layerIndex, frameIndex);
+        }
 
         connectWidgetToManager(animationTab);
     }

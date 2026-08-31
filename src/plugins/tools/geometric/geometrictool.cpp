@@ -595,19 +595,65 @@ void GeometricTool::release(const TupInputDeviceInformation *input, TupBrushMana
     QDomDocument doc;
     QPointF point;
 
+    auto discardDegenerateItem = [](QGraphicsItem *item) {
+        if (!item)
+            return;
+
+        QGraphicsScene *itemScene = item->scene();
+        if (itemScene)
+            itemScene->removeItem(item);
+        delete item;
+    };
+
     if (toolId() == TAction::Rectangle) {
+        const QRectF geometry = rect->rect().normalized();
+        if (qFuzzyIsNull(geometry.width()) || qFuzzyIsNull(geometry.height())) {
+            discardDegenerateItem(rect);
+            rect = nullptr;
+            added = false;
+            return;
+        }
+
         rect->setBrush(fillBrush);
         doc.appendChild(dynamic_cast<TupAbstractSerializable *>(rect)->toXml(doc));
         point = rect->pos();
     } else if (toolId() == TAction::Ellipse) {
+        const QRectF geometry = ellipse->rect().normalized();
+        if (qFuzzyIsNull(geometry.width()) || qFuzzyIsNull(geometry.height())) {
+            discardDegenerateItem(ellipse);
+            ellipse = nullptr;
+            added = false;
+            return;
+        }
+
         ellipse->setBrush(fillBrush);
         doc.appendChild(dynamic_cast<TupAbstractSerializable *>(ellipse)->toXml(doc));
         point = QPoint(0, 0);
     } else if (toolId() == TAction::Triangle) {
+        const QRectF geometry = triangle->path().boundingRect().normalized();
+        if (triangle->path().isEmpty()
+                || qFuzzyIsNull(geometry.width())
+                || qFuzzyIsNull(geometry.height())) {
+            discardDegenerateItem(triangle);
+            triangle = nullptr;
+            added = false;
+            return;
+        }
+
         triangle->setBrush(fillBrush);
         doc.appendChild(dynamic_cast<TupAbstractSerializable *>(triangle)->toXml(doc));
         point = triangle->pos();        
     } else if (toolId() == TAction::Hexagon) {
+        const QRectF geometry = hexagon->path().boundingRect().normalized();
+        if (hexagon->path().isEmpty()
+                || qFuzzyIsNull(geometry.width())
+                || qFuzzyIsNull(geometry.height())) {
+            discardDegenerateItem(hexagon);
+            hexagon = nullptr;
+            added = false;
+            return;
+        }
+
         hexagon->setBrush(fillBrush);
         doc.appendChild(dynamic_cast<TupAbstractSerializable *>(hexagon)->toXml(doc));
         point = hexagon->pos();
@@ -750,6 +796,24 @@ void GeometricTool::endItem()
     #endif
 
     if (linePath) {
+        const QPainterPath path = linePath->path();
+        if (path.elementCount() <= 1) {
+            QGraphicsScene *itemScene = linePath->scene();
+            if (itemScene)
+                itemScene->removeItem(linePath);
+            delete linePath;
+            linePath = nullptr;
+
+            if (guideLine) {
+                QGraphicsScene *guideScene = guideLine->scene();
+                if (guideScene)
+                    guideScene->removeItem(guideLine);
+                delete guideLine;
+                guideLine = nullptr;
+            }
+            return;
+        }
+
         linePath->setBrush(fillBrush);
         QDomDocument doc;
         doc.appendChild(dynamic_cast<TupAbstractSerializable *>(linePath)->toXml(doc));

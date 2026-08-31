@@ -57,6 +57,47 @@
 #include <QDomDocument>
 #include <algorithm>
 
+namespace
+{
+    bool isDegeneratePrimitiveCreation(const QString &xml)
+    {
+        QDomDocument document;
+        if (!document.setContent(xml))
+            return false;
+
+        const QDomElement root = document.documentElement();
+        if (root.tagName() == QStringLiteral("rect")) {
+            bool widthOk = false;
+            bool heightOk = false;
+            const qreal width = root.attribute(QStringLiteral("width")).toDouble(&widthOk);
+            const qreal height = root.attribute(QStringLiteral("height")).toDouble(&heightOk);
+            return widthOk && heightOk
+                && (qFuzzyIsNull(width) || qFuzzyIsNull(height));
+        }
+
+        if (root.tagName() == QStringLiteral("ellipse")) {
+            bool rxOk = false;
+            bool ryOk = false;
+            const qreal rx = root.attribute(QStringLiteral("rx")).toDouble(&rxOk);
+            const qreal ry = root.attribute(QStringLiteral("ry")).toDouble(&ryOk);
+            return rxOk && ryOk
+                && (qFuzzyIsNull(rx) || qFuzzyIsNull(ry));
+        }
+
+        if (root.tagName() == QStringLiteral("path")) {
+            const QString route = root.attribute(QStringLiteral("coords")).trimmed();
+            if (route.isEmpty())
+                return true;
+
+            QPainterPath path;
+            TupSvg2Qt::svgpath2qtpath(route, path);
+            return path.elementCount() <= 1;
+        }
+
+        return false;
+    }
+}
+
 bool TupCommandExecutor::createItem(TupItemResponse *response)
 {
     #ifdef TUP_DEBUG
@@ -71,6 +112,15 @@ bool TupCommandExecutor::createItem(TupItemResponse *response)
 
     TupProject::Mode mode = response->spaceMode();
     QString xml = response->getArg().toString();
+
+    if (response->getMode() == TupProjectResponse::Do
+            && type != TupLibraryObject::Svg
+            && isDegeneratePrimitiveCreation(xml)) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupCommandExecutor::createItem()] - Rejecting degenerate primitive creation";
+        #endif
+        return false;
+    }
 
     // Validate indices for FRAMES_MODE
     if (mode == TupProject::FRAMES_MODE && !validateIndices(sceneIndex, layerIndex, frameIndex))

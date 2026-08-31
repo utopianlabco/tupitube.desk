@@ -92,20 +92,22 @@ void MotionTweener::init(TupGraphicsScene *gScene)
     undoList.clear();
 
     if (nodesGroup) {
-        nodesGroup->clear();
+        delete nodesGroup;
         nodesGroup = nullptr;
     }
 
     removeTweenPoints();
 
     if (guideLine) {
-        gScene->removeItem(guideLine);
+        if (guideLine->scene())
+            guideLine->scene()->removeItem(guideLine);
         delete guideLine;
         guideLine = nullptr;
     }
 
     if (linePath) {
-        gScene->removeItem(linePath);
+        if (linePath->scene())
+            linePath->scene()->removeItem(linePath);
         delete linePath;
         linePath = nullptr;
     }
@@ -460,11 +462,12 @@ void MotionTweener::resetGUI()
         disableSelection();
     } else if (editMode == TupToolPlugin::Properties) {
         if (linePath) {
-            scene->removeItem(linePath);
+            if (linePath->scene())
+                linePath->scene()->removeItem(linePath);
             removeTweenPoints();
             isPathInScene = false;
             if (nodesGroup) {
-                nodesGroup->clear();
+                delete nodesGroup;
                 nodesGroup = nullptr;
             }
 
@@ -507,13 +510,15 @@ void MotionTweener::setTweenPath()
 
     if (linePath) {
         pathOffset = QPointF(0, 0);
-        if (!isPathInScene) {
+        if (linePath->scene() != scene) {
+            if (linePath->scene())
+                linePath->scene()->removeItem(linePath);
             scene->addItem(linePath);
-            isPathInScene = true;
         }
+        isPathInScene = linePath->scene() == scene;
 
         if (nodesGroup) {
-            disconnect(nodesGroup, SIGNAL(nodeReleased()), this, SLOT(updatePath()));
+            delete nodesGroup;
             nodesGroup = nullptr;
         }
         nodesGroup = new TNodeGroup(linePath, scene, TNodeGroup::MotionTween, baseZValue);
@@ -558,10 +563,11 @@ void MotionTweener::setSelection()
 
     if (linePath) {
         removeTweenPoints();
-        scene->removeItem(linePath);
+        if (linePath->scene())
+            linePath->scene()->removeItem(linePath);
         isPathInScene = false;
         if (nodesGroup) {
-            nodesGroup->clear();
+            delete nodesGroup;
             nodesGroup = nullptr;
         }
     }
@@ -650,7 +656,7 @@ void MotionTweener::applyReset()
 
     if (mode == TupToolPlugin::Edit && editMode == TupToolPlugin::Properties) {
         if (nodesGroup) {
-            nodesGroup->clear();
+            delete nodesGroup;
             nodesGroup = nullptr;
         }
     }
@@ -663,8 +669,10 @@ void MotionTweener::applyReset()
 
     if (linePath) {
         removeTweenPoints();
-        scene->removeItem(linePath);
+        if (linePath->scene())
+            linePath->scene()->removeItem(linePath);
         isPathInScene = false;
+        delete linePath;
         linePath = nullptr;
     }
 
@@ -1442,10 +1450,11 @@ void MotionTweener::itemResponse(const TupItemResponse *response)
                 if (!doList.isEmpty()) {
                     undoList << doList.last();
                     doList.removeLast();
-                    scene->removeItem(linePath);
+                    if (linePath && linePath->scene())
+                        linePath->scene()->removeItem(linePath);
 
                     if (nodesGroup) {
-                        nodesGroup->clear();
+                        delete nodesGroup;
                         nodesGroup = nullptr;
                     }
                     removeTweenPoints();
@@ -1502,12 +1511,12 @@ void MotionTweener::itemResponse(const TupItemResponse *response)
                 if (!undoList.isEmpty()) {
                     doList << undoList.last();
                     undoList.removeLast();
-                    scene->removeItem(linePath);
+                    if (linePath && linePath->scene())
+                        linePath->scene()->removeItem(linePath);
 
                     if (nodesGroup) {
-                        nodesGroup->clear();
+                        delete nodesGroup;
                         nodesGroup = nullptr;
-                        // disconnect(nodesGroup, SIGNAL(nodeReleased()), this, SLOT(updatePath()));
                     }
                     removeTweenPoints();
 
@@ -1561,8 +1570,14 @@ void MotionTweener::removeTweenPoints()
     #endif
 
     int total = dots.size();
-    for (int i=0; i<total; i++)
-         scene->removeItem(dots.at(i));
+    for (int i=0; i<total; i++) {
+        TupEllipseItem *dot = dots.at(i);
+        if (!dot)
+            continue;
+        if (dot->scene())
+            dot->scene()->removeItem(dot);
+        delete dot;
+    }
     dots.clear();
 }
 
@@ -1659,8 +1674,8 @@ void MotionTweener::keyReleaseEvent(QKeyEvent *event)
     if (editMode == TupToolPlugin::Properties) {
         if (event->key() == Qt::Key_Control) {
             lineStraightMode = false;
-            if (guideLine)
-                scene->removeItem(guideLine);
+            if (guideLine && guideLine->scene())
+                guideLine->scene()->removeItem(guideLine);
         }
     }
 }

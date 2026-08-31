@@ -1502,17 +1502,23 @@ void TupExposureSheet::itemResponse(TupItemResponse *response)
         qDebug() << "[TupExposureSheet::itemResponse()] - action ->" << response->getAction();
     #endif
 
+    if (response->spaceMode() != TupProject::FRAMES_MODE)
+        return;
+
     switch (response->getAction()) {
         case TupProjectRequest::Add:
-            {
-                if (response->spaceMode() == TupProject::FRAMES_MODE && response->getItemIndex() == 0)
-                    currentExposureTable->updateFrameState(response->getLayerIndex(), response->getFrameIndex(), TupExposureTable::Used);
-            }
-        break;
         case TupProjectRequest::Remove:
             {
-                if (response->spaceMode() == TupProject::FRAMES_MODE && response->frameIsEmpty())
-                    currentExposureTable->updateFrameState(response->getLayerIndex(), response->getFrameIndex(), TupExposureTable::Empty);
+                int sceneIndex = response->getSceneIndex();
+                TupExposureTable *table = scenesContainer->getExposureTable(sceneIndex);
+                TupScene *scene = project->sceneAt(sceneIndex);
+                if (table && scene) {
+                    TupExposureTable::FrameType state = TupExposureTable::Used;
+                    if (scene->frameIsEmpty(response->getLayerIndex(), response->getFrameIndex()))
+                        state = TupExposureTable::Empty;
+
+                    table->updateFrameState(response->getLayerIndex(), response->getFrameIndex(), state);
+                }
             }
         break;
         case TupProjectRequest::SetTween:

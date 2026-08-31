@@ -700,21 +700,11 @@ void TupTimeLine::itemResponse(TupItemResponse *response)
 
         switch (response->getAction()) {
             case TupProjectRequest::Add:
-              {
-                  TupScene *scene = project->sceneAt(sceneIndex);
-                  if (scene) {
-                    if (!scene->frameIsEmpty(layerIndex, frameIndex))
-                        framesTable->setAttribute(layerIndex, frameIndex, TupTimeLineTableItem::IsEmpty, false);
-                  }
-              }
-            break;
             case TupProjectRequest::Remove:
               {
                   TupScene *scene = project->sceneAt(sceneIndex);
-                  if (scene) {
-                      if (scene->frameIsEmpty(layerIndex, frameIndex))
-                          framesTable->setAttribute(layerIndex, frameIndex, TupTimeLineTableItem::IsEmpty, true);
-                  }
+                  if (scene)
+                      framesTable->updateFrameState(layerIndex, frameIndex, scene->frameIsEmpty(layerIndex, frameIndex));
               }
             break;
             default:

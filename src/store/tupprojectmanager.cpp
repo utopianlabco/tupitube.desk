@@ -61,6 +61,7 @@ TupProjectManager::TupProjectManager(QObject *parent) : QObject(parent)
     handler = nullptr;
     macroInProgress = false;
     pendingConvertRestoreCommandId.clear();
+    pendingRemoveRestoreCommandId.clear();
     pendingGroupRestoreCommandId.clear();
 
     project = new TupProject(this);
@@ -143,6 +144,10 @@ void TupProjectManager::setHandler(TupAbstractProjectHandler *pHandler, bool net
                 this, SLOT(advanceAuthoritativeTransformRestore(const QString &, bool)));
         connect(handler, SIGNAL(transformRestoreRequestFinished(const QString &)),
                 this, SLOT(finishAuthoritativeTransformRestore(const QString &)));
+        connect(handler, SIGNAL(removeRestoreStackAdvanceRequested(const QString &, bool)),
+                this, SLOT(advanceAuthoritativeRemoveRestore(const QString &, bool)));
+        connect(handler, SIGNAL(removeRestoreRequestFinished(const QString &)),
+                this, SLOT(finishAuthoritativeRemoveRestore(const QString &)));
         connect(handler, SIGNAL(groupRestoreStackAdvanceRequested(const QString &, bool)),
                 this, SLOT(advanceAuthoritativeGroupRestore(const QString &, bool)));
         connect(handler, SIGNAL(groupRestoreRequestFinished(const QString &)),
@@ -456,6 +461,7 @@ void TupProjectManager::undo()
     if (isNetworked && (!pendingConvertRestoreCommandId.isEmpty()
             || !pendingEditNodesRestoreCommandId.isEmpty()
             || !pendingTransformRestoreCommandId.isEmpty()
+            || !pendingRemoveRestoreCommandId.isEmpty()
             || !pendingGroupRestoreCommandId.isEmpty())) {
         return;
     }
@@ -510,6 +516,15 @@ void TupProjectManager::undo()
                     return;
                 pendingTransformRestoreCommandId.clear();
             }
+        } else if (isNetworked && constCommand && constCommand->isNativeItemRemove()) {
+            const QString commandId = constCommand->commandId().trimmed();
+            if (!commandId.isEmpty()) {
+                pendingRemoveRestoreCommandId = commandId;
+                if (QMetaObject::invokeMethod(handler, "requestAuthoritativeRemoveRestore",
+                        Qt::DirectConnection, Q_ARG(QString, commandId), Q_ARG(bool, true)))
+                    return;
+                pendingRemoveRestoreCommandId.clear();
+            }
         } else if (isNetworked && constCommand
                 && (constCommand->isItemGroup() || constCommand->isItemUngroup())) {
             const QString commandId = constCommand->commandId().trimmed();
@@ -539,6 +554,7 @@ void TupProjectManager::redo()
     if (isNetworked && (!pendingConvertRestoreCommandId.isEmpty()
             || !pendingEditNodesRestoreCommandId.isEmpty()
             || !pendingTransformRestoreCommandId.isEmpty()
+            || !pendingRemoveRestoreCommandId.isEmpty()
             || !pendingGroupRestoreCommandId.isEmpty())) {
         return;
     }
@@ -592,6 +608,15 @@ void TupProjectManager::redo()
                         Qt::DirectConnection, Q_ARG(QString, commandId), Q_ARG(bool, false)))
                     return;
                 pendingTransformRestoreCommandId.clear();
+            }
+        } else if (isNetworked && constCommand && constCommand->isNativeItemRemove()) {
+            const QString commandId = constCommand->commandId().trimmed();
+            if (!commandId.isEmpty()) {
+                pendingRemoveRestoreCommandId = commandId;
+                if (QMetaObject::invokeMethod(handler, "requestAuthoritativeRemoveRestore",
+                        Qt::DirectConnection, Q_ARG(QString, commandId), Q_ARG(bool, false)))
+                    return;
+                pendingRemoveRestoreCommandId.clear();
             }
         } else if (isNetworked && constCommand
                 && (constCommand->isItemGroup() || constCommand->isItemUngroup())) {
@@ -697,6 +722,39 @@ void TupProjectManager::finishAuthoritativeTransformRestore(const QString &comma
         pendingTransformRestoreCommandId.clear();
 }
 
+void TupProjectManager::advanceAuthoritativeRemoveRestore(
+    const QString &commandId, bool undoRestore)
+{
+    if (!undoStack || pendingRemoveRestoreCommandId != commandId.trimmed())
+        return;
+
+    const int commandIndex = undoRestore ? undoStack->index() - 1 : undoStack->index();
+    const TupProjectCommand *constCommand = commandIndex >= 0 && commandIndex < undoStack->count()
+        ? dynamic_cast<const TupProjectCommand *>(undoStack->command(commandIndex))
+        : nullptr;
+    if (!constCommand || constCommand->commandId() != pendingRemoveRestoreCommandId
+            || !constCommand->isNativeItemRemove()) {
+        return;
+    }
+
+    TupProjectCommand *command = const_cast<TupProjectCommand *>(constCommand);
+    if (undoRestore)
+        command->setRedoBlocked(false);
+    else
+        command->setUndoBlocked(false);
+    command->skipNextStackExecution();
+    if (undoRestore)
+        undoStack->undo();
+    else
+        undoStack->redo();
+}
+
+void TupProjectManager::finishAuthoritativeRemoveRestore(const QString &commandId)
+{
+    if (pendingRemoveRestoreCommandId == commandId.trimmed())
+        pendingRemoveRestoreCommandId.clear();
+}
+
 void TupProjectManager::advanceAuthoritativeGroupRestore(
     const QString &commandId, bool undoRestore)
 {
@@ -783,6 +841,7 @@ void TupProjectManager::clearUndoStack()
     pendingConvertRestoreCommandId.clear();
     pendingEditNodesRestoreCommandId.clear();
     pendingTransformRestoreCommandId.clear();
+    pendingRemoveRestoreCommandId.clear();
     pendingGroupRestoreCommandId.clear();
     undoStack->clear();
 }

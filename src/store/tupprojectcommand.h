@@ -64,6 +64,7 @@ class TUPITUBE_EXPORT TupProjectCommand : public QUndoCommand
         bool isItemConvert() const;
         bool isItemEditNodes() const;
         bool isItemTransform() const;
+        bool isNativeItemRemove() const;
         bool isItemGroup() const;
         bool isItemUngroup() const;
         bool isUndoBlocked() const;

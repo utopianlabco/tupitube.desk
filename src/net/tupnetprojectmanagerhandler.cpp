@@ -620,6 +620,51 @@ void TupNetProjectManagerHandler::requestAuthoritativeTransformRestore(const QSt
     socket->send(request.getXml());
 }
 
+void TupNetProjectManagerHandler::requestAuthoritativeRemoveRestore(
+    const QString &commandId, bool undoRestore)
+{
+    const QString normalizedCommandId = commandId.trimmed();
+    if (normalizedCommandId.isEmpty()
+            || !removeRestoreContexts.contains(normalizedCommandId)
+            || !socket
+            || socket->state() != QAbstractSocket::ConnectedState) {
+        emit removeRestoreRequestFinished(normalizedCommandId);
+        return;
+    }
+
+    const RemoveRestoreContext context = removeRestoreContexts.value(normalizedCommandId);
+    const int action = undoRestore ? TupProjectRequest::Add : TupProjectRequest::Remove;
+    const QString restoreIntent = undoRestore
+        ? QStringLiteral("restore_source:")
+        : QStringLiteral("restore_target:");
+
+    TupProjectRequest request = TupRequestBuilder::createItemRequest(
+        context.sceneIndex,
+        context.layerIndex,
+        context.frameIndex,
+        context.itemIndex,
+        context.position,
+        static_cast<TupProject::Mode>(context.spaceMode),
+        static_cast<TupLibraryObject::ObjectType>(context.itemType),
+        action,
+        restoreIntent + normalizedCommandId,
+        QByteArray(),
+        QString(),
+        QString(),
+        context.objectId);
+
+    if (!request.isValid() || !prepareCollaborativeCommand(&request)) {
+        emit removeRestoreRequestFinished(normalizedCommandId);
+        return;
+    }
+
+    PendingRemoveRestoreRequest pending;
+    pending.originalCommandId = normalizedCommandId;
+    pending.undoRestore = undoRestore;
+    pendingRemoveRestoreRequests.insert(request.getCommandId(), pending);
+    socket->send(request.getXml());
+}
+
 void TupNetProjectManagerHandler::requestAuthoritativeGroupRestore(
     const QString &commandId, bool undoRestore)
 {
@@ -836,6 +881,28 @@ bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
                 context.itemType = static_cast<int>(itemResponse->getItemType());
                 context.objectId = itemResponse->getObjectId().trimmed();
                 editNodesRestoreContexts.insert(commandId, context);
+            }
+        }
+
+        if (response->getPart() == TupProjectRequest::Item
+                && response->originalAction() == TupProjectRequest::Remove
+                && !response->external()) {
+            TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+            const QString commandId = itemResponse->getCommandId().trimmed();
+            const QString objectId = itemResponse->getObjectId().trimmed();
+            if (!commandId.isEmpty()
+                    && itemResponse->getItemType() != TupLibraryObject::Svg
+                    && !objectId.isEmpty()) {
+                RemoveRestoreContext context;
+                context.sceneIndex = itemResponse->getSceneIndex();
+                context.layerIndex = itemResponse->getLayerIndex();
+                context.frameIndex = itemResponse->getFrameIndex();
+                context.itemIndex = itemResponse->getItemIndex();
+                context.position = itemResponse->position();
+                context.spaceMode = static_cast<int>(itemResponse->spaceMode());
+                context.itemType = static_cast<int>(itemResponse->getItemType());
+                context.objectId = objectId;
+                removeRestoreContexts.insert(commandId, context);
             }
         }
 
@@ -1566,6 +1633,10 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
             pendingGroupContexts.contains(parser.commandId());
         const bool isPendingUngroup =
             pendingUngroupContexts.contains(parser.commandId());
+        const bool isPendingRemoveRestore =
+            pendingRemoveRestoreRequests.contains(parser.commandId());
+        const PendingRemoveRestoreRequest pendingRemoveRestore =
+            pendingRemoveRestoreRequests.value(parser.commandId());
         const bool isPendingGroupRestore =
             pendingGroupRestoreRequests.contains(parser.commandId());
         const PendingGroupRestoreRequest pendingGroupRestore =
@@ -1578,10 +1649,22 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                 bool convertAuthoritativeApplied = !isPendingConvertRestore;
                 bool editNodesAuthoritativeApplied = !isPendingEditNodesRestore;
                 bool transformAuthoritativeApplied = !isPendingTransformRestore;
+                bool removeRestoreAuthoritativeApplied = !isPendingRemoveRestore;
                 bool groupRestoreAuthoritativeApplied = !isPendingGroupRestore;
 
                 if (!parser.authoritativePayload().trimmed().isEmpty()) {
-                    if (isPendingGroupRestore
+                    if (isPendingRemoveRestore
+                            && (parser.eventType() == QStringLiteral("item.created")
+                                || parser.eventType() == QStringLiteral("item.removed"))) {
+                        removeRestoreAuthoritativeApplied = applyAuthoritativeRemoveRestoreResult(
+                            parser.commandId(), parser.authoritativePayload());
+                        if (!removeRestoreAuthoritativeApplied) {
+                            qWarning()
+                                << "[TupNetProjectManagerHandler::handlePackage()]"
+                                << "Unable to apply authoritative Remove restore result."
+                                << "Command:" << parser.commandId();
+                        }
+                    } else if (isPendingGroupRestore
                             && (parser.eventType() == QStringLiteral("item.grouped")
                                 || parser.eventType() == QStringLiteral("item.ungrouped"))) {
                         groupRestoreAuthoritativeApplied = applyAuthoritativeGroupRestoreResult(
@@ -1655,6 +1738,12 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                     emit transformRestoreStackAdvanceRequested(
                         pendingTransformRestoreOriginalCommandId,
                         pendingTransformRestoreMode == static_cast<int>(TupProjectResponse::Undo));
+                }
+
+                if (isPendingRemoveRestore && removeRestoreAuthoritativeApplied) {
+                    emit removeRestoreStackAdvanceRequested(
+                        pendingRemoveRestore.originalCommandId,
+                        pendingRemoveRestore.undoRestore);
                 }
 
                 if (isPendingGroupRestore && groupRestoreAuthoritativeApplied) {
@@ -1773,6 +1862,13 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                         << "[TupNetProjectManagerHandler::handlePackage()]"
                         << "Rejected optimistic Convert could not be reconciled locally."
                         << "Command:" << parser.commandId();
+                }
+
+                if (isPendingRemoveRestore
+                        && parser.errorCode() == QStringLiteral("remove_restore_conflict")) {
+                    emit authoritativeRestoreConflict(
+                        pendingRemoveRestore.originalCommandId,
+                        pendingRemoveRestore.undoRestore);
                 }
 
                 if (isPendingGroupRestore) {
@@ -1896,14 +1992,19 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
             emit editNodesRestoreRequestFinished(pendingEditNodesRestoreOriginalCommandId);
         if (isPendingTransformRestore)
             emit transformRestoreRequestFinished(pendingTransformRestoreOriginalCommandId);
+        if (isPendingRemoveRestore)
+            emit removeRestoreRequestFinished(pendingRemoveRestore.originalCommandId);
         if (isPendingGroupRestore)
             emit groupRestoreRequestFinished(pendingGroupRestore.originalCommandId);
 
+        pendingRemoveRestoreRequests.remove(parser.commandId());
         pendingGroupRestoreRequests.remove(parser.commandId());
         provisionalCreatedObjectIds.remove(parser.commandId());
         pendingConvertContexts.remove(parser.commandId());
         pendingGroupContexts.remove(parser.commandId());
         pendingUngroupContexts.remove(parser.commandId());
+        if (status != QStringLiteral("committed"))
+            removeRestoreContexts.remove(parser.commandId());
         updateAuthoritativeModifiedState();
 
         snapshotReconciliationCommands.remove(parser.commandId());
@@ -2133,6 +2234,38 @@ void TupNetProjectManagerHandler::handleProjectEvent(const QString &package)
                 pendingConvertRestoreMode == static_cast<int>(TupProjectResponse::Undo));
             emit convertRestoreRequestFinished(
                 pendingConvertRestoreOriginalCommandId);
+        }
+
+        if (pendingRemoveRestoreRequests.contains(causedBy)) {
+            const PendingRemoveRestoreRequest pendingRemoveRestore =
+                pendingRemoveRestoreRequests.value(causedBy);
+
+            if (eventType != QStringLiteral("item.created")
+                    && eventType != QStringLiteral("item.removed")) {
+                qCritical()
+                    << "[TupNetProjectManagerHandler::handleProjectEvent()]"
+                    << "Pending Remove restore was confirmed by an unexpected event type."
+                    << "Command:" << causedBy
+                    << "Event type:" << eventType;
+                requestProjectSync(true);
+                return;
+            }
+
+            if (!applyAuthoritativeRemoveRestoreResult(causedBy, payloadXml)) {
+                qCritical()
+                    << "[TupNetProjectManagerHandler::handleProjectEvent()]"
+                    << "Unable to apply authoritative Remove restore during recovery."
+                    << "Command:" << causedBy;
+                requestProjectSync(true);
+                return;
+            }
+
+            emit removeRestoreStackAdvanceRequested(
+                pendingRemoveRestore.originalCommandId,
+                pendingRemoveRestore.undoRestore);
+            emit removeRestoreRequestFinished(
+                pendingRemoveRestore.originalCommandId);
+            pendingRemoveRestoreRequests.remove(causedBy);
         }
 
         if (pendingGroupRestoreRequests.contains(causedBy)) {
@@ -3075,6 +3208,36 @@ bool TupNetProjectManagerHandler::reconcileRejectedOptimisticUngroup(
 #endif
 
     emitRequest(&restoreRequest, false);
+    return true;
+}
+
+bool TupNetProjectManagerHandler::applyAuthoritativeRemoveRestoreResult(
+    const QString &commandId, const QString &authoritativePayload)
+{
+    if (commandId.trimmed().isEmpty() || authoritativePayload.trimmed().isEmpty())
+        return false;
+
+    TupRequestParser parser;
+    if (!parser.parse(authoritativePayload.trimmed()))
+        return false;
+
+    TupProjectResponse *response = parser.getResponse();
+    if (!response || response->getPart() != TupProjectRequest::Item
+            || (response->originalAction() != TupProjectRequest::Add
+                && response->originalAction() != TupProjectRequest::Remove)
+            || response->getCommandId() != commandId) {
+        return false;
+    }
+
+    TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+    if (itemResponse->getItemType() == TupLibraryObject::Svg
+            || itemResponse->getObjectId().trimmed().isEmpty()) {
+        return false;
+    }
+
+    TupProjectRequest request = TupRequestBuilder::fromResponse(response, true);
+    request.setExternal(true);
+    emitRequest(&request, false);
     return true;
 }
 

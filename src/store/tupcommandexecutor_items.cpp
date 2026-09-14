@@ -96,6 +96,13 @@ namespace
 
         return false;
     }
+
+    bool isGraphicObjectSnapshot(const QString &xml)
+    {
+        QDomDocument document;
+        return document.setContent(xml)
+            && document.documentElement().tagName() == QStringLiteral("object");
+    }
 }
 
 bool TupCommandExecutor::createItem(TupItemResponse *response)
@@ -167,23 +174,29 @@ bool TupCommandExecutor::createItem(TupItemResponse *response)
                         }
                     } else {
                         if (response->getMode() == TupProjectResponse::Do) {
-                            QGraphicsItem *item = frame->createItem(point, xml);
-                            if (item) {
-                                const int createdIndex = frame->graphicsCount() - 1;
+                            TupGraphicObject *createdObject = nullptr;
+                            if (isGraphicObjectSnapshot(xml)) {
+                                createdObject = frame->insertGraphicObjectFromXml(
+                                    response->getItemIndex(), xml);
+                            } else {
+                                QGraphicsItem *item = frame->createItem(point, xml);
+                                if (item)
+                                    createdObject = frame->graphicAt(frame->graphicsCount() - 1);
+                            }
+
+                            if (createdObject) {
+                                const int createdIndex = frame->graphicIndexById(createdObject->objectId());
                                 response->setItemIndex(createdIndex);
 
-                                TupGraphicObject *createdObject = frame->graphicAt(createdIndex);
-                                if (createdObject) {
-                                    const QString requestedObjectId = response->getObjectId().trimmed();
-                                    if (!requestedObjectId.isEmpty())
-                                        createdObject->setObjectId(requestedObjectId);
+                                const QString requestedObjectId = response->getObjectId().trimmed();
+                                if (!requestedObjectId.isEmpty())
+                                    createdObject->setObjectId(requestedObjectId);
 
-                                    response->setObjectId(createdObject->objectId());
-                                }
+                                response->setObjectId(createdObject->objectId());
                             } else {
                                 #ifdef TUP_DEBUG
                                     qDebug() << "[TupCommandExecutor::createItem()] - Error: QGraphicsItem object is invalid!";
-                                #endif    
+                                #endif
                                 return false;
                             }
                         } else if (response->getMode() == TupProjectResponse::Undo) {
@@ -266,23 +279,29 @@ bool TupCommandExecutor::createItem(TupItemResponse *response)
                         }
                     } else { 
                         if (response->getMode() == TupProjectResponse::Do) {
-                            QGraphicsItem *item = frame->createItem(point, xml);
-                            if (item) {
-                                const int createdIndex = frame->indexOf(item);
+                            TupGraphicObject *createdObject = nullptr;
+                            if (isGraphicObjectSnapshot(xml)) {
+                                createdObject = frame->insertGraphicObjectFromXml(
+                                    response->getItemIndex(), xml);
+                            } else {
+                                QGraphicsItem *item = frame->createItem(point, xml);
+                                if (item)
+                                    createdObject = frame->graphicAt(frame->indexOf(item));
+                            }
+
+                            if (createdObject) {
+                                const int createdIndex = frame->graphicIndexById(createdObject->objectId());
                                 response->setItemIndex(createdIndex);
 
-                                TupGraphicObject *createdObject = frame->graphicAt(createdIndex);
-                                if (createdObject) {
-                                    const QString requestedObjectId = response->getObjectId().trimmed();
-                                    if (!requestedObjectId.isEmpty())
-                                        createdObject->setObjectId(requestedObjectId);
+                                const QString requestedObjectId = response->getObjectId().trimmed();
+                                if (!requestedObjectId.isEmpty())
+                                    createdObject->setObjectId(requestedObjectId);
 
-                                    response->setObjectId(createdObject->objectId());
-                                }
+                                response->setObjectId(createdObject->objectId());
                             } else {
                                 #ifdef TUP_DEBUG
                                     qDebug() << "[TupCommandExecutor::createItem()] - Error: QGraphicsItem object is invalid!";
-                                #endif    
+                                #endif
                                 return false;
                             }
                         } else if (response->getMode() == TupProjectResponse::Undo) {
@@ -383,6 +402,13 @@ bool TupCommandExecutor::removeItem(TupItemResponse *response)
 
                         TupGraphicObject *object = frame->graphicAt(itemIndex);
                         if (object) {
+                            response->setItemIndex(itemIndex);
+                            const QString objectSnapshot = object->toString().trimmed();
+                            if (objectSnapshot.isEmpty())
+                                return false;
+
+                            response->setArg(objectSnapshot);
+                            response->setObjectId(object->objectId());
                             frame->removeGraphic(itemIndex);
 
                             // if (object->hasTween()) 
@@ -444,6 +470,17 @@ bool TupCommandExecutor::removeItem(TupItemResponse *response)
                                 #endif
                                 return false;
                             }
+                            TupGraphicObject *object = frame->graphicAt(itemIndex);
+                            if (!object)
+                                return false;
+
+                            response->setItemIndex(itemIndex);
+                            const QString objectSnapshot = object->toString().trimmed();
+                            if (objectSnapshot.isEmpty())
+                                return false;
+
+                            response->setArg(objectSnapshot);
+                            response->setObjectId(object->objectId());
                             frame->removeGraphic(itemIndex);
                         }
                     }

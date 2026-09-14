@@ -379,6 +379,18 @@ bool TupProjectCommand::isItemTransform() const
     return !itemResponse->getObjectId().trimmed().isEmpty();
 }
 
+bool TupProjectCommand::isNativeItemRemove() const
+{
+    if (!response || response->getPart() != TupProjectRequest::Item
+            || response->originalAction() != TupProjectRequest::Remove) {
+        return false;
+    }
+
+    TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+    return itemResponse->getItemType() != TupLibraryObject::Svg
+        && !itemResponse->getObjectId().trimmed().isEmpty();
+}
+
 bool TupProjectCommand::isItemGroup() const
 {
     return response
@@ -448,6 +460,31 @@ QString TupProjectCommand::authoritativeEventPayload() const
             itemResponse->spaceMode(),
             itemResponse->getItemType(),
             TupProjectRequest::Add,
+            itemResponse->getArg().toString(),
+            itemResponse->getData(),
+            response->getCommandId(),
+            QString(),
+            itemResponse->getObjectId());
+
+        return request.getXml();
+    }
+
+    if (response->originalAction() == TupProjectRequest::Remove) {
+        if (itemResponse->getItemType() == TupLibraryObject::Svg
+                || itemResponse->getObjectId().trimmed().isEmpty()
+                || itemResponse->getArg().toString().trimmed().isEmpty()) {
+            return QString();
+        }
+
+        const TupProjectRequest request = TupRequestBuilder::createItemRequest(
+            itemResponse->getSceneIndex(),
+            itemResponse->getLayerIndex(),
+            itemResponse->getFrameIndex(),
+            itemResponse->getItemIndex(),
+            itemResponse->position(),
+            itemResponse->spaceMode(),
+            itemResponse->getItemType(),
+            TupProjectRequest::Remove,
             itemResponse->getArg().toString(),
             itemResponse->getData(),
             response->getCommandId(),

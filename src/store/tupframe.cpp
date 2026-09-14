@@ -1316,6 +1316,80 @@ void TupFrame::restoreGraphic()
     }
 }
 
+TupGraphicObject *TupFrame::insertGraphicObjectFromXml(int position, const QString &xml)
+{
+    QDomDocument document;
+    if (!document.setContent(xml))
+        return nullptr;
+
+    const QDomElement root = document.documentElement();
+    if (root.tagName() != QStringLiteral("object"))
+        return nullptr;
+
+    const QString objectId = root.attribute(QStringLiteral("object_id")).trimmed();
+    if (objectId.isEmpty())
+        return nullptr;
+
+    QDomElement representationElement;
+    QList<QDomElement> tweenElements;
+    QDomNode child = root.firstChild();
+    while (!child.isNull()) {
+        const QDomElement element = child.toElement();
+        if (!element.isNull()) {
+            if (element.tagName() == QStringLiteral("tweening"))
+                tweenElements.append(element);
+            else if (representationElement.isNull())
+                representationElement = element;
+        }
+        child = child.nextSibling();
+    }
+
+    if (representationElement.isNull())
+        return nullptr;
+
+    QDomDocument representationDocument;
+    representationDocument.appendChild(
+        representationDocument.importNode(representationElement, true));
+
+    TupItemFactory itemFactory;
+    TupLibrary *library = parentProject() ? parentProject()->getLibrary() : nullptr;
+    if (library)
+        itemFactory.setLibrary(library);
+
+    QGraphicsItem *item = itemFactory.create(representationDocument.toString(-1));
+    if (!item)
+        return nullptr;
+
+    QString label = QStringLiteral("path");
+    if (representationElement.tagName() == QStringLiteral("symbol")) {
+        const QString symbolId = representationElement.attribute(QStringLiteral("id")).trimmed();
+        if (!symbolId.isEmpty())
+            label = symbolId;
+    }
+
+    TupGraphicObject *object = new TupGraphicObject(item, this);
+    object->setObjectName(label);
+    object->setObjectId(objectId);
+
+    const int insertPosition = qBound(0, position, graphics.size());
+    insertObject(insertPosition, object, label);
+
+    for (const QDomElement &tweenElement : tweenElements) {
+        QDomDocument tweenDocument;
+        tweenDocument.appendChild(tweenDocument.importNode(tweenElement, true));
+
+        TupItemTweener *tweener = new TupItemTweener();
+        tweener->fromXml(tweenDocument.toString(-1));
+        tweener->setZLevel(insertPosition);
+        object->addTween(tweener);
+    }
+
+    if (!tweenElements.isEmpty() && parentScene() && layer)
+        parentScene()->addTweenObject(layer->layerIndex(), object);
+
+    return object;
+}
+
 bool TupFrame::removeGraphicAt(int position)
 {
     #ifdef TUP_DEBUG

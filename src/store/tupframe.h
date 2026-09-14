@@ -107,6 +107,7 @@ class TUPITUBE_EXPORT TupFrame : public QObject, public TupAbstractSerializable
         bool removeGraphic(int position);
         bool removeGraphicAt(int position);
         void restoreGraphic();
+        TupGraphicObject *insertGraphicObjectFromXml(int position, const QString &xml);
 
         bool removeSvg(int position);
         bool removeSvgAt(int position);

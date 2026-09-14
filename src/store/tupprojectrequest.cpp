@@ -86,13 +86,23 @@ QString TupProjectRequestArgument::toString()
 TupProjectRequest::TupProjectRequest(const QString &data)
     : xml(data),
       actionId(TupProjectRequest::None),
-      isExternal(false)
+      isExternal(false),
+      baseRevision(-1),
+      baseRevisionSet(false)
 {
     QDomDocument doc;
     if (doc.setContent(xml)) {
         const QDomElement root = doc.documentElement();
         commandId = root.attribute(QStringLiteral("command_id"));
         dependencyCommandId = root.attribute(QStringLiteral("depends_on"));
+
+        bool revisionOk = false;
+        const qint64 parsedRevision = root.attribute(
+            QStringLiteral("base_revision")).toLongLong(&revisionOk);
+        if (revisionOk && parsedRevision >= 0) {
+            baseRevision = parsedRevision;
+            baseRevisionSet = true;
+        }
     }
 }
 
@@ -180,6 +190,46 @@ bool TupProjectRequest::hasDependency() const
     return !dependencyCommandId.isEmpty();
 }
 
+void TupProjectRequest::setBaseRevision(qint64 revision)
+{
+    QDomDocument doc;
+    if (!doc.setContent(xml)) {
+        baseRevision = -1;
+        baseRevisionSet = false;
+        return;
+    }
+
+    QDomElement root = doc.documentElement();
+    if (root.isNull() || root.tagName() != QStringLiteral("project_request")) {
+        baseRevision = -1;
+        baseRevisionSet = false;
+        return;
+    }
+
+    if (revision < 0) {
+        root.removeAttribute(QStringLiteral("base_revision"));
+        baseRevision = -1;
+        baseRevisionSet = false;
+        xml = doc.toString(0);
+        return;
+    }
+
+    root.setAttribute(QStringLiteral("base_revision"), revision);
+    baseRevision = revision;
+    baseRevisionSet = true;
+    xml = doc.toString(0);
+}
+
+qint64 TupProjectRequest::getBaseRevision() const
+{
+    return baseRevision;
+}
+
+bool TupProjectRequest::hasBaseRevision() const
+{
+    return baseRevisionSet;
+}
+
 TupProjectRequest &TupProjectRequest::operator=(const TupProjectRequest &other)
 {
     if (this == &other)
@@ -190,6 +240,8 @@ TupProjectRequest &TupProjectRequest::operator=(const TupProjectRequest &other)
     isExternal = other.isExternal;
     commandId = other.commandId;
     dependencyCommandId = other.dependencyCommandId;
+    baseRevision = other.baseRevision;
+    baseRevisionSet = other.baseRevisionSet;
 
     return *this;
 }

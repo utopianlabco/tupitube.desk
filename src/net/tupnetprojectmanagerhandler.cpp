@@ -373,6 +373,32 @@ TupNetProjectManagerHandler::~TupNetProjectManagerHandler()
     }
 }
 
+bool TupNetProjectManagerHandler::prepareCollaborativeCommand(
+    TupProjectRequest *request)
+{
+    if (!request || !request->isValid() || request->getCommandId().isEmpty()
+            || !commandTracker || lastObservedProjectRevision < 0) {
+        return false;
+    }
+
+    if (!request->hasDependency() && commandTracker->pendingCount() > 0) {
+        const QString dependencyCommandId =
+            commandTracker->lastPendingCommandId();
+        if (!dependencyCommandId.isEmpty())
+            request->setDependencyCommandId(dependencyCommandId);
+    }
+
+    request->setBaseRevision(lastObservedProjectRevision);
+    if (!request->hasBaseRevision())
+        return false;
+
+    if (!commandTracker->track(*request))
+        return false;
+
+    notifyPendingCommandCountChanged();
+    return true;
+}
+
 void TupNetProjectManagerHandler::handleProjectRequest(const TupProjectRequest *request)
 {
 #ifdef TUP_DEBUG
@@ -465,31 +491,34 @@ void TupNetProjectManagerHandler::handleProjectRequest(const TupProjectRequest *
         }
     }
 
-#ifdef TUP_DEBUG
-    qDebug()
-        << "[TupNetProjectManagerHandler::handleProjectRequest()]"
-        << "Sending command:" << request->getCommandId()
-        << "Action:" << request->getActionId();
-
-    qDebug() << request->getXml();
-#endif
-
-    if (!commandTracker || !commandTracker->track(*request)) {
+    TupProjectRequest outboundRequest = *request;
+    if (!prepareCollaborativeCommand(&outboundRequest)) {
         pendingConvertContexts.remove(request->getCommandId());
         qWarning()
             << "[TupNetProjectManagerHandler::handleProjectRequest()]"
-            << "Unable to track command:"
-            << request->getCommandId();
+            << "Unable to prepare collaborative command:"
+            << request->getCommandId()
+            << "Observed revision:" << lastObservedProjectRevision;
         return;
     }
-    notifyPendingCommandCountChanged();
 
-    // Preserve the existing optimistic local execution behavior.
+#ifdef TUP_DEBUG
+    qDebug()
+        << "[TupNetProjectManagerHandler::handleProjectRequest()]"
+        << "Sending command:" << outboundRequest.getCommandId()
+        << "Action:" << outboundRequest.getActionId()
+        << "Base revision:" << outboundRequest.getBaseRevision()
+        << "Depends on:" << outboundRequest.getDependencyCommandId();
+
+    qDebug() << outboundRequest.getXml();
+#endif
+
+    // Preserve the existing optimistic local execution behavior. The domain
+    // request remains semantically identical; only collaboration envelope
+    // metadata was added to the tracked/sent copy.
     emit sendCommand(request, true);
 
-    QString outboundXml = request->getXml();
-
-    socket->send(outboundXml);
+    socket->send(outboundRequest.getXml());
 }
 
 void TupNetProjectManagerHandler::requestAuthoritativeConvertRestore(
@@ -524,12 +553,11 @@ void TupNetProjectManagerHandler::requestAuthoritativeConvertRestore(
         QString(),
         context.objectId);
 
-    if (!request.isValid() || !commandTracker || !commandTracker->track(request)) {
+    if (!request.isValid() || !prepareCollaborativeCommand(&request)) {
         emit convertRestoreRequestFinished(normalizedCommandId);
         return;
     }
 
-    notifyPendingCommandCountChanged();
     socket->send(request.getXml());
 }
 
@@ -565,12 +593,11 @@ void TupNetProjectManagerHandler::requestAuthoritativeEditNodesRestore(
         QString(),
         context.objectId);
 
-    if (!request.isValid() || !commandTracker || !commandTracker->track(request)) {
+    if (!request.isValid() || !prepareCollaborativeCommand(&request)) {
         emit editNodesRestoreRequestFinished(normalizedCommandId);
         return;
     }
 
-    notifyPendingCommandCountChanged();
     socket->send(request.getXml());
 }
 
@@ -587,10 +614,9 @@ void TupNetProjectManagerHandler::requestAuthoritativeTransformRestore(const QSt
         c.sceneIndex, c.layerIndex, c.frameIndex, c.itemIndex, c.position,
         static_cast<TupProject::Mode>(c.spaceMode), static_cast<TupLibraryObject::ObjectType>(c.itemType),
         TupProjectRequest::Transform, prefix + id, QByteArray(), QString(), QString(), c.objectId);
-    if (!request.isValid() || !commandTracker || !commandTracker->track(request)) {
+    if (!request.isValid() || !prepareCollaborativeCommand(&request)) {
         emit transformRestoreRequestFinished(id); return;
     }
-    notifyPendingCommandCountChanged();
     socket->send(request.getXml());
 }
 
@@ -633,11 +659,10 @@ void TupNetProjectManagerHandler::requestAuthoritativeGroupRestore(
         QString(),
         context.groupObjectId);
 
-    if (!request.isValid() || !commandTracker || !commandTracker->track(request)) {
+    if (!request.isValid() || !prepareCollaborativeCommand(&request)) {
         emit groupRestoreRequestFinished(normalizedCommandId);
         return;
     }
-    notifyPendingCommandCountChanged();
 
     PendingGroupRestoreRequest pending;
     pending.originalCommandId = normalizedCommandId;
@@ -981,14 +1006,13 @@ bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
     if (!undoOrRedo) {
         handleProjectRequest(&request);
     } else if (socket->state() == QAbstractSocket::ConnectedState && request.isValid()) {
-        if (!commandTracker || !commandTracker->track(request)) {
+        if (!prepareCollaborativeCommand(&request)) {
             qWarning()
                 << "[TupNetProjectManagerHandler::commandExecuted()]"
-                << "Unable to track Undo/Redo command:"
+                << "Unable to prepare Undo/Redo command:"
                 << request.getCommandId();
             return false;
         }
-        notifyPendingCommandCountChanged();
         socket->send(request.getXml());
     }
 

@@ -158,6 +158,10 @@ class TUPITUBE_EXPORT TupProjectRequest
         QString getDependencyCommandId() const;
         bool hasDependency() const;
 
+        void setBaseRevision(qint64 revision);
+        qint64 getBaseRevision() const;
+        bool hasBaseRevision() const;
+
         TupProjectRequest &operator = (const TupProjectRequest &other);
 
     private:
@@ -166,6 +170,8 @@ class TUPITUBE_EXPORT TupProjectRequest
         bool isExternal;
         QString commandId;
         QString dependencyCommandId;
+        qint64 baseRevision;
+        bool baseRevisionSet;
 };
 
 #endif

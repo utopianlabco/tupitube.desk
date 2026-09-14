@@ -56,6 +56,7 @@ bool TupCommandTracker::track(const TupProjectRequest &request)
     pending.retryCount = 0;
 
     m_pendingCommands.insert(commandId, pending);
+    m_pendingOrder.append(commandId);
 
 #ifdef TUP_DEBUG
     qDebug()
@@ -105,13 +106,14 @@ QList<QString> TupCommandTracker::expiredCommandIds(qint64 timeoutMs) const
 
     const qint64 now = QDateTime::currentMSecsSinceEpoch();
 
-    for (auto it = m_pendingCommands.constBegin();
-         it != m_pendingCommands.constEnd(); ++it) {
-        const PendingCommand &pending = it.value();
+    for (const QString &commandId : m_pendingOrder) {
+        const PendingCommand pending = m_pendingCommands.value(commandId);
+        if (pending.commandId.isEmpty())
+            continue;
 
         if (pending.lastSentAt > 0
                 && now - pending.lastSentAt >= timeoutMs) {
-            expired.append(it.key());
+            expired.append(commandId);
         }
     }
 
@@ -121,7 +123,12 @@ QList<QString> TupCommandTracker::expiredCommandIds(qint64 timeoutMs) const
 
 QList<QString> TupCommandTracker::pendingCommandIds() const
 {
-    return m_pendingCommands.keys();
+    return m_pendingOrder;
+}
+
+QString TupCommandTracker::lastPendingCommandId() const
+{
+    return m_pendingOrder.isEmpty() ? QString() : m_pendingOrder.last();
 }
 
 void TupCommandTracker::restartTimeoutWindow()
@@ -160,6 +167,8 @@ bool TupCommandTracker::complete(const QString &commandId)
         return false;
 
     const bool removed = m_pendingCommands.remove(normalized) > 0;
+    if (removed)
+        m_pendingOrder.removeAll(normalized);
 
 #ifdef TUP_DEBUG
     if (removed) {
@@ -188,4 +197,5 @@ void TupCommandTracker::clear()
 #endif
 
     m_pendingCommands.clear();
+    m_pendingOrder.clear();
 }

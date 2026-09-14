@@ -264,6 +264,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
 
         void loadProjectFromServer(const QString &projectID, const QString &owner);
         void emitRequest(TupProjectRequest *request, bool toStack);
+        bool prepareCollaborativeCommand(TupProjectRequest *request);
         void setProject(TupProject *project);
         void resumePendingCommands();
         bool reapplyPendingCommandAfterSnapshot(

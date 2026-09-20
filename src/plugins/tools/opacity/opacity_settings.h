@@ -70,10 +70,12 @@ class TUPITUBE_PLUGIN OpacitySettings : public QWidget
         int totalSteps();
 
         QString currentTweenName() const;
+        void setTweenName(const QString &name);
+        void focusTweenName();
         void activateMode(TupToolPlugin::EditMode mode);
         void notifySelection(bool flag);
         int startComboSize();
-        QString tweenToXml(int currentScene, int currentLayer, int currentFrame);
+        QString tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId);
 
     private slots:
         void applyTween();

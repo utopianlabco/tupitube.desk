@@ -355,6 +355,8 @@ int ColoringSettings::totalSteps()
 void ColoringSettings::setEditMode()
 {
     mode = TupToolPlugin::Edit;
+    input->setReadOnly(false);
+    input->setFocusPolicy(Qt::StrongFocus);
     apply->setToolTip(tr("Update Tween"));
     remove->setIcon(QPixmap(kAppProp->themeDir() + "icons/close_properties.png"));
     remove->setToolTip(tr("Close Tween Properties"));
@@ -409,6 +411,17 @@ QString ColoringSettings::currentTweenName() const
     return tweenName;
 }
 
+void ColoringSettings::setTweenName(const QString &name)
+{
+    input->setText(name);
+}
+
+void ColoringSettings::focusTweenName()
+{
+    input->setFocus();
+    input->selectAll();
+}
+
 void ColoringSettings::emitOptionChanged(int option)
 {
     switch (option) {
@@ -431,11 +444,12 @@ void ColoringSettings::emitOptionChanged(int option)
     }
 }
 
-QString ColoringSettings::tweenToXml(int currentScene, int currentLayer, int currentFrame)
+QString ColoringSettings::tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId)
 {
     QDomDocument doc;
 
     QDomElement root = doc.createElement("tweening");
+    root.setAttribute(QStringLiteral("tween_id"), tweenId);
     root.setAttribute("name", currentTweenName());
     root.setAttribute("type", TupItemTweener::Coloring);
     root.setAttribute("initFrame", currentFrame);

@@ -318,6 +318,8 @@ int ScaleSettings::totalSteps()
 void ScaleSettings::setEditMode()
 {
     mode = TupToolPlugin::Edit;
+    input->setReadOnly(false);
+    input->setFocusPolicy(Qt::StrongFocus);
     apply->setToolTip(tr("Update Tween"));
     remove->setIcon(QPixmap(kAppProp->themeDir() + "icons/close_properties.png"));
     remove->setToolTip(tr("Close Tween Properties"));
@@ -360,6 +362,17 @@ QString ScaleSettings::currentTweenName() const
     return tweenName;
 }
 
+void ScaleSettings::setTweenName(const QString &name)
+{
+    input->setText(name);
+}
+
+void ScaleSettings::focusTweenName()
+{
+    input->setFocus();
+    input->selectAll();
+}
+
 void ScaleSettings::emitOptionChanged(int option)
 {
     switch (option) {
@@ -382,12 +395,13 @@ void ScaleSettings::emitOptionChanged(int option)
     }
 }
 
-QString ScaleSettings::tweenToXml(int currentScene, int currentLayer, int currentFrame, QPointF point,
+QString ScaleSettings::tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId, QPointF point,
                              double initialXScaleFactor, double initialYScaleFactor)
 {
     QDomDocument doc;
 
     QDomElement root = doc.createElement("tweening");
+    root.setAttribute(QStringLiteral("tween_id"), tweenId);
     root.setAttribute("name", currentTweenName());
     root.setAttribute("type", TupItemTweener::Scale);
     root.setAttribute("initFrame", currentFrame);

@@ -113,6 +113,7 @@ void ShearConfigurator::setTweenManagerPanel()
     tweenManager = new TweenManager(this);
     connect(tweenManager, SIGNAL(addNewTween(const QString &)), this, SLOT(addTween(const QString &)));
     connect(tweenManager, SIGNAL(editCurrentTween(const QString &)), this, SLOT(editTween()));
+    connect(tweenManager, SIGNAL(renameCurrentTween(const QString &)), this, SLOT(renameTween()));
     connect(tweenManager, SIGNAL(removeCurrentTween(const QString &)), this, SLOT(removeTween(const QString &)));
     connect(tweenManager, SIGNAL(getTweenData(const QString &)), this, SLOT(updateTweenData(const QString &)));
 
@@ -173,9 +174,9 @@ int ShearConfigurator::startComboSize()
     return settingsPanel->startComboSize();
 }
 
-QString ShearConfigurator::tweenToXml(int currentScene, int currentLayer, int currentFrame, QPointF point)
+QString ShearConfigurator::tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId, QPointF point)
 {
-    return settingsPanel->tweenToXml(currentScene, currentLayer, currentFrame, point);
+    return settingsPanel->tweenToXml(currentScene, currentLayer, currentFrame, tweenId, point);
 }
 
 int ShearConfigurator::totalSteps()
@@ -218,6 +219,15 @@ void ShearConfigurator::editTween()
     activePropertiesPanel(true);
 
     // emit setMode(currentMode);
+}
+
+void ShearConfigurator::renameTween()
+{
+    if (!currentTween)
+        return;
+
+    editTween();
+    settingsPanel->focusTweenName();
 }
 
 void ShearConfigurator::removeTween()
@@ -285,6 +295,16 @@ TupToolPlugin::Mode ShearConfigurator::mode()
 
 void ShearConfigurator::applyItem()
 {
+    const QString name = settingsPanel->currentTweenName().trimmed();
+    if (!tweenManager->isTweenNameAvailable(name)) {
+        TOsd::self()->display(TOsd::Error, name.isEmpty() ? tr("Tween name is missing!") : tr("Tween name already exists!"));
+        if (currentTween) {
+            settingsPanel->setTweenName(currentTween->getTweenName());
+            settingsPanel->focusTweenName();
+        }
+        return;
+    }
+
     currentMode = TupToolPlugin::Edit;
     emit clickedApplyTween();
 }

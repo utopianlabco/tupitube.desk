@@ -73,8 +73,10 @@ class TUPITUBE_PLUGIN ShearSettings : public QWidget
         int startFrame();
         int startComboSize();
         QString currentTweenName() const;
+        void setTweenName(const QString &name);
+        void focusTweenName();
         void activateMode(TupToolPlugin::EditMode mode);
-        QString tweenToXml(int currentScene, int currentLayer, int currentFrame, QPointF point);
+        QString tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId, QPointF point);
 
     private slots:
         void applyTween();

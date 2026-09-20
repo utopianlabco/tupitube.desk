@@ -42,6 +42,7 @@
 #include <QPointF>
 #include <QColor>
 #include <QGraphicsPathItem>
+#include <QUuid>
 
 class TUPITUBE_EXPORT TupItemTweener : public QObject, public TupAbstractSerializable
 {
@@ -65,6 +66,11 @@ class TUPITUBE_EXPORT TupItemTweener : public QObject, public TupAbstractSeriali
 
         TupItemTweener();
         ~TupItemTweener();
+
+        static QString createTweenId();
+
+        void setTweenId(const QString &id);
+        QString tweenId() const;
 
         QString getTweenName();
         TupItemTweener::Type getType();
@@ -140,6 +146,7 @@ class TUPITUBE_EXPORT TupItemTweener : public QObject, public TupAbstractSeriali
         bool contains(TupItemTweener::Type getType);
         
     private:
+        QString persistentTweenId;
         QString tweenName;
         TupItemTweener::Type tweenType;
         int initFrame;

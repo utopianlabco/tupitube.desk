@@ -311,6 +311,8 @@ int OpacitySettings::totalSteps()
 void OpacitySettings::setEditMode()
 {
     mode = TupToolPlugin::Edit;
+    input->setReadOnly(false);
+    input->setFocusPolicy(Qt::StrongFocus);
     apply->setToolTip(tr("Update Tween"));
     remove->setIcon(QPixmap(kAppProp->themeDir() + "icons/close_properties.png"));
     remove->setToolTip(tr("Close Tween Properties"));
@@ -352,6 +354,17 @@ QString OpacitySettings::currentTweenName() const
     return tweenName;
 }
 
+void OpacitySettings::setTweenName(const QString &name)
+{
+    input->setText(name);
+}
+
+void OpacitySettings::focusTweenName()
+{
+    input->setFocus();
+    input->selectAll();
+}
+
 void OpacitySettings::emitOptionChanged(int option)
 {
     switch (option) {
@@ -374,11 +387,12 @@ void OpacitySettings::emitOptionChanged(int option)
     }
 }
 
-QString OpacitySettings::tweenToXml(int currentScene, int currentLayer, int currentFrame)
+QString OpacitySettings::tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId)
 {
     QDomDocument doc;
 
     QDomElement root = doc.createElement("tweening");
+    root.setAttribute(QStringLiteral("tween_id"), tweenId);
     root.setAttribute("name", currentTweenName());
     root.setAttribute("type", TupItemTweener::Opacity);
     root.setAttribute("initFrame", currentFrame);

@@ -53,6 +53,9 @@ TupGraphicObject::TupGraphicObject(QGraphicsItem *graphic, TupFrame *parent) : Q
 
 TupGraphicObject::~TupGraphicObject()
 {
+    qDeleteAll(tweens);
+    tweens.clear();
+
     /*
     #ifdef TUP_DEBUG
         qDebug() << "[~TupGraphicObject()]";
@@ -154,6 +157,8 @@ void TupGraphicObject::addTween(TupItemTweener *itemTween)
     for(int i=0; i < total; i++) {
         TupItemTweener *tween = tweens.at(i);
         if (tween->getType() == itemTween->getType()) {
+            if (tween != itemTween)
+                delete tween;
             tweens[i] = itemTween;
             return;
         }
@@ -169,11 +174,15 @@ bool TupGraphicObject::hasTweens()
 
 void TupGraphicObject::removeTween(int index)
 {
-    tweens.removeAt(index);
+    if (index < 0 || index >= tweens.size())
+        return;
+
+    delete tweens.takeAt(index);
 }
 
 void TupGraphicObject::removeAllTweens()
 {
+    qDeleteAll(tweens);
     tweens.clear();
 }
 
@@ -183,6 +192,20 @@ TupItemTweener *TupGraphicObject::tween(const QString &id) const
     for(int i=0; i < total; i++) {
         TupItemTweener *tween = tweens.at(i);
         if (tween->getTweenName().compare(id) == 0)
+            return tween;
+    }
+
+    return nullptr;
+}
+
+TupItemTweener *TupGraphicObject::tweenById(const QString &tweenId) const
+{
+    const QString id = tweenId.trimmed();
+    if (id.isEmpty())
+        return nullptr;
+
+    for (TupItemTweener *tween : tweens) {
+        if (tween && tween->tweenId() == id)
             return tween;
     }
 

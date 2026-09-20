@@ -80,12 +80,13 @@ class TUPITUBE_PLUGIN ShearConfigurator : public QFrame
         void closeSettingsPanel();
         TupToolPlugin::Mode mode();
         void resetUI();
-        QString tweenToXml(int currentScene, int currentLayer, int currentFrame, QPointF point);
+        QString tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId, QPointF point);
         
     private slots:
         void applyItem();
         void addTween(const QString &name);
         void editTween();
+        void renameTween();
         void removeTween();
         void removeTween(const QString &name);
         void closeTweenProperties();

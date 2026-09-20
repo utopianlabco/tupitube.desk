@@ -130,6 +130,9 @@ class TUPITUBE_EXPORT TupScene : public QObject, public TupAbstractSerializable
         bool removeTween(const QString &name, TupItemTweener::Type type);
 
         TupItemTweener * tween(const QString &name, TupItemTweener::Type type);
+        TupItemTweener *tweenById(const QString &tweenId) const;
+        bool tweenIdExists(const QString &tweenId) const;
+        QList<QGraphicsItem *> getItemsFromTweenId(const QString &tweenId) const;
 
         QList<QString> getTweenNames(TupItemTweener::Type type);
         QList<QGraphicsItem *> getItemsFromTween(const QString &name, TupItemTweener::Type type);

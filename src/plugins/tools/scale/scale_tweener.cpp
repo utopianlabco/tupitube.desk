@@ -422,8 +422,31 @@ void ScaleTweener::applyTween()
         return;
     }
 
+    TupItemTweener *identityTween = nullptr;
+    if (mode == TupToolPlugin::Edit && currentTween)
+        identityTween = currentTween;
+    else
+        identityTween = scene->currentScene()->tween(name, TupItemTweener::Scale);
+
+    const bool tweenAlreadyExists = identityTween != nullptr;
+    const QString sourceTweenName = tweenAlreadyExists ? identityTween->getTweenName() : name;
+    QString tweenId;
+    if (tweenAlreadyExists) {
+        currentTween = identityTween;
+        tweenId = currentTween->tweenId().trimmed();
+        if (tweenId.isEmpty()) {
+            #ifdef TUP_DEBUG
+                qWarning() << "[Scale Tweener::applyTween()] - Existing tween is missing tween_id ->" << sourceTweenName;
+            #endif
+            QApplication::restoreOverrideCursor();
+            return;
+        }
+    } else {
+        tweenId = TupItemTweener::createTweenId();
+    }
+
     // Tween is new
-    if (!scene->tweenExists(name, TupItemTweener::Scale)) {
+    if (!tweenAlreadyExists) {
         initFrame = scene->currentFrameIndex();
         initLayer = scene->currentLayerIndex();
         initScene = scene->currentSceneIndex();
@@ -452,16 +475,19 @@ void ScaleTweener::applyTween()
                                         initScene, initLayer, initFrame,
                                         objectIndex, QPointF(), scene->getSpaceContext(),
                                         type, TupProjectRequest::SetTween,
-                                        configPanel->tweenToXml(initScene, initLayer, initFrame, pos,
+                                        configPanel->tweenToXml(initScene, initLayer, initFrame, tweenId, pos,
                                                                 initialXScaleFactor, initialYScaleFactor), QByteArray(), QString(), QString(), objectId);
             emit requested(&request);
         }
     } else { // Tween already exists
-        removeTweenFromProject(name);
+        const int previousInitFrame = currentTween->getInitFrame();
+        const int previousInitLayer = currentTween->getInitLayer();
+
+        removeTweenFromProject(sourceTweenName);
         QList<QGraphicsItem *> newList;
 
         initFrame = configPanel->startFrame();
-        initLayer = currentTween->getInitLayer();
+        initLayer = previousInitLayer;
         initScene = scene->currentSceneIndex();
 
         foreach (QGraphicsItem *item, objects) {
@@ -469,7 +495,7 @@ void ScaleTweener::applyTween()
 
             TupScene *sceneData = scene->currentScene();
             TupLayer *layer = sceneData->layerAt(initLayer);
-            TupFrame *frame = layer->frameAt(currentTween->getInitFrame());
+            TupFrame *frame = layer->frameAt(previousInitFrame);
             int objectIndex = frame->indexOf(item);
 
             QRectF rect = item->sceneBoundingRect();
@@ -481,7 +507,7 @@ void ScaleTweener::applyTween()
                 objectIndex = frame->indexOf(svg);
             }
 
-            if (initFrame != currentTween->getInitFrame()) {
+            if (initFrame != previousInitFrame) {
                 QDomDocument dom;
                 if (type == TupLibraryObject::Svg)
                     dom.appendChild(svg->toXml(dom));
@@ -494,7 +520,7 @@ void ScaleTweener::applyTween()
                 emit requested(&request);
 
                 request = TupRequestBuilder::createItemRequest(initScene, initLayer,
-                                                               currentTween->getInitFrame(),
+                                                               previousInitFrame,
                                                                objectIndex, QPointF(), scene->getSpaceContext(),
                                                                type, TupProjectRequest::Remove);
                 emit requested(&request);
@@ -511,7 +537,7 @@ void ScaleTweener::applyTween()
 
             QString objectId;
             if (type == TupLibraryObject::Item
-                    && initFrame == currentTween->getInitFrame()) {
+                    && initFrame == previousInitFrame) {
                 TupGraphicObject *graphicObject = frame->graphicAt(objectIndex);
                 if (graphicObject)
                     objectId = graphicObject->objectId();
@@ -521,7 +547,7 @@ void ScaleTweener::applyTween()
                                         initScene, initLayer, initFrame,
                                         objectIndex, QPointF(), scene->getSpaceContext(),
                                         type, TupProjectRequest::SetTween,
-                                        configPanel->tweenToXml(initScene, initLayer, initFrame,
+                                        configPanel->tweenToXml(initScene, initLayer, initFrame, tweenId,
                                                                 origin, initialXScaleFactor, initialYScaleFactor), QByteArray(), QString(), QString(), objectId);
             emit requested(&request);
         }
@@ -739,4 +765,11 @@ void ScaleTweener::frameResponse(const TupFrameResponse *event)
         if (initLayer != event->getLayerIndex() || initScene != event->getSceneIndex())
             init(scene);
     }
+}
+
+void ScaleTweener::itemResponse(const TupItemResponse *event)
+{
+    if (event->getAction() == TupProjectRequest::RemoveTween
+            && event->getMode() != TupProjectResponse::Do)
+        init(scene);
 }

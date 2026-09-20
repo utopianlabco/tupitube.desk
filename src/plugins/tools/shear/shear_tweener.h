@@ -82,6 +82,7 @@ class TUPITUBE_PLUGIN ShearTweener : public TupToolPlugin
         virtual void sceneResponse(const TupSceneResponse *event);
         virtual void layerResponse(const TupLayerResponse *event);
         virtual void frameResponse(const TupFrameResponse *event);
+        virtual void itemResponse(const TupItemResponse *event);
 
         void resizeNode(qreal scaleFactor);
         void updateZoomFactor(qreal scaleFactor);

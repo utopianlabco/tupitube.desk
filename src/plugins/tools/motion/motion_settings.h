@@ -68,7 +68,7 @@ class TUPITUBE_PLUGIN MotionSettings : public QWidget
         int startFrame();
 
         void updateSteps(const QGraphicsPathItem *path);
-        QString tweenToXml(int currentScene, int currentLayer, int currentFrame, QPointF point, QString &path);
+        QString tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId, QPointF point, QString &path);
         int totalSteps();
         QList<QPointF> tweenPoints();
         void activateMode(TupToolPlugin::EditMode mode);
@@ -77,6 +77,8 @@ class TUPITUBE_PLUGIN MotionSettings : public QWidget
         int startComboSize();
         void enableInitCombo(bool enable);
         QString currentTweenName() const;
+        void setTweenName(const QString &name);
+        void focusTweenName();
         void updateSegments(const QPainterPath path);
 
         void undoSegment(const QPainterPath path);

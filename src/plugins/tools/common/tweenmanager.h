@@ -66,10 +66,12 @@ class TUPITUBE_EXPORT TweenManager: public QWidget
         int listSize(); 
         void removeItemFromList();
         void updateTweenName(const QString &name);
+        bool isTweenNameAvailable(const QString &name) const;
 
     signals:
         void addNewTween(const QString &name);
         void editCurrentTween(const QString &name);
+        void renameCurrentTween(const QString &name);
         void removeCurrentTween(const QString &name);
         void getTweenData(const QString &name);
 
@@ -77,6 +79,7 @@ class TUPITUBE_EXPORT TweenManager: public QWidget
         void addTween();
         void editTween();
         void editTween(QListWidgetItem *item);
+        void renameTween();
         void removeTween();
         void showMenu(const QPoint &point);
         void updateTweenData(QListWidgetItem *item);

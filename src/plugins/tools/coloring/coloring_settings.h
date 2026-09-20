@@ -71,12 +71,14 @@ class TUPITUBE_PLUGIN ColoringSettings : public QWidget
         int totalSteps();
 
         QString currentTweenName() const;
+        void setTweenName(const QString &name);
+        void focusTweenName();
         void activatePropertiesMode(TupToolPlugin::EditMode mode);
         void notifySelection(bool flag);
         int startComboSize();
         void setInitialColor(QColor color);
 		void activateMode(TupToolPlugin::EditMode mode);
-        QString tweenToXml(int currentScene, int currentLayer, int currentFrame);
+        QString tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId);
 
     private slots:
         void applyTween();

@@ -50,6 +50,8 @@ TupSvgItem::TupSvgItem(const QString &file, TupFrame *currentFrame) : QGraphicsS
 
 TupSvgItem::~TupSvgItem()
 {
+    qDeleteAll(tweens);
+    tweens.clear();
     setAcceptHoverEvents(false);
 }
 
@@ -99,6 +101,20 @@ TupItemTweener* TupSvgItem::tween(const QString &id) const
     return NULL;
 }
 
+TupItemTweener *TupSvgItem::tweenById(const QString &tweenId) const
+{
+    const QString id = tweenId.trimmed();
+    if (id.isEmpty())
+        return nullptr;
+
+    for (TupItemTweener *tween : tweens) {
+        if (tween && tween->tweenId() == id)
+            return tween;
+    }
+
+    return nullptr;
+}
+
 QList<TupItemTweener *> TupSvgItem::tweensList() const
 {
     return tweens;
@@ -146,11 +162,15 @@ bool TupSvgItem::hasTweens()
 
 void TupSvgItem::removeTween(int index)
 {
-    tweens.removeAt(index);
+    if (index < 0 || index >= tweens.size())
+        return;
+
+    delete tweens.takeAt(index);
 }
 
 void TupSvgItem::removeAllTweens()
 {
+    qDeleteAll(tweens);
     tweens.clear();
 }
 

@@ -704,10 +704,33 @@ void MotionTweener::applyTween()
         return;
     }
 
+    TupItemTweener *identityTween = nullptr;
+    if (mode == TupToolPlugin::Edit && currentTween)
+        identityTween = currentTween;
+    else
+        identityTween = scene->currentScene()->tween(name, TupItemTweener::Motion);
+
+    const bool tweenAlreadyExists = identityTween != nullptr;
+    const QString sourceTweenName = tweenAlreadyExists ? identityTween->getTweenName() : name;
+    QString tweenId;
+    if (tweenAlreadyExists) {
+        currentTween = identityTween;
+        tweenId = currentTween->tweenId().trimmed();
+        if (tweenId.isEmpty()) {
+            #ifdef TUP_DEBUG
+                qWarning() << "[Motion Tweener::applyTween()] - Existing tween is missing tween_id ->" << sourceTweenName;
+            #endif
+            QApplication::restoreOverrideCursor();
+            return;
+        }
+    } else {
+        tweenId = TupItemTweener::createTweenId();
+    }
+
     localTweenOperation = true;
 
     // Tween is new
-    if (!scene->tweenExists(name, TupItemTweener::Motion)) {
+    if (!tweenAlreadyExists) {
         initFrame = scene->currentFrameIndex();
         initLayer = scene->currentLayerIndex();
         initScene = scene->currentSceneIndex();
@@ -739,7 +762,7 @@ void MotionTweener::applyTween()
                                         objectIndex,
                                         QPointF(), scene->getSpaceContext(), type,
                                         TupProjectRequest::SetTween,
-                                        configPanel->tweenToXml(initScene, initLayer, initFrame, point, route), QByteArray(), QString(), QString(), objectId);
+                                        configPanel->tweenToXml(initScene, initLayer, initFrame, tweenId, point, route), QByteArray(), QString(), QString(), objectId);
             emit requested(&request);
         }
     } else { // Tween already exists
@@ -757,7 +780,7 @@ void MotionTweener::applyTween()
         // Remove the old local representation only so the replacement can be
         // applied optimistically without generating a second authoritative
         // RemoveTween command.
-        removeTweenLocally(name);
+        removeTweenLocally(sourceTweenName);
         QList<QGraphicsItem *> newList;
 
         initFrame = configPanel->startFrame();
@@ -834,7 +857,7 @@ void MotionTweener::applyTween()
                                         objectIndex,
                                         QPointF(), scene->getSpaceContext(), type,
                                         TupProjectRequest::SetTween,
-                                        configPanel->tweenToXml(initScene, initLayer, initFrame, point, route), QByteArray(), QString(), QString(), objectId);
+                                        configPanel->tweenToXml(initScene, initLayer, initFrame, tweenId, point, route), QByteArray(), QString(), QString(), objectId);
             emit requested(&request);
        }
 

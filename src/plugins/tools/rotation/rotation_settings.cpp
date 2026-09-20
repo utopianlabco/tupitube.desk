@@ -412,6 +412,8 @@ int RotationSettings::totalSteps()
 void RotationSettings::setEditMode()
 {
     mode = TupToolPlugin::Edit;
+    input->setReadOnly(false);
+    input->setFocusPolicy(Qt::StrongFocus);
     apply->setToolTip(tr("Update Tween"));
     remove->setIcon(QPixmap(kAppProp->themeDir() + "icons/close_properties.png"));
     remove->setToolTip(tr("Close Tween Properties"));
@@ -484,6 +486,17 @@ QString RotationSettings::currentTweenName() const
     return tweenName;
 }
 
+void RotationSettings::setTweenName(const QString &name)
+{
+    input->setText(name);
+}
+
+void RotationSettings::focusTweenName()
+{
+    input->setFocus();
+    input->selectAll();
+}
+
 void RotationSettings::emitOptionChanged(int option)
 {
     switch (option) {
@@ -509,11 +522,12 @@ void RotationSettings::emitOptionChanged(int option)
     }
 }
 
-QString RotationSettings::tweenToXml(int currentScene, int currentLayer, int currentFrame, QPointF point)
+QString RotationSettings::tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId, QPointF point)
 {
     QDomDocument doc;
 
     QDomElement root = doc.createElement("tweening");
+    root.setAttribute(QStringLiteral("tween_id"), tweenId);
     root.setAttribute("name", currentTweenName());
     root.setAttribute("type", TupItemTweener::Rotation);
     root.setAttribute("initFrame", currentFrame);

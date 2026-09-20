@@ -659,6 +659,66 @@ TupItemTweener *TupScene::tween(const QString &name, TupItemTweener::Type type)
     return nullptr;
 }
 
+TupItemTweener *TupScene::tweenById(const QString &tweenId) const
+{
+    const QString id = tweenId.trimmed();
+    if (id.isEmpty())
+        return nullptr;
+
+    for (TupLayer *layer : layers) {
+        if (!layer)
+            continue;
+
+        for (TupGraphicObject *object : layer->getTweeningGraphicObjects()) {
+            if (!object)
+                continue;
+
+            if (TupItemTweener *tween = object->tweenById(id))
+                return tween;
+        }
+
+        for (TupSvgItem *object : layer->getTweeningSvgObjects()) {
+            if (!object)
+                continue;
+
+            if (TupItemTweener *tween = object->tweenById(id))
+                return tween;
+        }
+    }
+
+    return nullptr;
+}
+
+bool TupScene::tweenIdExists(const QString &tweenId) const
+{
+    return tweenById(tweenId) != nullptr;
+}
+
+QList<QGraphicsItem *> TupScene::getItemsFromTweenId(const QString &tweenId) const
+{
+    QList<QGraphicsItem *> items;
+    const QString id = tweenId.trimmed();
+    if (id.isEmpty())
+        return items;
+
+    for (TupLayer *layer : layers) {
+        if (!layer)
+            continue;
+
+        for (TupGraphicObject *object : layer->getTweeningGraphicObjects()) {
+            if (object && object->tweenById(id))
+                items.append(object->item());
+        }
+
+        for (TupSvgItem *object : layer->getTweeningSvgObjects()) {
+            if (object && object->tweenById(id))
+                items.append(object);
+        }
+    }
+
+    return items;
+}
+
 QList<QString> TupScene::getTweenNames(TupItemTweener::Type type)
 {
     QList<QString> names;

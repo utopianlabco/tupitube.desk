@@ -145,6 +145,7 @@ void MotionConfigurator::setTweenManagerPanel()
 
     connect(tweenManager, SIGNAL(addNewTween(const QString &)), this, SLOT(addTween(const QString &)));
     connect(tweenManager, SIGNAL(editCurrentTween(const QString &)), this, SLOT(editTween()));
+    connect(tweenManager, SIGNAL(renameCurrentTween(const QString &)), this, SLOT(renameTween()));
     connect(tweenManager, SIGNAL(removeCurrentTween(const QString &)), this, SLOT(removeTween(const QString &)));
     connect(tweenManager, SIGNAL(getTweenData(const QString &)), this, SLOT(updateTweenData(const QString &)));
 
@@ -219,9 +220,9 @@ void MotionConfigurator::updateSteps(const QGraphicsPathItem *path)
     settingsPanel->updateSteps(path);
 }
 
-QString MotionConfigurator::tweenToXml(int currentScene, int currentLayer, int currentFrame, QPointF point, QString &path)
+QString MotionConfigurator::tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId, QPointF point, QString &path)
 {
-    return settingsPanel->tweenToXml(currentScene, currentLayer, currentFrame, point, path);
+    return settingsPanel->tweenToXml(currentScene, currentLayer, currentFrame, tweenId, point, path);
 }
 
 int MotionConfigurator::totalSteps()
@@ -302,6 +303,15 @@ void MotionConfigurator::closeTweenProperties()
     closeSettingsPanel();
 }
 
+void MotionConfigurator::renameTween()
+{
+    if (!currentTween)
+        return;
+
+    editTween();
+    settingsPanel->focusTweenName();
+}
+
 void MotionConfigurator::removeTween()
 {
     QString name = tweenManager->currentTweenName();
@@ -322,7 +332,13 @@ void MotionConfigurator::removeTween(const QString &name)
 
 QString MotionConfigurator::currentTweenName() const
 {
-    return settingsPanel->currentTweenName();
+    QString oldName = tweenManager->currentTweenName();
+    QString newName = settingsPanel->currentTweenName();
+
+    if (oldName.compare(newName) != 0)
+        tweenManager->updateTweenName(newName);
+
+    return newName;
 }
 
 QString MotionConfigurator::getTweenNameFromList() const
@@ -358,6 +374,16 @@ TupToolPlugin::Mode MotionConfigurator::mode()
 
 void MotionConfigurator::applyItem()
 {
+    const QString name = settingsPanel->currentTweenName().trimmed();
+    if (!tweenManager->isTweenNameAvailable(name)) {
+        TOsd::self()->display(TOsd::Error, name.isEmpty() ? tr("Tween name is missing!") : tr("Tween name already exists!"));
+        if (currentTween) {
+            settingsPanel->setTweenName(currentTween->getTweenName());
+            settingsPanel->focusTweenName();
+        }
+        return;
+    }
+
      currentMode = TupToolPlugin::Edit;
      emit clickedApplyTween();
 }

@@ -33,6 +33,7 @@
  ***************************************************************************/
 
 #include "opacity_configurator.h"
+#include "tosd.h"
 #include "tapplicationproperties.h"
 #include "tseparator.h"
 
@@ -112,6 +113,7 @@ void OpacityConfigurator::setTweenManagerPanel()
     tweenManager = new TweenManager(this);
     connect(tweenManager, SIGNAL(addNewTween(const QString &)), this, SLOT(addTween(const QString &)));
     connect(tweenManager, SIGNAL(editCurrentTween(const QString &)), this, SLOT(editTween()));
+    connect(tweenManager, SIGNAL(renameCurrentTween(const QString &)), this, SLOT(renameTween()));
     connect(tweenManager, SIGNAL(removeCurrentTween(const QString &)), this, SLOT(removeTween(const QString &)));
     connect(tweenManager, SIGNAL(getTweenData(const QString &)), this, SLOT(updateTweenData(const QString &)));
 
@@ -172,9 +174,9 @@ int OpacityConfigurator::startComboSize()
     return settingsPanel->startComboSize();
 }
 
-QString OpacityConfigurator::tweenToXml(int currentScene, int currentLayer, int currentFrame)
+QString OpacityConfigurator::tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId)
 {
-    return settingsPanel->tweenToXml(currentScene, currentLayer, currentFrame);
+    return settingsPanel->tweenToXml(currentScene, currentLayer, currentFrame, tweenId);
 }
 
 int OpacityConfigurator::totalSteps()
@@ -212,6 +214,15 @@ void OpacityConfigurator::editTween()
     activePropertiesPanel(true);
 
     emit setMode(currentMode);
+}
+
+void OpacityConfigurator::renameTween()
+{
+    if (!currentTween)
+        return;
+
+    editTween();
+    settingsPanel->focusTweenName();
 }
 
 void OpacityConfigurator::removeTween()
@@ -278,6 +289,16 @@ TupToolPlugin::Mode OpacityConfigurator::mode()
 
 void OpacityConfigurator::applyItem()
 {
+    const QString name = settingsPanel->currentTweenName().trimmed();
+    if (!tweenManager->isTweenNameAvailable(name)) {
+        TOsd::self()->display(TOsd::Error, name.isEmpty() ? tr("Tween name is missing!") : tr("Tween name already exists!"));
+        if (currentTween) {
+            settingsPanel->setTweenName(currentTween->getTweenName());
+            settingsPanel->focusTweenName();
+        }
+        return;
+    }
+
      currentMode = TupToolPlugin::Edit;
      emit clickedApplyTween();
 }

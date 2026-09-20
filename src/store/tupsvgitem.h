@@ -61,6 +61,7 @@ class TUPITUBE_EXPORT TupSvgItem : public QGraphicsSvgItem, public TupAbstractSe
         bool layerIsVisible();
 
         TupItemTweener* tween(const QString &name) const;
+        TupItemTweener* tweenById(const QString &tweenId) const;
         QList<TupItemTweener *> tweensList() const;
         void removeTween(int index);
         void removeAllTweens();

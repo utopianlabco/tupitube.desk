@@ -68,6 +68,7 @@ class TUPITUBE_EXPORT TupGraphicObject : public QObject, public TupAbstractSeria
         void removeTween(int index);
         void removeAllTweens();
         TupItemTweener *tween(const QString &id) const;
+        TupItemTweener *tweenById(const QString &tweenId) const;
         QList<TupItemTweener *> tweensList() const;
 
         TupFrame *frame() const;

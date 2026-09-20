@@ -72,8 +72,10 @@ class TUPITUBE_PLUGIN ScaleSettings : public QWidget
         void notifySelection(bool flag);
         int startComboSize();
         QString currentTweenName() const;
+        void setTweenName(const QString &name);
+        void focusTweenName();
         void activateMode(TupToolPlugin::EditMode mode);
-        QString tweenToXml(int currentScene, int currentLayer, int currentFrame,
+        QString tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId,
                            QPointF point, double initialXFactor, double initialYFactor);
 
     private slots:

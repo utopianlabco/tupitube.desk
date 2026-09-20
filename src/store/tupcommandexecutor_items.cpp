@@ -1358,6 +1358,26 @@ bool TupCommandExecutor::setTween(TupItemResponse *response)
                 TupItemTweener *tween = new TupItemTweener();
                 tween->fromXml(xml);
 
+                const QString tweenId = tween->tweenId().trimmed();
+                if (tweenId.isEmpty()) {
+                    #ifdef TUP_DEBUG
+                        qWarning() << "[TupCommandExecutor::setTween()] - Tween request is missing tween_id";
+                    #endif
+                    delete tween;
+                    return false;
+                }
+
+                if (TupItemTweener *existingTween = scene->tweenById(tweenId)) {
+                    if (existingTween->getType() != tween->getType()) {
+                        #ifdef TUP_DEBUG
+                            qWarning() << "[TupCommandExecutor::setTween()] - tween_id/type conflict ->"
+                                       << tweenId << existingTween->getType() << tween->getType();
+                        #endif
+                        delete tween;
+                        return false;
+                    }
+                }
+
                 if (itemType == TupLibraryObject::Item) {
                     const QString objectId = response->getObjectId().trimmed();
                     if (!objectId.isEmpty()) {
@@ -1478,6 +1498,11 @@ bool TupCommandExecutor::removeTween(TupItemResponse *response)
 
             TupItemTweener *tween = new TupItemTweener();
             tween->fromXml(xml);
+            if (tween->tweenId().isEmpty()) {
+                delete tween;
+                return false;
+            }
+
             tween->setZLevel(itemIndex);
             object->addTween(tween);
             scene->addTweenObject(layerIndex, object);
@@ -1510,6 +1535,11 @@ bool TupCommandExecutor::removeTween(TupItemResponse *response)
 
             TupItemTweener *tween = new TupItemTweener();
             tween->fromXml(xml);
+            if (tween->tweenId().isEmpty()) {
+                delete tween;
+                return false;
+            }
+
             tween->setZLevel(itemIndex);
             svg->addTween(tween);
             scene->addTweenObject(layerIndex, svg);

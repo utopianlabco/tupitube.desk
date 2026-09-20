@@ -74,13 +74,14 @@ class TUPITUBE_PLUGIN ScaleConfigurator : public QFrame
         void closeSettingsPanel();
         TupToolPlugin::Mode mode();
         void resetUI();
-        QString tweenToXml(int currentScene, int currentLayer, int currentFrame,
+        QString tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId,
                            QPointF point, double initialXScaleFactor, double initialYScaleFactor);
         
     private slots:
         void applyItem();
         void addTween(const QString &name);
         void editTween();
+        void renameTween();
         void removeTween();
         void removeTween(const QString &name);
         void closeTweenProperties();

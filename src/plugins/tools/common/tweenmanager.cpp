@@ -157,6 +157,15 @@ void TweenManager::editTween(QListWidgetItem *item)
     emit editCurrentTween(item->text());
 }
 
+void TweenManager::renameTween()
+{
+    QListWidgetItem *item = tweensList->currentItem();
+    if (!item)
+        return;
+
+    emit renameCurrentTween(item->text());
+}
+
 void TweenManager::removeTween()
 {
     removeItemFromList();
@@ -174,19 +183,27 @@ void TweenManager::removeItemFromList()
 
 void TweenManager::showMenu(const QPoint &point)
 {
-    if (tweensList->count() > 0) {
-        QAction *edit = new QAction(tr("Edit"), this);
-        connect(edit, SIGNAL(triggered()), this, SLOT(editTween()));
-        QAction *remove = new QAction(tr("Remove"), this);
-        connect(remove, SIGNAL(triggered()), this, SLOT(removeTween()));
+    QListWidgetItem *item = tweensList->itemAt(point);
+    if (!item)
+        return;
 
-        QMenu *menu = new QMenu(tr("Options"));
-        menu->addAction(edit);
-        menu->addAction(remove);
+    tweensList->setCurrentItem(item);
+    emit getTweenData(item->text());
 
-        QPoint globalPos = tweensList->mapToGlobal(point);
-        menu->exec(globalPos);
-    }
+    QAction *edit = new QAction(tr("Edit"), this);
+    connect(edit, SIGNAL(triggered()), this, SLOT(editTween()));
+    QAction *rename = new QAction(tr("Rename"), this);
+    connect(rename, SIGNAL(triggered()), this, SLOT(renameTween()));
+    QAction *remove = new QAction(tr("Remove"), this);
+    connect(remove, SIGNAL(triggered()), this, SLOT(removeTween()));
+
+    QMenu *menu = new QMenu(tr("Options"));
+    menu->addAction(edit);
+    menu->addAction(rename);
+    menu->addAction(remove);
+
+    QPoint globalPos = tweensList->mapToGlobal(point);
+    menu->exec(globalPos);
 }
 
 void TweenManager::updateTweenData(QListWidgetItem *item)
@@ -221,4 +238,20 @@ void TweenManager::updateTweenName(const QString &name)
     QListWidgetItem *item = tweensList->currentItem();
     item->setText(name);
     target = name;
+}
+
+bool TweenManager::isTweenNameAvailable(const QString &name) const
+{
+    const QString candidate = name.trimmed();
+    if (candidate.isEmpty())
+        return false;
+
+    QListWidgetItem *current = tweensList->currentItem();
+    for (int i = 0; i < tweensList->count(); ++i) {
+        QListWidgetItem *item = tweensList->item(i);
+        if (item != current && item->text() == candidate)
+            return false;
+    }
+
+    return true;
 }

@@ -75,6 +75,7 @@ class TUPITUBE_PLUGIN ColoringTweener : public TupToolPlugin
         virtual void sceneResponse(const TupSceneResponse *event);
         virtual void layerResponse(const TupLayerResponse *event);
         virtual void frameResponse(const TupFrameResponse *event);
+        virtual void itemResponse(const TupItemResponse *event);
 
     signals:
         void tweenRemoved();

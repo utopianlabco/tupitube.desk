@@ -113,6 +113,7 @@ void RotationConfigurator::setTweenManagerPanel()
     tweenManager = new TweenManager(this);
     connect(tweenManager, SIGNAL(addNewTween(const QString &)), this, SLOT(addTween(const QString &)));
     connect(tweenManager, SIGNAL(editCurrentTween(const QString &)), this, SLOT(editTween()));
+    connect(tweenManager, SIGNAL(renameCurrentTween(const QString &)), this, SLOT(renameTween()));
     connect(tweenManager, SIGNAL(removeCurrentTween(const QString &)), this, SLOT(removeTween(const QString &)));
     connect(tweenManager, SIGNAL(getTweenData(const QString &)), this, SLOT(updateTweenData(const QString &)));
 
@@ -173,9 +174,9 @@ int RotationConfigurator::startComboSize()
     return settingsPanel->startComboSize();
 }
 
-QString RotationConfigurator::tweenToXml(int currentScene, int currentLayer, int currentFrame, QPointF point)
+QString RotationConfigurator::tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId, QPointF point)
 {
-    return settingsPanel->tweenToXml(currentScene, currentLayer, currentFrame, point);
+    return settingsPanel->tweenToXml(currentScene, currentLayer, currentFrame, tweenId, point);
 }
 
 int RotationConfigurator::totalSteps()
@@ -213,6 +214,15 @@ void RotationConfigurator::editTween()
     settingsPanel->notifySelection(true);
     settingsPanel->setParameters(currentTween);
     activePropertiesPanel(true);
+}
+
+void RotationConfigurator::renameTween()
+{
+    if (!currentTween)
+        return;
+
+    editTween();
+    settingsPanel->focusTweenName();
 }
 
 void RotationConfigurator::removeTween()
@@ -279,6 +289,16 @@ TupToolPlugin::Mode RotationConfigurator::mode()
 
 void RotationConfigurator::applyItem()
 {
+    const QString name = settingsPanel->currentTweenName().trimmed();
+    if (!tweenManager->isTweenNameAvailable(name)) {
+        TOsd::self()->display(TOsd::Error, name.isEmpty() ? tr("Tween name is missing!") : tr("Tween name already exists!"));
+        if (currentTween) {
+            settingsPanel->setTweenName(currentTween->getTweenName());
+            settingsPanel->focusTweenName();
+        }
+        return;
+    }
+
      currentMode = TupToolPlugin::Edit;
      emit clickedApplyTween();
 }

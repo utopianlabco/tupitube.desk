@@ -48,6 +48,21 @@ TupItemTweener::~TupItemTweener()
     qDeleteAll(steps);
 }
 
+QString TupItemTweener::createTweenId()
+{
+    return QUuid::createUuid().toString(QUuid::WithoutBraces);
+}
+
+void TupItemTweener::setTweenId(const QString &id)
+{
+    persistentTweenId = id.trimmed();
+}
+
+QString TupItemTweener::tweenId() const
+{
+    return persistentTweenId;
+}
+
 QString TupItemTweener::getTweenName()
 {
     return tweenName;
@@ -184,6 +199,7 @@ void TupItemTweener::fromXml(const QString &xml)
     if (doc.setContent(xml)) {
         QDomElement root = doc.documentElement();
 
+        persistentTweenId = root.attribute(QStringLiteral("tween_id")).trimmed();
         tweenName = root.attribute("name");
         tweenType = TupItemTweener::Type(root.attribute("type").toInt());
 
@@ -288,6 +304,7 @@ QDomElement TupItemTweener::toXml(QDomDocument &doc) const
     #endif
 
     QDomElement root = doc.createElement("tweening");
+    root.setAttribute(QStringLiteral("tween_id"), persistentTweenId);
     root.setAttribute("name", tweenName);
     root.setAttribute("type", tweenType);
 

@@ -83,7 +83,7 @@ class TUPITUBE_PLUGIN MotionConfigurator : public QFrame
         int startFrame();
 
         void updateSteps(const QGraphicsPathItem *path);
-        QString tweenToXml(int currentScene, int currentLayer, int currentFrame, QPointF point, QString &path);
+        QString tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId, QPointF point, QString &path);
         int totalSteps();
         QList<QPointF> tweenPoints();
         void activateMode(TupToolPlugin::EditMode mode);
@@ -108,6 +108,7 @@ class TUPITUBE_PLUGIN MotionConfigurator : public QFrame
 
     public slots:
         void editTween();
+        void renameTween();
         void closeTweenProperties();
         
     private slots:

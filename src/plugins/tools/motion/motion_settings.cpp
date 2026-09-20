@@ -277,11 +277,12 @@ void MotionSettings::emitOptionChanged(int option)
     }
 }
 
-QString MotionSettings::tweenToXml(int currentScene, int currentLayer, int currentFrame, QPointF point, QString &path)
+QString MotionSettings::tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId, QPointF point, QString &path)
 {
     QDomDocument doc;
 
     QDomElement root = doc.createElement("tweening");
+    root.setAttribute(QStringLiteral("tween_id"), tweenId);
     root.setAttribute("name", currentTweenName());
     root.setAttribute("type", TupItemTweener::Motion);
     root.setAttribute("initFrame", currentFrame);
@@ -356,14 +357,14 @@ void MotionSettings::applyTween()
 void MotionSettings::setEditMode()
 {
     mode = TupToolPlugin::Edit;
-    input->setReadOnly(true);
-    input->setFrame(false);
-    input->setFocusPolicy(Qt::NoFocus);
-    input->setCursor(Qt::ArrowCursor);
-    input->setStyleSheet("QLineEdit { background: transparent; border: none; color: palette(text); }");
-    input->setToolTip(tr("Tween names cannot be changed after creation."));
+    input->setReadOnly(false);
+    input->setFrame(true);
+    input->setFocusPolicy(Qt::StrongFocus);
+    input->unsetCursor();
+    input->setStyleSheet(QString());
+    input->setToolTip(tr("Tween name"));
     QFont nameFont = input->font();
-    nameFont.setBold(true);
+    nameFont.setBold(false);
     input->setFont(nameFont);
     applyButton->setToolTip(tr("Update Tween"));
     applyButton->setEnabled(true);
@@ -378,6 +379,17 @@ QString MotionSettings::currentTweenName() const
         input->setFocus();
 
     return tweenName;
+}
+
+void MotionSettings::setTweenName(const QString &name)
+{
+    input->setText(name);
+}
+
+void MotionSettings::focusTweenName()
+{
+    input->setFocus();
+    input->selectAll();
 }
 
 void MotionSettings::updateTotalLabel(int total)

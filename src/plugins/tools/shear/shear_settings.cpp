@@ -307,6 +307,8 @@ int ShearSettings::totalSteps()
 void ShearSettings::setEditMode()
 {
     mode = TupToolPlugin::Edit;
+    input->setReadOnly(false);
+    input->setFocusPolicy(Qt::StrongFocus);
     apply->setToolTip(tr("Update Tween"));
     remove->setIcon(QPixmap(kAppProp->themeDir() + "icons/close_properties.png"));
     remove->setToolTip(tr("Close Tween Properties"));
@@ -349,6 +351,17 @@ QString ShearSettings::currentTweenName() const
     return tweenName;
 }
 
+void ShearSettings::setTweenName(const QString &name)
+{
+    input->setText(name);
+}
+
+void ShearSettings::focusTweenName()
+{
+    input->setFocus();
+    input->selectAll();
+}
+
 void ShearSettings::emitOptionChanged(int option)
 {
     switch (option) {
@@ -371,11 +384,12 @@ void ShearSettings::emitOptionChanged(int option)
     }
 }
 
-QString ShearSettings::tweenToXml(int currentScene, int currentLayer, int currentFrame, QPointF point)
+QString ShearSettings::tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId, QPointF point)
 {
     QDomDocument doc;
 
     QDomElement root = doc.createElement("tweening");
+    root.setAttribute(QStringLiteral("tween_id"), tweenId);
     root.setAttribute("name", currentTweenName());
     root.setAttribute("type", TupItemTweener::Shear);
     root.setAttribute("initFrame", currentFrame);

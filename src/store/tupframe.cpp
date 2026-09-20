@@ -291,9 +291,16 @@ void TupFrame::fromXml(const QString &xml)
                           }
 
                           tweener->fromXml(newDoc);
-                          tweener->setZLevel(counter);
-                          last->addTween(tweener);
-                          parentScene()->addTweenObject(layer->layerIndex(), last);
+                          if (tweener->tweenId().isEmpty()) {
+                              #ifdef TUP_DEBUG
+                                  qWarning() << "[TupFrame::fromXml()] - Ignoring native tween with missing tween_id";
+                              #endif
+                              delete tweener;
+                          } else {
+                              tweener->setZLevel(counter);
+                              last->addTween(tweener);
+                              parentScene()->addTweenObject(layer->layerIndex(), last);
+                          }
                       } else {
                           QString newDoc;
                           {
@@ -346,9 +353,16 @@ void TupFrame::fromXml(const QString &xml)
                                           ts << n2;
                                       }
                                       tweener->fromXml(newDoc);
-                                      tweener->setZLevel(counter);
-                                      svg->addTween(tweener);
-                                      parentScene()->addTweenObject(layer->layerIndex(), svg);
+                                      if (tweener->tweenId().isEmpty()) {
+                                          #ifdef TUP_DEBUG
+                                              qWarning() << "[TupFrame::fromXml()] - Ignoring SVG tween with missing tween_id";
+                                          #endif
+                                          delete tweener;
+                                      } else {
+                                          tweener->setZLevel(counter);
+                                          svg->addTween(tweener);
+                                          parentScene()->addTweenObject(layer->layerIndex(), svg);
+                                      }
                                   }
                                   n2 = n2.nextSibling();
                               }
@@ -1374,17 +1388,24 @@ TupGraphicObject *TupFrame::insertGraphicObjectFromXml(int position, const QStri
     const int insertPosition = qBound(0, position, graphics.size());
     insertObject(insertPosition, object, label);
 
+    bool hasValidTween = false;
     for (const QDomElement &tweenElement : tweenElements) {
         QDomDocument tweenDocument;
         tweenDocument.appendChild(tweenDocument.importNode(tweenElement, true));
 
         TupItemTweener *tweener = new TupItemTweener();
         tweener->fromXml(tweenDocument.toString(-1));
+        if (tweener->tweenId().isEmpty()) {
+            delete tweener;
+            continue;
+        }
+
         tweener->setZLevel(insertPosition);
         object->addTween(tweener);
+        hasValidTween = true;
     }
 
-    if (!tweenElements.isEmpty() && parentScene() && layer)
+    if (hasValidTween && parentScene() && layer)
         parentScene()->addTweenObject(layer->layerIndex(), object);
 
     return object;

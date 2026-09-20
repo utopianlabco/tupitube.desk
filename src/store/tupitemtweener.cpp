@@ -55,7 +55,15 @@ QString TupItemTweener::createTweenId()
 
 void TupItemTweener::setTweenId(const QString &id)
 {
-    persistentTweenId = id.trimmed();
+    const QString trimmedId = id.trimmed();
+    const QUuid uuid(trimmedId);
+
+    if (uuid.isNull()) {
+        persistentTweenId.clear();
+        return;
+    }
+
+    persistentTweenId = trimmedId;
 }
 
 QString TupItemTweener::tweenId() const
@@ -199,7 +207,7 @@ void TupItemTweener::fromXml(const QString &xml)
     if (doc.setContent(xml)) {
         QDomElement root = doc.documentElement();
 
-        persistentTweenId = root.attribute(QStringLiteral("tween_id")).trimmed();
+        setTweenId(root.attribute(QStringLiteral("tween_id")));
         tweenName = root.attribute("name");
         tweenType = TupItemTweener::Type(root.attribute("type").toInt());
 

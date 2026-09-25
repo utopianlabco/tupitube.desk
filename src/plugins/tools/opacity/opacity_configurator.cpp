@@ -106,14 +106,16 @@ void OpacityConfigurator::activePropertiesPanel(bool enable)
 void OpacityConfigurator::setCurrentTween(TupItemTweener *tween)
 {
     currentTween = tween;
+    if (currentTween)
+        tweenManager->selectTween(currentTween->getTweenName());
 }
 
 void OpacityConfigurator::setTweenManagerPanel()
 {
     tweenManager = new TweenManager(this);
     connect(tweenManager, SIGNAL(addNewTween(const QString &)), this, SLOT(addTween(const QString &)));
-    connect(tweenManager, SIGNAL(editCurrentTween(const QString &)), this, SLOT(editTween()));
-    connect(tweenManager, SIGNAL(renameCurrentTween(const QString &)), this, SLOT(renameTween()));
+    connect(tweenManager, SIGNAL(editCurrentTween(const QString &)), this, SLOT(editTween(const QString &)));
+    connect(tweenManager, SIGNAL(renameCurrentTween(const QString &)), this, SLOT(renameTween(const QString &)));
     connect(tweenManager, SIGNAL(removeCurrentTween(const QString &)), this, SLOT(removeTween(const QString &)));
     connect(tweenManager, SIGNAL(getTweenData(const QString &)), this, SLOT(updateTweenData(const QString &)));
 
@@ -216,6 +218,12 @@ void OpacityConfigurator::editTween()
     emit setMode(currentMode);
 }
 
+void OpacityConfigurator::editTween(const QString &name)
+{
+    updateTweenData(name);
+    editTween();
+}
+
 void OpacityConfigurator::renameTween()
 {
     if (!currentTween)
@@ -223,6 +231,12 @@ void OpacityConfigurator::renameTween()
 
     editTween();
     settingsPanel->focusTweenName();
+}
+
+void OpacityConfigurator::renameTween(const QString &name)
+{
+    updateTweenData(name);
+    renameTween();
 }
 
 void OpacityConfigurator::removeTween()

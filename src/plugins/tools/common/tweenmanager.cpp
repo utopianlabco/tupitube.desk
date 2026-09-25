@@ -35,6 +35,8 @@
 #include "tweenmanager.h"
 #include "talgorithm.h"
 
+#include <QShortcut>
+
 TweenManager::TweenManager(QWidget *parent) : QWidget(parent)
 {
 
@@ -69,8 +71,17 @@ TweenManager::TweenManager(QWidget *parent) : QWidget(parent)
     tweensList->setMovement(QListView::Static);
     tweensList->setFixedHeight((screenHeight * 8)/100);
     connect(tweensList, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showMenu(const QPoint &)));
-    connect(tweensList, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(updateTweenData(QListWidgetItem *)));
+    connect(tweensList, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
+            this, SLOT(updateTweenData(QListWidgetItem *)));
     connect(tweensList, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(editTween(QListWidgetItem *)));
+
+    QShortcut *returnShortcut = new QShortcut(QKeySequence(Qt::Key_Return), tweensList);
+    returnShortcut->setContext(Qt::WidgetShortcut);
+    connect(returnShortcut, SIGNAL(activated()), this, SLOT(editTween()));
+
+    QShortcut *enterShortcut = new QShortcut(QKeySequence(Qt::Key_Enter), tweensList);
+    enterShortcut->setContext(Qt::WidgetShortcut);
+    connect(enterShortcut, SIGNAL(activated()), this, SLOT(editTween()));
 
     listLayout->addWidget(tweensList);
 
@@ -95,6 +106,17 @@ void TweenManager::loadTweenList(QList<QString> tweenList)
     }
 
     tweensList->setCurrentRow(0);
+}
+
+void TweenManager::selectTween(const QString &name)
+{
+    for (int i=0; i < tweensList->count(); i++) {
+        QListWidgetItem *item = tweensList->item(i);
+        if (item && item->text() == name) {
+            tweensList->setCurrentItem(item);
+            return;
+        }
+    }
 }
 
 bool TweenManager::itemExists(const QString &name)
@@ -145,6 +167,9 @@ void TweenManager::addTween()
 void TweenManager::editTween()
 {
     QListWidgetItem *item = tweensList->currentItem();
+    if (!item)
+        return;
+
     #ifdef TUP_DEBUG
         qDebug() << "[TweenManager::editTween()] - tween name ->" << item->text();
     #endif
@@ -208,6 +233,9 @@ void TweenManager::showMenu(const QPoint &point)
 
 void TweenManager::updateTweenData(QListWidgetItem *item)
 {
+    if (!item)
+        return;
+
     emit getTweenData(item->text());
 }
 

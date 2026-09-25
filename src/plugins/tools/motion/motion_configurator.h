@@ -108,7 +108,9 @@ class TUPITUBE_PLUGIN MotionConfigurator : public QFrame
 
     public slots:
         void editTween();
+        void editTween(const QString &name);
         void renameTween();
+        void renameTween(const QString &name);
         void closeTweenProperties();
         
     private slots:

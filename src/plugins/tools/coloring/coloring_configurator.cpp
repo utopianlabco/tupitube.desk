@@ -115,14 +115,16 @@ void ColoringConfigurator::activePropertiesPanel(bool enable)
 void ColoringConfigurator::setCurrentTween(TupItemTweener *lCurrentTween)
 {
     currentTween = lCurrentTween;
+    if (currentTween)
+        tweenManager->selectTween(currentTween->getTweenName());
 }
 
 void ColoringConfigurator::setTweenManagerPanel()
 {
     tweenManager = new TweenManager(this);
     connect(tweenManager, SIGNAL(addNewTween(const QString &)), this, SLOT(addTween(const QString &)));
-    connect(tweenManager, SIGNAL(editCurrentTween(const QString &)), this, SLOT(editTween()));
-    connect(tweenManager, SIGNAL(renameCurrentTween(const QString &)), this, SLOT(renameTween()));
+    connect(tweenManager, SIGNAL(editCurrentTween(const QString &)), this, SLOT(editTween(const QString &)));
+    connect(tweenManager, SIGNAL(renameCurrentTween(const QString &)), this, SLOT(renameTween(const QString &)));
     connect(tweenManager, SIGNAL(removeCurrentTween(const QString &)), this, SLOT(removeTween(const QString &)));
     connect(tweenManager, SIGNAL(getTweenData(const QString &)), this, SLOT(updateTweenData(const QString &)));
 
@@ -225,6 +227,12 @@ void ColoringConfigurator::editTween()
     activePropertiesPanel(true);    
 }
 
+void ColoringConfigurator::editTween(const QString &name)
+{
+    updateTweenData(name);
+    editTween();
+}
+
 void ColoringConfigurator::renameTween()
 {
     if (!currentTween)
@@ -232,6 +240,12 @@ void ColoringConfigurator::renameTween()
 
     editTween();
     settingsPanel->focusTweenName();
+}
+
+void ColoringConfigurator::renameTween(const QString &name)
+{
+    updateTweenData(name);
+    renameTween();
 }
 
 void ColoringConfigurator::removeTween()

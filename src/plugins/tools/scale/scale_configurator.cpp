@@ -111,14 +111,16 @@ void ScaleConfigurator::activePropertiesPanel(bool enable)
 void ScaleConfigurator::setCurrentTween(TupItemTweener *tween)
 {
     currentTween = tween;
+    if (currentTween)
+        tweenManager->selectTween(currentTween->getTweenName());
 }
 
 void ScaleConfigurator::setTweenManagerPanel()
 {
     tweenManager = new TweenManager(this);
     connect(tweenManager, SIGNAL(addNewTween(const QString &)), this, SLOT(addTween(const QString &)));
-    connect(tweenManager, SIGNAL(editCurrentTween(const QString &)), this, SLOT(editTween()));
-    connect(tweenManager, SIGNAL(renameCurrentTween(const QString &)), this, SLOT(renameTween()));
+    connect(tweenManager, SIGNAL(editCurrentTween(const QString &)), this, SLOT(editTween(const QString &)));
+    connect(tweenManager, SIGNAL(renameCurrentTween(const QString &)), this, SLOT(renameTween(const QString &)));
     connect(tweenManager, SIGNAL(removeCurrentTween(const QString &)), this, SLOT(removeTween(const QString &)));
     connect(tweenManager, SIGNAL(getTweenData(const QString &)), this, SLOT(updateTweenData(const QString &)));
 
@@ -223,6 +225,12 @@ void ScaleConfigurator::editTween()
     activePropertiesPanel(true);
 }
 
+void ScaleConfigurator::editTween(const QString &name)
+{
+    updateTweenData(name);
+    editTween();
+}
+
 void ScaleConfigurator::renameTween()
 {
     if (!currentTween)
@@ -230,6 +238,12 @@ void ScaleConfigurator::renameTween()
 
     editTween();
     settingsPanel->focusTweenName();
+}
+
+void ScaleConfigurator::renameTween(const QString &name)
+{
+    updateTweenData(name);
+    renameTween();
 }
 
 void ScaleConfigurator::removeTween()

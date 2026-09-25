@@ -88,7 +88,9 @@ class TUPITUBE_PLUGIN ColoringConfigurator : public QFrame
         void applyItem();
         void addTween(const QString &name);
         void editTween();
+        void editTween(const QString &name);
         void renameTween();
+        void renameTween(const QString &name);
         void removeTween();
         void removeTween(const QString &name);
         void closeTweenProperties();

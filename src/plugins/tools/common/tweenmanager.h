@@ -61,6 +61,7 @@ class TUPITUBE_EXPORT TweenManager: public QWidget
         ~TweenManager();
 
         void loadTweenList(QList<QString> tweenList);
+        void selectTween(const QString &name);
         void resetUI();
         QString currentTweenName() const;
         int listSize(); 

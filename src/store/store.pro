@@ -79,7 +79,8 @@ HEADERS += tuplayer.h \
            tupstoryboard.h \
            tuplipsync.h \
            tupprojectscanner.h \
-           tupcommandcoordinator.h
+           tupcommandcoordinator.h \
+           tupobjectrelocationservice.h
 
 SOURCES += tuplayer.cpp \
            tuppalettedocument.cpp \
@@ -134,7 +135,8 @@ SOURCES += tuplayer.cpp \
            tupstoryboard.cpp \
            tuplipsync.cpp \
            tupprojectscanner.cpp \
-           tupcommandcoordinator.cpp
+           tupcommandcoordinator.cpp \
+           tupobjectrelocationservice.cpp
 
 STORE_DIR = .
 

@@ -1411,6 +1411,111 @@ TupGraphicObject *TupFrame::insertGraphicObjectFromXml(int position, const QStri
     return object;
 }
 
+bool TupFrame::takeGraphicObjectForRelocation(int position, TupGraphicObject **object,
+                                               QString *label, int *zLevel)
+{
+    if (!object || !label || !zLevel)
+        return false;
+
+    *object = nullptr;
+    label->clear();
+    *zLevel = -1;
+
+    if (position < 0 || position >= graphics.size())
+        return false;
+
+    TupGraphicObject *currentObject = graphics.at(position);
+    if (!currentObject || !currentObject->item())
+        return false;
+
+    const int currentZLevel = currentObject->itemZValue();
+    const QString currentLabel = objectIndexes.at(position);
+
+    objectIndexes.removeAt(position);
+    graphics.removeAt(position);
+
+    // Close the z-order gap created by the detached native object. Unlike
+    // removeGraphicAt(), relocation deliberately leaves tween indexes intact.
+    for (TupGraphicObject *remainingObject : graphics) {
+        if (remainingObject && remainingObject->itemZValue() > currentZLevel)
+            remainingObject->setItemZValue(remainingObject->itemZValue() - 1);
+    }
+
+    for (TupSvgItem *svgItem : svg) {
+        if (svgItem && static_cast<int>(svgItem->zValue()) > currentZLevel)
+            svgItem->setZValue(svgItem->zValue() - 1);
+    }
+
+    refreshZLevelIndex();
+
+    *object = currentObject;
+    *label = currentLabel;
+    *zLevel = currentZLevel;
+
+    return true;
+}
+
+bool TupFrame::insertGraphicObjectForRelocation(int position, TupGraphicObject *object,
+                                                 const QString &label, int zLevel)
+{
+    if (!object || !object->item() || zLevel < 0)
+        return false;
+
+    if (graphics.contains(object))
+        return false;
+
+    const QString objectId = object->objectId().trimmed();
+    if (objectId.isEmpty() || graphicById(objectId))
+        return false;
+
+    const int insertPosition = qBound(0, position, graphics.size());
+
+    // Make one deterministic z-order slot for the relocated object. Native
+    // and SVG representations share the frame z-order namespace.
+    for (TupGraphicObject *currentObject : graphics) {
+        if (currentObject && currentObject->itemZValue() >= zLevel)
+            currentObject->setItemZValue(currentObject->itemZValue() + 1);
+    }
+
+    for (TupSvgItem *svgItem : svg) {
+        if (svgItem && static_cast<int>(svgItem->zValue()) >= zLevel)
+            svgItem->setZValue(svgItem->zValue() + 1);
+    }
+
+    object->setItemZValue(zLevel);
+    object->setParent(this);
+    object->setFrame(this);
+
+    graphics.insert(insertPosition, object);
+    objectIndexes.insert(insertPosition, label);
+    refreshZLevelIndex();
+
+    return true;
+}
+
+void TupFrame::refreshZLevelIndex()
+{
+    int maxZLevel = -1;
+
+    for (TupGraphicObject *object : graphics) {
+        if (object)
+            maxZLevel = qMax(maxZLevel, object->itemZValue());
+    }
+
+    for (TupSvgItem *svgItem : svg) {
+        if (svgItem)
+            maxZLevel = qMax(maxZLevel, static_cast<int>(svgItem->zValue()));
+    }
+
+    if (maxZLevel >= 0) {
+        zLevelIndex = maxZLevel + 1;
+        return;
+    }
+
+    if (type == Regular && layer)
+        zLevelIndex = (layer->layerIndex() + BG_LAYERS) * ZLAYER_LIMIT;
+}
+
 bool TupFrame::removeGraphicAt(int position)
 {
     #ifdef TUP_DEBUG

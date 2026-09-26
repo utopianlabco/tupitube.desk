@@ -109,6 +109,14 @@ class TUPITUBE_EXPORT TupFrame : public QObject, public TupAbstractSerializable
         void restoreGraphic();
         TupGraphicObject *insertGraphicObjectFromXml(int position, const QString &xml);
 
+        // Relocation-only primitives. These transfer an existing native
+        // TupGraphicObject between frames without using deletion Undo storage
+        // and without removing its tween bindings.
+        bool takeGraphicObjectForRelocation(int position, TupGraphicObject **object,
+                                            QString *label, int *zLevel);
+        bool insertGraphicObjectForRelocation(int position, TupGraphicObject *object,
+                                              const QString &label, int zLevel);
+
         bool removeSvg(int position);
         bool removeSvgAt(int position);
         void restoreSvg();
@@ -184,6 +192,7 @@ class TUPITUBE_EXPORT TupFrame : public QObject, public TupAbstractSerializable
        void insertItem(int position, QGraphicsItem *item, const QString &label);
        void insertObject(int position, TupGraphicObject *object, const QString &label);
        void insertSvg(int position, TupSvgItem *item, const QString &label);
+       void refreshZLevelIndex();
 
        TupLayer *layer;
        QString frameName;

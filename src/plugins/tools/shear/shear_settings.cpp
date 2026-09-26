@@ -252,6 +252,11 @@ void ShearSettings::setParameters(TupItemTweener *currentTween)
 
     input->setText(currentTween->getTweenName());
 
+    // Preserve the authoritative tween duration while the start frame is
+    // refreshed programmatically. updateRangeFromInit() keeps the end frame
+    // aligned when the start frame moves.
+    stepsCounter = currentTween->getFrames();
+
     initFrameSpin->setEnabled(true);
     initFrameSpin->setValue(currentTween->getInitFrame() + 1);
     endFrameSpin->setValue(currentTween->getInitFrame() + currentTween->getFrames());
@@ -272,10 +277,14 @@ void ShearSettings::initStartCombo(int framesCount, int currentIndex)
     endFrameSpin->clear();
 
     initFrameSpin->setMinimum(1);
-    initFrameSpin->setMaximum(framesCount);
+    // The start frame is an editable tween property, not a selector limited
+    // to frames that already exist. RebaseTween creates required trailing
+    // frames as part of the authoritative domain operation.
+    initFrameSpin->setMaximum(999);
     initFrameSpin->setValue(currentIndex + 1);
 
     endFrameSpin->setMinimum(1);
+    endFrameSpin->setMaximum(999);
     endFrameSpin->setValue(framesCount);
 
     iterationsField->setValue(framesCount);
@@ -491,6 +500,12 @@ void ShearSettings::activateMode(TupToolPlugin::EditMode mode)
     options->setCurrentIndex(mode);
 }
 
+void ShearSettings::showPropertiesForm()
+{
+    propertiesDone = true;
+    innerPanel->show();
+}
+
 void ShearSettings::checkFramesRange()
 {
     int begin = initFrameSpin->value();
@@ -534,8 +549,18 @@ void ShearSettings::updateReverseCheckbox(int state)
 
 void ShearSettings::updateRangeFromInit(int begin)
 {
-    int end = endFrameSpin->value();
-    stepsCounter = end - begin + 1;
+    emit initFrameChanged(begin - 1);
+
+    if (mode == TupToolPlugin::Edit && stepsCounter > 0) {
+        const int end = begin + stepsCounter - 1;
+        endFrameSpin->blockSignals(true);
+        endFrameSpin->setValue(end);
+        endFrameSpin->blockSignals(false);
+    } else {
+        const int end = endFrameSpin->value();
+        stepsCounter = end - begin + 1;
+    }
+
     totalLabel->setText(tr("Frames Total") + ": " + QString::number(stepsCounter));
 }
 

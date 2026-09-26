@@ -222,13 +222,11 @@ void ScaleSettings::setInnerForm()
 
 void ScaleSettings::activeInnerForm(bool enable)
 {
-    if (enable && !innerPanel->isVisible()) {
-        propertiesDone = true;
+    propertiesDone = enable;
+    if (enable)
         innerPanel->show();
-    } else {
-        propertiesDone = false;
+    else
         innerPanel->hide();
-    }
 }
 
 // Adding new Tween
@@ -255,6 +253,11 @@ void ScaleSettings::setParameters(TupItemTweener *currentTween)
     activateMode(TupToolPlugin::Properties);
 
     input->setText(currentTween->getTweenName());
+
+    // Preserve the authoritative tween duration while the start frame is
+    // refreshed programmatically. updateRangeFromInit() keeps the end frame
+    // aligned when the start frame moves.
+    stepsCounter = currentTween->getFrames();
 
     initFrameSpin->setEnabled(true);
     initFrameSpin->setValue(currentTween->getInitFrame() + 1);
@@ -283,10 +286,14 @@ void ScaleSettings::initStartCombo(int framesCount, int currentIndex)
     endFrameSpin->clear();
 
     initFrameSpin->setMinimum(1);
-    initFrameSpin->setMaximum(framesCount);
+    // The start frame is an editable tween property, not a selector limited
+    // to frames that already exist in the project. RebaseTween is responsible
+    // for creating any trailing frames required by the authoritative target.
+    initFrameSpin->setMaximum(999);
     initFrameSpin->setValue(currentIndex + 1);
 
     endFrameSpin->setMinimum(1);
+    endFrameSpin->setMaximum(999);
     endFrameSpin->setValue(framesCount);
 
     iterationsField->setValue(framesCount);
@@ -507,6 +514,12 @@ void ScaleSettings::activateMode(TupToolPlugin::EditMode mode)
     options->setCurrentIndex(mode);
 }
 
+void ScaleSettings::showPropertiesForm()
+{
+    propertiesDone = true;
+    innerPanel->show();
+}
+
 void ScaleSettings::checkFramesRange()
 {
     int begin = initFrameSpin->value();
@@ -550,8 +563,18 @@ void ScaleSettings::updateReverseCheckbox(int state)
 
 void ScaleSettings::updateRangeFromInit(int begin)
 {
-    int end = endFrameSpin->value();
-    stepsCounter = end - begin + 1;
+    emit startingPointChanged(begin - 1);
+
+    if (mode == TupToolPlugin::Edit && stepsCounter > 0) {
+        const int end = begin + stepsCounter - 1;
+        endFrameSpin->blockSignals(true);
+        endFrameSpin->setValue(end);
+        endFrameSpin->blockSignals(false);
+    } else {
+        const int end = endFrameSpin->value();
+        stepsCounter = end - begin + 1;
+    }
+
     totalLabel->setText(tr("Frames Total") + ": " + QString::number(stepsCounter));
 }
 

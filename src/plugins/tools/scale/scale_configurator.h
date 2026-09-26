@@ -74,6 +74,7 @@ class TUPITUBE_PLUGIN ScaleConfigurator : public QFrame
         void closeSettingsPanel();
         TupToolPlugin::Mode mode();
         void resetUI();
+        void refreshCurrentTweenProperties(int totalFrames);
         QString tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId,
                            QPointF point, double initialXScaleFactor, double initialYScaleFactor);
         

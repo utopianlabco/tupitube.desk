@@ -324,6 +324,23 @@ void ScaleConfigurator::applyItem()
     emit clickedApplyTween();
 }
 
+void ScaleConfigurator::refreshCurrentTweenProperties(int totalFrames)
+{
+    if (!currentTween)
+        return;
+
+    currentMode = TupToolPlugin::Edit;
+    state = Properties;
+    framesCount = totalFrames;
+    currentFrame = currentTween->getInitFrame();
+    activeTweenManagerPanel(false);
+    settingsPanel->notifySelection(true);
+    settingsPanel->initStartCombo(framesCount, currentFrame);
+    settingsPanel->setParameters(currentTween);
+    settingsPanel->showPropertiesForm();
+    activePropertiesPanel(true);
+}
+
 void ScaleConfigurator::resetUI()
 {
     tweenManager->resetUI();

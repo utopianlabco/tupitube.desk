@@ -111,6 +111,7 @@ class TUPITUBE_EXPORT TupTimeLine : public TupModuleWidgetBase
         double getLayerOpacity(int sceneIndex, int layerIndex);
         void updateLayerOpacity(int sceneIndex, int layerIndex);
         void requestSceneRename(const QString &name);
+        void reconcileLayerFramesFromProject(int sceneIndex, int layerIndex);
 
         TupTimelineSceneContainer *scenesContainer;
         TupTimeLineTable *currentTable;

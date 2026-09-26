@@ -222,6 +222,10 @@ QString TupProjectCommand::actionString(int action) const
         {
             return "convert";
         }
+        case TupProjectRequest::RebaseTween:
+        {
+            return "rebase tween";
+        }
         case TupProjectRequest::RemoveTween:
         {
             return "remove tween";
@@ -642,6 +646,7 @@ QString TupProjectCommand::eventType() const
                 case TupProjectRequest::Group: return QStringLiteral("item.grouped");
                 case TupProjectRequest::Ungroup: return QStringLiteral("item.ungrouped");
                 case TupProjectRequest::SetTween: return QStringLiteral("item.tween-updated");
+                case TupProjectRequest::RebaseTween: return QStringLiteral("item.tween-rebased");
                 case TupProjectRequest::RemoveTween: return QStringLiteral("item.tween-removed");
                 case TupProjectRequest::UpdateTweenPath: return QStringLiteral("item.tween-path-updated");
                 case TupProjectRequest::AddRasterItem: return QStringLiteral("item.raster-item-added");
@@ -1039,6 +1044,11 @@ bool TupProjectCommand::itemCommand()
             case TupProjectRequest::SetTween:
             {
                  return executeOperation([&]() { return executor->setTween(res); });
+            }
+            break;
+            case TupProjectRequest::RebaseTween:
+            {
+                 return executeOperation([&]() { return executor->rebaseTween(res); });
             }
             break;
             case TupProjectRequest::RemoveTween:

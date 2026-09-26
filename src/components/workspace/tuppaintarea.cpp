@@ -672,6 +672,34 @@ void TupPaintArea::itemResponse(TupItemResponse *response)
                   // Do nothing
               }
             break;
+            case TupProjectRequest::RebaseTween:
+              {
+                  // RebaseTween already changed the authoritative object location.
+                  // For a local response, follow the restored tween start frame as
+                  // presentation state only. Do not emit a Select project request
+                  // here: response delivery is synchronous and nested requests can
+                  // invalidate the outer response (the Redo crash fixed earlier).
+                  const bool targetsCurrentScene =
+                      response->getSceneIndex() == guiScene->currentSceneIndex();
+
+                  if (!response->external() && targetsCurrentScene
+                      && response->getLayerIndex() >= 0 && response->getFrameIndex() >= 0) {
+                      if (guiScene->currentFrameIndex() != response->getFrameIndex())
+                          emit frameChanged(response->getFrameIndex());
+
+                      guiScene->setCurrentFrame(response->getLayerIndex(), response->getFrameIndex());
+
+                      if (spaceMode == TupProject::FRAMES_MODE)
+                          guiScene->drawPhotogram(response->getFrameIndex(), true);
+                  } else if (spaceMode == TupProject::FRAMES_MODE) {
+                      // External rebases update the model but must not steal this
+                      // client's current frame. Refresh the frame already in view.
+                      guiScene->drawCurrentPhotogram();
+                  }
+
+                  viewport()->update(guiScene->sceneRect().toRect());
+              }
+            break;
             default:
               {
                   #ifdef TUP_DEBUG

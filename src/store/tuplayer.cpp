@@ -228,6 +228,21 @@ bool TupLayer::removeFrame(int pos)
     return false;
 }
 
+bool TupLayer::removeLastEmptyFrameForDomainOperation()
+{
+    if (framesCounter <= 0 || frames.isEmpty())
+        return false;
+
+    TupFrame *frame = frames.last();
+    if (!frame || !frame->isEmpty())
+        return false;
+
+    frames.removeLast();
+    framesCounter--;
+    delete frame;
+    return true;
+}
+
 bool TupLayer::removeLipSync(const QString &name)
 {
     int size = lipsyncList.size();

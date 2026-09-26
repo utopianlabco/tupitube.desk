@@ -80,7 +80,8 @@ HEADERS += tuplayer.h \
            tuplipsync.h \
            tupprojectscanner.h \
            tupcommandcoordinator.h \
-           tupobjectrelocationservice.h
+           tupobjectrelocationservice.h \
+           tuptweenservice.h
 
 SOURCES += tuplayer.cpp \
            tuppalettedocument.cpp \
@@ -136,7 +137,8 @@ SOURCES += tuplayer.cpp \
            tuplipsync.cpp \
            tupprojectscanner.cpp \
            tupcommandcoordinator.cpp \
-           tupobjectrelocationservice.cpp
+           tupobjectrelocationservice.cpp \
+           tuptweenservice.cpp
 
 STORE_DIR = .
 

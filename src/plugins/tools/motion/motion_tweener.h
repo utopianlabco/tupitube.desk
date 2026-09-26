@@ -123,6 +123,8 @@ class TUPITUBE_PLUGIN MotionTweener : public TupToolPlugin
         void removeTweenFromProject(const QString &name);
         void removeTweenLocally(const QString &name);
         void refreshTweenList();
+        void refreshRebasedTween(const QString &tweenId);
+        void loadEditEnvironment(bool requestFrameSelection);
         void resetGUI();
         void removeTweenPoints();
         void paintTweenPoints();

@@ -74,6 +74,7 @@ class TUPITUBE_EXPORT TupExposureSheet : public TupModuleWidgetBase
         void removeBlock(TupExposureTable *table, int layerIndex, int frameIndex, 
                          int layersTotal, int framesTotal);
         void requestSceneRename(const QString &name);
+        void reconcileLayerFramesFromProject(int sceneIndex, int layerIndex, bool external);
 
     protected:
         virtual void sceneResponse(TupSceneResponse *response);

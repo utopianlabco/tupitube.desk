@@ -685,6 +685,39 @@ void TupTimeLine::libraryResponse(TupLibraryResponse *response)
     }
 }
 
+void TupTimeLine::reconcileLayerFramesFromProject(int sceneIndex, int layerIndex)
+{
+    TupTimeLineTable *table = framesTable(sceneIndex);
+    TupScene *scene = project->sceneAt(sceneIndex);
+    TupLayer *layer = scene ? scene->layerAt(layerIndex) : nullptr;
+    if (!table || !layer)
+        return;
+
+    const int modelFrames = layer->framesCount();
+    int uiFrames = table->lastFrameByLayer(layerIndex) + 1;
+
+    while (uiFrames < modelFrames) {
+        table->insertFrame(layerIndex);
+        uiFrames++;
+    }
+
+    while (uiFrames > modelFrames && uiFrames > 0) {
+        table->removeFrame(layerIndex, uiFrames - 1);
+        uiFrames--;
+    }
+
+    for (int frameIndex = 0; frameIndex < modelFrames; frameIndex++) {
+        TupFrame *frame = layer->frameAt(frameIndex);
+        if (frame)
+            table->updateFrameState(layerIndex, frameIndex, frame->isEmpty());
+    }
+
+    if (modelFrames > 0 && table->currentLayer() == layerIndex
+            && table->currentFrame() >= modelFrames) {
+        table->selectFrame(layerIndex, modelFrames - 1);
+    }
+}
+
 void TupTimeLine::itemResponse(TupItemResponse *response)
 {
     int sceneIndex = response->getSceneIndex();
@@ -710,6 +743,30 @@ void TupTimeLine::itemResponse(TupItemResponse *response)
                   TupScene *scene = project->sceneAt(sceneIndex);
                   if (scene)
                       framesTable->updateFrameState(layerIndex, frameIndex, scene->frameIsEmpty(layerIndex, frameIndex));
+              }
+            break;
+            case TupProjectRequest::RebaseTween:
+              {
+                  reconcileLayerFramesFromProject(sceneIndex, layerIndex);
+
+                  // Keep presentation state aligned with the authoritative tween
+                  // start frame without emitting a separate Select command. Remote
+                  // collaborator rebases must not steal this client's selection.
+                  if (!response->external()) {
+                      TupScene *scene = project->sceneAt(sceneIndex);
+                      TupLayer *layer = scene ? scene->layerAt(layerIndex) : nullptr;
+                      if (layer && frameIndex >= 0 && frameIndex < layer->framesCount()) {
+                          const QString selection = QString::number(layerIndex) + "," + QString::number(layerIndex) + ","
+                                                    + QString::number(frameIndex) + "," + QString::number(frameIndex);
+                          framesTable->blockSignals(true);
+                          framesTable->selectFrame(layerIndex, frameIndex, selection);
+                          framesTable->blockSignals(false);
+
+                          if (selectedLayer != layerIndex)
+                              updateLayerOpacity(sceneIndex, layerIndex);
+                          selectedLayer = layerIndex;
+                      }
+                  }
               }
             break;
             default:

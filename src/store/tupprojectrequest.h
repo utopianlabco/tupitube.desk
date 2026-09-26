@@ -96,7 +96,8 @@ class TUPITUBE_EXPORT TupProjectRequest
             RemoveSymbolFromFrame = -InsertSymbolIntoFrame,
 
             SetTween = 19,
-            UpdateTween = 20,
+            RebaseTween = 20,
+            UpdateTween = RebaseTween, // Deprecated compatibility alias
             RemoveTween = 21,
             UpdateTweenPath = 22,
             

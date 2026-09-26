@@ -93,6 +93,7 @@ class TUPITUBE_PLUGIN MotionSettings : public QWidget
         void emitOptionChanged(int option);
         void applyTween();
         void updateTotalLabel(int total);
+        void updateEndingFrame();
         void setPathColor();
 
     signals:

@@ -40,6 +40,7 @@
 #include "tuplineitem.h"
 #include "tupellipseitem.h"
 #include "tupitemconverter.h"
+#include "tuptweenservice.h"
 #include "tupsvg2qt.h"
 
 #include "tupprojectrequest.h"
@@ -1435,6 +1436,87 @@ bool TupCommandExecutor::setTween(TupItemResponse *response)
     }
     
     return false;
+}
+
+
+bool TupCommandExecutor::rebaseTween(TupItemResponse *response)
+{
+    #ifdef TUP_DEBUG
+        qDebug() << "[TupCommandExecutor::rebaseTween()]";
+        SHOW_VAR(response)
+    #endif
+
+    if (!response || response->getItemType() != TupLibraryObject::Item)
+        return false;
+
+    const QString objectId = response->getObjectId().trimmed();
+    if (objectId.isEmpty()) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupCommandExecutor::rebaseTween()] - Native RebaseTween requires object_id";
+        #endif
+        return false;
+    }
+
+    const int sceneIndex = response->getSceneIndex();
+    if (!validateIndices(sceneIndex))
+        return false;
+
+    TupScene *scene = project->sceneAt(sceneIndex);
+    if (!scene)
+        return false;
+
+    QString sourceSnapshot;
+    QString targetSnapshot;
+    QString error;
+    bool success = false;
+
+    if (response->getMode() == TupProjectResponse::Undo
+            || response->getMode() == TupProjectResponse::Redo) {
+        if (!TupTweenService::unpackSnapshots(response->getState(),
+                                              &sourceSnapshot, &targetSnapshot)) {
+            return false;
+        }
+
+        const QString &snapshot = response->getMode() == TupProjectResponse::Undo
+                ? sourceSnapshot : targetSnapshot;
+        success = TupTweenService::restoreMotionTweenSnapshot(scene, snapshot, &error);
+    } else {
+        TupTweenService::Result result = TupTweenService::rebaseMotionTween(
+                    scene, response->getArg().toString());
+        success = result.success;
+        error = result.error;
+        if (success) {
+            const QString state = TupTweenService::packSnapshots(
+                        result.sourceSnapshot, result.targetSnapshot);
+            if (state.isEmpty())
+                return false;
+            response->setState(state);
+        }
+    }
+
+    if (!success) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupCommandExecutor::rebaseTween()] - Rebase failed ->" << error;
+        #endif
+        return false;
+    }
+
+    // Resolve the response location from the logical tween after applying or
+    // restoring the snapshot. This reports the source frame on Undo and the
+    // target frame on Do/Redo without computing an inverse operation.
+    QDomDocument payloadDocument;
+    if (payloadDocument.setContent(response->getArg().toString())) {
+        const QString tweenId = payloadDocument.documentElement()
+                .attribute(QStringLiteral("tween_id")).trimmed();
+        TupItemTweener *currentTween = scene->tweenById(tweenId);
+        if (currentTween) {
+            response->setLayerIndex(currentTween->getInitLayer());
+            response->setFrameIndex(currentTween->getInitFrame());
+        }
+    }
+
+    emit responsed(response);
+    return true;
 }
 
 bool TupCommandExecutor::removeTween(TupItemResponse *response)

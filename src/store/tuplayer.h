@@ -80,6 +80,7 @@ class TUPITUBE_EXPORT TupLayer : public QObject, public TupAbstractSerializable
         TupFrame *createFrame(QString name, int position, bool loaded = false);
         bool restoreFrame(int index);
         bool removeFrame(int position);
+        bool removeLastEmptyFrameForDomainOperation();
         bool resetFrame(int position);
         bool restoreResettedFrame(int pos);
         int resettedFramesCount();

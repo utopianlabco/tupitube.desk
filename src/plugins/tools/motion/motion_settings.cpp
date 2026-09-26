@@ -106,6 +106,7 @@ void MotionSettings::setInnerForm()
     initSpinBox = new QSpinBox();
 
     connect(initSpinBox, SIGNAL(valueChanged(int)), this, SIGNAL(startingFrameChanged(int)));
+    connect(initSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateEndingFrame()));
 
     QHBoxLayout *startLayout = new QHBoxLayout;
     startLayout->setAlignment(Qt::AlignHCenter);
@@ -398,9 +399,15 @@ void MotionSettings::updateTotalLabel(int total)
         qDebug() << "[MotionSettings::updateTotalLabel()] - total ->" << total;
     #endif
 
-    endingLabel->setText(tr("Ending at frame") + ": " + QString::number(startFrame() + stepViewer->totalSteps()));
+    updateEndingFrame();
     totalLabel->setText(tr("Frames Total") + ": " + QString::number(total));
     emit framesTotalChanged(); 
+}
+
+void MotionSettings::updateEndingFrame()
+{
+    endingLabel->setText(tr("Ending at frame") + ": "
+                         + QString::number(startFrame() + stepViewer->totalSteps()));
 }
 
 void MotionSettings::undoSegment(const QPainterPath path)

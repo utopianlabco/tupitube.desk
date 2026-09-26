@@ -1496,6 +1496,48 @@ void TupExposureSheet::frameResponse(TupFrameResponse *response)
     }
 }
 
+void TupExposureSheet::reconcileLayerFramesFromProject(int sceneIndex, int layerIndex, bool external)
+{
+    TupExposureTable *table = scenesContainer->getExposureTable(sceneIndex);
+    TupScene *scene = project->sceneAt(sceneIndex);
+    TupLayer *layer = scene ? scene->layerAt(layerIndex) : nullptr;
+    if (!table || !layer)
+        return;
+
+    const int modelFrames = layer->framesCount();
+    int uiFrames = table->framesCountAtLayer(layerIndex);
+
+    while (uiFrames < modelFrames) {
+        TupFrame *frame = layer->frameAt(uiFrames);
+        const QString frameName = frame ? frame->getFrameName() : tr("Frame");
+        table->insertFrame(layerIndex, uiFrames, frameName, external);
+        uiFrames++;
+    }
+
+    while (uiFrames > modelFrames && uiFrames > 0) {
+        table->removeFrame(layerIndex, uiFrames - 1);
+        uiFrames--;
+    }
+
+    for (int frameIndex = 0; frameIndex < modelFrames; frameIndex++) {
+        TupFrame *frame = layer->frameAt(frameIndex);
+        if (!frame)
+            continue;
+
+        const TupExposureTable::FrameType state = frame->isEmpty()
+                ? TupExposureTable::Empty : TupExposureTable::Used;
+        table->updateFrameState(layerIndex, frameIndex, state);
+        table->setFrameName(layerIndex, frameIndex, frame->getFrameName());
+    }
+
+    if (modelFrames > 0 && table->currentLayer() == layerIndex
+            && table->currentFrame() >= modelFrames) {
+        table->blockSignals(true);
+        table->selectFrame(layerIndex, modelFrames - 1);
+        table->blockSignals(false);
+    }
+}
+
 void TupExposureSheet::itemResponse(TupItemResponse *response)
 {
     #ifdef TUP_DEBUG
@@ -1518,6 +1560,37 @@ void TupExposureSheet::itemResponse(TupItemResponse *response)
                         state = TupExposureTable::Empty;
 
                     table->updateFrameState(response->getLayerIndex(), response->getFrameIndex(), state);
+                }
+            }
+        break;
+        case TupProjectRequest::RebaseTween:
+            {
+                const int sceneIndex = response->getSceneIndex();
+                const int layerIndex = response->getLayerIndex();
+                const int frameIndex = response->getFrameIndex();
+
+                reconcileLayerFramesFromProject(sceneIndex, layerIndex, response->external());
+
+                // RebaseTween already committed the authoritative frame change.
+                // Mirror that result locally without emitting a Select request, so
+                // frame navigation does not create another command or re-enter the
+                // project manager while the response is still being delivered.
+                if (!response->external()) {
+                    TupExposureTable *table = scenesContainer->getExposureTable(sceneIndex);
+                    if (table && frameIndex >= 0 && frameIndex < table->framesCountAtLayer(layerIndex)) {
+                        const QString selection = QString::number(layerIndex) + "," + QString::number(layerIndex) + ","
+                                                  + QString::number(frameIndex) + "," + QString::number(frameIndex);
+                        table->blockSignals(true);
+                        table->selectFrame(layerIndex, frameIndex, selection);
+                        table->blockSignals(false);
+                        table->updateSceneView(layerIndex, frameIndex);
+
+                        if (previousScene != sceneIndex || previousLayer != layerIndex) {
+                            previousScene = sceneIndex;
+                            previousLayer = layerIndex;
+                            updateLayerOpacity(sceneIndex, layerIndex);
+                        }
+                    }
                 }
             }
         break;

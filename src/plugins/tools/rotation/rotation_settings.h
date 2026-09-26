@@ -77,6 +77,7 @@ class TUPITUBE_PLUGIN RotationSettings : public QWidget
         void setTweenName(const QString &name);
         void focusTweenName();
         void activateMode(TupToolPlugin::EditMode mode);
+        void showPropertiesForm();
         QString tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId, QPointF point);
 
     private slots:

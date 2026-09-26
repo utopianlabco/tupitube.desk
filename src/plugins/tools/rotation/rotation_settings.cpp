@@ -352,8 +352,13 @@ void RotationSettings::setParameters(TupItemTweener *currentTween)
 
     input->setText(currentTween->getTweenName());
 
+    // Preserve the authoritative tween duration while the start frame is
+    // refreshed programmatically. updateRangeFromInit() uses stepsCounter
+    // to keep the end frame aligned with a moved start frame.
+    stepsCounter = currentTween->getFrames();
+
     initFrame->setEnabled(true);
-    initFrame->setValue(currentTween->getInitFrame());
+    initFrame->setValue(currentTween->getInitFrame() + 1);
 
     endFrame->setValue(currentTween->getInitFrame() + currentTween->getFrames());
 
@@ -667,6 +672,11 @@ void RotationSettings::activateMode(TupToolPlugin::EditMode mode)
     options->setCurrentIndex(mode);
 }
 
+void RotationSettings::showPropertiesForm()
+{
+    activeInnerForm(true);
+}
+
 void RotationSettings::refreshForm(int type)
 {
     if (type == 0) {
@@ -732,8 +742,16 @@ void RotationSettings::checkRange(int index)
 
 void RotationSettings::updateRangeFromInit(int begin)
 {
-    int end = endFrame->value();
-    stepsCounter = end - begin + 1;
+    if (mode == TupToolPlugin::Edit && stepsCounter > 0) {
+        const int end = begin + stepsCounter - 1;
+        endFrame->blockSignals(true);
+        endFrame->setValue(end);
+        endFrame->blockSignals(false);
+    } else {
+        const int end = endFrame->value();
+        stepsCounter = end - begin + 1;
+    }
+
     totalLabel->setText(tr("Frames Total") + ": " + QString::number(stepsCounter));
 }
 

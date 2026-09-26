@@ -27,14 +27,21 @@ class TUPITUBE_EXPORT TupTweenService
             QString error;
         };
 
-        // Applies one semantic Motion rebase for all native members carried
-        // by the payload. The same TupGraphicObject wrappers and object_ids
-        // survive the operation. On failure the exact source snapshot is
-        // restored before returning false.
-        static Result rebaseMotionTween(TupScene *scene, const QString &payload);
+        // Applies one semantic rebase for all native members carried by the
+        // payload. The target tween type must match the existing tween_id.
+        // The same TupGraphicObject wrappers and object_ids survive the
+        // operation. On failure the exact source snapshot is restored.
+        static Result rebaseTween(TupScene *scene, const QString &payload);
 
-        // Restores an exact snapshot captured by rebaseMotionTween(). Used by
+        // Restores an exact snapshot captured by rebaseTween(). Used by
         // Undo/Redo; no inverse rebase is computed.
+        static bool restoreTweenSnapshot(TupScene *scene,
+                                         const QString &snapshot,
+                                         QString *error = nullptr);
+
+        // Compatibility entry points retained for the existing command
+        // executor while non-Motion tweeners migrate to the common service.
+        static Result rebaseMotionTween(TupScene *scene, const QString &payload);
         static bool restoreMotionTweenSnapshot(TupScene *scene,
                                                const QString &snapshot,
                                                QString *error = nullptr);

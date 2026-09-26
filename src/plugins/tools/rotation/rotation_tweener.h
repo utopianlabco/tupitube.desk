@@ -102,6 +102,7 @@ class TUPITUBE_PLUGIN RotationTweener : public TupToolPlugin
         void disableSelection();
         void addTarget();
         void removeTweenFromProject(const QString &name);
+        void refreshRebasedTween(const QString &tweenId);
 
     private slots:
         void setSelection();

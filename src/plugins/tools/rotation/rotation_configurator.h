@@ -80,6 +80,7 @@ class TUPITUBE_PLUGIN RotationConfigurator : public QFrame
         void closeSettingsPanel();
         TupToolPlugin::Mode mode();
         void resetUI();
+        void refreshCurrentTweenProperties(int totalFrames);
         QString tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId, QPointF point);
         
     private slots:

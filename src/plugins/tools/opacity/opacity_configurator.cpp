@@ -317,6 +317,23 @@ void OpacityConfigurator::applyItem()
      emit clickedApplyTween();
 }
 
+void OpacityConfigurator::refreshCurrentTweenProperties(int totalFrames)
+{
+    if (!currentTween)
+        return;
+
+    currentMode = TupToolPlugin::Edit;
+    state = Properties;
+    framesCount = totalFrames;
+    currentFrame = currentTween->getInitFrame();
+    activeTweenManagerPanel(false);
+    settingsPanel->notifySelection(true);
+    settingsPanel->initStartCombo(framesCount, currentFrame);
+    settingsPanel->setParameters(currentTween);
+    settingsPanel->showPropertiesForm();
+    activePropertiesPanel(true);
+}
+
 void OpacityConfigurator::resetUI()
 {
     tweenManager->resetUI();

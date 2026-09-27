@@ -256,6 +256,11 @@ void OpacitySettings::setParameters(TupItemTweener *currentTween)
 
     input->setText(currentTween->getTweenName());
 
+    // Preserve the authoritative tween duration while the start frame is
+    // refreshed programmatically. updateRangeFromInit() keeps the end frame
+    // aligned when the start frame moves.
+    stepsCounter = currentTween->getFrames();
+
     initFrame->setEnabled(true);
     initFrame->setValue(currentTween->getInitFrame() + 1);
     endFrame->setValue(currentTween->getInitFrame() + currentTween->getFrames());
@@ -276,10 +281,14 @@ void OpacitySettings::initStartCombo(int framesCount, int currentIndex)
     endFrame->clear();
 
     initFrame->setMinimum(1);
-    initFrame->setMaximum(framesCount);
+    // The start frame is an editable tween property, not a selector limited
+    // to frames that already exist. RebaseTween creates required trailing
+    // frames as part of the authoritative domain operation.
+    initFrame->setMaximum(999);
     initFrame->setValue(currentIndex + 1);
 
     endFrame->setMinimum(1);
+    endFrame->setMaximum(999);
     endFrame->setValue(framesCount);
 
     iterationsField->setValue(framesCount);
@@ -476,6 +485,12 @@ void OpacitySettings::activateMode(TupToolPlugin::EditMode mode)
     options->setCurrentIndex(mode);
 }
 
+void OpacitySettings::showPropertiesForm()
+{
+    propertiesDone = true;
+    innerPanel->show();
+}
+
 void OpacitySettings::checkFramesRange()
 {
     int begin = initFrame->value();
@@ -519,8 +534,18 @@ void OpacitySettings::updateReverseCheckbox(int state)
 
 void OpacitySettings::updateRangeFromInit(int begin)
 {
-    int end = endFrame->value();
-    stepsCounter = end - begin + 1;
+    emit startingPointChanged(begin - 1);
+
+    if (mode == TupToolPlugin::Edit && stepsCounter > 0) {
+        const int end = begin + stepsCounter - 1;
+        endFrame->blockSignals(true);
+        endFrame->setValue(end);
+        endFrame->blockSignals(false);
+    } else {
+        const int end = endFrame->value();
+        stepsCounter = end - begin + 1;
+    }
+
     totalLabel->setText(tr("Frames Total") + ": " + QString::number(stepsCounter));
 }
 

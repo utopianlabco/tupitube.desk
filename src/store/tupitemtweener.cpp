@@ -34,6 +34,7 @@
 
 #include "tupitemtweener.h"
 #include "tupsvg2qt.h"
+#include <algorithm>
 
 TupItemTweener::TupItemTweener()
 {
@@ -370,8 +371,13 @@ QDomElement TupItemTweener::toXml(QDomDocument &doc) const
         root.setAttribute("colorReverseLoop", QString::number(colorReverseLoop));
     }
  
-    foreach (TupTweenerStep *step, steps.values())
-        root.appendChild(step->toXml(doc));
+    QList<int> stepIndexes = steps.keys();
+    std::sort(stepIndexes.begin(), stepIndexes.end());
+    foreach (int stepIndex, stepIndexes) {
+        TupTweenerStep *step = steps.value(stepIndex);
+        if (step)
+            root.appendChild(step->toXml(doc));
+    }
     
     return root;
 }

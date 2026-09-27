@@ -78,6 +78,7 @@ class TUPITUBE_PLUGIN OpacityConfigurator : public QFrame
         void closeSettingsPanel();
         TupToolPlugin::Mode mode();
         void resetUI();
+        void refreshCurrentTweenProperties(int totalFrames);
         QString tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId);
         
     private slots:

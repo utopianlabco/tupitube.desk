@@ -95,6 +95,7 @@ class TUPITUBE_PLUGIN MotionTweener : public TupToolPlugin
 
     signals:
         void tweenRemoved();
+        void rebasedFrameFollowRequested(int frameIndex, int layerIndex, int sceneIndex);
 
     private slots:
         void applyReset();

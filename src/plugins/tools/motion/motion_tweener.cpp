@@ -1574,6 +1574,10 @@ void MotionTweener::itemResponse(const TupItemResponse *response)
             if (response->getAction() == TupProjectRequest::RebaseTween
                     && !affectedTweenId.isEmpty()) {
                 refreshRebasedTween(affectedTweenId);
+                if (response->external() && currentTween
+                        && currentTween->tweenId().trimmed() == affectedTweenId) {
+                    emit rebasedFrameFollowRequested(initFrame, initLayer, initScene);
+                }
             } else {
                 currentTween = nullptr;
                 init(scene);

@@ -615,6 +615,8 @@ void TupDocumentView::loadPlugins()
                       if (toolId == TAction::Motion) {
                           tweenTools[0] = action;
                           motionMenu->setDefaultAction(action);
+                          connect(tool, SIGNAL(rebasedFrameFollowRequested(int,int,int)),
+                                  this, SLOT(selectFrame(int,int,int)), Qt::QueuedConnection);
                       }
 
                       if (toolId == TAction::Rotation)

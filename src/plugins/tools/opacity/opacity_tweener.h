@@ -80,6 +80,7 @@ class TUPITUBE_PLUGIN OpacityTweener : public TupToolPlugin
 
     signals:
         void tweenRemoved();
+        void rebasedFrameFollowRequested(int frameIndex, int layerIndex, int sceneIndex);
 
     private slots:
         void setCurrentTween(const QString &name);

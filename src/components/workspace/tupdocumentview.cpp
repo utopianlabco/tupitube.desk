@@ -636,6 +636,16 @@ void TupDocumentView::loadPlugins()
 
                       TupToolPlugin *tool = qobject_cast<TupToolPlugin *>(action->parent());
                       connect(tool, SIGNAL(tweenRemoved()), this, SLOT(updatePaintArea()));
+
+                      if (toolId == TAction::Rotation || toolId == TAction::Scale
+                              || toolId == TAction::Shear || toolId == TAction::Opacity
+                              || toolId == TAction::Color) {
+                          // RebaseTween responses are dispatched synchronously. Queue the
+                          // presentation-only frame follow so it runs after the outer response
+                          // returns and becomes a local Select rather than a collaborative command.
+                          connect(tool, SIGNAL(rebasedFrameFollowRequested(int,int,int)),
+                                  this, SLOT(selectFrame(int,int,int)), Qt::QueuedConnection);
+                      }
                     }
                     break;
                     case TupToolInterface::Selection:

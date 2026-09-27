@@ -807,9 +807,13 @@ void ColoringTweener::refreshRebasedTween(const QString &tweenId)
     initFrame = tween->getInitFrame();
     objects = sceneData->getItemsFromTweenId(tweenId);
 
+    // Keep authoritative zero-based indexes from being changed by
+    // programmatic one-based Properties values during refresh.
+    const bool signalsBlocked = configPanel->blockSignals(true);
     configPanel->setCurrentTween(currentTween);
     configPanel->notifySelection(!objects.isEmpty());
     configPanel->refreshCurrentTweenProperties(framesCount());
+    configPanel->blockSignals(signalsBlocked);
 
     mode = TupToolPlugin::Edit;
     editMode = TupToolPlugin::Properties;
@@ -858,6 +862,20 @@ void ColoringTweener::itemResponse(const TupItemResponse *event)
 
         const QString tweenId = document.documentElement()
                 .attribute(QStringLiteral("tween_id")).trimmed();
-        refreshRebasedTween(tweenId);
+        TupItemTweener *affectedTween = scene->currentScene()
+                ? scene->currentScene()->tweenById(tweenId) : nullptr;
+        const QString affectedTweenName = affectedTween
+                ? affectedTween->getTweenName() : QString();
+        const bool editingAffectedTween = configPanel->mode() == TupToolPlugin::Edit
+                && !affectedTweenName.isEmpty()
+                && configPanel->currentTweenName() == affectedTweenName;
+
+        if (editingAffectedTween) {
+            refreshRebasedTween(tweenId);
+            if (event->external() && currentTween
+                    && currentTween->tweenId().trimmed() == tweenId) {
+                emit rebasedFrameFollowRequested(initFrame, initLayer, initScene);
+            }
+        }
     }
 }

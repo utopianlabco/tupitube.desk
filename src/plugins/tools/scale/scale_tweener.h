@@ -85,6 +85,7 @@ class TUPITUBE_PLUGIN ScaleTweener : public TupToolPlugin
 
     signals:
         void tweenRemoved();
+        void rebasedFrameFollowRequested(int frameIndex, int layerIndex, int sceneIndex);
 
     private slots:
         void setSelection();

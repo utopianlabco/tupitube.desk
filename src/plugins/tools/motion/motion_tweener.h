@@ -95,7 +95,6 @@ class TUPITUBE_PLUGIN MotionTweener : public TupToolPlugin
 
     signals:
         void tweenRemoved();
-        void rebasedFrameFollowRequested(int frameIndex, int layerIndex, int sceneIndex);
 
     private slots:
         void applyReset();
@@ -125,7 +124,7 @@ class TUPITUBE_PLUGIN MotionTweener : public TupToolPlugin
         void removeTweenLocally(const QString &name);
         void refreshTweenList();
         void refreshRebasedTween(const QString &tweenId);
-        void loadEditEnvironment(bool requestFrameSelection);
+        void loadEditEnvironment(bool requestFrameSelection, bool alignPathToObject = true);
         void resetGUI();
         void removeTweenPoints();
         void paintTweenPoints();

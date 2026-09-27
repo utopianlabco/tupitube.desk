@@ -1155,11 +1155,6 @@ void MotionTweener::refreshRebasedTween(const QString &tweenId)
 
     objects.clear();
     currentTween = tween;
-
-    // Authoritative refresh must not feed programmatic, one-based UI values
-    // back into updateStartFrame(). Keep the domain indexes zero-based while
-    // the Properties form is rebuilt from the authoritative tween.
-    const bool signalsBlocked = configPanel->blockSignals(true);
     configPanel->setCurrentTween(currentTween);
     mode = TupToolPlugin::Edit;
     editMode = TupToolPlugin::Properties;
@@ -1168,15 +1163,13 @@ void MotionTweener::refreshRebasedTween(const QString &tweenId)
     // can invalidate the outer TupProjectResponse before the remaining
     // observers receive it. Rebuild the Motion edit environment in place
     // without issuing a nested project command.
-    loadEditEnvironment(false);
+    loadEditEnvironment(false, false);
 
     const int framesNumber = framesCount();
     if (configPanel->startComboSize() != framesNumber)
         configPanel->initStartCombo(framesNumber, initFrame);
     else
         configPanel->setStartFrame(initFrame);
-
-    configPanel->blockSignals(signalsBlocked);
 }
 
 void MotionTweener::removeTweenFromProject(const QString &name)
@@ -1306,7 +1299,7 @@ void MotionTweener::setEditEnv()
     loadEditEnvironment(true);
 }
 
-void MotionTweener::loadEditEnvironment(bool requestFrameSelection)
+void MotionTweener::loadEditEnvironment(bool requestFrameSelection, bool alignPathToObject)
 {
     if (!currentTween) {
         #ifdef TUP_DEBUG
@@ -1357,13 +1350,23 @@ void MotionTweener::loadEditEnvironment(bool requestFrameSelection)
         QPainterPath::Element e = linePath->path().elementAt(0);
         firstNode = QPointF(e.x, e.y);
 
-        QPointF oldPos = QPointF(e.x, e.y);
-        QPointF newPos = rect.center();
+        if (alignPathToObject) {
+            QPointF oldPos = QPointF(e.x, e.y);
+            QPointF newPos = rect.center();
 
-        int distanceX = static_cast<int> (newPos.x() - oldPos.x());
-        int distanceY = static_cast<int> (newPos.y() - oldPos.y());
-        linePath->moveBy(distanceX, distanceY);
-        pathOffset = QPointF(distanceX, distanceY);
+            int distanceX = static_cast<int> (newPos.x() - oldPos.x());
+            int distanceY = static_cast<int> (newPos.y() - oldPos.y());
+            linePath->moveBy(distanceX, distanceY);
+            pathOffset = QPointF(distanceX, distanceY);
+        } else {
+            // An authoritative RebaseTween already carries the exact Motion path
+            // geometry. During an external rebase the local canvas may still be
+            // displaying the previous frame until the queued frame-follow runs,
+            // so anchoring the path to the currently rendered object would
+            // translate valid authoritative geometry to a stale presentation
+            // position. Keep the authoritative path coordinates unchanged.
+            pathOffset = QPointF(0, 0);
+        }
 
         QColor pathColor = configPanel->getPathColor();
         pathColor.setAlpha(200);
@@ -1581,10 +1584,6 @@ void MotionTweener::itemResponse(const TupItemResponse *response)
             if (response->getAction() == TupProjectRequest::RebaseTween
                     && !affectedTweenId.isEmpty()) {
                 refreshRebasedTween(affectedTweenId);
-                if (response->external() && currentTween
-                        && currentTween->tweenId().trimmed() == affectedTweenId) {
-                    emit rebasedFrameFollowRequested(initFrame, initLayer, initScene);
-                }
             } else {
                 currentTween = nullptr;
                 init(scene);

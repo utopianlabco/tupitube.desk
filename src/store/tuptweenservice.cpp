@@ -269,7 +269,6 @@ bool parsePayload(const QString &payload, QString *tweenId, int *targetLayer,
         TupItemTweener parsedTween;
         parsedTween.fromXml(state.tweenXml);
         if (parsedTween.tweenId().trimmed() != id
-                || parsedTween.getType() != TupItemTweener::Motion
                 || parsedTween.getInitLayer() != layerIndex
                 || parsedTween.getInitFrame() != frameIndex) {
             if (error)
@@ -323,8 +322,8 @@ TupTweenService::Result TupTweenService::rebaseMotionTween(TupScene *scene,
     }
 
     TupItemTweener *existingTween = scene->tweenById(tweenId);
-    if (!existingTween || existingTween->getType() != TupItemTweener::Motion) {
-        result.error = QStringLiteral("RebaseTween tween_id was not found as Motion");
+    if (!existingTween) {
+        result.error = QStringLiteral("RebaseTween tween_id was not found");
         return result;
     }
 
@@ -339,6 +338,13 @@ TupTweenService::Result TupTweenService::rebaseMotionTween(TupScene *scene,
         MemberState &member = targetMembers[memberIndex];
         if (objectIds.contains(member.objectId)) {
             result.error = QStringLiteral("RebaseTween contains duplicate object_id");
+            return result;
+        }
+
+        TupItemTweener targetTween;
+        targetTween.fromXml(member.tweenXml);
+        if (targetTween.getType() != existingTween->getType()) {
+            result.error = QStringLiteral("RebaseTween target snapshot type does not match tween_id");
             return result;
         }
 

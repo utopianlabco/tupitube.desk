@@ -1155,6 +1155,11 @@ void MotionTweener::refreshRebasedTween(const QString &tweenId)
 
     objects.clear();
     currentTween = tween;
+
+    // Authoritative refresh must not feed programmatic, one-based UI values
+    // back into updateStartFrame(). Keep the domain indexes zero-based while
+    // the Properties form is rebuilt from the authoritative tween.
+    const bool signalsBlocked = configPanel->blockSignals(true);
     configPanel->setCurrentTween(currentTween);
     mode = TupToolPlugin::Edit;
     editMode = TupToolPlugin::Properties;
@@ -1170,6 +1175,8 @@ void MotionTweener::refreshRebasedTween(const QString &tweenId)
         configPanel->initStartCombo(framesNumber, initFrame);
     else
         configPanel->setStartFrame(initFrame);
+
+    configPanel->blockSignals(signalsBlocked);
 }
 
 void MotionTweener::removeTweenFromProject(const QString &name)

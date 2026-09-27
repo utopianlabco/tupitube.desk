@@ -110,6 +110,7 @@ class TUPITUBE_PLUGIN ShearTweener : public TupToolPlugin
         void addTarget();
         void removeTweenFromProject(const QString &name);
         QTransform initialStep();
+        void refreshTweenList();
         void refreshRebasedTween(const QString &tweenId);
 
         QMap<TAction::ActionId, TAction *> shearActions;

@@ -795,6 +795,24 @@ void ScaleTweener::updateMode(TupToolPlugin::Mode currentMode)
     }
 }
 
+void ScaleTweener::refreshTweenList()
+{
+    QList<QString> tweenList = scene->currentScene()->getTweenNames(TupItemTweener::Scale);
+    QString tweenName = configPanel->getTweenNameFromList();
+
+    configPanel->loadTweenList(tweenList);
+
+    if (tweenList.isEmpty()) {
+        currentTween = nullptr;
+        return;
+    }
+
+    if (!tweenList.contains(tweenName))
+        tweenName = tweenList.at(0);
+
+    setCurrentTween(tweenName);
+}
+
 void ScaleTweener::refreshRebasedTween(const QString &tweenId)
 {
     TupScene *sceneData = scene ? scene->currentScene() : nullptr;
@@ -862,6 +880,37 @@ void ScaleTweener::itemResponse(const TupItemResponse *event)
         return;
     }
 
+    if (event->getAction() == TupProjectRequest::SetTween
+            || event->getAction() == TupProjectRequest::RemoveTween) {
+        // Local Set/Remove UI state is already maintained by the initiating
+        // configurator path. Remote peers reconcile their visible manager or
+        // the Properties panel if it is currently showing the affected tween.
+        if (!event->external())
+            return;
+
+        QString affectedTweenName;
+        if (event->getAction() == TupProjectRequest::RemoveTween) {
+            affectedTweenName = event->getArg().toString().trimmed();
+        } else {
+            QDomDocument document;
+            if (document.setContent(event->getArg().toString()))
+                affectedTweenName = document.documentElement()
+                        .attribute(QStringLiteral("name")).trimmed();
+        }
+
+        const bool editingAffectedTween = configPanel->mode() == TupToolPlugin::Edit
+                && !affectedTweenName.isEmpty()
+                && configPanel->currentTweenName() == affectedTweenName;
+
+        if (editingAffectedTween) {
+            currentTween = nullptr;
+            init(scene);
+        } else {
+            refreshTweenList();
+        }
+        return;
+    }
+
     if (event->getAction() == TupProjectRequest::RebaseTween) {
         QDomDocument document;
         if (!document.setContent(event->getArg().toString()))
@@ -883,6 +932,9 @@ void ScaleTweener::itemResponse(const TupItemResponse *event)
                     && currentTween->tweenId().trimmed() == tweenId) {
                 emit rebasedFrameFollowRequested(initFrame, initLayer, initScene);
             }
+        } else if (event->external()) {
+            refreshTweenList();
         }
+        return;
     }
 }

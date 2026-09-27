@@ -105,6 +105,7 @@ class TUPITUBE_PLUGIN ScaleTweener : public TupToolPlugin
         void disableSelection();
         void removeTweenFromProject(const QString &name);
         QTransform initialStep();
+        void refreshTweenList();
         void refreshRebasedTween(const QString &tweenId);
 
         QMap<TAction::ActionId, TAction *> scaleActions;

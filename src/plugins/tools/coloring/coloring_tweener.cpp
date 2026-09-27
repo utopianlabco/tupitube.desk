@@ -451,6 +451,7 @@ void ColoringTweener::applyTween()
     QString name = configPanel->currentTweenName();
     if (name.length() == 0) {
         TOsd::self()->display(TOsd::Warning, tr("Tween name is missing!"));
+        QApplication::restoreOverrideCursor();
         return;
     }
 
@@ -476,6 +477,8 @@ void ColoringTweener::applyTween()
     } else {
         tweenId = TupItemTweener::createTweenId();
     }
+
+    bool semanticRebase = false;
 
     // Tween is new
     if (!tweenAlreadyExists) {
@@ -512,99 +515,143 @@ void ColoringTweener::applyTween()
         const int previousInitFrame = currentTween->getInitFrame();
         const int previousInitLayer = currentTween->getInitLayer();
 
-        removeTweenFromProject(sourceTweenName);
-        QList<QGraphicsItem *> newList;
-
         initFrame = configPanel->startFrame();
         initLayer = previousInitLayer;
         initScene = scene->currentSceneIndex();
 
-        foreach (QGraphicsItem *item, objects) {
-            TupLibraryObject::ObjectType type = TupLibraryObject::Item;
-            TupScene *tupScene = scene->currentScene();
-            TupLayer *layer = tupScene->layerAt(initLayer);
-            TupFrame *frame = layer->frameAt(previousInitFrame);
-            int objectIndex = -1;
-            TupSvgItem *svg = qgraphicsitem_cast<TupSvgItem *>(item);
+        if (initFrame != previousInitFrame) {
+            semanticRebase = true;
 
-            if (svg) {
-                type = TupLibraryObject::Svg;
-                objectIndex = frame->indexOf(svg);
-            } else {
-                objectIndex = frame->indexOf(item);
+            TupScene *sceneData = scene->currentScene();
+            TupLayer *layer = sceneData->layerAt(previousInitLayer);
+            TupFrame *sourceFrame = layer ? layer->frameAt(previousInitFrame) : nullptr;
+            if (!sourceFrame) {
+                TOsd::self()->display(TOsd::Error, tr("Coloring tween source frame is unavailable!"));
+                QApplication::restoreOverrideCursor();
+                return;
             }
 
-            if (initFrame != previousInitFrame) {
-                QDomDocument dom;
-                if (type == TupLibraryObject::Svg)
-                    dom.appendChild(svg->toXml(dom));
-                else
-                    dom.appendChild(dynamic_cast<TupAbstractSerializable *>(item)->toXml(dom));
+            QDomDocument rebaseDocument;
+            QDomElement root = rebaseDocument.createElement(QStringLiteral("tween_rebase"));
+            root.setAttribute(QStringLiteral("tween_id"), tweenId);
+            root.setAttribute(QStringLiteral("target_layer"), initLayer);
+            root.setAttribute(QStringLiteral("target_frame"), initFrame);
 
-                TupProjectRequest request = TupRequestBuilder::createItemRequest(initScene, initLayer, initFrame,
-                                                                                 0, item->pos(), scene->getSpaceContext(),
-                                                                                 type, TupProjectRequest::Add,
-                                                                                 dom.toString());
-                emit requested(&request);
+            QString representativeObjectId;
+            int representativeObjectIndex = -1;
 
-                request = TupRequestBuilder::createItemRequest(initScene, initLayer,
-                                                               previousInitFrame,
-                                                               objectIndex, QPointF(),
-                                                               scene->getSpaceContext(), type,
-                                                               TupProjectRequest::Remove);
-                emit requested(&request);
+            foreach (QGraphicsItem *item, objects) {
+                if (qgraphicsitem_cast<TupSvgItem *>(item)) {
+                    TOsd::self()->display(TOsd::Error, tr("Coloring tween rebase currently requires native objects."));
+                    QApplication::restoreOverrideCursor();
+                    return;
+                }
 
-                frame = layer->frameAt(initFrame);
-                if (type == TupLibraryObject::Item) {
-                    objectIndex = frame->graphicsCount() - 1;
-                    newList.append(frame->graphicAt(objectIndex)->item());
-                } else {
-                    objectIndex = frame->svgItemsCount() - 1;
-                    newList.append(frame->svgAt(objectIndex));
+                const int sourceIndex = sourceFrame->indexOf(item);
+                TupGraphicObject *graphicObject = sourceIndex >= 0 ? sourceFrame->graphicAt(sourceIndex) : nullptr;
+                if (!graphicObject) {
+                    TOsd::self()->display(TOsd::Error, tr("Coloring tween member could not be resolved."));
+                    QApplication::restoreOverrideCursor();
+                    return;
+                }
+
+                const QString objectId = graphicObject->objectId().trimmed();
+                if (objectId.isEmpty()) {
+                    TOsd::self()->display(TOsd::Error, tr("Coloring tween member is missing object identity."));
+                    QApplication::restoreOverrideCursor();
+                    return;
+                }
+
+                const QString targetTweenXml = configPanel->tweenToXml(
+                            initScene, initLayer, initFrame, tweenId);
+
+                QDomElement member = rebaseDocument.createElement(QStringLiteral("member"));
+                member.setAttribute(QStringLiteral("object_id"), objectId);
+                member.setAttribute(QStringLiteral("tween"),
+                                    QString::fromLatin1(targetTweenXml.toUtf8().toBase64()));
+                root.appendChild(member);
+
+                if (representativeObjectId.isEmpty()) {
+                    representativeObjectId = objectId;
+                    representativeObjectIndex = sourceIndex;
                 }
             }
 
-            QString objectId;
-            if (type == TupLibraryObject::Item
-                    && initFrame == previousInitFrame) {
-                TupGraphicObject *graphicObject = frame->graphicAt(objectIndex);
-                if (graphicObject)
-                    objectId = graphicObject->objectId();
+            if (root.firstChildElement(QStringLiteral("member")).isNull()) {
+                TOsd::self()->display(TOsd::Error, tr("Coloring tween has no native members to rebase."));
+                QApplication::restoreOverrideCursor();
+                return;
             }
 
+            rebaseDocument.appendChild(root);
             TupProjectRequest request = TupRequestBuilder::createItemRequest(
-                                        initScene, initLayer, initFrame,
-                                        objectIndex, QPointF(), scene->getSpaceContext(),
-                                        type, TupProjectRequest::SetTween,
-                                        configPanel->tweenToXml(initScene, initLayer, initFrame, tweenId), QByteArray(), QString(), QString(), objectId);
+                        initScene, previousInitLayer, previousInitFrame,
+                        representativeObjectIndex, QPointF(), scene->getSpaceContext(),
+                        TupLibraryObject::Item, TupProjectRequest::RebaseTween,
+                        rebaseDocument.toString(), QByteArray(), QString(), QString(),
+                        representativeObjectId);
             emit requested(&request);
-        }
+        } else {
+            removeTweenFromProject(sourceTweenName);
 
-        if (newList.size() > 0)
-            objects = newList;
-    }
+            TupScene *sceneData = scene->currentScene();
+            TupLayer *layer = sceneData->layerAt(initLayer);
+            TupFrame *frame = layer ? layer->frameAt(previousInitFrame) : nullptr;
+            if (!frame) {
+                QApplication::restoreOverrideCursor();
+                return;
+            }
 
-    int total = initFrame + configPanel->totalSteps();
-    int framesNumber = framesCount();
-    int layersCount = scene->currentScene()->layersCount();
-    TupProjectRequest request;
+            foreach (QGraphicsItem *item, objects) {
+                TupLibraryObject::ObjectType type = TupLibraryObject::Item;
+                int objectIndex = frame->indexOf(item);
 
-    if (total >= framesNumber) {
-        for (int i = framesNumber; i < total; i++) {
-            for (int j = 0; j < layersCount; j++) {
-                request = TupRequestBuilder::createFrameRequest(initScene, j, i,
-                                                                TupProjectRequest::Add, tr("Frame"));
+                if (TupSvgItem *svg = qgraphicsitem_cast<TupSvgItem *>(item)) {
+                    type = TupLibraryObject::Svg;
+                    objectIndex = frame->indexOf(svg);
+                }
+
+                QString objectId;
+                if (type == TupLibraryObject::Item) {
+                    TupGraphicObject *graphicObject = frame->graphicAt(objectIndex);
+                    if (graphicObject)
+                        objectId = graphicObject->objectId();
+                }
+
+                TupProjectRequest request = TupRequestBuilder::createItemRequest(
+                            initScene, initLayer, initFrame,
+                            objectIndex, QPointF(), scene->getSpaceContext(),
+                            type, TupProjectRequest::SetTween,
+                            configPanel->tweenToXml(initScene, initLayer, initFrame, tweenId),
+                            QByteArray(), QString(), QString(), objectId);
                 emit requested(&request);
             }
         }
     }
 
-    QString selection = QString::number(initLayer) + "," + QString::number(initLayer) + ","
-                        + QString::number(initFrame) + "," + QString::number(initFrame);
+    if (!semanticRebase) {
+        int total = initFrame + configPanel->totalSteps();
+        int framesNumber = framesCount();
+        int layersCount = scene->currentScene()->layersCount();
+        TupProjectRequest request;
 
-    request = TupRequestBuilder::createFrameRequest(initScene, initLayer, initFrame,
-                                                    TupProjectRequest::Select, selection);
-    emit requested(&request);
+        if (total >= framesNumber) {
+            for (int i = framesNumber; i < total; i++) {
+                for (int j = 0; j < layersCount; j++) {
+                    request = TupRequestBuilder::createFrameRequest(initScene, j, i,
+                                                                    TupProjectRequest::Add, tr("Frame"));
+                    emit requested(&request);
+                }
+            }
+        }
+
+        QString selection = QString::number(initLayer) + "," + QString::number(initLayer) + ","
+                            + QString::number(initFrame) + "," + QString::number(initFrame);
+
+        request = TupRequestBuilder::createFrameRequest(initScene, initLayer, initFrame,
+                                                        TupProjectRequest::Select, selection);
+        emit requested(&request);
+    }
 
     setCurrentTween(name);
     TOsd::self()->display(TOsd::Info, tr("Tween %1 applied!").arg(name));
@@ -744,6 +791,30 @@ void ColoringTweener::updateMode(TupToolPlugin::Mode toolMode)
     }
 }
 
+void ColoringTweener::refreshRebasedTween(const QString &tweenId)
+{
+    TupScene *sceneData = scene ? scene->currentScene() : nullptr;
+    if (!sceneData || tweenId.trimmed().isEmpty())
+        return;
+
+    TupItemTweener *tween = sceneData->tweenById(tweenId);
+    if (!tween || tween->getType() != TupItemTweener::Coloring)
+        return;
+
+    currentTween = tween;
+    initScene = tween->getInitScene();
+    initLayer = tween->getInitLayer();
+    initFrame = tween->getInitFrame();
+    objects = sceneData->getItemsFromTweenId(tweenId);
+
+    configPanel->setCurrentTween(currentTween);
+    configPanel->notifySelection(!objects.isEmpty());
+    configPanel->refreshCurrentTweenProperties(framesCount());
+
+    mode = TupToolPlugin::Edit;
+    editMode = TupToolPlugin::Properties;
+}
+
 void ColoringTweener::sceneResponse(const TupSceneResponse *event)
 {
     if ((event->getAction() == TupProjectRequest::Remove || event->getAction() == TupProjectRequest::Reset)
@@ -775,6 +846,18 @@ void ColoringTweener::frameResponse(const TupFrameResponse *event)
 void ColoringTweener::itemResponse(const TupItemResponse *event)
 {
     if (event->getAction() == TupProjectRequest::RemoveTween
-            && event->getMode() != TupProjectResponse::Do)
+            && event->getMode() != TupProjectResponse::Do) {
         init(scene);
+        return;
+    }
+
+    if (event->getAction() == TupProjectRequest::RebaseTween) {
+        QDomDocument document;
+        if (!document.setContent(event->getArg().toString()))
+            return;
+
+        const QString tweenId = document.documentElement()
+                .attribute(QStringLiteral("tween_id")).trimmed();
+        refreshRebasedTween(tweenId);
+    }
 }

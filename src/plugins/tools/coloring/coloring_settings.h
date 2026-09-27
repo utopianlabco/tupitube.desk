@@ -77,6 +77,7 @@ class TUPITUBE_PLUGIN ColoringSettings : public QWidget
         void notifySelection(bool flag);
         int startComboSize();
         void setInitialColor(QColor color);
+        void showPropertiesForm();
 		void activateMode(TupToolPlugin::EditMode mode);
         QString tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId);
 

@@ -78,6 +78,7 @@ class TUPITUBE_PLUGIN ColoringConfigurator : public QFrame
         void notifySelection(bool flag);
         int startComboSize();
         void setInitialColor(QColor color);
+        void refreshCurrentTweenProperties(int totalFrames);
 
         void closeSettingsPanel();
         TupToolPlugin::Mode mode();

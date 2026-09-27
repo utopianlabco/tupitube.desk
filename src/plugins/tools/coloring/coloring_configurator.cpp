@@ -331,6 +331,23 @@ void ColoringConfigurator::applyItem()
      emit clickedApplyTween();
 }
 
+void ColoringConfigurator::refreshCurrentTweenProperties(int totalFrames)
+{
+    if (!currentTween)
+        return;
+
+    toolMode = TupToolPlugin::Edit;
+    state = ColoringConfigurator::Properties;
+    framesCount = totalFrames;
+    currentFrame = currentTween->getInitFrame();
+    activeTweenManagerPanel(false);
+    settingsPanel->notifySelection(true);
+    settingsPanel->initStartCombo(framesCount, currentFrame);
+    settingsPanel->setParameters(currentTween);
+    settingsPanel->showPropertiesForm();
+    activePropertiesPanel(true);
+}
+
 void ColoringConfigurator::resetUI()
 {
     tweenManager->resetUI();

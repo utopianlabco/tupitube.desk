@@ -263,13 +263,11 @@ void ColoringSettings::setInnerForm()
 
 void ColoringSettings::activeInnerForm(bool enable)
 {
-    if (enable && !tabWidget->isVisible()) {
-       propertiesDone = true;
-       tabWidget->show();
-    } else {
-       propertiesDone = false;
-       tabWidget->hide();
-    }
+    propertiesDone = enable;
+    if (enable)
+        tabWidget->show();
+    else
+        tabWidget->hide();
 }
 
 // Adding new Tween
@@ -296,21 +294,26 @@ void ColoringSettings::setParameters(TupItemTweener *currentTween)
 
     input->setText(currentTween->getTweenName());
 
+    // Preserve the authoritative tween duration while the start frame is
+    // refreshed programmatically. updateRangeFromInit() keeps the end frame
+    // aligned when the start frame moves.
+    totalStepsCount = currentTween->getFrames();
+
     initFrame->setEnabled(true);
     initFrame->setValue(currentTween->getInitFrame() + 1);
-
-    int lastFrame = currentTween->getInitFrame() + currentTween->getFrames();
-    endFrame->setValue(lastFrame);
+    endFrame->setValue(currentTween->getInitFrame() + currentTween->getFrames());
 
     int end = endFrame->value();
     updateRangeFromEnd(end);
 
-    updateColor(currentTween->tweenInitialColor(), initColorButton);
-    updateColor(currentTween->tweenEndingColor(), endColorButton);
+    fillTypeCombo->setCurrentIndex(static_cast<int>(currentTween->tweenColorFillType()));
 
-    int iterations = currentTween->tweenColorIterations();
+    initialColor = currentTween->tweenInitialColor();
+    endingColor = currentTween->tweenEndingColor();
+    updateColor(initialColor, initColorButton);
+    updateColor(endingColor, endColorButton);
 
-    iterationsCombo->setValue(iterations);
+    iterationsCombo->setValue(currentTween->tweenColorIterations());
 
     loopBox->setChecked(currentTween->tweenColorLoop());
     reverseLoopBox->setChecked(currentTween->tweenColorReverseLoop());
@@ -322,10 +325,14 @@ void ColoringSettings::initStartCombo(int framesCount, int currentIndex)
     endFrame->clear();
 
     initFrame->setMinimum(1);
-    initFrame->setMaximum(framesCount);
+    // The start frame is an editable tween property, not a selector limited
+    // to frames that already exist. RebaseTween creates required trailing
+    // frames as part of the authoritative domain operation.
+    initFrame->setMaximum(999);
     initFrame->setValue(currentIndex + 1);
 
     endFrame->setMinimum(1);
+    endFrame->setMaximum(999);
     endFrame->setValue(framesCount);
 }
 
@@ -576,6 +583,12 @@ void ColoringSettings::activatePropertiesMode(TupToolPlugin::EditMode mode)
     options->setCurrentIndex(mode);
 }
 
+void ColoringSettings::showPropertiesForm()
+{
+    propertiesDone = true;
+    tabWidget->show();
+}
+
 void ColoringSettings::checkFramesRange()
 {
     int begin = initFrame->value();
@@ -638,8 +651,18 @@ QString ColoringSettings::labelColor(QColor color) const
 
 void ColoringSettings::updateRangeFromInit(int begin)
 {
-    int end = endFrame->value();
-    totalStepsCount = end - begin + 1;
+    emit startingPointChanged(begin - 1);
+
+    if (mode == TupToolPlugin::Edit && totalStepsCount > 0) {
+        const int end = begin + totalStepsCount - 1;
+        endFrame->blockSignals(true);
+        endFrame->setValue(end);
+        endFrame->blockSignals(false);
+    } else {
+        const int end = endFrame->value();
+        totalStepsCount = end - begin + 1;
+    }
+
     totalLabel->setText(tr("Frames Total") + ": " + QString::number(totalStepsCount));
 }
 

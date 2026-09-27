@@ -269,6 +269,7 @@ bool parsePayload(const QString &payload, QString *tweenId, int *targetLayer,
         TupItemTweener parsedTween;
         parsedTween.fromXml(state.tweenXml);
         if (parsedTween.tweenId().trimmed() != id
+                || parsedTween.getType() != TupItemTweener::Motion
                 || parsedTween.getInitLayer() != layerIndex
                 || parsedTween.getInitFrame() != frameIndex) {
             if (error)
@@ -303,8 +304,8 @@ TupTweenService::Result::Result() : success(false)
 {
 }
 
-TupTweenService::Result TupTweenService::rebaseTween(TupScene *scene,
-                                                      const QString &payload)
+TupTweenService::Result TupTweenService::rebaseMotionTween(TupScene *scene,
+                                                            const QString &payload)
 {
     Result result;
     if (!scene) {
@@ -322,19 +323,9 @@ TupTweenService::Result TupTweenService::rebaseTween(TupScene *scene,
     }
 
     TupItemTweener *existingTween = scene->tweenById(tweenId);
-    if (!existingTween) {
-        result.error = QStringLiteral("RebaseTween tween_id was not found");
+    if (!existingTween || existingTween->getType() != TupItemTweener::Motion) {
+        result.error = QStringLiteral("RebaseTween tween_id was not found as Motion");
         return result;
-    }
-
-    const int existingTweenType = existingTween->getType();
-    for (const MemberState &member : targetMembers) {
-        TupItemTweener targetTween;
-        targetTween.fromXml(member.tweenXml);
-        if (targetTween.getType() != existingTweenType) {
-            result.error = QStringLiteral("RebaseTween member target type does not match existing tween");
-            return result;
-        }
     }
 
     TupLayer *targetLayer = scene->layerAt(targetLayerIndex);
@@ -393,7 +384,7 @@ TupTweenService::Result TupTweenService::rebaseTween(TupScene *scene,
         if (!targetLayer->createFrame(QStringLiteral("Frame"), newFrameIndex)) {
             result.error = QStringLiteral("RebaseTween could not extend the target layer");
             QString rollbackError;
-            restoreTweenSnapshot(scene, result.sourceSnapshot, &rollbackError);
+            restoreMotionTweenSnapshot(scene, result.sourceSnapshot, &rollbackError);
             return result;
         }
     }
@@ -402,7 +393,7 @@ TupTweenService::Result TupTweenService::rebaseTween(TupScene *scene,
     if (!targetFrame) {
         result.error = QStringLiteral("RebaseTween target frame does not exist after extension");
         QString rollbackError;
-        restoreTweenSnapshot(scene, result.sourceSnapshot, &rollbackError);
+        restoreMotionTweenSnapshot(scene, result.sourceSnapshot, &rollbackError);
         return result;
     }
 
@@ -434,7 +425,7 @@ TupTweenService::Result TupTweenService::rebaseTween(TupScene *scene,
 
     if (!applied) {
         QString rollbackError;
-        if (!restoreTweenSnapshot(scene, result.sourceSnapshot, &rollbackError)) {
+        if (!restoreMotionTweenSnapshot(scene, result.sourceSnapshot, &rollbackError)) {
             result.error += QStringLiteral("; rollback failed: ") + rollbackError;
         }
         return result;
@@ -443,7 +434,7 @@ TupTweenService::Result TupTweenService::rebaseTween(TupScene *scene,
     result.targetSnapshot = createSnapshot(scene, tweenId, objectIds, &result.error);
     if (result.targetSnapshot.isEmpty()) {
         QString rollbackError;
-        if (!restoreTweenSnapshot(scene, result.sourceSnapshot, &rollbackError)) {
+        if (!restoreMotionTweenSnapshot(scene, result.sourceSnapshot, &rollbackError)) {
             result.error += QStringLiteral("; rollback failed: ") + rollbackError;
         }
         return result;
@@ -453,9 +444,9 @@ TupTweenService::Result TupTweenService::rebaseTween(TupScene *scene,
     return result;
 }
 
-bool TupTweenService::restoreTweenSnapshot(TupScene *scene,
-                                             const QString &snapshot,
-                                             QString *error)
+bool TupTweenService::restoreMotionTweenSnapshot(TupScene *scene,
+                                                  const QString &snapshot,
+                                                  QString *error)
 {
     if (!scene) {
         if (error)
@@ -537,17 +528,29 @@ bool TupTweenService::restoreTweenSnapshot(TupScene *scene,
     return true;
 }
 
-TupTweenService::Result TupTweenService::rebaseMotionTween(TupScene *scene,
-                                                            const QString &payload)
+QString TupTweenService::currentMotionTweenSnapshot(
+    TupScene *scene, const QString &referenceSnapshot, QString *error)
 {
-    return rebaseTween(scene, payload);
-}
+    if (!scene) {
+        if (error)
+            *error = QStringLiteral("Tween snapshot capture requires a scene");
+        return QString();
+    }
 
-bool TupTweenService::restoreMotionTweenSnapshot(TupScene *scene,
-                                                  const QString &snapshot,
-                                                  QString *error)
-{
-    return restoreTweenSnapshot(scene, snapshot, error);
+    QString tweenId;
+    int layerIndex = -1;
+    int frameCount = -1;
+    QList<MemberState> members;
+    if (!parseSnapshot(referenceSnapshot, &tweenId, &layerIndex,
+                       &frameCount, &members, error)) {
+        return QString();
+    }
+
+    QList<QString> objectIds;
+    for (const MemberState &member : members)
+        objectIds.append(member.objectId);
+
+    return createSnapshot(scene, tweenId, objectIds, error);
 }
 
 QString TupTweenService::packSnapshots(const QString &sourceSnapshot,

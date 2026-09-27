@@ -40,6 +40,7 @@
 #include "tuprequestbuilder.h"
 #include "tupprojectresponse.h"
 #include "tupsvg2qt.h"
+#include "tuptweenservice.h"
 
 #include <QVariant>
 #include <QDomDocument>
@@ -383,6 +384,18 @@ bool TupProjectCommand::isItemTransform() const
     return !itemResponse->getObjectId().trimmed().isEmpty();
 }
 
+bool TupProjectCommand::isItemRebaseTween() const
+{
+    if (!response || response->getPart() != TupProjectRequest::Item
+            || response->originalAction() != TupProjectRequest::RebaseTween) {
+        return false;
+    }
+
+    TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+    return itemResponse->getItemType() == TupLibraryObject::Item
+        && !itemResponse->getObjectId().trimmed().isEmpty();
+}
+
 bool TupProjectCommand::isNativeItemRemove() const
 {
     if (!response || response->getPart() != TupProjectRequest::Item
@@ -513,6 +526,47 @@ QString TupProjectCommand::authoritativeEventPayload() const
             targetSnapshot, sourceSnapshot, response->getCommandId(),
             QString(), itemResponse->getObjectId());
         return request.getXml();
+    }
+
+    if (response->originalAction() == TupProjectRequest::RebaseTween) {
+        QString sourceSnapshot;
+        QString targetSnapshot;
+        if (!TupTweenService::unpackSnapshots(
+                itemResponse->getState(), &sourceSnapshot, &targetSnapshot)) {
+            return QString();
+        }
+
+        QString authoritativeSnapshot;
+        if (response->external() && !itemResponse->getData().trimmed().isEmpty())
+            authoritativeSnapshot = QString::fromUtf8(itemResponse->getData());
+        else
+            authoritativeSnapshot = targetSnapshot;
+
+        if (authoritativeSnapshot.trimmed().isEmpty()
+                || itemResponse->getObjectId().trimmed().isEmpty()) {
+            return QString();
+        }
+
+        const TupProjectRequest request = TupRequestBuilder::createItemRequest(
+            itemResponse->getSceneIndex(), itemResponse->getLayerIndex(),
+            itemResponse->getFrameIndex(), itemResponse->getItemIndex(),
+            itemResponse->position(), itemResponse->spaceMode(),
+            itemResponse->getItemType(), TupProjectRequest::RebaseTween,
+            itemResponse->getArg().toString(), authoritativeSnapshot.toUtf8(),
+            response->getCommandId(), QString(), itemResponse->getObjectId());
+
+        QDomDocument document;
+        if (!document.setContent(request.getXml()))
+            return QString();
+
+        QDomElement root = document.documentElement();
+        QDomElement stateElement = document.createElement(
+            QStringLiteral("tween_rebase_state"));
+        stateElement.setAttribute(QStringLiteral("encoding"), QStringLiteral("base64"));
+        stateElement.appendChild(document.createTextNode(
+            QString::fromLatin1(itemResponse->getState().toUtf8().toBase64())));
+        root.appendChild(stateElement);
+        return document.toString();
     }
 
     if (response->originalAction() == TupProjectRequest::Group

@@ -1480,6 +1480,13 @@ bool TupCommandExecutor::rebaseTween(TupItemResponse *response)
         const QString &snapshot = response->getMode() == TupProjectResponse::Undo
                 ? sourceSnapshot : targetSnapshot;
         success = TupTweenService::restoreMotionTweenSnapshot(scene, snapshot, &error);
+    } else if (response->external() && !response->getData().trimmed().isEmpty()) {
+        // Collaborative authoritative-result events carry the exact resulting
+        // snapshot. Never recompute a rebase on remote clients or for an
+        // authoritative restore command.
+        const QString authoritativeSnapshot = QString::fromUtf8(response->getData());
+        success = TupTweenService::restoreMotionTweenSnapshot(
+            scene, authoritativeSnapshot, &error);
     } else {
         TupTweenService::Result result = TupTweenService::rebaseMotionTween(
                     scene, response->getArg().toString());

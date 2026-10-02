@@ -1381,24 +1381,18 @@ bool TupCommandExecutor::setTween(TupItemResponse *response)
 
                 if (itemType == TupLibraryObject::Item) {
                     const QString objectId = response->getObjectId().trimmed();
-                    if (!objectId.isEmpty()) {
-                        itemIndex = resolveItemIndex(frame, response);
-                        if (itemIndex < 0) {
-                            delete tween;
-                            return false;
-                        }
-                    } else {
-                        // Legacy compatibility is required until tween-start
-                        // relocation becomes one atomic object-id-preserving
-                        // domain operation. The existing relocation path still
-                        // emits Add -> Remove -> SetTween and cannot safely
-                        // reuse an object_id across those committed revisions.
+                    if (objectId.isEmpty()) {
                         #ifdef TUP_DEBUG
-                            qWarning() << "[TupCommandExecutor::setTween()] - "
-                                          "Native tween request has no object_id; "
-                                          "using legacy positional lookup ->"
-                                       << itemIndex;
+                            qWarning() << "[TupCommandExecutor::setTween()] - Native tween request is missing object_id";
                         #endif
+                        delete tween;
+                        return false;
+                    }
+
+                    itemIndex = resolveItemIndex(frame, response);
+                    if (itemIndex < 0) {
+                        delete tween;
+                        return false;
                     }
 
                     tween->setZLevel(itemIndex);

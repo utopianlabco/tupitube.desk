@@ -482,6 +482,9 @@ void ScaleTweener::applyTween()
     } else { // Tween already exists
         const int previousInitFrame = currentTween->getInitFrame();
         const int previousInitLayer = currentTween->getInitLayer();
+        const QPointF authoritativeOrigin = currentTween->transformOriginPoint();
+        const double authoritativeInitialX = currentTween->initXScaleValue();
+        const double authoritativeInitialY = currentTween->initYScaleValue();
 
         initFrame = configPanel->startFrame();
         initLayer = previousInitLayer;
@@ -498,10 +501,6 @@ void ScaleTweener::applyTween()
                 QApplication::restoreOverrideCursor();
                 return;
             }
-
-            const QPointF authoritativeOrigin = currentTween->transformOriginPoint();
-            const double authoritativeInitialX = currentTween->initXScaleValue();
-            const double authoritativeInitialY = currentTween->initYScaleValue();
 
             QDomDocument rebaseDocument;
             QDomElement root = rebaseDocument.createElement(QStringLiteral("tween_rebase"));
@@ -574,10 +573,6 @@ void ScaleTweener::applyTween()
                 QApplication::restoreOverrideCursor();
                 return;
             }
-
-            const QPointF authoritativeOrigin = currentTween->transformOriginPoint();
-            const double authoritativeInitialX = currentTween->initXScaleValue();
-            const double authoritativeInitialY = currentTween->initYScaleValue();
 
             foreach (QGraphicsItem *item, objects) {
                 TupLibraryObject::ObjectType type = TupLibraryObject::Item;

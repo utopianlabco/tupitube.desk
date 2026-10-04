@@ -99,7 +99,7 @@ class TUPITUBE_PLUGIN OpacityTweener : public TupToolPlugin
         void disableSelection();
         void removeTweenFromProject(const QString &tweenId);
         void refreshTweenList();
-        void refreshRebasedTween(const QString &tweenId);
+        void refreshAuthoritativeTween(const QString &tweenId);
 
         QMap<TAction::ActionId, TAction *> opacityActions;
         OpacityConfigurator *configPanel;

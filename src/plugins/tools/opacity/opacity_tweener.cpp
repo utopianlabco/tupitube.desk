@@ -517,8 +517,6 @@ void OpacityTweener::applyTween()
                         representativeObjectId);
             emit requested(&request);
         } else {
-            removeTweenFromProject(tweenId);
-
             TupScene *sceneData = scene->currentScene();
             TupLayer *layer = sceneData->layerAt(initLayer);
             TupFrame *frame = layer ? layer->frameAt(previousInitFrame) : nullptr;
@@ -735,7 +733,7 @@ void OpacityTweener::refreshTweenList()
     setCurrentTween(tweenId);
 }
 
-void OpacityTweener::refreshRebasedTween(const QString &tweenId)
+void OpacityTweener::refreshAuthoritativeTween(const QString &tweenId)
 {
     TupScene *sceneData = scene ? scene->currentScene() : nullptr;
     if (!sceneData || tweenId.trimmed().isEmpty())
@@ -823,8 +821,12 @@ void OpacityTweener::itemResponse(const TupItemResponse *event)
                 && selectedTweenId == affectedTweenId;
 
         if (editingAffectedTween) {
-            currentTween = nullptr;
-            init(scene);
+            if (event->getAction() == TupProjectRequest::SetTween) {
+                refreshAuthoritativeTween(affectedTweenId);
+            } else {
+                currentTween = nullptr;
+                init(scene);
+            }
         } else {
             refreshTweenList();
         }
@@ -844,7 +846,7 @@ void OpacityTweener::itemResponse(const TupItemResponse *event)
                 && selectedTweenId == tweenId;
 
         if (editingAffectedTween) {
-            refreshRebasedTween(tweenId);
+            refreshAuthoritativeTween(tweenId);
             if (event->external())
                 emit rebasedFrameFollowRequested(initFrame, initLayer, initScene);
         } else if (event->external()) {

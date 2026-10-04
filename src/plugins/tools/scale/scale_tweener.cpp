@@ -564,8 +564,6 @@ void ScaleTweener::applyTween()
                         representativeObjectId);
             emit requested(&request);
         } else {
-            removeTweenFromProject(tweenId);
-
             TupScene *sceneData = scene->currentScene();
             TupLayer *layer = sceneData->layerAt(initLayer);
             TupFrame *frame = layer ? layer->frameAt(previousInitFrame) : nullptr;
@@ -899,8 +897,12 @@ void ScaleTweener::itemResponse(const TupItemResponse *event)
                 && selectedTweenId == affectedTweenId;
 
         if (editingAffectedTween) {
-            currentTween = nullptr;
-            init(scene);
+            if (event->getAction() == TupProjectRequest::SetTween) {
+                refreshRebasedTween(affectedTweenId);
+            } else {
+                currentTween = nullptr;
+                init(scene);
+            }
         } else {
             refreshTweenList();
         }

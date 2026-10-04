@@ -147,7 +147,7 @@ void MotionSettings::activeInnerForm(bool enable)
         qDebug() << "[MotionSettings::activeInnerForm()] - enable flag -> " << enable;
     #endif
 
-    if (enable && !innerPanel->isVisible())
+    if (enable)
         innerPanel->show();
     else
         innerPanel->hide();

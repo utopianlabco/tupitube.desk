@@ -1533,10 +1533,10 @@ void MotionTweener::itemResponse(const TupItemResponse *response)
                 affectedTweenId = tweenDocument.documentElement().attribute(QStringLiteral("tween_id")).trimmed();
         }
 
+        const QString selectedTweenId = configPanel->getTweenIdFromList().trimmed();
         const bool editingAffectedTween = configPanel->mode() == TupToolPlugin::Edit
-                && currentTween
                 && !affectedTweenId.isEmpty()
-                && currentTween->tweenId() == affectedTweenId;
+                && selectedTweenId == affectedTweenId;
 
         const bool tweenWasRemoved = response->getAction() == TupProjectRequest::RemoveTween
                 && response->getMode() != TupProjectResponse::Undo;
@@ -1584,10 +1584,8 @@ void MotionTweener::itemResponse(const TupItemResponse *response)
             if (response->getAction() == TupProjectRequest::RebaseTween
                     && !affectedTweenId.isEmpty()) {
                 refreshRebasedTween(affectedTweenId);
-                if (response->external() && currentTween
-                        && currentTween->tweenId().trimmed() == affectedTweenId) {
+                if (response->external())
                     emit rebasedFrameFollowRequested(initFrame, initLayer, initScene);
-                }
             } else {
                 currentTween = nullptr;
                 init(scene);

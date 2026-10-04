@@ -945,10 +945,10 @@ void ShearTweener::itemResponse(const TupItemResponse *event)
                         .attribute(QStringLiteral("tween_id")).trimmed();
         }
 
+        const QString selectedTweenId = configPanel->getTweenIdFromList().trimmed();
         const bool editingAffectedTween = configPanel->mode() == TupToolPlugin::Edit
-                && currentTween
                 && !affectedTweenId.isEmpty()
-                && currentTween->tweenId() == affectedTweenId;
+                && selectedTweenId == affectedTweenId;
 
         if (editingAffectedTween) {
             currentTween = nullptr;
@@ -966,17 +966,15 @@ void ShearTweener::itemResponse(const TupItemResponse *event)
 
         const QString tweenId = document.documentElement()
                 .attribute(QStringLiteral("tween_id")).trimmed();
+        const QString selectedTweenId = configPanel->getTweenIdFromList().trimmed();
         const bool editingAffectedTween = configPanel->mode() == TupToolPlugin::Edit
-                && currentTween
                 && !tweenId.isEmpty()
-                && currentTween->tweenId() == tweenId;
+                && selectedTweenId == tweenId;
 
         if (editingAffectedTween) {
             refreshRebasedTween(tweenId);
-            if (event->external() && currentTween
-                    && currentTween->tweenId().trimmed() == tweenId) {
+            if (event->external())
                 emit rebasedFrameFollowRequested(initFrame, initLayer, initScene);
-            }
         } else if (event->external()) {
             refreshTweenList();
         }

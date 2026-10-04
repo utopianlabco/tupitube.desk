@@ -860,11 +860,9 @@ void MotionTweener::applyTween()
                         QString(), representativeObjectId);
             emit requested(&request);
         } else {
-            // Non-rebase edits keep the existing SetTween path. Remove only
-            // the local tween representation so each member can be replaced
-            // optimistically without generating an authoritative RemoveTween.
-            removeTweenLocally(tweenId);
-
+            // Non-rebase edits update the existing tween in place. The same
+            // tween_id remains authoritative; do not delete the local tween
+            // before SetTween because that invalidates the active edit context.
             foreach (QGraphicsItem *item, objects) {
                 TupLibraryObject::ObjectType type = TupLibraryObject::Item;
                 TupScene *sceneData = scene->currentScene();
@@ -1077,30 +1075,6 @@ void MotionTweener::updateMode(TupToolPlugin::Mode currentMode)
 
     if (mode == TupToolPlugin::Edit)
         setEditEnv();
-}
-
-void MotionTweener::removeTweenLocally(const QString &tweenId)
-{
-    TupScene *sceneData = scene->currentScene();
-    bool removed = sceneData->removeTweenById(tweenId, TupItemTweener::Motion);
-
-    if (removed) {
-        foreach (QGraphicsView *view, scene->views()) {
-            foreach (QGraphicsItem *item, view->scene()->items()) {
-                QString tip = item->toolTip();
-                if (tip.compare("Tweens: " + tr("Motion")) == 0) {
-                    item->setToolTip("");
-                } else if (tip.contains(tr("Motion"))) {
-                    tip = tip.replace(tr("Motion") + ",", "");
-                    tip = tip.replace(tr("Motion"), "");
-                    if (tip.endsWith(","))
-                        tip.chop(1);
-                    item->setToolTip(tip);
-                }
-            }
-        }
-        emit tweenRemoved();
-    }
 }
 
 void MotionTweener::refreshTweenList()
@@ -1586,6 +1560,9 @@ void MotionTweener::itemResponse(const TupItemResponse *response)
                 refreshRebasedTween(affectedTweenId);
                 if (response->external())
                     emit rebasedFrameFollowRequested(initFrame, initLayer, initScene);
+            } else if (response->getAction() == TupProjectRequest::SetTween
+                       && !affectedTweenId.isEmpty()) {
+                refreshRebasedTween(affectedTweenId);
             } else {
                 currentTween = nullptr;
                 init(scene);

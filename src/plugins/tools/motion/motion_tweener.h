@@ -122,7 +122,6 @@ class TUPITUBE_PLUGIN MotionTweener : public TupToolPlugin
         void clearSelection();
         void disableSelection();
         void removeTweenFromProject(const QString &tweenId);
-        void removeTweenLocally(const QString &tweenId);
         void refreshTweenList();
         void refreshRebasedTween(const QString &tweenId);
         void loadEditEnvironment(bool requestFrameSelection, bool alignPathToObject = true);

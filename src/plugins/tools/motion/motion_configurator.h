@@ -97,6 +97,7 @@ class TUPITUBE_PLUGIN MotionConfigurator : public QFrame
         TupToolPlugin::Mode mode();
         void resetUI();
         void setCurrentTween(TupItemTweener *currentTween);
+        void refreshCurrentTweenProperties(int totalFrames);
 
         void undoSegment(const QPainterPath path);
         void redoSegment(const QPainterPath path);

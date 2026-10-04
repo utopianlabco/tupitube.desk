@@ -1134,6 +1134,7 @@ void MotionTweener::refreshRebasedTween(const QString &tweenId)
     // the Properties form is rebuilt from the authoritative tween.
     const bool signalsBlocked = configPanel->blockSignals(true);
     configPanel->setCurrentTween(currentTween);
+    configPanel->refreshCurrentTweenProperties(framesCount());
     mode = TupToolPlugin::Edit;
     editMode = TupToolPlugin::Properties;
     // RebaseTween responses are delivered synchronously to all project
@@ -1142,12 +1143,6 @@ void MotionTweener::refreshRebasedTween(const QString &tweenId)
     // observers receive it. Rebuild the Motion edit environment in place
     // without issuing a nested project command.
     loadEditEnvironment(false, false);
-
-    const int framesNumber = framesCount();
-    if (configPanel->startComboSize() != framesNumber)
-        configPanel->initStartCombo(framesNumber, initFrame);
-    else
-        configPanel->setStartFrame(initFrame);
 
     configPanel->blockSignals(signalsBlocked);
 }

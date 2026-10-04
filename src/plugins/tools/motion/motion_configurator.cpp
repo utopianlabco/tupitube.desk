@@ -428,6 +428,23 @@ void MotionConfigurator::setCurrentTween(TupItemTweener *tween)
         tweenManager->selectTween(currentTween->tweenId());
 }
 
+void MotionConfigurator::refreshCurrentTweenProperties(int totalFrames)
+{
+    if (!currentTween)
+        return;
+
+    currentMode = TupToolPlugin::Edit;
+    state = Properties;
+    framesCount = totalFrames;
+    currentFrame = currentTween->getInitFrame();
+
+    activeTweenManagerPanel(false);
+    settingsPanel->notifySelection(true);
+    settingsPanel->setParameters(currentTween);
+    settingsPanel->initStartCombo(framesCount, currentFrame);
+    activePropertiesPanel(true);
+}
+
 void MotionConfigurator::undoSegment(const QPainterPath path)
 {
     settingsPanel->undoSegment(path);

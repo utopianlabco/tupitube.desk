@@ -853,12 +853,15 @@ void TupVideoProperties::setScenesIndexes(const QList<int> &indexes)
     sceneIndexes = indexes;
 
     scenes = scenesToExport();
+    fps = scenes.first()->getFPS();
+    double duration = calculateProjectDuration(scenes, fps);
+
     #ifdef TUP_DEBUG
         qDebug() << "[TupVideoProperties::setScenesIndexes()] - Scenes total ->" << scenes.count();
+        qDebug() << "[TupVideoProperties::setScenesIndexes()] - FPS ->" << fps;
+        qDebug() << "[TupVideoProperties::setScenesIndexes()] - duration ->" << duration;
     #endif
-    fps = scenes.first()->getFPS();
 
-    double duration = calculateProjectDuration(scenes, fps);
     if (duration < 3) { // Duration is too short to be played
         #ifdef TUP_DEBUG
             qWarning() << "[TupVideoProperties::setScenesIndexes()] - Fatal Error: The project duration is too short. Aborting export action!";

@@ -170,10 +170,12 @@ void TupExportModule::setScenesIndexes(const QList<int> &indexes)
 {
     sceneIndexes = indexes;
     scenes = scenesToExport();
+    fps = scenes.first()->getFPS();
+
     #ifdef TUP_DEBUG
         qDebug() << "[TupExportModule::setScenesIndexes()] - Scenes total ->" << scenes.count();
+        qDebug() << "[TupExportModule::setScenesIndexes()] - FPS ->" << fps;
     #endif
-    fps = scenes.first()->getFPS();
 
     if (outputFormat == Animation) {
         double duration = calculateProjectDuration(scenes, fps);

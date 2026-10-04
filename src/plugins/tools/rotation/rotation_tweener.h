@@ -102,7 +102,7 @@ class TUPITUBE_PLUGIN RotationTweener : public TupToolPlugin
         void clearSelection();
         void disableSelection();
         void addTarget();
-        void removeTweenFromProject(const QString &name);
+        void removeTweenFromProject(const QString &tweenId);
         void refreshTweenList();
         void refreshRebasedTween(const QString &tweenId);
 
@@ -112,9 +112,9 @@ class TUPITUBE_PLUGIN RotationTweener : public TupToolPlugin
         void updateMode(TupToolPlugin::Mode mode);
         void applyReset();
         void applyTween();
-        void removeTween(const QString &name);
+        void removeTween(const QString &tweenId);
         void updateStartPoint(int index);
-        void setCurrentTween(const QString &name);
+        void setCurrentTween(const QString &tweenId);
         void updateOriginPoint(const QPointF &point);
 
     private:

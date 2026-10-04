@@ -92,10 +92,10 @@ void ColoringTweener::init(TupGraphicsScene *gScene)
 
     configPanel->resetUI();
 
-    QList<QString> tweenList = scene->currentScene()->getTweenNames(TupItemTweener::Coloring);
+    QList<QPair<QString, QString>> tweenList = scene->currentScene()->getTweenEntries(TupItemTweener::Coloring);
     if (tweenList.size() > 0) {
         configPanel->loadTweenList(tweenList);
-        setCurrentTween(tweenList.at(0));
+        setCurrentTween(tweenList.at(0).second);
     } else {
         configPanel->activeButtonsPanel(false);
     }
@@ -335,12 +335,14 @@ void ColoringTweener::updateScene(TupGraphicsScene *gScene)
     }
 }
 
-void ColoringTweener::setCurrentTween(const QString &name)
+void ColoringTweener::setCurrentTween(const QString &tweenId)
 {
     TupScene *sceneData = scene->currentScene();
-    currentTween = sceneData->tween(name, TupItemTweener::Coloring);
-    if (currentTween)
+    currentTween = sceneData->tweenById(tweenId);
+    if (currentTween && currentTween->getType() == TupItemTweener::Coloring)
         configPanel->setCurrentTween(currentTween);
+    else
+        currentTween = nullptr;
 }
 
 int ColoringTweener::framesCount()
@@ -458,8 +460,6 @@ void ColoringTweener::applyTween()
     TupItemTweener *identityTween = nullptr;
     if (mode == TupToolPlugin::Edit && currentTween)
         identityTween = currentTween;
-    else
-        identityTween = scene->currentScene()->tween(name, TupItemTweener::Coloring);
 
     const bool tweenAlreadyExists = identityTween != nullptr;
     const QString sourceTweenName = tweenAlreadyExists ? identityTween->getTweenName() : name;
@@ -592,7 +592,7 @@ void ColoringTweener::applyTween()
                         representativeObjectId);
             emit requested(&request);
         } else {
-            removeTweenFromProject(sourceTweenName);
+            removeTweenFromProject(tweenId);
 
             TupScene *sceneData = scene->currentScene();
             TupLayer *layer = sceneData->layerAt(initLayer);
@@ -653,23 +653,24 @@ void ColoringTweener::applyTween()
         emit requested(&request);
     }
 
-    setCurrentTween(name);
+    refreshTweenList();
+    setCurrentTween(tweenId);
     TOsd::self()->display(TOsd::Info, tr("Tween %1 applied!").arg(name));
 
     QApplication::restoreOverrideCursor();
 }
 
-void ColoringTweener::removeTweenFromProject(const QString &name)
+void ColoringTweener::removeTweenFromProject(const QString &tweenId)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[Coloring Tweener::removeTweenFromProject()] - name ->" << name;
+        qDebug() << "[Coloring Tweener::removeTweenFromProject()] - name ->" << tweenId;
     #endif
 
     TupScene *sceneData = scene->currentScene();
-    TupItemTweener *tween = sceneData->tween(name, TupItemTweener::Coloring);
-    if (!tween) {
+    TupItemTweener *tween = sceneData->tweenById(tweenId);
+    if (!tween || tween->getType() != TupItemTweener::Coloring) {
         #ifdef TUP_DEBUG
-            qDebug() << "[Coloring Tweener::removeTweenFromProject()] - Coloring tween couldn't be found ->" << name;
+            qDebug() << "[Coloring Tweener::removeTweenFromProject()] - Coloring tween couldn't be found ->" << tweenId;
         #endif
         return;
     }
@@ -677,7 +678,7 @@ void ColoringTweener::removeTweenFromProject(const QString &name)
     const int tweenScene = tween->getInitScene();
     const int tweenLayer = tween->getInitLayer();
     const int tweenFrame = tween->getInitFrame();
-    QList<QGraphicsItem *> tweenItems = sceneData->getItemsFromTween(name, TupItemTweener::Coloring);
+    QList<QGraphicsItem *> tweenItems = sceneData->getItemsFromTweenId(tweenId);
 
     TupLayer *layer = sceneData->layerAt(tweenLayer);
     TupFrame *frame = layer ? layer->frameAt(tweenFrame) : nullptr;
@@ -720,7 +721,7 @@ void ColoringTweener::removeTweenFromProject(const QString &name)
         TupProjectRequest request = TupRequestBuilder::createItemRequest(
                                     tweenScene, tweenLayer, tweenFrame,
                                     objectIndex, QPointF(), scene->getSpaceContext(),
-                                    type, TupProjectRequest::RemoveTween, name,
+                                    type, TupProjectRequest::RemoveTween, tweenId,
                                     QByteArray::number(static_cast<int>(TupItemTweener::Coloring)),
                                     QString(), QString(), objectId);
         emit requested(&request);
@@ -747,19 +748,19 @@ void ColoringTweener::removeTweenFromProject(const QString &name)
         emit tweenRemoved();
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "[Coloring Tweener::removeTweenFromProject()] - No tween removal request was sent ->" << name;
+            qDebug() << "[Coloring Tweener::removeTweenFromProject()] - No tween removal request was sent ->" << tweenId;
         #endif
     }
 }
 
-void ColoringTweener::removeTween(const QString &name)
+void ColoringTweener::removeTween(const QString &tweenId)
 {
-    removeTweenFromProject(name);
+    removeTweenFromProject(tweenId);
     applyReset();
 
-    QString tweenName = configPanel->getTweenNameFromList();
-    if (!tweenName.isEmpty())
-            setCurrentTween(tweenName);
+    const QString nextTweenId = configPanel->getTweenIdFromList();
+    if (!nextTweenId.isEmpty())
+        setCurrentTween(nextTweenId);
 }
 
 void ColoringTweener::updateMode(TupToolPlugin::Mode toolMode)
@@ -782,7 +783,7 @@ void ColoringTweener::updateMode(TupToolPlugin::Mode toolMode)
             }
 
             if (objects.isEmpty())
-                objects = scene->currentScene()->getItemsFromTween(currentTween->getTweenName(), TupItemTweener::Coloring);
+                objects = scene->currentScene()->getItemsFromTweenId(currentTween->tweenId());
         } else {
             #ifdef TUP_DEBUG
                 qDebug() << "[Color Tweener::updateMode()] - Current tween pointer is NULL!";
@@ -793,8 +794,8 @@ void ColoringTweener::updateMode(TupToolPlugin::Mode toolMode)
 
 void ColoringTweener::refreshTweenList()
 {
-    QList<QString> tweenList = scene->currentScene()->getTweenNames(TupItemTweener::Coloring);
-    QString tweenName = configPanel->getTweenNameFromList();
+    QList<QPair<QString, QString>> tweenList = scene->currentScene()->getTweenEntries(TupItemTweener::Coloring);
+    QString tweenId = configPanel->getTweenIdFromList();
 
     configPanel->loadTweenList(tweenList);
 
@@ -803,10 +804,11 @@ void ColoringTweener::refreshTweenList()
         return;
     }
 
-    if (!tweenList.contains(tweenName))
-        tweenName = tweenList.at(0);
+    TupItemTweener *selectedTween = scene->currentScene()->tweenById(tweenId);
+    if (!selectedTween || selectedTween->getType() != TupItemTweener::Coloring)
+        tweenId = tweenList.at(0).second;
 
-    setCurrentTween(tweenName);
+    setCurrentTween(tweenId);
 }
 
 void ColoringTweener::refreshRebasedTween(const QString &tweenId)
@@ -881,19 +883,20 @@ void ColoringTweener::itemResponse(const TupItemResponse *event)
         if (!event->external())
             return;
 
-        QString affectedTweenName;
+        QString affectedTweenId;
         if (event->getAction() == TupProjectRequest::RemoveTween) {
-            affectedTweenName = event->getArg().toString().trimmed();
+            affectedTweenId = event->getArg().toString().trimmed();
         } else {
             QDomDocument document;
             if (document.setContent(event->getArg().toString()))
-                affectedTweenName = document.documentElement()
-                        .attribute(QStringLiteral("name")).trimmed();
+                affectedTweenId = document.documentElement()
+                        .attribute(QStringLiteral("tween_id")).trimmed();
         }
 
         const bool editingAffectedTween = configPanel->mode() == TupToolPlugin::Edit
-                && !affectedTweenName.isEmpty()
-                && configPanel->currentTweenName() == affectedTweenName;
+                && currentTween
+                && !affectedTweenId.isEmpty()
+                && currentTween->tweenId() == affectedTweenId;
 
         if (editingAffectedTween) {
             currentTween = nullptr;
@@ -911,13 +914,10 @@ void ColoringTweener::itemResponse(const TupItemResponse *event)
 
         const QString tweenId = document.documentElement()
                 .attribute(QStringLiteral("tween_id")).trimmed();
-        TupItemTweener *affectedTween = scene->currentScene()
-                ? scene->currentScene()->tweenById(tweenId) : nullptr;
-        const QString affectedTweenName = affectedTween
-                ? affectedTween->getTweenName() : QString();
         const bool editingAffectedTween = configPanel->mode() == TupToolPlugin::Edit
-                && !affectedTweenName.isEmpty()
-                && configPanel->currentTweenName() == affectedTweenName;
+                && currentTween
+                && !tweenId.isEmpty()
+                && currentTween->tweenId() == tweenId;
 
         if (editingAffectedTween) {
             refreshRebasedTween(tweenId);

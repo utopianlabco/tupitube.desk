@@ -73,7 +73,7 @@ ShearConfigurator::~ShearConfigurator()
 {
 }
 
-void ShearConfigurator::loadTweenList(QList<QString> tweenList)
+void ShearConfigurator::loadTweenList(const QList<QPair<QString, QString>> &tweenList)
 {
     tweenManager->loadTweenList(tweenList);
     if (tweenList.count() > 0)
@@ -107,7 +107,7 @@ void ShearConfigurator::setCurrentTween(TupItemTweener *tween)
 {
     currentTween = tween;
     if (currentTween)
-        tweenManager->selectTween(currentTween->getTweenName());
+        tweenManager->selectTween(currentTween->tweenId());
 }
 
 void ShearConfigurator::setTweenManagerPanel()
@@ -223,9 +223,9 @@ void ShearConfigurator::editTween()
     // emit setMode(currentMode);
 }
 
-void ShearConfigurator::editTween(const QString &name)
+void ShearConfigurator::editTween(const QString &tweenId)
 {
-    updateTweenData(name);
+    updateTweenData(tweenId);
     editTween();
 }
 
@@ -238,26 +238,26 @@ void ShearConfigurator::renameTween()
     settingsPanel->focusTweenName();
 }
 
-void ShearConfigurator::renameTween(const QString &name)
+void ShearConfigurator::renameTween(const QString &tweenId)
 {
-    updateTweenData(name);
+    updateTweenData(tweenId);
     renameTween();
 }
 
 void ShearConfigurator::removeTween()
 {
-    QString name = tweenManager->currentTweenName();
+    const QString tweenId = tweenManager->currentTweenId();
     tweenManager->removeItemFromList();
 
-    removeTween(name);
+    removeTween(tweenId);
 }
 
-void ShearConfigurator::removeTween(const QString &name)
+void ShearConfigurator::removeTween(const QString &tweenId)
 {
     if (tweenManager->listSize() == 0)
         activeButtonsPanel(false);
 
-    emit clickedRemoveTween(name);
+    emit clickedRemoveTween(tweenId);
 }
 
 QString ShearConfigurator::currentTweenName() const
@@ -274,6 +274,11 @@ QString ShearConfigurator::currentTweenName() const
 QString ShearConfigurator::getTweenNameFromList() const
 {
     return tweenManager->currentTweenName();
+}
+
+QString ShearConfigurator::getTweenIdFromList() const
+{
+    return tweenManager->currentTweenId();
 }
 
 void ShearConfigurator::notifySelection(bool flag)
@@ -347,7 +352,7 @@ void ShearConfigurator::resetUI()
     settingsPanel->notifySelection(false);
 }
 
-void ShearConfigurator::updateTweenData(const QString &name)
+void ShearConfigurator::updateTweenData(const QString &tweenId)
 {
-    emit getTweenData(name);
+    emit getTweenData(tweenId);
 }

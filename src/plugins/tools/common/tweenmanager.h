@@ -40,6 +40,7 @@
 #include "tosd.h"
 
 #include <QWidget>
+#include <QPair>
 #include <QHBoxLayout>
 #include <QBoxLayout>
 #include <QLineEdit>
@@ -60,10 +61,11 @@ class TUPITUBE_EXPORT TweenManager: public QWidget
         TweenManager(QWidget *parent = nullptr);
         ~TweenManager();
 
-        void loadTweenList(QList<QString> tweenList);
-        void selectTween(const QString &name);
+        void loadTweenList(const QList<QPair<QString, QString>> &tweenList);
+        void selectTween(const QString &tweenId);
         void resetUI();
         QString currentTweenName() const;
+        QString currentTweenId() const;
         int listSize(); 
         void removeItemFromList();
         void updateTweenName(const QString &name);
@@ -71,10 +73,10 @@ class TUPITUBE_EXPORT TweenManager: public QWidget
 
     signals:
         void addNewTween(const QString &name);
-        void editCurrentTween(const QString &name);
-        void renameCurrentTween(const QString &name);
-        void removeCurrentTween(const QString &name);
-        void getTweenData(const QString &name);
+        void editCurrentTween(const QString &tweenId);
+        void renameCurrentTween(const QString &tweenId);
+        void removeCurrentTween(const QString &tweenId);
+        void getTweenData(const QString &tweenId);
 
     private slots:
         void addTween();

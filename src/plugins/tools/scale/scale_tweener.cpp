@@ -84,11 +84,10 @@ void ScaleTweener::init(TupGraphicsScene *gScene)
 
     configPanel->resetUI();
 
-    QList<QString> tweenList = gScene->currentScene()->getTweenNames(TupItemTweener::Scale);
+    QList<QPair<QString, QString>> tweenList = gScene->currentScene()->getTweenEntries(TupItemTweener::Scale);
     if (tweenList.size() > 0) {
         configPanel->loadTweenList(tweenList);
-        QString tweenName = tweenList.at(0);
-        setCurrentTween(tweenName);
+        setCurrentTween(tweenList.at(0).second);
     } else {
         configPanel->activeButtonsPanel(false);
     }
@@ -328,13 +327,14 @@ void ScaleTweener::updateScene(TupGraphicsScene *gScene)
     }
 }
 
-void ScaleTweener::setCurrentTween(const QString &name)
+void ScaleTweener::setCurrentTween(const QString &tweenId)
 {
     TupScene *sceneData = scene->currentScene();
-    currentTween = sceneData->tween(name, TupItemTweener::Scale);
-
-    if (currentTween)
+    currentTween = sceneData->tweenById(tweenId);
+    if (currentTween && currentTween->getType() == TupItemTweener::Scale)
         configPanel->setCurrentTween(currentTween);
+    else
+        currentTween = nullptr;
 }
 
 int ScaleTweener::framesCount()
@@ -426,8 +426,6 @@ void ScaleTweener::applyTween()
     TupItemTweener *identityTween = nullptr;
     if (mode == TupToolPlugin::Edit && currentTween)
         identityTween = currentTween;
-    else
-        identityTween = scene->currentScene()->tween(name, TupItemTweener::Scale);
 
     const bool tweenAlreadyExists = identityTween != nullptr;
     const QString sourceTweenName = tweenAlreadyExists ? identityTween->getTweenName() : name;
@@ -567,7 +565,7 @@ void ScaleTweener::applyTween()
                         representativeObjectId);
             emit requested(&request);
         } else {
-            removeTweenFromProject(sourceTweenName);
+            removeTweenFromProject(tweenId);
 
             TupScene *sceneData = scene->currentScene();
             TupLayer *layer = sceneData->layerAt(initLayer);
@@ -634,23 +632,24 @@ void ScaleTweener::applyTween()
         emit requested(&request);
     }
 
-    setCurrentTween(name);
+    refreshTweenList();
+    setCurrentTween(tweenId);
     TOsd::self()->display(TOsd::Info, tr("Tween %1 applied!").arg(name));
 
     QApplication::restoreOverrideCursor();
 }
 
-void ScaleTweener::removeTweenFromProject(const QString &name)
+void ScaleTweener::removeTweenFromProject(const QString &tweenId)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[Scale Tweener::removeTweenFromProject()] - name ->" << name;
+        qDebug() << "[Scale Tweener::removeTweenFromProject()] - name ->" << tweenId;
     #endif
 
     TupScene *sceneData = scene->currentScene();
-    TupItemTweener *tween = sceneData->tween(name, TupItemTweener::Scale);
-    if (!tween) {
+    TupItemTweener *tween = sceneData->tweenById(tweenId);
+    if (!tween || tween->getType() != TupItemTweener::Scale) {
         #ifdef TUP_DEBUG
-            qDebug() << "[Scale Tweener::removeTweenFromProject()] - Scale tween couldn't be found ->" << name;
+            qDebug() << "[Scale Tweener::removeTweenFromProject()] - Scale tween couldn't be found ->" << tweenId;
         #endif
         return;
     }
@@ -659,7 +658,7 @@ void ScaleTweener::removeTweenFromProject(const QString &name)
     const int tweenScene = tween->getInitScene();
     const int tweenLayer = tween->getInitLayer();
     const int tweenFrame = tween->getInitFrame();
-    QList<QGraphicsItem *> tweenItems = sceneData->getItemsFromTween(name, TupItemTweener::Scale);
+    QList<QGraphicsItem *> tweenItems = sceneData->getItemsFromTweenId(tweenId);
 
     TupLayer *layer = sceneData->layerAt(tweenLayer);
     TupFrame *frame = layer ? layer->frameAt(tweenFrame) : nullptr;
@@ -702,7 +701,7 @@ void ScaleTweener::removeTweenFromProject(const QString &name)
         TupProjectRequest request = TupRequestBuilder::createItemRequest(
                                     tweenScene, tweenLayer, tweenFrame,
                                     objectIndex, QPointF(), scene->getSpaceContext(),
-                                    type, TupProjectRequest::RemoveTween, name,
+                                    type, TupProjectRequest::RemoveTween, tweenId,
                                     QByteArray::number(static_cast<int>(TupItemTweener::Scale)),
                                     QString(), QString(), objectId);
         emit requested(&request);
@@ -731,7 +730,7 @@ void ScaleTweener::removeTweenFromProject(const QString &name)
         emit tweenRemoved();
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "[Scale Tweener::removeTweenFromProject()] - No tween removal request was sent ->" << name;
+            qDebug() << "[Scale Tweener::removeTweenFromProject()] - No tween removal request was sent ->" << tweenId;
         #endif
     }
 }
@@ -747,14 +746,14 @@ QTransform ScaleTweener::initialStep()
     return transform;
 }
 
-void ScaleTweener::removeTween(const QString &name)
+void ScaleTweener::removeTween(const QString &tweenId)
 {
-    removeTweenFromProject(name);
+    removeTweenFromProject(tweenId);
     applyReset();
 
-    QString tweenName = configPanel->getTweenNameFromList();
-    if (!tweenName.isEmpty())
-        setCurrentTween(tweenName);
+    const QString nextTweenId = configPanel->getTweenIdFromList();
+    if (!nextTweenId.isEmpty())
+        setCurrentTween(nextTweenId);
 }
 
 void ScaleTweener::updateOriginPoint(const QPointF &point)
@@ -784,7 +783,7 @@ void ScaleTweener::updateMode(TupToolPlugin::Mode currentMode)
             }
 
             if (objects.isEmpty()) {
-                objects = scene->currentScene()->getItemsFromTween(currentTween->getTweenName(), TupItemTweener::Scale);
+                objects = scene->currentScene()->getItemsFromTweenId(currentTween->tweenId());
                 origin = currentTween->transformOriginPoint();
             }
         } else {
@@ -797,8 +796,8 @@ void ScaleTweener::updateMode(TupToolPlugin::Mode currentMode)
 
 void ScaleTweener::refreshTweenList()
 {
-    QList<QString> tweenList = scene->currentScene()->getTweenNames(TupItemTweener::Scale);
-    QString tweenName = configPanel->getTweenNameFromList();
+    QList<QPair<QString, QString>> tweenList = scene->currentScene()->getTweenEntries(TupItemTweener::Scale);
+    QString tweenId = configPanel->getTweenIdFromList();
 
     configPanel->loadTweenList(tweenList);
 
@@ -807,10 +806,11 @@ void ScaleTweener::refreshTweenList()
         return;
     }
 
-    if (!tweenList.contains(tweenName))
-        tweenName = tweenList.at(0);
+    TupItemTweener *selectedTween = scene->currentScene()->tweenById(tweenId);
+    if (!selectedTween || selectedTween->getType() != TupItemTweener::Scale)
+        tweenId = tweenList.at(0).second;
 
-    setCurrentTween(tweenName);
+    setCurrentTween(tweenId);
 }
 
 void ScaleTweener::refreshRebasedTween(const QString &tweenId)
@@ -888,19 +888,20 @@ void ScaleTweener::itemResponse(const TupItemResponse *event)
         if (!event->external())
             return;
 
-        QString affectedTweenName;
+        QString affectedTweenId;
         if (event->getAction() == TupProjectRequest::RemoveTween) {
-            affectedTweenName = event->getArg().toString().trimmed();
+            affectedTweenId = event->getArg().toString().trimmed();
         } else {
             QDomDocument document;
             if (document.setContent(event->getArg().toString()))
-                affectedTweenName = document.documentElement()
-                        .attribute(QStringLiteral("name")).trimmed();
+                affectedTweenId = document.documentElement()
+                        .attribute(QStringLiteral("tween_id")).trimmed();
         }
 
         const bool editingAffectedTween = configPanel->mode() == TupToolPlugin::Edit
-                && !affectedTweenName.isEmpty()
-                && configPanel->currentTweenName() == affectedTweenName;
+                && currentTween
+                && !affectedTweenId.isEmpty()
+                && currentTween->tweenId() == affectedTweenId;
 
         if (editingAffectedTween) {
             currentTween = nullptr;
@@ -918,13 +919,10 @@ void ScaleTweener::itemResponse(const TupItemResponse *event)
 
         const QString tweenId = document.documentElement()
                 .attribute(QStringLiteral("tween_id")).trimmed();
-        TupItemTweener *affectedTween = scene->currentScene()
-                ? scene->currentScene()->tweenById(tweenId) : nullptr;
-        const QString affectedTweenName = affectedTween
-                ? affectedTween->getTweenName() : QString();
         const bool editingAffectedTween = configPanel->mode() == TupToolPlugin::Edit
-                && !affectedTweenName.isEmpty()
-                && configPanel->currentTweenName() == affectedTweenName;
+                && currentTween
+                && !tweenId.isEmpty()
+                && currentTween->tweenId() == tweenId;
 
         if (editingAffectedTween) {
             refreshRebasedTween(tweenId);

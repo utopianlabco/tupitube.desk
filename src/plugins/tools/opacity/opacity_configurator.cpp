@@ -73,7 +73,7 @@ OpacityConfigurator::~OpacityConfigurator()
 {
 }
 
-void OpacityConfigurator::loadTweenList(QList<QString> tweenList)
+void OpacityConfigurator::loadTweenList(const QList<QPair<QString, QString>> &tweenList)
 {
     tweenManager->loadTweenList(tweenList);
     if (tweenList.count() > 0)
@@ -107,7 +107,7 @@ void OpacityConfigurator::setCurrentTween(TupItemTweener *tween)
 {
     currentTween = tween;
     if (currentTween)
-        tweenManager->selectTween(currentTween->getTweenName());
+        tweenManager->selectTween(currentTween->tweenId());
 }
 
 void OpacityConfigurator::setTweenManagerPanel()
@@ -218,9 +218,9 @@ void OpacityConfigurator::editTween()
     emit setMode(currentMode);
 }
 
-void OpacityConfigurator::editTween(const QString &name)
+void OpacityConfigurator::editTween(const QString &tweenId)
 {
-    updateTweenData(name);
+    updateTweenData(tweenId);
     editTween();
 }
 
@@ -233,26 +233,26 @@ void OpacityConfigurator::renameTween()
     settingsPanel->focusTweenName();
 }
 
-void OpacityConfigurator::renameTween(const QString &name)
+void OpacityConfigurator::renameTween(const QString &tweenId)
 {
-    updateTweenData(name);
+    updateTweenData(tweenId);
     renameTween();
 }
 
 void OpacityConfigurator::removeTween()
 {
-    QString name = tweenManager->currentTweenName();
+    const QString tweenId = tweenManager->currentTweenId();
     tweenManager->removeItemFromList();
 
-    removeTween(name);
+    removeTween(tweenId);
 }
 
-void OpacityConfigurator::removeTween(const QString &name)
+void OpacityConfigurator::removeTween(const QString &tweenId)
 {
     if (tweenManager->listSize() == 0)
         activeButtonsPanel(false);
 
-    emit clickedRemoveTween(name);
+    emit clickedRemoveTween(tweenId);
 }
 
 QString OpacityConfigurator::currentTweenName() const
@@ -269,6 +269,11 @@ QString OpacityConfigurator::currentTweenName() const
 QString OpacityConfigurator::getTweenNameFromList() const
 {
     return tweenManager->currentTweenName();
+}
+
+QString OpacityConfigurator::getTweenIdFromList() const
+{
+    return tweenManager->currentTweenId();
 }
 
 void OpacityConfigurator::notifySelection(bool flag)
@@ -341,7 +346,7 @@ void OpacityConfigurator::resetUI()
     settingsPanel->notifySelection(false);
 }
 
-void OpacityConfigurator::updateTweenData(const QString &name)
+void OpacityConfigurator::updateTweenData(const QString &tweenId)
 {
-    emit getTweenData(name);
+    emit getTweenData(tweenId);
 }

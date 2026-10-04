@@ -82,7 +82,7 @@ ColoringConfigurator::~ColoringConfigurator()
     delete currentTween;
 }
 
-void ColoringConfigurator::loadTweenList(QList<QString> tweenList)
+void ColoringConfigurator::loadTweenList(const QList<QPair<QString, QString>> &tweenList)
 {
     tweenManager->loadTweenList(tweenList);
     if (tweenList.count() > 0)
@@ -116,7 +116,7 @@ void ColoringConfigurator::setCurrentTween(TupItemTweener *lCurrentTween)
 {
     currentTween = lCurrentTween;
     if (currentTween)
-        tweenManager->selectTween(currentTween->getTweenName());
+        tweenManager->selectTween(currentTween->tweenId());
 }
 
 void ColoringConfigurator::setTweenManagerPanel()
@@ -227,9 +227,9 @@ void ColoringConfigurator::editTween()
     activePropertiesPanel(true);    
 }
 
-void ColoringConfigurator::editTween(const QString &name)
+void ColoringConfigurator::editTween(const QString &tweenId)
 {
-    updateTweenData(name);
+    updateTweenData(tweenId);
     editTween();
 }
 
@@ -242,26 +242,26 @@ void ColoringConfigurator::renameTween()
     settingsPanel->focusTweenName();
 }
 
-void ColoringConfigurator::renameTween(const QString &name)
+void ColoringConfigurator::renameTween(const QString &tweenId)
 {
-    updateTweenData(name);
+    updateTweenData(tweenId);
     renameTween();
 }
 
 void ColoringConfigurator::removeTween()
 {
-    QString name = tweenManager->currentTweenName();
+    const QString tweenId = tweenManager->currentTweenId();
     tweenManager->removeItemFromList();
 
-    removeTween(name);
+    removeTween(tweenId);
 }
 
-void ColoringConfigurator::removeTween(const QString &name)
+void ColoringConfigurator::removeTween(const QString &tweenId)
 {
     if (tweenManager->listSize() == 0)
         activeButtonsPanel(false);
 
-    emit clickedRemoveTween(name);
+    emit clickedRemoveTween(tweenId);
 }
 
 QString ColoringConfigurator::currentTweenName() const
@@ -278,6 +278,11 @@ QString ColoringConfigurator::currentTweenName() const
 QString ColoringConfigurator::getTweenNameFromList() const
 {
     return tweenManager->currentTweenName();
+}
+
+QString ColoringConfigurator::getTweenIdFromList() const
+{
+    return tweenManager->currentTweenId();
 }
 
 void ColoringConfigurator::notifySelection(bool flag)
@@ -355,7 +360,7 @@ void ColoringConfigurator::resetUI()
     settingsPanel->notifySelection(false);
 }
 
-void ColoringConfigurator::updateTweenData(const QString &name)
+void ColoringConfigurator::updateTweenData(const QString &tweenId)
 {
-    emit getTweenData(name);
+    emit getTweenData(tweenId);
 }

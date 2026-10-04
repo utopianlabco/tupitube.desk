@@ -48,6 +48,7 @@
 #include <QGraphicsScene>
 #include <QMap>
 #include <QList>
+#include <QPair>
 #include <QPainter>
 #include <QGraphicsItem>
 #include <QStyleOptionGraphicsItem>
@@ -128,6 +129,7 @@ class TUPITUBE_EXPORT TupScene : public QObject, public TupAbstractSerializable
 
         bool tweenExists(const QString &name, TupItemTweener::Type type);
         bool removeTween(const QString &name, TupItemTweener::Type type);
+        bool removeTweenById(const QString &tweenId, TupItemTweener::Type type);
 
         TupItemTweener * tween(const QString &name, TupItemTweener::Type type);
         TupItemTweener *tweenById(const QString &tweenId) const;
@@ -135,6 +137,7 @@ class TUPITUBE_EXPORT TupScene : public QObject, public TupAbstractSerializable
         QList<QGraphicsItem *> getItemsFromTweenId(const QString &tweenId) const;
 
         QList<QString> getTweenNames(TupItemTweener::Type type);
+        QList<QPair<QString, QString>> getTweenEntries(TupItemTweener::Type type) const;
         QList<QGraphicsItem *> getItemsFromTween(const QString &name, TupItemTweener::Type type);
 
         QList<TupGraphicObject *> getTweeningGraphicObjects(int layerIndex) const;

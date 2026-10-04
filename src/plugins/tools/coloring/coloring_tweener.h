@@ -82,21 +82,21 @@ class TUPITUBE_PLUGIN ColoringTweener : public TupToolPlugin
         void rebasedFrameFollowRequested(int frameIndex, int layerIndex, int sceneIndex);
 
     private slots:
-        void setCurrentTween(const QString &name);
+        void setCurrentTween(const QString &tweenId);
         void setSelection();
         void setPropertiesMode(); 
         void updateMode(TupToolPlugin::Mode mode);
         void updateStartPoint(int index);
         void applyReset();
         void applyTween();
-        void removeTween(const QString &name);
+        void removeTween(const QString &tweenId);
 
     private:
         void setupActions();
         int framesCount();
         void clearSelection();
         void disableSelection();
-        void removeTweenFromProject(const QString &name);
+        void removeTweenFromProject(const QString &tweenId);
         void refreshTweenList();
         void refreshRebasedTween(const QString &tweenId);
 

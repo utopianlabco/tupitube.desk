@@ -610,6 +610,55 @@ bool TupScene::removeTween(const QString &name, TupItemTweener::Type type)
     return found;
 }
 
+bool TupScene::removeTweenById(const QString &tweenId, TupItemTweener::Type type)
+{
+    const QString id = tweenId.trimmed();
+    if (id.isEmpty())
+        return false;
+
+    bool found = false;
+    for (TupLayer *layer : layers) {
+        if (!layer)
+            continue;
+
+        for (TupGraphicObject *object : layer->getTweeningGraphicObjects()) {
+            if (!object)
+                continue;
+
+            QList<TupItemTweener *> list = object->tweensList();
+            for (int i = list.count() - 1; i >= 0; --i) {
+                TupItemTweener *tween = list.at(i);
+                if (tween && tween->tweenId() == id && tween->getType() == type) {
+                    object->removeTween(i);
+                    if (object->tweensList().isEmpty())
+                        removeTweenObject(layer->layerIndex(), object);
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        for (TupSvgItem *object : layer->getTweeningSvgObjects()) {
+            if (!object)
+                continue;
+
+            QList<TupItemTweener *> list = object->tweensList();
+            for (int i = list.count() - 1; i >= 0; --i) {
+                TupItemTweener *tween = list.at(i);
+                if (tween && tween->tweenId() == id && tween->getType() == type) {
+                    object->removeTween(i);
+                    if (object->tweensList().isEmpty())
+                        removeTweenObject(layer->layerIndex(), object);
+                    found = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    return found;
+}
+
 void TupScene::removeTweensFromLayer(int layerIndex)
 {
     #ifdef TUP_DEBUG
@@ -717,6 +766,53 @@ QList<QGraphicsItem *> TupScene::getItemsFromTweenId(const QString &tweenId) con
     }
 
     return items;
+}
+
+QList<QPair<QString, QString>> TupScene::getTweenEntries(TupItemTweener::Type type) const
+{
+    QList<QPair<QString, QString>> entries;
+    QList<QString> tweenIds;
+
+    for (TupLayer *layer : layers) {
+        if (!layer)
+            continue;
+
+        for (TupGraphicObject *object : layer->getTweeningGraphicObjects()) {
+            if (!object)
+                continue;
+
+            for (TupItemTweener *tween : object->tweensList()) {
+                if (!tween || tween->getType() != type)
+                    continue;
+
+                const QString tweenId = tween->tweenId().trimmed();
+                if (tweenId.isEmpty() || tweenIds.contains(tweenId))
+                    continue;
+
+                tweenIds.append(tweenId);
+                entries.append(qMakePair(tween->getTweenName(), tweenId));
+            }
+        }
+
+        for (TupSvgItem *object : layer->getTweeningSvgObjects()) {
+            if (!object)
+                continue;
+
+            for (TupItemTweener *tween : object->tweensList()) {
+                if (!tween || tween->getType() != type)
+                    continue;
+
+                const QString tweenId = tween->tweenId().trimmed();
+                if (tweenId.isEmpty() || tweenIds.contains(tweenId))
+                    continue;
+
+                tweenIds.append(tweenId);
+                entries.append(qMakePair(tween->getTweenName(), tweenId));
+            }
+        }
+    }
+
+    return entries;
 }
 
 QList<QString> TupScene::getTweenNames(TupItemTweener::Type type)

@@ -100,13 +100,13 @@ class TUPITUBE_PLUGIN MotionTweener : public TupToolPlugin
     private slots:
         void applyReset();
         void applyTween();
-        void removeTween(const QString &name);
+        void removeTween(const QString &tweenId);
         void setTweenPath();
         void setSelection();
         void setEditEnv();
         void updateMode(TupToolPlugin::Mode mode);
         void updateStartFrame(int index);
-        void setCurrentTween(const QString &name);
+        void setCurrentTween(const QString &tweenId);
         void updateTweenPoints();
 
         void updatePathThickness(int thickness);
@@ -121,8 +121,8 @@ class TUPITUBE_PLUGIN MotionTweener : public TupToolPlugin
         QString pathToCoords();
         void clearSelection();
         void disableSelection();
-        void removeTweenFromProject(const QString &name);
-        void removeTweenLocally(const QString &name);
+        void removeTweenFromProject(const QString &tweenId);
+        void removeTweenLocally(const QString &tweenId);
         void refreshTweenList();
         void refreshRebasedTween(const QString &tweenId);
         void loadEditEnvironment(bool requestFrameSelection, bool alignPathToObject = true);

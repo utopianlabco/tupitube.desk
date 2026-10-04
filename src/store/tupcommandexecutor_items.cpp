@@ -1313,13 +1313,13 @@ bool TupCommandExecutor::setPathItem(TupItemResponse *response)
     return false;
 }
 
-static int tweenIndexByNameAndType(const QList<TupItemTweener *> &tweens,
-                                   const QString &name,
-                                   TupItemTweener::Type type)
+static int tweenIndexByIdAndType(const QList<TupItemTweener *> &tweens,
+                                 const QString &tweenId,
+                                 TupItemTweener::Type type)
 {
     for (int i = 0; i < tweens.count(); ++i) {
         TupItemTweener *tween = tweens.at(i);
-        if (tween && tween->getTweenName() == name && tween->getType() == type)
+        if (tween && tween->tweenId() == tweenId && tween->getType() == type)
             return i;
     }
 
@@ -1381,18 +1381,24 @@ bool TupCommandExecutor::setTween(TupItemResponse *response)
 
                 if (itemType == TupLibraryObject::Item) {
                     const QString objectId = response->getObjectId().trimmed();
-                    if (objectId.isEmpty()) {
+                    if (!objectId.isEmpty()) {
+                        itemIndex = resolveItemIndex(frame, response);
+                        if (itemIndex < 0) {
+                            delete tween;
+                            return false;
+                        }
+                    } else {
+                        // Legacy compatibility is required until tween-start
+                        // relocation becomes one atomic object-id-preserving
+                        // domain operation. The existing relocation path still
+                        // emits Add -> Remove -> SetTween and cannot safely
+                        // reuse an object_id across those committed revisions.
                         #ifdef TUP_DEBUG
-                            qWarning() << "[TupCommandExecutor::setTween()] - Native tween request is missing object_id";
+                            qWarning() << "[TupCommandExecutor::setTween()] - "
+                                          "Native tween request has no object_id; "
+                                          "using legacy positional lookup ->"
+                                       << itemIndex;
                         #endif
-                        delete tween;
-                        return false;
-                    }
-
-                    itemIndex = resolveItemIndex(frame, response);
-                    if (itemIndex < 0) {
-                        delete tween;
-                        return false;
                     }
 
                     tween->setZLevel(itemIndex);
@@ -1535,14 +1541,14 @@ bool TupCommandExecutor::removeTween(TupItemResponse *response)
     const int frameIndex = response->getFrameIndex();
     const TupLibraryObject::ObjectType itemType = response->getItemType();
     int itemIndex = response->getItemIndex();
-    const QString tweenName = response->getArg().toString();
+    const QString tweenId = response->getArg().toString().trimmed();
 
     bool typeOk = false;
     const int tweenTypeValue = QString::fromUtf8(response->getData()).toInt(&typeOk);
-    if (tweenName.isEmpty() || !typeOk) {
+    if (tweenId.isEmpty() || !typeOk) {
         #ifdef TUP_DEBUG
             qWarning() << "[TupCommandExecutor::removeTween()] - Invalid tween identity ->"
-                       << tweenName << response->getData();
+                       << tweenId << response->getData();
         #endif
         return false;
     }
@@ -1581,7 +1587,7 @@ bool TupCommandExecutor::removeTween(TupItemResponse *response)
 
             TupItemTweener *tween = new TupItemTweener();
             tween->fromXml(xml);
-            if (tween->tweenId().isEmpty()) {
+            if (tween->tweenId() != tweenId || tween->getType() != tweenType) {
                 delete tween;
                 return false;
             }
@@ -1591,7 +1597,7 @@ bool TupCommandExecutor::removeTween(TupItemResponse *response)
             scene->addTweenObject(layerIndex, object);
         } else {
             QList<TupItemTweener *> tweens = object->tweensList();
-            const int tweenIndex = tweenIndexByNameAndType(tweens, tweenName, tweenType);
+            const int tweenIndex = tweenIndexByIdAndType(tweens, tweenId, tweenType);
             if (tweenIndex < 0)
                 return false;
 
@@ -1618,7 +1624,7 @@ bool TupCommandExecutor::removeTween(TupItemResponse *response)
 
             TupItemTweener *tween = new TupItemTweener();
             tween->fromXml(xml);
-            if (tween->tweenId().isEmpty()) {
+            if (tween->tweenId() != tweenId || tween->getType() != tweenType) {
                 delete tween;
                 return false;
             }
@@ -1628,7 +1634,7 @@ bool TupCommandExecutor::removeTween(TupItemResponse *response)
             scene->addTweenObject(layerIndex, svg);
         } else {
             QList<TupItemTweener *> tweens = svg->tweensList();
-            const int tweenIndex = tweenIndexByNameAndType(tweens, tweenName, tweenType);
+            const int tweenIndex = tweenIndexByIdAndType(tweens, tweenId, tweenType);
             if (tweenIndex < 0)
                 return false;
 

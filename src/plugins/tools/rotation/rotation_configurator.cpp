@@ -73,7 +73,7 @@ RotationConfigurator::~RotationConfigurator()
 {
 }
 
-void RotationConfigurator::loadTweenList(QList<QString> tweenList)
+void RotationConfigurator::loadTweenList(const QList<QPair<QString, QString>> &tweenList)
 {
     tweenManager->loadTweenList(tweenList);
     if (tweenList.count() > 0)
@@ -107,7 +107,7 @@ void RotationConfigurator::setCurrentTween(TupItemTweener *tween)
 {
     currentTween = tween;
     if (currentTween)
-        tweenManager->selectTween(currentTween->getTweenName());
+        tweenManager->selectTween(currentTween->tweenId());
 }
 
 void RotationConfigurator::setTweenManagerPanel()
@@ -218,9 +218,9 @@ void RotationConfigurator::editTween()
     activePropertiesPanel(true);
 }
 
-void RotationConfigurator::editTween(const QString &name)
+void RotationConfigurator::editTween(const QString &tweenId)
 {
-    updateTweenData(name);
+    updateTweenData(tweenId);
     editTween();
 }
 
@@ -233,26 +233,26 @@ void RotationConfigurator::renameTween()
     settingsPanel->focusTweenName();
 }
 
-void RotationConfigurator::renameTween(const QString &name)
+void RotationConfigurator::renameTween(const QString &tweenId)
 {
-    updateTweenData(name);
+    updateTweenData(tweenId);
     renameTween();
 }
 
 void RotationConfigurator::removeTween()
 {
-    QString name = tweenManager->currentTweenName();
+    const QString tweenId = tweenManager->currentTweenId();
     tweenManager->removeItemFromList();
 
-    removeTween(name);
+    removeTween(tweenId);
 }
 
-void RotationConfigurator::removeTween(const QString &name)
+void RotationConfigurator::removeTween(const QString &tweenId)
 {
     if (tweenManager->listSize() == 0)
         activeButtonsPanel(false);
 
-    emit clickedRemoveTween(name);
+    emit clickedRemoveTween(tweenId);
 }
 
 QString RotationConfigurator::currentTweenName() const
@@ -269,6 +269,11 @@ QString RotationConfigurator::currentTweenName() const
 QString RotationConfigurator::getTweenNameFromList() const
 {
     return tweenManager->currentTweenName();
+}
+
+QString RotationConfigurator::getTweenIdFromList() const
+{
+    return tweenManager->currentTweenId();
 }
 
 void RotationConfigurator::notifySelection(bool flag)
@@ -341,7 +346,7 @@ void RotationConfigurator::resetUI()
     settingsPanel->notifySelection(false);
 }
 
-void RotationConfigurator::updateTweenData(const QString &name)
+void RotationConfigurator::updateTweenData(const QString &tweenId)
 {
-    emit getTweenData(name);
+    emit getTweenData(tweenId);
 }

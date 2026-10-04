@@ -95,24 +95,29 @@ TweenManager::~TweenManager()
     delete addButton;
 }
 
-void TweenManager::loadTweenList(QList<QString> tweenList)
+void TweenManager::loadTweenList(const QList<QPair<QString, QString>> &tweenList)
 {
     tweensList->clear();
 
-    for (int i=0; i < tweenList.size(); i++) {
+    for (const QPair<QString, QString> &entry : tweenList) {
         QListWidgetItem *tweenerItem = new QListWidgetItem(tweensList);
-        tweenerItem->setText(tweenList.at(i));
+        tweenerItem->setText(entry.first);
+        tweenerItem->setData(Qt::UserRole, entry.second.trimmed());
         tweenerItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     }
 
     tweensList->setCurrentRow(0);
 }
 
-void TweenManager::selectTween(const QString &name)
+void TweenManager::selectTween(const QString &tweenId)
 {
-    for (int i=0; i < tweensList->count(); i++) {
+    const QString id = tweenId.trimmed();
+    if (id.isEmpty())
+        return;
+
+    for (int i = 0; i < tweensList->count(); ++i) {
         QListWidgetItem *item = tweensList->item(i);
-        if (item && item->text() == name) {
+        if (item && item->data(Qt::UserRole).toString() == id) {
             tweensList->setCurrentItem(item);
             return;
         }
@@ -138,6 +143,7 @@ void TweenManager::addTween()
         if (!itemExists(name)) {
             QListWidgetItem *tweenerItem = new QListWidgetItem(tweensList);
             tweenerItem->setText(name);
+            tweenerItem->setData(Qt::UserRole, QString());
             tweenerItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
             input->clear();
             tweensList->setCurrentItem(tweenerItem);
@@ -174,12 +180,12 @@ void TweenManager::editTween()
         qDebug() << "[TweenManager::editTween()] - tween name ->" << item->text();
     #endif
 
-    emit editCurrentTween(item->text());
+    emit editCurrentTween(item->data(Qt::UserRole).toString());
 }
 
 void TweenManager::editTween(QListWidgetItem *item)
 {
-    emit editCurrentTween(item->text());
+    emit editCurrentTween(item->data(Qt::UserRole).toString());
 }
 
 void TweenManager::renameTween()
@@ -188,7 +194,7 @@ void TweenManager::renameTween()
     if (!item)
         return;
 
-    emit renameCurrentTween(item->text());
+    emit renameCurrentTween(item->data(Qt::UserRole).toString());
 }
 
 void TweenManager::removeTween()
@@ -201,7 +207,7 @@ void TweenManager::removeTween()
 void TweenManager::removeItemFromList()
 {
     QListWidgetItem *item = tweensList->currentItem();
-    target = item->text();
+    target = item->data(Qt::UserRole).toString();
 
     tweensList->takeItem(tweensList->row(item));
 }
@@ -213,7 +219,7 @@ void TweenManager::showMenu(const QPoint &point)
         return;
 
     tweensList->setCurrentItem(item);
-    emit getTweenData(item->text());
+    emit getTweenData(item->data(Qt::UserRole).toString());
 
     QAction *edit = new QAction(tr("Edit"), this);
     connect(edit, SIGNAL(triggered()), this, SLOT(editTween()));
@@ -236,7 +242,7 @@ void TweenManager::updateTweenData(QListWidgetItem *item)
     if (!item)
         return;
 
-    emit getTweenData(item->text());
+    emit getTweenData(item->data(Qt::UserRole).toString());
 }
 
 void TweenManager::resetUI()
@@ -256,6 +262,15 @@ QString TweenManager::currentTweenName() const
     return "";
 }
 
+QString TweenManager::currentTweenId() const
+{
+    QListWidgetItem *item = tweensList->currentItem();
+    if (item)
+        return item->data(Qt::UserRole).toString().trimmed();
+
+    return QString();
+}
+
 int TweenManager::listSize()
 {
     return tweensList->count();
@@ -265,7 +280,6 @@ void TweenManager::updateTweenName(const QString &name)
 {
     QListWidgetItem *item = tweensList->currentItem();
     item->setText(name);
-    target = name;
 }
 
 bool TweenManager::isTweenNameAvailable(const QString &name) const

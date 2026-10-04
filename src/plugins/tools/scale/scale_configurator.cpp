@@ -78,7 +78,7 @@ ScaleConfigurator::~ScaleConfigurator()
 {
 }
 
-void ScaleConfigurator::loadTweenList(QList<QString> tweenList)
+void ScaleConfigurator::loadTweenList(const QList<QPair<QString, QString>> &tweenList)
 {
     tweenManager->loadTweenList(tweenList);
     if (tweenList.count() > 0)
@@ -112,7 +112,7 @@ void ScaleConfigurator::setCurrentTween(TupItemTweener *tween)
 {
     currentTween = tween;
     if (currentTween)
-        tweenManager->selectTween(currentTween->getTweenName());
+        tweenManager->selectTween(currentTween->tweenId());
 }
 
 void ScaleConfigurator::setTweenManagerPanel()
@@ -225,9 +225,9 @@ void ScaleConfigurator::editTween()
     activePropertiesPanel(true);
 }
 
-void ScaleConfigurator::editTween(const QString &name)
+void ScaleConfigurator::editTween(const QString &tweenId)
 {
-    updateTweenData(name);
+    updateTweenData(tweenId);
     editTween();
 }
 
@@ -240,26 +240,26 @@ void ScaleConfigurator::renameTween()
     settingsPanel->focusTweenName();
 }
 
-void ScaleConfigurator::renameTween(const QString &name)
+void ScaleConfigurator::renameTween(const QString &tweenId)
 {
-    updateTweenData(name);
+    updateTweenData(tweenId);
     renameTween();
 }
 
 void ScaleConfigurator::removeTween()
 {
-    QString name =tweenManager->currentTweenName();
+    const QString tweenId = tweenManager->currentTweenId();
     tweenManager->removeItemFromList();
 
-    removeTween(name);
+    removeTween(tweenId);
 }
 
-void ScaleConfigurator::removeTween(const QString &name)
+void ScaleConfigurator::removeTween(const QString &tweenId)
 {
     if (tweenManager->listSize() == 0)
         activeButtonsPanel(false);
 
-    emit clickedRemoveTween(name);
+    emit clickedRemoveTween(tweenId);
 }
 
 QString ScaleConfigurator::currentTweenName() const
@@ -276,6 +276,11 @@ QString ScaleConfigurator::currentTweenName() const
 QString ScaleConfigurator::getTweenNameFromList() const
 {
     return tweenManager->currentTweenName();
+}
+
+QString ScaleConfigurator::getTweenIdFromList() const
+{
+    return tweenManager->currentTweenId();
 }
 
 void ScaleConfigurator::notifySelection(bool flag)
@@ -348,7 +353,7 @@ void ScaleConfigurator::resetUI()
     settingsPanel->notifySelection(false);
 }
 
-void ScaleConfigurator::updateTweenData(const QString &name)
+void ScaleConfigurator::updateTweenData(const QString &tweenId)
 {
-    emit getTweenData(name);
+    emit getTweenData(tweenId);
 }

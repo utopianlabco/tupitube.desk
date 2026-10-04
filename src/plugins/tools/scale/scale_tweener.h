@@ -93,9 +93,9 @@ class TUPITUBE_PLUGIN ScaleTweener : public TupToolPlugin
         void updateMode(TupToolPlugin::Mode mode);
         void applyReset();
         void applyTween();
-        void removeTween(const QString &name);
+        void removeTween(const QString &tweenId);
         void updateStartPoint(int index);
-        void setCurrentTween(const QString &name);
+        void setCurrentTween(const QString &tweenId);
         void updateOriginPoint(const QPointF &point);
 
     private:
@@ -103,7 +103,7 @@ class TUPITUBE_PLUGIN ScaleTweener : public TupToolPlugin
         int framesCount();
         void clearSelection();
         void disableSelection();
-        void removeTweenFromProject(const QString &name);
+        void removeTweenFromProject(const QString &tweenId);
         QTransform initialStep();
         void refreshTweenList();
         void refreshRebasedTween(const QString &tweenId);

@@ -63,7 +63,7 @@ class TUPITUBE_PLUGIN ShearConfigurator : public QFrame
         ShearConfigurator(QWidget *parent = nullptr);
         ~ShearConfigurator();
 
-        void loadTweenList(QList<QString> tweenList);
+        void loadTweenList(const QList<QPair<QString, QString>> &tweenList);
 
         void initStartCombo(int framesCount, int currentFrame);
         void setStartFrame(int currentIndex);
@@ -74,6 +74,7 @@ class TUPITUBE_PLUGIN ShearConfigurator : public QFrame
         void setCurrentTween(TupItemTweener *currentTween);
         QString currentTweenName() const;
         QString getTweenNameFromList() const;
+        QString getTweenIdFromList() const;
         void notifySelection(bool flag);
         int startFrame();
         int startComboSize();
@@ -87,23 +88,23 @@ class TUPITUBE_PLUGIN ShearConfigurator : public QFrame
         void applyItem();
         void addTween(const QString &name);
         void editTween();
-        void editTween(const QString &name);
+        void editTween(const QString &tweenId);
         void renameTween();
-        void renameTween(const QString &name);
+        void renameTween(const QString &tweenId);
         void removeTween();
-        void removeTween(const QString &name);
+        void removeTween(const QString &tweenId);
         void closeTweenProperties();
-        void updateTweenData(const QString &name);
+        void updateTweenData(const QString &tweenId);
         
     signals:
         void initFrameChanged(int index);
         void clickedSelect();
         void clickedDefineProperties();
-        void clickedRemoveTween(const QString &name);
+        void clickedRemoveTween(const QString &tweenId);
         void setMode(TupToolPlugin::Mode mode);
         void clickedApplyTween();
         void clickedResetInterface();
-        void getTweenData(const QString &name);
+        void getTweenData(const QString &tweenId);
         
     private:
         void setPropertiesPanel();

@@ -79,7 +79,7 @@ MotionConfigurator::~MotionConfigurator()
 {
 }
 
-void MotionConfigurator::loadTweenList(QList<QString> tweenList)
+void MotionConfigurator::loadTweenList(const QList<QPair<QString, QString>> &tweenList)
 {
     #ifdef TUP_DEBUG
         qDebug() << "[MotionConfigurator::loadTweenList()]";
@@ -303,9 +303,9 @@ void MotionConfigurator::closeTweenProperties()
     closeSettingsPanel();
 }
 
-void MotionConfigurator::editTween(const QString &name)
+void MotionConfigurator::editTween(const QString &tweenId)
 {
-    updateTweenData(name);
+    updateTweenData(tweenId);
     editTween();
 }
 
@@ -318,28 +318,28 @@ void MotionConfigurator::renameTween()
     settingsPanel->focusTweenName();
 }
 
-void MotionConfigurator::renameTween(const QString &name)
+void MotionConfigurator::renameTween(const QString &tweenId)
 {
-    updateTweenData(name);
+    updateTweenData(tweenId);
     renameTween();
 }
 
 void MotionConfigurator::removeTween()
 {
-    QString name = tweenManager->currentTweenName();
+    const QString tweenId = tweenManager->currentTweenId();
     tweenManager->removeItemFromList();
 
     currentTween = nullptr;
 
-    removeTween(name);
+    removeTween(tweenId);
 }
 
-void MotionConfigurator::removeTween(const QString &name)
+void MotionConfigurator::removeTween(const QString &tweenId)
 {
     if (tweenManager->listSize() == 0)
         activeButtonsPanel(false);
 
-    emit clickedRemoveTween(name);
+    emit clickedRemoveTween(tweenId);
 }
 
 QString MotionConfigurator::currentTweenName() const
@@ -356,6 +356,11 @@ QString MotionConfigurator::currentTweenName() const
 QString MotionConfigurator::getTweenNameFromList() const
 {
     return tweenManager->currentTweenName();
+}
+
+QString MotionConfigurator::getTweenIdFromList() const
+{
+    return tweenManager->currentTweenId();
 }
 
 void MotionConfigurator::notifySelection(bool flag)
@@ -411,16 +416,16 @@ void MotionConfigurator::resetUI()
     settingsPanel->notifySelection(false);
 }
 
-void MotionConfigurator::updateTweenData(const QString &name)
+void MotionConfigurator::updateTweenData(const QString &tweenId)
 {
-    emit tweenDataRequested(name);
+    emit tweenDataRequested(tweenId);
 }
 
 void MotionConfigurator::setCurrentTween(TupItemTweener *tween)
 {
     currentTween = tween;
     if (currentTween)
-        tweenManager->selectTween(currentTween->getTweenName());
+        tweenManager->selectTween(currentTween->tweenId());
 }
 
 void MotionConfigurator::undoSegment(const QPainterPath path)

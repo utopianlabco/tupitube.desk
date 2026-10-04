@@ -67,7 +67,7 @@ class TUPITUBE_PLUGIN MotionConfigurator : public QFrame
         MotionConfigurator(QWidget *parent = nullptr);
         ~MotionConfigurator();
 
-        void loadTweenList(QList<QString> tweenList);
+        void loadTweenList(const QList<QPair<QString, QString>> &tweenList);
 
         void setPropertiesPanel();
         void activePropertiesPanel(bool enable);
@@ -90,6 +90,7 @@ class TUPITUBE_PLUGIN MotionConfigurator : public QFrame
         void clearData();
         QString currentTweenName() const;
         QString getTweenNameFromList() const;
+        QString getTweenIdFromList() const;
         void notifySelection(bool flag);
         int startComboSize();
         void closeSettingsPanel();
@@ -108,27 +109,27 @@ class TUPITUBE_PLUGIN MotionConfigurator : public QFrame
 
     public slots:
         void editTween();
-        void editTween(const QString &name);
+        void editTween(const QString &tweenId);
         void renameTween();
-        void renameTween(const QString &name);
+        void renameTween(const QString &tweenId);
         void closeTweenProperties();
         
     private slots:
         void applyItem();
         void addTween(const QString &name);
         void removeTween();
-        void removeTween(const QString &name);
-        void updateTweenData(const QString &name);
+        void removeTween(const QString &tweenId);
+        void updateTweenData(const QString &tweenId);
         
     signals:
         void clickedCreatePath();
         void clickedSelect();
-        void clickedRemoveTween(const QString &name);
+        void clickedRemoveTween(const QString &tweenId);
         void setMode(TupToolPlugin::Mode mode);
         void clickedResetInterface();
         void clickedApplyTween();
         void startingFrameChanged(int);
-        void tweenDataRequested(const QString &name);
+        void tweenDataRequested(const QString &tweenId);
         void framesTotalChanged();
 
         void pathThicknessChanged(int);

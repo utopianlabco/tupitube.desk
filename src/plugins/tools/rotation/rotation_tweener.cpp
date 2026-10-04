@@ -91,11 +91,10 @@ void RotationTweener::init(TupGraphicsScene *gScene)
 
     configPanel->resetUI();
 
-    QList<QString> tweenList = scene->currentScene()->getTweenNames(TupItemTweener::Rotation);
+    QList<QPair<QString, QString>> tweenList = scene->currentScene()->getTweenEntries(TupItemTweener::Rotation);
     if (tweenList.size() > 0) {
         configPanel->loadTweenList(tweenList);
-        QString tweenName = tweenList.at(0);
-        setCurrentTween(tweenName);
+        setCurrentTween(tweenList.at(0).second);
     } else {
         configPanel->activeButtonsPanel(false);
     }
@@ -334,13 +333,14 @@ void RotationTweener::updateScene(TupGraphicsScene *scene)
     }
 }
 
-void RotationTweener::setCurrentTween(const QString &name)
+void RotationTweener::setCurrentTween(const QString &tweenId)
 {
     TupScene *sceneData = scene->currentScene();
-    currentTween = sceneData->tween(name, TupItemTweener::Rotation);
-
-    if (currentTween)
+    currentTween = sceneData->tweenById(tweenId);
+    if (currentTween && currentTween->getType() == TupItemTweener::Rotation)
         configPanel->setCurrentTween(currentTween);
+    else
+        currentTween = nullptr;
 }
 
 int RotationTweener::framesCount()
@@ -451,8 +451,6 @@ void RotationTweener::applyTween()
     TupItemTweener *identityTween = nullptr;
     if (mode == TupToolPlugin::Edit && currentTween)
         identityTween = currentTween;
-    else
-        identityTween = scene->currentScene()->tween(name, TupItemTweener::Rotation);
 
     const bool tweenAlreadyExists = identityTween != nullptr;
     const QString sourceTweenName = tweenAlreadyExists ? identityTween->getTweenName() : name;
@@ -609,7 +607,7 @@ void RotationTweener::applyTween()
                         representativeObjectId);
             emit requested(&request);
         } else {
-            removeTweenFromProject(sourceTweenName);
+            removeTweenFromProject(tweenId);
 
             TupScene *sceneData = scene->currentScene();
             TupLayer *layer = sceneData->layerAt(initLayer);
@@ -673,23 +671,24 @@ void RotationTweener::applyTween()
         emit requested(&request);
     }
 
-    setCurrentTween(name);
+    refreshTweenList();
+    setCurrentTween(tweenId);
     TOsd::self()->display(TOsd::Info, tr("Tween %1 applied!").arg(name));
 
     QApplication::restoreOverrideCursor();
 }
 
-void RotationTweener::removeTweenFromProject(const QString &name)
+void RotationTweener::removeTweenFromProject(const QString &tweenId)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[Rotation Tweener::removeTweenFromProject()] - name ->" << name;
+        qDebug() << "[Rotation Tweener::removeTweenFromProject()] - name ->" << tweenId;
     #endif
 
     TupScene *sceneData = scene->currentScene();
-    TupItemTweener *tween = sceneData->tween(name, TupItemTweener::Rotation);
-    if (!tween) {
+    TupItemTweener *tween = sceneData->tweenById(tweenId);
+    if (!tween || tween->getType() != TupItemTweener::Rotation) {
         #ifdef TUP_DEBUG
-            qDebug() << "[Rotation Tweener::removeTweenFromProject()] - Rotation tween couldn't be found ->" << name;
+            qDebug() << "[Rotation Tweener::removeTweenFromProject()] - Rotation tween couldn't be found ->" << tweenId;
         #endif
         return;
     }
@@ -697,7 +696,7 @@ void RotationTweener::removeTweenFromProject(const QString &name)
     const int tweenScene = tween->getInitScene();
     const int tweenLayer = tween->getInitLayer();
     const int tweenFrame = tween->getInitFrame();
-    QList<QGraphicsItem *> tweenItems = sceneData->getItemsFromTween(name, TupItemTweener::Rotation);
+    QList<QGraphicsItem *> tweenItems = sceneData->getItemsFromTweenId(tweenId);
 
     TupLayer *layer = sceneData->layerAt(tweenLayer);
     TupFrame *frame = layer ? layer->frameAt(tweenFrame) : nullptr;
@@ -740,7 +739,7 @@ void RotationTweener::removeTweenFromProject(const QString &name)
         TupProjectRequest request = TupRequestBuilder::createItemRequest(
                                     tweenScene, tweenLayer, tweenFrame,
                                     objectIndex, QPointF(), scene->getSpaceContext(),
-                                    type, TupProjectRequest::RemoveTween, name,
+                                    type, TupProjectRequest::RemoveTween, tweenId,
                                     QByteArray::number(static_cast<int>(TupItemTweener::Rotation)),
                                     QString(), QString(), objectId);
         emit requested(&request);
@@ -769,23 +768,23 @@ void RotationTweener::removeTweenFromProject(const QString &name)
         emit tweenRemoved();
     } else {
         #ifdef TUP_DEBUG
-            qDebug() << "[Rotation Tweener::removeTweenFromProject()] - No tween removal request was sent ->" << name;
+            qDebug() << "[Rotation Tweener::removeTweenFromProject()] - No tween removal request was sent ->" << tweenId;
         #endif
     }
 }
 
-void RotationTweener::removeTween(const QString &name)
+void RotationTweener::removeTween(const QString &tweenId)
 {
     #ifdef TUP_DEBUG
-        qDebug() << "[Rotation Tweener::removeTween()] - name -> " << name;
+        qDebug() << "[Rotation Tweener::removeTween()] - tween_id -> " << tweenId;
     #endif
 
-    removeTweenFromProject(name);
+    removeTweenFromProject(tweenId);
     applyReset();
 
-    QString tweenName = configPanel->getTweenNameFromList();
-    if (!tweenName.isEmpty())
-        setCurrentTween(tweenName);
+    const QString nextTweenId = configPanel->getTweenIdFromList();
+    if (!nextTweenId.isEmpty())
+        setCurrentTween(nextTweenId);
 }
 
 void RotationTweener::updateOriginPoint(const QPointF &point)
@@ -857,7 +856,7 @@ void RotationTweener::updateMode(TupToolPlugin::Mode currentMode)
             }
 
             if (objects.isEmpty()) {
-                objects = scene->currentScene()->getItemsFromTween(currentTween->getTweenName(), TupItemTweener::Rotation);
+                objects = scene->currentScene()->getItemsFromTweenId(currentTween->tweenId());
                 origin = currentTween->transformOriginPoint();
             }
         } else {
@@ -870,8 +869,8 @@ void RotationTweener::updateMode(TupToolPlugin::Mode currentMode)
 
 void RotationTweener::refreshTweenList()
 {
-    QList<QString> tweenList = scene->currentScene()->getTweenNames(TupItemTweener::Rotation);
-    QString tweenName = configPanel->getTweenNameFromList();
+    QList<QPair<QString, QString>> tweenList = scene->currentScene()->getTweenEntries(TupItemTweener::Rotation);
+    QString tweenId = configPanel->getTweenIdFromList();
 
     configPanel->loadTweenList(tweenList);
 
@@ -880,10 +879,11 @@ void RotationTweener::refreshTweenList()
         return;
     }
 
-    if (!tweenList.contains(tweenName))
-        tweenName = tweenList.at(0);
+    TupItemTweener *selectedTween = scene->currentScene()->tweenById(tweenId);
+    if (!selectedTween || selectedTween->getType() != TupItemTweener::Rotation)
+        tweenId = tweenList.at(0).second;
 
-    setCurrentTween(tweenName);
+    setCurrentTween(tweenId);
 }
 
 void RotationTweener::refreshRebasedTween(const QString &tweenId)
@@ -989,19 +989,20 @@ void RotationTweener::itemResponse(const TupItemResponse *event)
         if (!event->external())
             return;
 
-        QString affectedTweenName;
+        QString affectedTweenId;
         if (event->getAction() == TupProjectRequest::RemoveTween) {
-            affectedTweenName = event->getArg().toString().trimmed();
+            affectedTweenId = event->getArg().toString().trimmed();
         } else {
             QDomDocument document;
             if (document.setContent(event->getArg().toString()))
-                affectedTweenName = document.documentElement()
-                        .attribute(QStringLiteral("name")).trimmed();
+                affectedTweenId = document.documentElement()
+                        .attribute(QStringLiteral("tween_id")).trimmed();
         }
 
         const bool editingAffectedTween = configPanel->mode() == TupToolPlugin::Edit
-                && !affectedTweenName.isEmpty()
-                && configPanel->currentTweenName() == affectedTweenName;
+                && currentTween
+                && !affectedTweenId.isEmpty()
+                && currentTween->tweenId() == affectedTweenId;
 
         if (editingAffectedTween) {
             currentTween = nullptr;
@@ -1019,13 +1020,10 @@ void RotationTweener::itemResponse(const TupItemResponse *event)
 
         const QString tweenId = document.documentElement()
                 .attribute(QStringLiteral("tween_id")).trimmed();
-        TupItemTweener *affectedTween = scene->currentScene()
-                ? scene->currentScene()->tweenById(tweenId) : nullptr;
-        const QString affectedTweenName = affectedTween
-                ? affectedTween->getTweenName() : QString();
         const bool editingAffectedTween = configPanel->mode() == TupToolPlugin::Edit
-                && !affectedTweenName.isEmpty()
-                && configPanel->currentTweenName() == affectedTweenName;
+                && currentTween
+                && !tweenId.isEmpty()
+                && currentTween->tweenId() == tweenId;
 
         if (editingAffectedTween) {
             refreshRebasedTween(tweenId);

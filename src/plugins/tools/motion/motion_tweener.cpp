@@ -1575,6 +1575,15 @@ void MotionTweener::itemResponse(const TupItemResponse *response)
 
     if (editMode == TupToolPlugin::Properties) {
         if (response->getAction() == TupProjectRequest::UpdateTweenPath) {
+            if (response->external()
+                    && response->getMode() != TupProjectResponse::Undo
+                    && response->getMode() != TupProjectResponse::Redo) {
+                const QString selectedTweenId = configPanel->getTweenIdFromList().trimmed();
+                if (!selectedTweenId.isEmpty())
+                    refreshRebasedTween(selectedTweenId);
+                return;
+            }
+
             if (response->getMode() == TupProjectResponse::Undo) {
                 if (!doList.isEmpty()) {
                     undoList << doList.last();

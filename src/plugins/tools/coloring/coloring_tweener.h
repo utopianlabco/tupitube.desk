@@ -98,7 +98,7 @@ class TUPITUBE_PLUGIN ColoringTweener : public TupToolPlugin
         void disableSelection();
         void removeTweenFromProject(const QString &tweenId);
         void refreshTweenList();
-        void refreshRebasedTween(const QString &tweenId);
+        void refreshAuthoritativeTween(const QString &tweenId);
 
         QMap<TAction::ActionId, TAction *> colorActions;
         ColoringConfigurator *configPanel;

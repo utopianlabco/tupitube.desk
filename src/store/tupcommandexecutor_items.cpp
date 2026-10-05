@@ -1656,11 +1656,104 @@ bool TupCommandExecutor::removeTween(TupItemResponse *response)
 }
 
 bool TupCommandExecutor::updateTweenPath(TupItemResponse *response)
-{   
+{
     #ifdef TUP_DEBUG
-        qDebug() << "[TupCommandExecutor::updateTweenTween()]";
+        qDebug() << "[TupCommandExecutor::updateTweenPath()]";
         SHOW_VAR(response)
     #endif
+
+    if (!response)
+        return false;
+
+    // SVG tween members remain outside the current stable-identity milestone.
+    // Preserve their legacy response-only behavior until SVG identity is designed.
+    if (response->getItemType() == TupLibraryObject::Svg) {
+        emit responsed(response);
+        return true;
+    }
+
+    const QString objectId = response->getObjectId().trimmed();
+    if (objectId.isEmpty()) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupCommandExecutor::updateTweenPath()] - Native UpdateTweenPath requires object_id";
+        #endif
+        return false;
+    }
+
+    QDomDocument payloadDocument;
+    if (!payloadDocument.setContent(response->getArg().toString())) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupCommandExecutor::updateTweenPath()] - Invalid semantic payload";
+        #endif
+        return false;
+    }
+
+    const QDomElement payload = payloadDocument.documentElement();
+    if (payload.tagName() != QStringLiteral("tween_path_update"))
+        return false;
+
+    const QString tweenId = payload.attribute(QStringLiteral("tween_id")).trimmed();
+    const QString route = payload.attribute(QStringLiteral("coords"));
+    if (tweenId.isEmpty() || route.trimmed().isEmpty())
+        return false;
+
+    const int sceneIndex = response->getSceneIndex();
+    const int layerIndex = response->getLayerIndex();
+    const int frameIndex = response->getFrameIndex();
+    if (!validateIndices(sceneIndex, layerIndex, frameIndex))
+        return false;
+
+    TupScene *scene = project->sceneAt(sceneIndex);
+    TupLayer *layer = scene ? scene->layerAt(layerIndex) : nullptr;
+    TupFrame *frame = layer ? layer->frameAt(frameIndex) : nullptr;
+    if (!scene || !layer || !frame)
+        return false;
+
+    const int itemIndex = resolveItemIndex(frame, response);
+    if (itemIndex < 0)
+        return false;
+    response->setItemIndex(itemIndex);
+
+    QString error;
+    bool success = false;
+
+    if (response->getMode() == TupProjectResponse::Undo
+            || response->getMode() == TupProjectResponse::Redo) {
+        QString sourceSnapshot;
+        QString targetSnapshot;
+        if (!TupTweenService::unpackSnapshots(
+                response->getState(), &sourceSnapshot, &targetSnapshot)) {
+            return false;
+        }
+
+        const QString &snapshot = response->getMode() == TupProjectResponse::Undo
+                ? sourceSnapshot : targetSnapshot;
+        success = TupTweenService::restoreMotionTweenMemberSnapshot(
+            scene, objectId, snapshot, &error);
+    } else if (response->external() && !response->getData().trimmed().isEmpty()) {
+        const QString authoritativeSnapshot = QString::fromUtf8(response->getData());
+        success = TupTweenService::restoreMotionTweenMemberSnapshot(
+            scene, objectId, authoritativeSnapshot, &error);
+    } else {
+        TupTweenService::Result result = TupTweenService::updateMotionTweenPath(
+            scene, tweenId, objectId, route);
+        success = result.success;
+        error = result.error;
+        if (success) {
+            const QString state = TupTweenService::packSnapshots(
+                result.sourceSnapshot, result.targetSnapshot);
+            if (state.isEmpty())
+                return false;
+            response->setState(state);
+        }
+    }
+
+    if (!success) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[TupCommandExecutor::updateTweenPath()] - Update failed ->" << error;
+        #endif
+        return false;
+    }
 
     emit responsed(response);
     return true;

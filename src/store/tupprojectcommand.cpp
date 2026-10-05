@@ -528,6 +528,30 @@ QString TupProjectCommand::authoritativeEventPayload() const
         return request.getXml();
     }
 
+    if (response->originalAction() == TupProjectRequest::UpdateTweenPath) {
+        if (itemResponse->getItemType() != TupLibraryObject::Item
+                || itemResponse->getObjectId().trimmed().isEmpty()) {
+            return QString();
+        }
+
+        QString sourceSnapshot;
+        QString targetSnapshot;
+        if (!TupTweenService::unpackSnapshots(
+                itemResponse->getState(), &sourceSnapshot, &targetSnapshot)
+                || targetSnapshot.trimmed().isEmpty()) {
+            return QString();
+        }
+
+        const TupProjectRequest request = TupRequestBuilder::createItemRequest(
+            itemResponse->getSceneIndex(), itemResponse->getLayerIndex(),
+            itemResponse->getFrameIndex(), itemResponse->getItemIndex(),
+            itemResponse->position(), itemResponse->spaceMode(),
+            itemResponse->getItemType(), TupProjectRequest::UpdateTweenPath,
+            itemResponse->getArg().toString(), targetSnapshot.toUtf8(),
+            response->getCommandId(), QString(), itemResponse->getObjectId());
+        return request.getXml();
+    }
+
     if (response->originalAction() == TupProjectRequest::RebaseTween) {
         QString sourceSnapshot;
         QString targetSnapshot;

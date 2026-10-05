@@ -51,6 +51,7 @@
 #include "tuplibraryobject.h"
 #include "tupscene.h"
 #include "tuplayer.h"
+#include "tupframe.h"
 #include "talgorithm.h"
 
 #include <QMessageBox>
@@ -365,14 +366,74 @@ void MotionTweener::updateTweenPath()
         qDebug() << "[Motion Tweener::updateTweenPath()]";
     #endif
 
-    QString route = pathToCoords();
+    if (!currentTween) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[Motion Tweener::updateTweenPath()] - Current tween is NULL";
+        #endif
+        return;
+    }
+
+    const QString tweenId = currentTween->tweenId().trimmed();
+    if (tweenId.isEmpty()) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[Motion Tweener::updateTweenPath()] - Current tween has no tween_id";
+        #endif
+        return;
+    }
+
+    TupScene *sceneData = scene->currentScene();
+    TupLayer *layer = sceneData ? sceneData->layerAt(initLayer) : nullptr;
+    TupFrame *frame = layer ? layer->frameAt(initFrame) : nullptr;
+    if (!frame) {
+        #ifdef TUP_DEBUG
+            qWarning() << "[Motion Tweener::updateTweenPath()] - Tween source frame is unavailable";
+        #endif
+        return;
+    }
+
+    const QString route = pathToCoords();
+
+    QDomDocument payloadDocument;
+    QDomElement payload = payloadDocument.createElement(QStringLiteral("tween_path_update"));
+    payload.setAttribute(QStringLiteral("tween_id"), tweenId);
+    payload.setAttribute(QStringLiteral("coords"), route);
+    payloadDocument.appendChild(payload);
+    const QString semanticPayload = payloadDocument.toString(0);
+
     foreach (QGraphicsItem *item, objects) {
         TupLibraryObject::ObjectType type = TupLibraryObject::Item;
-        int objectIndex = scene->currentFrame()->indexOf(item);
+        int objectIndex = frame->indexOf(item);
+        QString objectId;
+
+        if (TupSvgItem *svg = qgraphicsitem_cast<TupSvgItem *>(item)) {
+            // SVG stable identity remains a separate milestone. Preserve the
+            // legacy index-addressed path request for SVG members only.
+            type = TupLibraryObject::Svg;
+            objectIndex = frame->indexOf(svg);
+        } else {
+            TupGraphicObject *graphicObject = frame->graphicAt(objectIndex);
+            if (!graphicObject) {
+                #ifdef TUP_DEBUG
+                    qWarning() << "[Motion Tweener::updateTweenPath()] - Native tween member cannot be resolved";
+                #endif
+                continue;
+            }
+            objectId = graphicObject->objectId().trimmed();
+            if (objectId.isEmpty()) {
+                #ifdef TUP_DEBUG
+                    qWarning() << "[Motion Tweener::updateTweenPath()] - Native tween member has no object_id";
+                #endif
+                continue;
+            }
+        }
+
+        const QString argument = type == TupLibraryObject::Item
+                ? semanticPayload : route;
         TupProjectRequest request = TupRequestBuilder::createItemRequest(
                                     initScene, initLayer, initFrame, objectIndex,
                                     QPointF(), scene->getSpaceContext(), type,
-                                    TupProjectRequest::UpdateTweenPath, route);
+                                    TupProjectRequest::UpdateTweenPath, argument,
+                                    QByteArray(), QString(), QString(), objectId);
         emit requested(&request);
     }
     doList << linePath->path();

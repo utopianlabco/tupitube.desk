@@ -303,6 +303,127 @@ TupTweenService::Result::Result() : success(false)
 {
 }
 
+TupTweenService::Result TupTweenService::updateMotionTweenPath(
+    TupScene *scene, const QString &tweenId, const QString &objectId,
+    const QString &route)
+{
+    Result result;
+    const QString normalizedTweenId = tweenId.trimmed();
+    const QString normalizedObjectId = objectId.trimmed();
+
+    if (!scene) {
+        result.error = QStringLiteral("UpdateTweenPath requires a scene");
+        return result;
+    }
+    if (normalizedTweenId.isEmpty()) {
+        result.error = QStringLiteral("UpdateTweenPath requires tween_id");
+        return result;
+    }
+    if (normalizedObjectId.isEmpty()) {
+        result.error = QStringLiteral("UpdateTweenPath requires object_id");
+        return result;
+    }
+    if (route.trimmed().isEmpty()) {
+        result.error = QStringLiteral("UpdateTweenPath requires path coordinates");
+        return result;
+    }
+
+    TupItemTweener *logicalTween = scene->tweenById(normalizedTweenId);
+    if (!logicalTween) {
+        result.error = QStringLiteral("UpdateTweenPath tween_id was not found");
+        return result;
+    }
+    if (logicalTween->getType() != TupItemTweener::Motion) {
+        result.error = QStringLiteral("UpdateTweenPath requires a Motion tween");
+        return result;
+    }
+
+    int layerIndex = -1;
+    int frameIndex = -1;
+    int position = -1;
+    TupGraphicObject *object = findGraphicObject(
+        scene, normalizedObjectId, &layerIndex, &frameIndex, &position);
+    if (!object || position < 0) {
+        result.error = QStringLiteral("UpdateTweenPath object_id was not found");
+        return result;
+    }
+
+    TupItemTweener *memberTween = object->tweenById(normalizedTweenId);
+    if (!memberTween) {
+        result.error = QStringLiteral("UpdateTweenPath object_id is not bound to tween_id");
+        return result;
+    }
+    if (memberTween->getType() != TupItemTweener::Motion) {
+        result.error = QStringLiteral("UpdateTweenPath member is not a Motion tween");
+        return result;
+    }
+
+    result.sourceSnapshot = tweenXml(memberTween);
+    if (result.sourceSnapshot.isEmpty()) {
+        result.error = QStringLiteral("UpdateTweenPath could not capture source snapshot");
+        return result;
+    }
+
+    memberTween->setGraphicsPath(route);
+    result.targetSnapshot = tweenXml(memberTween);
+    if (result.targetSnapshot.isEmpty()) {
+        memberTween->fromXml(result.sourceSnapshot);
+        result.error = QStringLiteral("UpdateTweenPath could not capture target snapshot");
+        return result;
+    }
+
+    scene->addTweenObject(layerIndex, object);
+    result.success = true;
+    return result;
+}
+
+bool TupTweenService::restoreMotionTweenMemberSnapshot(
+    TupScene *scene, const QString &objectId, const QString &snapshot, QString *error)
+{
+    if (!scene) {
+        if (error)
+            *error = QStringLiteral("Motion tween restore requires a scene");
+        return false;
+    }
+
+    const QString normalizedObjectId = objectId.trimmed();
+    if (normalizedObjectId.isEmpty() || snapshot.trimmed().isEmpty()) {
+        if (error)
+            *error = QStringLiteral("Motion tween restore requires object_id and snapshot");
+        return false;
+    }
+
+    TupItemTweener parsedTween;
+    parsedTween.fromXml(snapshot);
+    const QString tweenId = parsedTween.tweenId().trimmed();
+    if (tweenId.isEmpty() || parsedTween.getType() != TupItemTweener::Motion) {
+        if (error)
+            *error = QStringLiteral("Motion tween restore snapshot has invalid identity or type");
+        return false;
+    }
+
+    int layerIndex = -1;
+    int frameIndex = -1;
+    int position = -1;
+    TupGraphicObject *object = findGraphicObject(
+        scene, normalizedObjectId, &layerIndex, &frameIndex, &position);
+    TupItemTweener *memberTween = object ? object->tweenById(tweenId) : nullptr;
+    if (!object || position < 0 || !memberTween
+            || memberTween->getType() != TupItemTweener::Motion) {
+        if (error)
+            *error = QStringLiteral("Motion tween restore target cannot be resolved");
+        return false;
+    }
+
+    // Restore the exact serialized tween state on the existing logical tween
+    // instance so tools holding the current tween pointer do not observe an
+    // identity-breaking object replacement.
+    memberTween->fromXml(snapshot);
+    memberTween->setZLevel(position);
+    scene->addTweenObject(layerIndex, object);
+    return true;
+}
+
 TupTweenService::Result TupTweenService::rebaseMotionTween(TupScene *scene,
                                                             const QString &payload)
 {

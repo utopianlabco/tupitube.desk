@@ -396,6 +396,24 @@ bool TupProjectCommand::isItemRebaseTween() const
         && !itemResponse->getObjectId().trimmed().isEmpty();
 }
 
+bool TupProjectCommand::isItemUpdateTweenPath() const
+{
+    if (!response || response->getPart() != TupProjectRequest::Item
+            || response->originalAction() != TupProjectRequest::UpdateTweenPath) {
+        return false;
+    }
+
+    TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
+    return itemResponse->getItemType() == TupLibraryObject::Item
+        && !itemResponse->getObjectId().trimmed().isEmpty();
+}
+
+bool TupProjectCommand::isSelectionCommand() const
+{
+    return response
+        && response->originalAction() == TupProjectRequest::Select;
+}
+
 bool TupProjectCommand::isNativeItemRemove() const
 {
     if (!response || response->getPart() != TupProjectRequest::Item
@@ -549,7 +567,19 @@ QString TupProjectCommand::authoritativeEventPayload() const
             itemResponse->getItemType(), TupProjectRequest::UpdateTweenPath,
             itemResponse->getArg().toString(), targetSnapshot.toUtf8(),
             response->getCommandId(), QString(), itemResponse->getObjectId());
-        return request.getXml();
+
+        QDomDocument document;
+        if (!document.setContent(request.getXml()))
+            return QString();
+
+        QDomElement root = document.documentElement();
+        QDomElement stateElement = document.createElement(
+            QStringLiteral("tween_path_state"));
+        stateElement.setAttribute(QStringLiteral("encoding"), QStringLiteral("base64"));
+        stateElement.appendChild(document.createTextNode(
+            QString::fromLatin1(itemResponse->getState().toUtf8().toBase64())));
+        root.appendChild(stateElement);
+        return document.toString();
     }
 
     if (response->originalAction() == TupProjectRequest::RebaseTween) {

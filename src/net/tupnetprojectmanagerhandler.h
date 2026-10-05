@@ -140,6 +140,8 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void transformRestoreRequestFinished(const QString &commandId);
         void rebaseTweenRestoreStackAdvanceRequested(const QString &commandId, bool undoRestore);
         void rebaseTweenRestoreRequestFinished(const QString &commandId);
+        void updateTweenPathRestoreStackAdvanceRequested(const QString &commandId, bool undoRestore);
+        void updateTweenPathRestoreRequestFinished(const QString &commandId);
         void removeRestoreStackAdvanceRequested(const QString &commandId, bool undoRestore);
         void removeRestoreRequestFinished(const QString &commandId);
         void groupRestoreStackAdvanceRequested(const QString &commandId, bool undoRestore);
@@ -152,6 +154,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void requestAuthoritativeEditNodesRestore(const QString &commandId, bool undoRestore);
         void requestAuthoritativeTransformRestore(const QString &commandId, bool undoRestore);
         void requestAuthoritativeRebaseTweenRestore(const QString &commandId, bool undoRestore);
+        void requestAuthoritativeUpdateTweenPathRestore(const QString &commandId, bool undoRestore);
         void requestAuthoritativeRemoveRestore(const QString &commandId, bool undoRestore);
         void requestAuthoritativeGroupRestore(const QString &commandId, bool undoRestore);
         void sendExportImageRequest(int frameIndex, int sceneIndex, const QString &title, const QString &topics, const QString &description);
@@ -290,6 +293,18 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
             QString objectId;
         };
 
+        struct UpdateTweenPathRestoreContext
+        {
+            int sceneIndex = -1;
+            int layerIndex = -1;
+            int frameIndex = -1;
+            int itemIndex = -1;
+            QPointF position;
+            int spaceMode = 0;
+            int itemType = 0;
+            QString objectId;
+        };
+
         enum class CollaborationState
         {
             Disconnected,
@@ -325,6 +340,9 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
             const QString &commandId,
             const QString &authoritativePayload);
         bool applyAuthoritativeRebaseTweenResult(
+            const QString &commandId,
+            const QString &authoritativePayload);
+        bool applyAuthoritativeUpdateTweenPathResult(
             const QString &commandId,
             const QString &authoritativePayload);
         bool applyAuthoritativeRemoveRestoreResult(
@@ -398,6 +416,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         QHash<QString, EditNodesRestoreContext> editNodesRestoreContexts;
         QHash<QString, TransformRestoreContext> transformRestoreContexts;
         QHash<QString, RebaseTweenRestoreContext> rebaseTweenRestoreContexts;
+        QHash<QString, UpdateTweenPathRestoreContext> updateTweenPathRestoreContexts;
         QHash<QString, RemoveRestoreContext> removeRestoreContexts;
         QHash<QString, PendingRemoveRestoreRequest> pendingRemoveRestoreRequests;
         TupProjectListDialog *dialog;

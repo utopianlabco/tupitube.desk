@@ -46,6 +46,15 @@ class TUPITUBE_EXPORT TupTweenService
                                                      const QString &snapshot,
                                                      QString *error = nullptr);
 
+        // Captures the exact current serialized state of one native Motion
+        // tween member using durable object_id and the tween identity carried
+        // by a previously captured member snapshot.
+        static QString currentMotionTweenMemberSnapshot(
+            TupScene *scene,
+            const QString &objectId,
+            const QString &referenceSnapshot,
+            QString *error = nullptr);
+
         // Restores an exact snapshot captured by rebaseMotionTween(). Used by
         // Undo/Redo; no inverse rebase is computed.
         static bool restoreMotionTweenSnapshot(TupScene *scene,

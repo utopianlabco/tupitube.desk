@@ -110,6 +110,8 @@ class TUPITUBE_EXPORT TupProjectManager : public QObject
         void finishAuthoritativeTransformRestore(const QString &commandId);
         void advanceAuthoritativeRebaseTweenRestore(const QString &commandId, bool undoRestore);
         void finishAuthoritativeRebaseTweenRestore(const QString &commandId);
+        void advanceAuthoritativeUpdateTweenPathRestore(const QString &commandId, bool undoRestore);
+        void finishAuthoritativeUpdateTweenPathRestore(const QString &commandId);
         void advanceAuthoritativeRemoveRestore(const QString &commandId, bool undoRestore);
         void finishAuthoritativeRemoveRestore(const QString &commandId);
         void advanceAuthoritativeGroupRestore(const QString &commandId, bool undoRestore);
@@ -134,6 +136,7 @@ class TUPITUBE_EXPORT TupProjectManager : public QObject
         QString pendingEditNodesRestoreCommandId;
         QString pendingTransformRestoreCommandId;
         QString pendingRebaseTweenRestoreCommandId;
+        QString pendingUpdateTweenPathRestoreCommandId;
         QString pendingRemoveRestoreCommandId;
         QString pendingGroupRestoreCommandId;
 

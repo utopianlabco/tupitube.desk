@@ -424,6 +424,53 @@ bool TupTweenService::restoreMotionTweenMemberSnapshot(
     return true;
 }
 
+QString TupTweenService::currentMotionTweenMemberSnapshot(
+    TupScene *scene, const QString &objectId, const QString &referenceSnapshot,
+    QString *error)
+{
+    if (!scene) {
+        if (error)
+            *error = QStringLiteral("Motion tween member snapshot capture requires a scene");
+        return QString();
+    }
+
+    const QString normalizedObjectId = objectId.trimmed();
+    if (normalizedObjectId.isEmpty() || referenceSnapshot.trimmed().isEmpty()) {
+        if (error)
+            *error = QStringLiteral(
+                "Motion tween member snapshot capture requires object_id and reference snapshot");
+        return QString();
+    }
+
+    TupItemTweener referenceTween;
+    referenceTween.fromXml(referenceSnapshot);
+    const QString tweenId = referenceTween.tweenId().trimmed();
+    if (tweenId.isEmpty() || referenceTween.getType() != TupItemTweener::Motion) {
+        if (error)
+            *error = QStringLiteral(
+                "Motion tween member reference snapshot has invalid identity or type");
+        return QString();
+    }
+
+    int position = -1;
+    TupGraphicObject *object = findGraphicObject(
+        scene, normalizedObjectId, nullptr, nullptr, &position);
+    TupItemTweener *memberTween = object ? object->tweenById(tweenId) : nullptr;
+    if (!object || position < 0 || !memberTween
+            || memberTween->getType() != TupItemTweener::Motion) {
+        if (error)
+            *error = QStringLiteral(
+                "Motion tween member snapshot target cannot be resolved");
+        return QString();
+    }
+
+    const QString snapshot = tweenXml(memberTween);
+    if (snapshot.isEmpty() && error)
+        *error = QStringLiteral("Motion tween member snapshot could not be captured");
+
+    return snapshot;
+}
+
 TupTweenService::Result TupTweenService::rebaseMotionTween(TupScene *scene,
                                                             const QString &payload)
 {

@@ -529,15 +529,18 @@ void StepsViewer::addTableRow(int row, int frames)
     framesItem->setTextAlignment(Qt::AlignCenter);
     framesItem->setText(QString::number(frames));
 
-    plusButton->append(new TPushButton(this, "+", 2, row));
-    connect(plusButton->at(row), SIGNAL(clicked(int, int)), this, SLOT(updatePathSection(int, int)));
-    minusButton->append(new TPushButton(this, "-", 3, row));
-    connect(minusButton->at(row), SIGNAL(clicked(int, int)), this, SLOT(updatePathSection(int, int)));
+    TPushButton *plus = new TPushButton(this, "+", 2, row);
+    plusButton->append(plus);
+    connect(plus, SIGNAL(clicked(int, int)), this, SLOT(updatePathSection(int, int)));
+
+    TPushButton *minus = new TPushButton(this, "-", 3, row);
+    minusButton->append(minus);
+    connect(minus, SIGNAL(clicked(int, int)), this, SLOT(updatePathSection(int, int)));
 
     setItem(row, 0, intervalItem);
     setItem(row, 1, framesItem);
-    setCellWidget(row, 2, plusButton->at(row));
-    setCellWidget(row, 3, minusButton->at(row));
+    setCellWidget(row, 2, plus);
+    setCellWidget(row, 3, minus);
 
     setRowHeight(row, 20);
 }

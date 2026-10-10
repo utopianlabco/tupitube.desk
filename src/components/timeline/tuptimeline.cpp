@@ -745,11 +745,12 @@ void TupTimeLine::itemResponse(TupItemResponse *response)
                       framesTable->updateFrameState(layerIndex, frameIndex, scene->frameIsEmpty(layerIndex, frameIndex));
               }
             break;
+            case TupProjectRequest::ApplyMotionTween:
             case TupProjectRequest::RebaseTween:
               {
                   reconcileLayerFramesFromProject(sceneIndex, layerIndex);
 
-                  // Keep presentation state aligned with the authoritative tween
+                  // Keep presentation state aligned with the applied tween
                   // start frame without emitting a separate Select command. Remote
                   // collaborator rebases must not steal this client's selection.
                   if (!response->external()) {

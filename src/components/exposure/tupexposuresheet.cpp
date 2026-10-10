@@ -1563,6 +1563,7 @@ void TupExposureSheet::itemResponse(TupItemResponse *response)
                 }
             }
         break;
+        case TupProjectRequest::ApplyMotionTween:
         case TupProjectRequest::RebaseTween:
             {
                 const int sceneIndex = response->getSceneIndex();
@@ -1571,7 +1572,7 @@ void TupExposureSheet::itemResponse(TupItemResponse *response)
 
                 reconcileLayerFramesFromProject(sceneIndex, layerIndex, response->external());
 
-                // RebaseTween already committed the authoritative frame change.
+                // The tween operation already changed the project model frames.
                 // Mirror that result locally without emitting a Select request, so
                 // frame navigation does not create another command or re-enter the
                 // project manager while the response is still being delivered.

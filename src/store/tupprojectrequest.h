@@ -126,7 +126,8 @@ class TUPITUBE_EXPORT TupProjectRequest
             ClearRasterCanvas = 35,
 
             // Scene properties
-            SetFps = 36
+            SetFps = 36,
+            ApplyMotionTween = 37
         };
 
         enum Part

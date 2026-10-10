@@ -223,6 +223,7 @@ QString TupProjectCommand::actionString(int action) const
         {
             return "convert";
         }
+        case TupProjectRequest::ApplyMotionTween: return "apply motion tween";
         case TupProjectRequest::RebaseTween:
         {
             return "rebase tween";
@@ -382,6 +383,16 @@ bool TupProjectCommand::isItemTransform() const
 
     TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
     return !itemResponse->getObjectId().trimmed().isEmpty();
+}
+
+bool TupProjectCommand::isItemApplyMotionTween() const
+{
+    if (!response || response->getPart() != TupProjectRequest::Item
+            || response->originalAction() != TupProjectRequest::ApplyMotionTween)
+        return false;
+    TupItemResponse *item = static_cast<TupItemResponse *>(response);
+    return item->getItemType() == TupLibraryObject::Item
+        && !item->getObjectId().trimmed().isEmpty();
 }
 
 bool TupProjectCommand::isItemRebaseTween() const
@@ -582,6 +593,31 @@ QString TupProjectCommand::authoritativeEventPayload() const
         return document.toString();
     }
 
+    if (response->originalAction() == TupProjectRequest::ApplyMotionTween) {
+        QString sourceSnapshot, targetSnapshot;
+        if (!TupTweenService::unpackSnapshots(itemResponse->getState(),
+                                              &sourceSnapshot, &targetSnapshot))
+            return QString();
+        const QString snapshot = response->external() && !itemResponse->getData().isEmpty()
+            ? QString::fromUtf8(itemResponse->getData()) : targetSnapshot;
+        if (snapshot.isEmpty()) return QString();
+        TupProjectRequest request = TupRequestBuilder::createItemRequest(
+            itemResponse->getSceneIndex(), itemResponse->getLayerIndex(),
+            itemResponse->getFrameIndex(), itemResponse->getItemIndex(),
+            itemResponse->position(), itemResponse->spaceMode(),
+            itemResponse->getItemType(), TupProjectRequest::ApplyMotionTween,
+            itemResponse->getArg().toString(), snapshot.toUtf8(),
+            response->getCommandId(), QString(), itemResponse->getObjectId());
+        QDomDocument document;
+        if (!document.setContent(request.getXml())) return QString();
+        QDomElement stateElement = document.createElement(QStringLiteral("tween_apply_state"));
+        stateElement.setAttribute(QStringLiteral("encoding"), QStringLiteral("base64"));
+        stateElement.appendChild(document.createTextNode(
+            QString::fromLatin1(itemResponse->getState().toUtf8().toBase64())));
+        document.documentElement().appendChild(stateElement);
+        return document.toString();
+    }
+
     if (response->originalAction() == TupProjectRequest::RebaseTween) {
         QString sourceSnapshot;
         QString targetSnapshot;
@@ -754,6 +790,7 @@ QString TupProjectCommand::eventType() const
                 case TupProjectRequest::Group: return QStringLiteral("item.grouped");
                 case TupProjectRequest::Ungroup: return QStringLiteral("item.ungrouped");
                 case TupProjectRequest::SetTween: return QStringLiteral("item.tween-updated");
+                case TupProjectRequest::ApplyMotionTween: return QStringLiteral("item.motion-tween-applied");
                 case TupProjectRequest::RebaseTween: return QStringLiteral("item.tween-rebased");
                 case TupProjectRequest::RemoveTween: return QStringLiteral("item.tween-removed");
                 case TupProjectRequest::UpdateTweenPath: return QStringLiteral("item.tween-path-updated");
@@ -1152,6 +1189,11 @@ bool TupProjectCommand::itemCommand()
             case TupProjectRequest::SetTween:
             {
                  return executeOperation([&]() { return executor->setTween(res); });
+            }
+            break;
+            case TupProjectRequest::ApplyMotionTween:
+            {
+                 return executeOperation([&]() { return executor->applyMotionTween(res); });
             }
             break;
             case TupProjectRequest::RebaseTween:

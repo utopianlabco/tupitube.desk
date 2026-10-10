@@ -26,6 +26,7 @@ struct MemberState
     int frameIndex = -1;
     int position = -1;
     QString tweenXml;
+    bool present = true;
 };
 
 QString encode(const QString &value)
@@ -243,7 +244,8 @@ bool replaceTween(TupGraphicObject *object, const QString &xml,
 }
 
 QString createSnapshot(TupScene *scene, const QString &tweenId,
-                       const QList<QString> &objectIds, QString *error)
+                       const QList<QString> &objectIds, QString *error,
+                       bool allowAbsent = false, bool allLayerCounts = false)
 {
     QDomDocument document;
     QDomElement root = document.createElement(QStringLiteral("tween_rebase_snapshot"));
@@ -277,7 +279,7 @@ QString createSnapshot(TupScene *scene, const QString &tweenId,
 
         TupItemTweener *tween = object->tweenById(tweenId);
         const QString xml = tweenXml(tween);
-        if (!tween || xml.isEmpty()) {
+        if ((!tween && !allowAbsent) || (tween && xml.isEmpty())) {
             if (error)
                 *error = QStringLiteral("Snapshot member is missing tween_id");
             return QString();
@@ -288,10 +290,20 @@ QString createSnapshot(TupScene *scene, const QString &tweenId,
         member.setAttribute(QStringLiteral("layer"), layerIndex);
         member.setAttribute(QStringLiteral("frame"), frameIndex);
         member.setAttribute(QStringLiteral("position"), position);
+        member.setAttribute(QStringLiteral("present"), tween ? 1 : 0);
         member.setAttribute(QStringLiteral("tween"), encode(xml));
         root.appendChild(member);
     }
 
+    if (allLayerCounts) {
+        QStringList counts;
+        for (int index = 0; index < scene->layersCount(); ++index) {
+            TupLayer *layer = scene->layerAt(index);
+            if (!layer) return QString();
+            counts.append(QString::number(layer->framesCount()));
+        }
+        root.setAttribute(QStringLiteral("layer_counts"), counts.join(QLatin1Char(',')));
+    }
     root.setAttribute(QStringLiteral("layer"), snapshotLayerIndex);
     root.setAttribute(QStringLiteral("frame_count"), snapshotFrameCount);
     document.appendChild(root);
@@ -333,10 +345,11 @@ bool parseSnapshot(const QString &snapshot, QString *tweenId, int *layerIndex,
         state.frameIndex = memberElement.attribute(QStringLiteral("frame")).toInt();
         state.position = memberElement.attribute(QStringLiteral("position")).toInt();
         state.tweenXml = decode(memberElement.attribute(QStringLiteral("tween")));
+        state.present = memberElement.attribute(QStringLiteral("present"), QStringLiteral("1")) != QStringLiteral("0");
 
         if (state.objectId.isEmpty() || state.layerIndex < 0
                 || state.frameIndex < 0 || state.position < 0
-                || state.tweenXml.isEmpty()) {
+                || (state.present && state.tweenXml.isEmpty())) {
             if (error)
                 *error = QStringLiteral("Incomplete tween rebase snapshot member");
             return false;
@@ -654,6 +667,133 @@ QString TupTweenService::currentMotionTweenMemberSnapshot(
     return snapshot;
 }
 
+TupTweenService::Result TupTweenService::applyMotionTween(TupScene *scene,
+                                                              const QString &payload)
+{
+    Result result;
+    if (!scene) {
+        result.error = QStringLiteral("ApplyMotionTween requires a scene");
+        return result;
+    }
+
+    QString tweenId;
+    int layerIndex = -1;
+    int frameIndex = -1;
+    QList<MemberState> members;
+    // The native Apply payload deliberately has the same identity fields and
+    // member encoding as RebaseTween, but has a distinct protocol root.
+    QString normalized = payload;
+    QDomDocument requestDocument;
+    if (!requestDocument.setContent(payload)
+            || requestDocument.documentElement().tagName()
+                != QStringLiteral("tween_apply")) {
+        result.error = QStringLiteral("Invalid ApplyMotionTween payload");
+        return result;
+    }
+    requestDocument.documentElement().setTagName(QStringLiteral("tween_rebase"));
+    normalized = requestDocument.toString(0);
+    if (!parsePayload(normalized, &tweenId, &layerIndex, &frameIndex,
+                      &members, &result.error))
+        return result;
+
+    TupLayer *layer = scene->layerAt(layerIndex);
+    if (!layer || frameIndex >= layer->framesCount()) {
+        result.error = QStringLiteral("ApplyMotionTween target frame does not exist");
+        return result;
+    }
+
+    QList<QString> ids;
+    int requiredFrameCount = layer->framesCount();
+    for (const MemberState &member : members) {
+        int objectLayer = -1;
+        int objectFrame = -1;
+        TupGraphicObject *object = findGraphicObject(
+            scene, member.objectId, &objectLayer, &objectFrame);
+        if (!object || objectLayer != layerIndex || objectFrame != frameIndex
+                || ids.contains(member.objectId)) {
+            result.error = QStringLiteral("ApplyMotionTween member identity/location conflict");
+            return result;
+        }
+        TupItemTweener targetTween;
+        targetTween.fromXml(member.tweenXml);
+        if (targetTween.getType() != TupItemTweener::Motion) {
+            result.error = QStringLiteral("ApplyMotionTween requires native Motion members");
+            return result;
+        }
+        for (TupItemTweener *other : object->tweensList()) {
+            if (other && other->getType() == TupItemTweener::Motion
+                    && other->tweenId() != tweenId) {
+                result.error = QStringLiteral("ApplyMotionTween Motion type collision");
+                return result;
+            }
+        }
+        ids.append(member.objectId);
+        requiredFrameCount = qMax(requiredFrameCount,
+                                  frameIndex + qMax(1, targetTween.getFrames()));
+    }
+    {
+        const QList<QString> actualIds = nativeMotionMemberIds(scene, tweenId);
+        if (!actualIds.isEmpty() && actualIds.size() != ids.size()) {
+            result.error = QStringLiteral("ApplyMotionTween requires complete membership");
+            return result;
+        }
+        for (const QString &id : actualIds) {
+            if (!ids.contains(id)) {
+                result.error = QStringLiteral("ApplyMotionTween incomplete membership");
+                return result;
+            }
+        }
+    }
+
+    if (scene->getItemsFromTweenId(tweenId).size()
+            != nativeMotionMemberIds(scene, tweenId).size()) {
+        result.error = QStringLiteral("ApplyMotionTween does not support SVG membership");
+        return result;
+    }
+
+    result.sourceSnapshot = createSnapshot(scene, tweenId, ids, &result.error, true, true);
+    if (result.sourceSnapshot.isEmpty())
+        return result;
+
+    bool applied = true;
+    for (int index = 0; applied && index < scene->layersCount(); ++index) {
+        TupLayer *currentLayer = scene->layerAt(index);
+        if (!currentLayer) { applied = false; break; }
+        while (currentLayer->framesCount() < requiredFrameCount) {
+            if (!currentLayer->createFrame(QStringLiteral("Frame"), currentLayer->framesCount())) {
+                result.error = QStringLiteral("ApplyMotionTween failed extending scene layers");
+                applied = false;
+                break;
+            }
+        }
+    }
+    if (applied) {
+        for (const MemberState &member : members) {
+            TupGraphicObject *object = findGraphicObject(scene, member.objectId);
+            const int position = object && object->frame()
+                ? object->frame()->graphicIndexById(member.objectId) : -1;
+            if (position < 0 || !replaceTween(object, member.tweenXml,
+                                             tweenId, position, &result.error)) {
+                applied = false;
+                break;
+            }
+            scene->addTweenObject(layerIndex, object);
+        }
+    }
+    if (applied) {
+        result.targetSnapshot = createSnapshot(scene, tweenId, ids, &result.error, false, true);
+        applied = !result.targetSnapshot.isEmpty();
+    }
+    if (!applied) {
+        QString rollbackError;
+        if (!restoreMotionTweenSnapshot(scene, result.sourceSnapshot, &rollbackError))
+            result.error += QStringLiteral("; rollback failed: ") + rollbackError;
+        return result;
+    }
+    result.success = true;
+    return result;
+}
+
 TupTweenService::Result TupTweenService::rebaseMotionTween(TupScene *scene,
                                                             const QString &payload)
 {
@@ -826,6 +966,38 @@ bool TupTweenService::restoreMotionTweenSnapshot(TupScene *scene,
         return false;
     }
 
+    QList<int> intendedFrameCounts;
+    QDomDocument snapshotDocument;
+    if (!snapshotDocument.setContent(snapshot)) return false;
+    const QString countsValue = snapshotDocument.documentElement()
+        .attribute(QStringLiteral("layer_counts"));
+    if (!countsValue.isEmpty()) {
+        const QStringList countStrings = countsValue.split(QLatin1Char(','));
+        if (countStrings.size() != scene->layersCount()) {
+            if (error) *error = QStringLiteral("Tween snapshot layer count mismatch");
+            return false;
+        }
+        for (const QString &value : countStrings) {
+            bool ok = false;
+            const int count = value.toInt(&ok);
+            if (!ok || count < 1) return false;
+            intendedFrameCounts.append(count);
+        }
+    } else {
+        for (int index = 0; index < scene->layersCount(); ++index)
+            intendedFrameCounts.append(index == snapshotLayerIndex
+                ? snapshotFrameCount : scene->layerAt(index)->framesCount());
+    }
+    for (int index = 0; index < intendedFrameCounts.size(); ++index) {
+        TupLayer *layer = scene->layerAt(index);
+        if (!layer) return false;
+        while (layer->framesCount() < intendedFrameCounts.at(index)) {
+            if (!layer->createFrame(QStringLiteral("Frame"), layer->framesCount())) {
+                if (error) *error = QStringLiteral("Tween snapshot layer extension failed");
+                return false;
+            }
+        }
+    }
     while (snapshotLayer->framesCount() < snapshotFrameCount) {
         const int newFrameIndex = snapshotLayer->framesCount();
         if (!snapshotLayer->createFrame(QStringLiteral("Frame"), newFrameIndex)) {
@@ -840,7 +1012,8 @@ bool TupTweenService::restoreMotionTweenSnapshot(TupScene *scene,
         TupLayer *layer = scene->layerAt(member.layerIndex);
         TupFrame *frame = layer ? layer->frameAt(member.frameIndex) : nullptr;
         TupGraphicObject *object = findGraphicObject(scene, member.objectId);
-        if (!layer || !frame || !object || !object->tweenById(tweenId)) {
+        if (!layer || !frame || !object
+                ) {
             if (error)
                 *error = QStringLiteral("Tween snapshot member cannot be resolved");
             return false;
@@ -867,18 +1040,37 @@ bool TupTweenService::restoreMotionTweenSnapshot(TupScene *scene,
         }
 
         const int position = targetFrame->graphicIndexById(member.objectId);
-        if (position < 0
-                || !replaceTween(object, member.tweenXml, tweenId,
+        if (position < 0) {
+            if (error)
+                *error = QStringLiteral("Tween snapshot restored object position is invalid");
+            return false;
+        }
+
+        if (!member.present) {
+            const QList<TupItemTweener *> currentTweens = object->tweensList();
+            for (int i = 0; i < currentTweens.size(); ++i) {
+                if (currentTweens.at(i) && currentTweens.at(i)->tweenId() == tweenId) {
+                    object->removeTween(i);
+                    break;
+                }
+            }
+            if (!object->hasTweens())
+                scene->removeTweenObject(member.layerIndex, object);
+        } else if (!replaceTween(object, member.tweenXml, tweenId,
                                  position, error)) {
             return false;
+        } else {
+            scene->addTweenObject(member.layerIndex, object);
         }
     }
 
-    while (snapshotLayer->framesCount() > snapshotFrameCount) {
-        if (!snapshotLayer->removeLastEmptyFrameForDomainOperation()) {
-            if (error)
-                *error = QStringLiteral("Tween snapshot cannot remove non-empty trailing frame");
-            return false;
+    for (int index = 0; index < intendedFrameCounts.size(); ++index) {
+        TupLayer *layer = scene->layerAt(index);
+        while (layer->framesCount() > intendedFrameCounts.at(index)) {
+            if (!layer->removeLastEmptyFrameForDomainOperation()) {
+                if (error) *error = QStringLiteral("Tween snapshot cannot remove non-empty trailing frame");
+                return false;
+            }
         }
     }
 
@@ -907,7 +1099,8 @@ QString TupTweenService::currentMotionTweenSnapshot(
     for (const MemberState &member : members)
         objectIds.append(member.objectId);
 
-    return createSnapshot(scene, tweenId, objectIds, error);
+    return createSnapshot(scene, tweenId, objectIds, error, true,
+        referenceSnapshot.contains(QStringLiteral("layer_counts=")));
 }
 
 QString TupTweenService::packSnapshots(const QString &sourceSnapshot,

@@ -27,6 +27,10 @@ class TUPITUBE_EXPORT TupTweenService
             QString error;
         };
 
+        // Native Motion Apply: one all-or-nothing domain mutation.
+        // Initial membership may be absent; Undo restores that absence.
+        static Result applyMotionTween(TupScene *scene, const QString &payload);
+
         // Applies one semantic Motion rebase for all native members carried
         // by the payload. The same TupGraphicObject wrappers and object_ids
         // survive the operation. On failure the exact source snapshot is

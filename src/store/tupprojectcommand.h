@@ -65,6 +65,7 @@ class TUPITUBE_EXPORT TupProjectCommand : public QUndoCommand
         bool isItemEditNodes() const;
         bool isItemTransform() const;
         bool isItemRebaseTween() const;
+        bool isItemApplyMotionTween() const;
         bool isItemUpdateTweenPath() const;
         bool isSelectionCommand() const;
         bool isNativeItemRemove() const;

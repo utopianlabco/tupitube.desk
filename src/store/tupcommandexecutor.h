@@ -123,6 +123,7 @@ class TUPITUBE_EXPORT TupCommandExecutor : public QObject
         
         bool setTween(TupItemResponse *response);
         bool rebaseTween(TupItemResponse *response);
+        bool applyMotionTween(TupItemResponse *response);
         bool removeTween(TupItemResponse *response);
         bool updateTweenPath(TupItemResponse *response);
         bool extendFrame(TupFrameResponse *response);

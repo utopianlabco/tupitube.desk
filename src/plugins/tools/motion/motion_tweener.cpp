@@ -850,42 +850,11 @@ void MotionTweener::applyTween()
     localTweenOperation = true;
     bool semanticRebase = false;
 
-    // Tween is new
+    // New and existing non-rebase Apply are sent as one semantic domain command.
     if (!tweenAlreadyExists) {
         initFrame = scene->currentFrameIndex();
         initLayer = scene->currentLayerIndex();
         initScene = scene->currentSceneIndex();
-
-        #ifdef TUP_DEBUG
-            qDebug() << "[Motion Tweener::applyTween()] - initFrame -> " << initFrame;
-        #endif
-
-        foreach (QGraphicsItem *item, objects) {
-            TupLibraryObject::ObjectType type = TupLibraryObject::Item;
-            int objectIndex = scene->currentFrame()->indexOf(item);
-            QPointF point = item->pos();
-
-            if (TupSvgItem *svg = qgraphicsitem_cast<TupSvgItem *>(item)) {
-                type = TupLibraryObject::Svg;
-                objectIndex = scene->currentFrame()->indexOf(svg);
-            }
-
-            QString route = pathToCoords();
-            QString objectId;
-            if (type == TupLibraryObject::Item) {
-                TupGraphicObject *graphicObject = scene->currentFrame()->graphicAt(objectIndex);
-                if (graphicObject)
-                    objectId = graphicObject->objectId();
-            }
-
-            TupProjectRequest request = TupRequestBuilder::createItemRequest(
-                                        initScene, initLayer, initFrame,
-                                        objectIndex,
-                                        QPointF(), scene->getSpaceContext(), type,
-                                        TupProjectRequest::SetTween,
-                                        configPanel->tweenToXml(initScene, initLayer, initFrame, tweenId, point, route), QByteArray(), QString(), QString(), objectId);
-            emit requested(&request);
-        }
     } else { // Tween already exists
         if (!currentTween) {
             localTweenOperation = false;
@@ -981,69 +950,58 @@ void MotionTweener::applyTween()
                         payloadDocument.toString(0), QByteArray(), QString(),
                         QString(), representativeObjectId);
             emit requested(&request);
-        } else {
-            // Non-rebase edits update the existing tween in place. The same
-            // tween_id remains authoritative; do not delete the local tween
-            // before SetTween because that invalidates the active edit context.
-            foreach (QGraphicsItem *item, objects) {
-                TupLibraryObject::ObjectType type = TupLibraryObject::Item;
-                TupScene *sceneData = scene->currentScene();
-                TupLayer *layer = sceneData ? sceneData->layerAt(initLayer) : nullptr;
-                TupFrame *frame = layer ? layer->frameAt(previousInitFrame) : nullptr;
-                if (!frame)
-                    continue;
-
-                int objectIndex = frame->indexOf(item);
-                QPointF point = item->pos();
-                TupSvgItem *svg = qgraphicsitem_cast<TupSvgItem *>(item);
-
-                if (svg) {
-                    type = TupLibraryObject::Svg;
-                    objectIndex = frame->indexOf(svg);
-                }
-
-                QString route = pathToCoords();
-                QString objectId;
-                if (type == TupLibraryObject::Item) {
-                    TupGraphicObject *graphicObject = frame->graphicAt(objectIndex);
-                    if (graphicObject)
-                        objectId = graphicObject->objectId();
-                }
-
-                TupProjectRequest request = TupRequestBuilder::createItemRequest(
-                                            initScene, initLayer, initFrame,
-                                            objectIndex,
-                                            QPointF(), scene->getSpaceContext(), type,
-                                            TupProjectRequest::SetTween,
-                                            configPanel->tweenToXml(initScene, initLayer, initFrame, tweenId, point, route),
-                                            QByteArray(), QString(), QString(), objectId);
-                emit requested(&request);
-            }
         }
     }
 
     if (!semanticRebase) {
-        int framesNumber = framesCount();
-        int total = initFrame + configPanel->totalSteps();
-        TupProjectRequest request;
-
-        if (total > framesNumber) {
-            int layersCount = scene->currentScene()->layersCount();
-            for (int i = framesNumber; i < total; i++) {
-                 for (int j = 0; j < layersCount; j++) {
-                      request = TupRequestBuilder::createFrameRequest(initScene, j, i, TupProjectRequest::Add, tr("Frame"));
-                      emit requested(&request);
-                 }
-            }
+        TupScene *sceneData = scene->currentScene();
+        TupLayer *layer = sceneData ? sceneData->layerAt(initLayer) : nullptr;
+        TupFrame *frame = layer ? layer->frameAt(initFrame) : nullptr;
+        if (!frame || scene->getSpaceContext() != TupProject::FRAMES_MODE) {
+            localTweenOperation = false;
+            QApplication::restoreOverrideCursor();
+            TOsd::self()->display(TOsd::Error, tr("Motion Apply requires a normal vector frame."));
+            return;
         }
-
-        QString selection = QString::number(initLayer) + "," + QString::number(initLayer) + ","
-                            + QString::number(initFrame) + "," + QString::number(initFrame);
-
-        request = TupRequestBuilder::createFrameRequest(initScene, initLayer, initFrame,
-                                                        TupProjectRequest::Select, selection);
+        QDomDocument document;
+        QDomElement root = document.createElement(QStringLiteral("tween_apply"));
+        root.setAttribute(QStringLiteral("tween_id"), tweenId);
+        root.setAttribute(QStringLiteral("target_layer"), initLayer);
+        root.setAttribute(QStringLiteral("target_frame"), initFrame);
+        QString representativeId;
+        int representativeIndex = -1;
+        bool valid = !objects.isEmpty();
+        QString route = pathToCoords();
+        foreach (QGraphicsItem *item, objects) {
+            if (qgraphicsitem_cast<TupSvgItem *>(item)) { valid = false; break; }
+            const int index = frame->indexOf(item);
+            TupGraphicObject *object = index >= 0 ? frame->graphicAt(index) : nullptr;
+            const QString objectId = object ? object->objectId().trimmed() : QString();
+            if (objectId.isEmpty()) { valid = false; break; }
+            if (representativeId.isEmpty()) {
+                representativeId = objectId;
+                representativeIndex = index;
+            }
+            QDomElement member = document.createElement(QStringLiteral("member"));
+            member.setAttribute(QStringLiteral("object_id"), objectId);
+            member.setAttribute(QStringLiteral("tween"), QString::fromLatin1(
+                configPanel->tweenToXml(initScene, initLayer, initFrame,
+                    tweenId, item->pos(), route).toUtf8().toBase64()));
+            root.appendChild(member);
+        }
+        if (!valid || representativeId.isEmpty()) {
+            localTweenOperation = false;
+            QApplication::restoreOverrideCursor();
+            TOsd::self()->display(TOsd::Error, tr("Motion Apply requires valid native object IDs."));
+            return;
+        }
+        document.appendChild(root);
+        TupProjectRequest request = TupRequestBuilder::createItemRequest(
+            initScene, initLayer, initFrame, representativeIndex, QPointF(),
+            scene->getSpaceContext(), TupLibraryObject::Item,
+            TupProjectRequest::ApplyMotionTween, document.toString(0),
+            QByteArray(), QString(), QString(), representativeId);
         emit requested(&request);
-
     }
 
     localTweenOperation = false;

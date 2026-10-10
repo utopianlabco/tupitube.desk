@@ -146,6 +146,10 @@ void TupProjectManager::setHandler(TupAbstractProjectHandler *pHandler, bool net
                 this, SLOT(advanceAuthoritativeTransformRestore(const QString &, bool)));
         connect(handler, SIGNAL(transformRestoreRequestFinished(const QString &)),
                 this, SLOT(finishAuthoritativeTransformRestore(const QString &)));
+        connect(handler, SIGNAL(applyMotionTweenRestoreStackAdvanceRequested(const QString &, bool)),
+                this, SLOT(advanceAuthoritativeApplyMotionTweenRestore(const QString &, bool)));
+        connect(handler, SIGNAL(applyMotionTweenRestoreRequestFinished(const QString &)),
+                this, SLOT(finishAuthoritativeApplyMotionTweenRestore(const QString &)));
         connect(handler, SIGNAL(rebaseTweenRestoreStackAdvanceRequested(const QString &, bool)),
                 this, SLOT(advanceAuthoritativeRebaseTweenRestore(const QString &, bool)));
         connect(handler, SIGNAL(rebaseTweenRestoreRequestFinished(const QString &)),
@@ -535,6 +539,15 @@ void TupProjectManager::undo()
                     return;
                 pendingTransformRestoreCommandId.clear();
             }
+        } else if (isNetworked && constCommand && constCommand->isItemApplyMotionTween()) {
+            const QString commandId = constCommand->commandId().trimmed();
+            if (!commandId.isEmpty()) {
+                pendingApplyMotionTweenRestoreCommandId = commandId;
+                if (QMetaObject::invokeMethod(handler, "requestAuthoritativeApplyMotionTweenRestore",
+                        Qt::DirectConnection, Q_ARG(QString, commandId), Q_ARG(bool, true)))
+                    return;
+                pendingApplyMotionTweenRestoreCommandId.clear();
+            }
         } else if (isNetworked && constCommand && constCommand->isItemRebaseTween()) {
             const QString commandId = constCommand->commandId().trimmed();
             if (!commandId.isEmpty()) {
@@ -654,6 +667,15 @@ void TupProjectManager::redo()
                         Qt::DirectConnection, Q_ARG(QString, commandId), Q_ARG(bool, false)))
                     return;
                 pendingTransformRestoreCommandId.clear();
+            }
+        } else if (isNetworked && constCommand && constCommand->isItemApplyMotionTween()) {
+            const QString commandId = constCommand->commandId().trimmed();
+            if (!commandId.isEmpty()) {
+                pendingApplyMotionTweenRestoreCommandId = commandId;
+                if (QMetaObject::invokeMethod(handler, "requestAuthoritativeApplyMotionTweenRestore",
+                        Qt::DirectConnection, Q_ARG(QString, commandId), Q_ARG(bool, false)))
+                    return;
+                pendingApplyMotionTweenRestoreCommandId.clear();
             }
         } else if (isNetworked && constCommand && constCommand->isItemRebaseTween()) {
             const QString commandId = constCommand->commandId().trimmed();
@@ -784,6 +806,31 @@ void TupProjectManager::finishAuthoritativeTransformRestore(const QString &comma
 {
     if (pendingTransformRestoreCommandId == commandId.trimmed())
         pendingTransformRestoreCommandId.clear();
+}
+
+void TupProjectManager::advanceAuthoritativeApplyMotionTweenRestore(
+    const QString &commandId, bool undoRestore)
+{
+    if (!undoStack || pendingApplyMotionTweenRestoreCommandId != commandId.trimmed())
+        return;
+    const int index = undoRestore ? undoStack->index() - 1 : undoStack->index();
+    const TupProjectCommand *entry = index >= 0 && index < undoStack->count()
+        ? dynamic_cast<const TupProjectCommand *>(undoStack->command(index)) : nullptr;
+    if (!entry || entry->commandId() != pendingApplyMotionTweenRestoreCommandId
+            || !entry->isItemApplyMotionTween())
+        return;
+    TupProjectCommand *command = const_cast<TupProjectCommand *>(entry);
+    if (undoRestore) command->setRedoBlocked(false);
+    else command->setUndoBlocked(false);
+    command->skipNextStackExecution();
+    if (undoRestore) undoStack->undo();
+    else undoStack->redo();
+}
+
+void TupProjectManager::finishAuthoritativeApplyMotionTweenRestore(const QString &commandId)
+{
+    if (pendingApplyMotionTweenRestoreCommandId == commandId.trimmed())
+        pendingApplyMotionTweenRestoreCommandId.clear();
 }
 
 void TupProjectManager::advanceAuthoritativeRebaseTweenRestore(

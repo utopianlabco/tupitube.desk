@@ -138,6 +138,8 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void editNodesRestoreRequestFinished(const QString &commandId);
         void transformRestoreStackAdvanceRequested(const QString &commandId, bool undoRestore);
         void transformRestoreRequestFinished(const QString &commandId);
+        void applyMotionTweenRestoreStackAdvanceRequested(const QString &commandId, bool undoRestore);
+        void applyMotionTweenRestoreRequestFinished(const QString &commandId);
         void rebaseTweenRestoreStackAdvanceRequested(const QString &commandId, bool undoRestore);
         void rebaseTweenRestoreRequestFinished(const QString &commandId);
         void updateTweenPathRestoreStackAdvanceRequested(const QString &commandId, bool undoRestore);
@@ -153,6 +155,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void requestAuthoritativeConvertRestore(const QString &commandId, bool undoRestore);
         void requestAuthoritativeEditNodesRestore(const QString &commandId, bool undoRestore);
         void requestAuthoritativeTransformRestore(const QString &commandId, bool undoRestore);
+        void requestAuthoritativeApplyMotionTweenRestore(const QString &commandId, bool undoRestore);
         void requestAuthoritativeRebaseTweenRestore(const QString &commandId, bool undoRestore);
         void requestAuthoritativeUpdateTweenPathRestore(const QString &commandId, bool undoRestore);
         void requestAuthoritativeRemoveRestore(const QString &commandId, bool undoRestore);
@@ -281,6 +284,18 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
             QPointF position; int spaceMode = 0; int itemType = 0; QString objectId;
         };
 
+        struct ApplyMotionTweenRestoreContext
+        {
+            int sceneIndex = -1;
+            int layerIndex = -1;
+            int frameIndex = -1;
+            int itemIndex = -1;
+            QPointF position;
+            int spaceMode = 0;
+            int itemType = 0;
+            QString objectId;
+        };
+
         struct RebaseTweenRestoreContext
         {
             int sceneIndex = -1;
@@ -337,6 +352,9 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
             const QString &commandId,
             const QString &authoritativePayload);
         bool applyAuthoritativeTransformResult(
+            const QString &commandId,
+            const QString &authoritativePayload);
+        bool applyAuthoritativeApplyMotionTweenResult(
             const QString &commandId,
             const QString &authoritativePayload);
         bool applyAuthoritativeRebaseTweenResult(
@@ -415,6 +433,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         QHash<QString, PendingGroupRestoreRequest> pendingGroupRestoreRequests;
         QHash<QString, EditNodesRestoreContext> editNodesRestoreContexts;
         QHash<QString, TransformRestoreContext> transformRestoreContexts;
+        QHash<QString, ApplyMotionTweenRestoreContext> applyMotionTweenRestoreContexts;
         QHash<QString, RebaseTweenRestoreContext> rebaseTweenRestoreContexts;
         QHash<QString, UpdateTweenPathRestoreContext> updateTweenPathRestoreContexts;
         QHash<QString, RemoveRestoreContext> removeRestoreContexts;

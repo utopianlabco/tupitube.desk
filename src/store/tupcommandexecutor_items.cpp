@@ -1439,6 +1439,50 @@ bool TupCommandExecutor::setTween(TupItemResponse *response)
 }
 
 
+bool TupCommandExecutor::applyMotionTween(TupItemResponse *response)
+{
+    if (!response || response->getItemType() != TupLibraryObject::Item
+            || response->getObjectId().trimmed().isEmpty()
+            || !validateIndices(response->getSceneIndex()))
+        return false;
+    TupScene *scene = project->sceneAt(response->getSceneIndex());
+    if (!scene)
+        return false;
+    QString error;
+    bool success = false;
+    if (response->getMode() == TupProjectResponse::Undo
+            || response->getMode() == TupProjectResponse::Redo) {
+        QString source, target;
+        if (!TupTweenService::unpackSnapshots(response->getState(), &source, &target))
+            return false;
+        success = TupTweenService::restoreMotionTweenSnapshot(
+            scene, response->getMode() == TupProjectResponse::Undo ? source : target, &error);
+    } else if (response->external() && !response->getData().isEmpty()) {
+        success = TupTweenService::restoreMotionTweenSnapshot(
+            scene, QString::fromUtf8(response->getData()), &error);
+    } else {
+        TupTweenService::Result result = TupTweenService::applyMotionTween(
+            scene, response->getArg().toString());
+        success = result.success;
+        error = result.error;
+        if (success) {
+            const QString packed = TupTweenService::packSnapshots(
+                result.sourceSnapshot, result.targetSnapshot);
+            if (packed.isEmpty()) {
+                TupTweenService::restoreMotionTweenSnapshot(scene, result.sourceSnapshot, &error);
+                return false;
+            }
+            response->setState(packed);
+        }
+    }
+    if (!success) {
+        qWarning() << "[TupCommandExecutor::applyMotionTween()]" << error;
+        return false;
+    }
+    emit responsed(response);
+    return true;
+}
+
 bool TupCommandExecutor::rebaseTween(TupItemResponse *response)
 {
     #ifdef TUP_DEBUG

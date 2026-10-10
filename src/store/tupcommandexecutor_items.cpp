@@ -1728,15 +1728,15 @@ bool TupCommandExecutor::updateTweenPath(TupItemResponse *response)
 
         const QString &snapshot = response->getMode() == TupProjectResponse::Undo
                 ? sourceSnapshot : targetSnapshot;
-        success = TupTweenService::restoreMotionTweenMemberSnapshot(
-            scene, objectId, snapshot, &error);
+        success = TupTweenService::restoreMotionTweenSnapshot(
+            scene, snapshot, &error);
     } else if (response->external() && !response->getData().trimmed().isEmpty()) {
         const QString authoritativeSnapshot = QString::fromUtf8(response->getData());
-        success = TupTweenService::restoreMotionTweenMemberSnapshot(
-            scene, objectId, authoritativeSnapshot, &error);
+        success = TupTweenService::restoreMotionTweenSnapshot(
+            scene, authoritativeSnapshot, &error);
     } else {
         TupTweenService::Result result = TupTweenService::updateMotionTweenPath(
-            scene, tweenId, objectId, route);
+            scene, tweenId, objectId, response->getArg().toString());
         success = result.success;
         error = result.error;
         if (success) {

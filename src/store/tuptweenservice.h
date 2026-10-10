@@ -33,13 +33,15 @@ class TUPITUBE_EXPORT TupTweenService
         // restored before returning false.
         static Result rebaseMotionTween(TupScene *scene, const QString &payload);
 
-        // Updates one native Motion tween member by durable tween_id/object_id.
-        // The returned snapshots are exact serialized tween states used for
-        // rollback, Undo/Redo, and authoritative-result delivery.
+        // Updates one logical native Motion tween. object_id identifies one
+        // representative member for durable membership validation; payload
+        // carries the canonical path/timing intent. All native members bound to
+        // tween_id are updated atomically and the returned snapshots describe
+        // the complete logical tween membership.
         static Result updateMotionTweenPath(TupScene *scene,
                                             const QString &tweenId,
                                             const QString &objectId,
-                                            const QString &route);
+                                            const QString &payload);
 
         static bool restoreMotionTweenMemberSnapshot(TupScene *scene,
                                                      const QString &objectId,

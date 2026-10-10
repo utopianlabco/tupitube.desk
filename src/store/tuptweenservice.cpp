@@ -83,6 +83,141 @@ TupGraphicObject *findGraphicObject(TupScene *scene, const QString &objectId,
     return nullptr;
 }
 
+
+QList<QString> nativeMotionMemberIds(TupScene *scene, const QString &tweenId)
+{
+    QList<QString> objectIds;
+    if (!scene || tweenId.trimmed().isEmpty())
+        return objectIds;
+
+    for (int layerIndex = 0; layerIndex < scene->layersCount(); ++layerIndex) {
+        TupLayer *layer = scene->layerAt(layerIndex);
+        if (!layer)
+            continue;
+
+        for (int frameIndex = 0; frameIndex < layer->framesCount(); ++frameIndex) {
+            TupFrame *frame = layer->frameAt(frameIndex);
+            if (!frame)
+                continue;
+
+            for (int objectIndex = 0; objectIndex < frame->graphicsCount(); ++objectIndex) {
+                TupGraphicObject *object = frame->graphicAt(objectIndex);
+                if (!object || !object->tweenById(tweenId))
+                    continue;
+
+                const QString objectId = object->objectId().trimmed();
+                if (!objectId.isEmpty() && !objectIds.contains(objectId))
+                    objectIds.append(objectId);
+            }
+        }
+    }
+
+    return objectIds;
+}
+
+bool parseMotionPathPayload(const QString &payload, const QString &expectedTweenId,
+                            QDomDocument *document, QString *route,
+                            QString *intervals, int *frames, QString *error)
+{
+    if (!document || !document->setContent(payload)) {
+        if (error)
+            *error = QStringLiteral("Invalid UpdateTweenPath payload XML");
+        return false;
+    }
+
+    const QDomElement root = document->documentElement();
+    if (root.tagName() != QStringLiteral("tween_path_update")) {
+        if (error)
+            *error = QStringLiteral("Unexpected UpdateTweenPath payload root");
+        return false;
+    }
+
+    const QString tweenId = root.attribute(QStringLiteral("tween_id")).trimmed();
+    const QString coords = root.attribute(QStringLiteral("coords")).trimmed();
+    const QString intervalText = root.attribute(QStringLiteral("intervals")).trimmed();
+    bool framesOk = false;
+    const int frameCount = root.attribute(QStringLiteral("frames")).toInt(&framesOk);
+    if (tweenId.isEmpty() || tweenId != expectedTweenId.trimmed()
+            || coords.isEmpty() || intervalText.isEmpty()
+            || !framesOk || frameCount < 1) {
+        if (error)
+            *error = QStringLiteral("UpdateTweenPath payload is missing canonical Motion state");
+        return false;
+    }
+
+    int intervalTotal = 0;
+    int intervalCount = 0;
+    const QStringList values = intervalText.split(QLatin1Char(','), Qt::SkipEmptyParts);
+    for (const QString &value : values) {
+        bool ok = false;
+        const int interval = value.trimmed().toInt(&ok);
+        if (!ok || interval < 1) {
+            if (error)
+                *error = QStringLiteral("UpdateTweenPath payload contains an invalid interval");
+            return false;
+        }
+        intervalTotal += interval;
+        ++intervalCount;
+    }
+
+    int stepCount = 0;
+    QDomElement step = root.firstChildElement(QStringLiteral("step"));
+    while (!step.isNull()) {
+        ++stepCount;
+        step = step.nextSiblingElement(QStringLiteral("step"));
+    }
+
+    if (intervalCount < 1 || intervalTotal != frameCount || stepCount != frameCount) {
+        if (error)
+            *error = QStringLiteral("UpdateTweenPath payload timing/step state is inconsistent");
+        return false;
+    }
+
+    if (route)
+        *route = coords;
+    if (intervals)
+        *intervals = intervalText;
+    if (frames)
+        *frames = frameCount;
+    return true;
+}
+
+QString motionPathTargetXml(const QString &sourceXml, const QDomElement &payload,
+                            const QString &tweenId, const QString &route,
+                            const QString &intervals, int frames, QString *error)
+{
+    QDomDocument document;
+    if (!document.setContent(sourceXml)) {
+        if (error)
+            *error = QStringLiteral("UpdateTweenPath member source snapshot is invalid");
+        return QString();
+    }
+
+    QDomElement root = document.documentElement();
+    if (root.tagName() != QStringLiteral("tweening")
+            || root.attribute(QStringLiteral("tween_id")).trimmed() != tweenId
+            || root.attribute(QStringLiteral("type")).toInt() != TupItemTweener::Motion) {
+        if (error)
+            *error = QStringLiteral("UpdateTweenPath member source identity is invalid");
+        return QString();
+    }
+
+    root.setAttribute(QStringLiteral("coords"), route);
+    root.setAttribute(QStringLiteral("intervals"), intervals);
+    root.setAttribute(QStringLiteral("frames"), frames);
+
+    while (!root.firstChild().isNull())
+        root.removeChild(root.firstChild());
+
+    QDomElement step = payload.firstChildElement(QStringLiteral("step"));
+    while (!step.isNull()) {
+        root.appendChild(document.importNode(step, true));
+        step = step.nextSiblingElement(QStringLiteral("step"));
+    }
+
+    return document.toString(0);
+}
+
 bool replaceTween(TupGraphicObject *object, const QString &xml,
                   const QString &expectedTweenId, int zLevel,
                   QString *error)
@@ -305,7 +440,7 @@ TupTweenService::Result::Result() : success(false)
 
 TupTweenService::Result TupTweenService::updateMotionTweenPath(
     TupScene *scene, const QString &tweenId, const QString &objectId,
-    const QString &route)
+    const QString &payload)
 {
     Result result;
     const QString normalizedTweenId = tweenId.trimmed();
@@ -323,8 +458,13 @@ TupTweenService::Result TupTweenService::updateMotionTweenPath(
         result.error = QStringLiteral("UpdateTweenPath requires object_id");
         return result;
     }
-    if (route.trimmed().isEmpty()) {
-        result.error = QStringLiteral("UpdateTweenPath requires path coordinates");
+
+    QDomDocument payloadDocument;
+    QString route;
+    QString intervals;
+    int frames = 0;
+    if (!parseMotionPathPayload(payload, normalizedTweenId, &payloadDocument,
+                                &route, &intervals, &frames, &result.error)) {
         return result;
     }
 
@@ -338,41 +478,84 @@ TupTweenService::Result TupTweenService::updateMotionTweenPath(
         return result;
     }
 
-    int layerIndex = -1;
-    int frameIndex = -1;
-    int position = -1;
-    TupGraphicObject *object = findGraphicObject(
-        scene, normalizedObjectId, &layerIndex, &frameIndex, &position);
-    if (!object || position < 0) {
-        result.error = QStringLiteral("UpdateTweenPath object_id was not found");
-        return result;
-    }
-
-    TupItemTweener *memberTween = object->tweenById(normalizedTweenId);
-    if (!memberTween) {
+    int representativePosition = -1;
+    TupGraphicObject *representative = findGraphicObject(
+        scene, normalizedObjectId, nullptr, nullptr, &representativePosition);
+    TupItemTweener *representativeTween = representative
+        ? representative->tweenById(normalizedTweenId) : nullptr;
+    if (!representative || representativePosition < 0 || !representativeTween
+            || representativeTween->getType() != TupItemTweener::Motion) {
         result.error = QStringLiteral("UpdateTweenPath object_id is not bound to tween_id");
         return result;
     }
-    if (memberTween->getType() != TupItemTweener::Motion) {
-        result.error = QStringLiteral("UpdateTweenPath member is not a Motion tween");
+
+    const QList<QString> objectIds = nativeMotionMemberIds(scene, normalizedTweenId);
+    if (objectIds.isEmpty() || !objectIds.contains(normalizedObjectId)) {
+        result.error = QStringLiteral("UpdateTweenPath native membership could not be resolved");
         return result;
     }
 
-    result.sourceSnapshot = tweenXml(memberTween);
-    if (result.sourceSnapshot.isEmpty()) {
-        result.error = QStringLiteral("UpdateTweenPath could not capture source snapshot");
+    // This milestone is native-only. Refuse to claim one atomic logical update
+    // if the tween also contains an SVG member whose durable identity is still
+    // intentionally deferred.
+    const QList<QGraphicsItem *> indexedMembers = scene->getItemsFromTweenId(normalizedTweenId);
+    if (indexedMembers.size() != objectIds.size()) {
+        result.error = QStringLiteral("UpdateTweenPath atomic native update does not support SVG members");
         return result;
     }
 
-    memberTween->setGraphicsPath(route);
-    result.targetSnapshot = tweenXml(memberTween);
+    result.sourceSnapshot = createSnapshot(
+        scene, normalizedTweenId, objectIds, &result.error);
+    if (result.sourceSnapshot.isEmpty())
+        return result;
+
+    const QDomElement payloadRoot = payloadDocument.documentElement();
+    bool applied = true;
+    for (const QString &memberObjectId : objectIds) {
+        int layerIndex = -1;
+        int position = -1;
+        TupGraphicObject *object = findGraphicObject(
+            scene, memberObjectId, &layerIndex, nullptr, &position);
+        TupItemTweener *memberTween = object
+            ? object->tweenById(normalizedTweenId) : nullptr;
+        const QString sourceXml = tweenXml(memberTween);
+        if (!object || position < 0 || !memberTween
+                || memberTween->getType() != TupItemTweener::Motion
+                || sourceXml.isEmpty()) {
+            result.error = QStringLiteral("UpdateTweenPath member disappeared before mutation");
+            applied = false;
+            break;
+        }
+
+        const QString targetXml = motionPathTargetXml(
+            sourceXml, payloadRoot, normalizedTweenId, route,
+            intervals, frames, &result.error);
+        if (targetXml.isEmpty()
+                || !replaceTween(object, targetXml, normalizedTweenId,
+                                 position, &result.error)) {
+            applied = false;
+            break;
+        }
+
+        scene->addTweenObject(layerIndex, object);
+    }
+
+    if (!applied) {
+        QString rollbackError;
+        if (!restoreMotionTweenSnapshot(scene, result.sourceSnapshot, &rollbackError))
+            result.error += QStringLiteral("; rollback failed: ") + rollbackError;
+        return result;
+    }
+
+    result.targetSnapshot = createSnapshot(
+        scene, normalizedTweenId, objectIds, &result.error);
     if (result.targetSnapshot.isEmpty()) {
-        memberTween->fromXml(result.sourceSnapshot);
-        result.error = QStringLiteral("UpdateTweenPath could not capture target snapshot");
+        QString rollbackError;
+        if (!restoreMotionTweenSnapshot(scene, result.sourceSnapshot, &rollbackError))
+            result.error += QStringLiteral("; rollback failed: ") + rollbackError;
         return result;
     }
 
-    scene->addTweenObject(layerIndex, object);
     result.success = true;
     return result;
 }

@@ -226,14 +226,16 @@ void MotionTweener::release(const TupInputDeviceInformation *input, TupBrushMana
                 qDebug() << "[Motion Tweener::release()] - Tracing properties mode";
             #endif
             if (nodesGroup) {
+                // Finalize the local Motion timing/step state before building the
+                // semantic UpdateTweenPath request. The authoritative command
+                // must describe the same path table the origin is displaying.
+                configPanel->updateSteps(linePath);
                 updateTweenPath();
 
                 nodesGroup->createNodes(linePath);
                 nodesGroup->show();
                 nodesGroup->resizeNodes(realFactor);
                 nodesGroup->expandAllNodes();
-
-                configPanel->updateSteps(linePath);
 
                 QPainterPath::Element e = linePath->path().elementAt(0);
                 QPointF begin = QPointF(e.x, e.y);
@@ -393,49 +395,108 @@ void MotionTweener::updateTweenPath()
 
     const QString route = pathToCoords();
 
-    QDomDocument payloadDocument;
-    QDomElement payload = payloadDocument.createElement(QStringLiteral("tween_path_update"));
-    payload.setAttribute(QStringLiteral("tween_id"), tweenId);
-    payload.setAttribute(QStringLiteral("coords"), route);
-    payloadDocument.appendChild(payload);
-    const QString semanticPayload = payloadDocument.toString(0);
+    // Native Motion path editing is one logical tween mutation. Use one
+    // representative native member only for durable membership validation;
+    // TupTweenService applies the resulting Motion state to every native member
+    // bound to tween_id atomically.
+    int representativeIndex = -1;
+    QString representativeObjectId;
+    QGraphicsItem *representativeItem = nullptr;
+    QList<QPair<TupSvgItem *, int>> svgMembers;
 
     foreach (QGraphicsItem *item, objects) {
-        TupLibraryObject::ObjectType type = TupLibraryObject::Item;
-        int objectIndex = frame->indexOf(item);
-        QString objectId;
-
         if (TupSvgItem *svg = qgraphicsitem_cast<TupSvgItem *>(item)) {
-            // SVG stable identity remains a separate milestone. Preserve the
-            // legacy index-addressed path request for SVG members only.
-            type = TupLibraryObject::Svg;
-            objectIndex = frame->indexOf(svg);
-        } else {
-            TupGraphicObject *graphicObject = frame->graphicAt(objectIndex);
-            if (!graphicObject) {
-                #ifdef TUP_DEBUG
-                    qWarning() << "[Motion Tweener::updateTweenPath()] - Native tween member cannot be resolved";
-                #endif
-                continue;
-            }
-            objectId = graphicObject->objectId().trimmed();
-            if (objectId.isEmpty()) {
-                #ifdef TUP_DEBUG
-                    qWarning() << "[Motion Tweener::updateTweenPath()] - Native tween member has no object_id";
-                #endif
-                continue;
-            }
+            const int svgIndex = frame->indexOf(svg);
+            if (svgIndex >= 0)
+                svgMembers.append(qMakePair(svg, svgIndex));
+            continue;
         }
 
-        const QString argument = type == TupLibraryObject::Item
-                ? semanticPayload : route;
+        const int objectIndex = frame->indexOf(item);
+        TupGraphicObject *graphicObject = objectIndex >= 0
+                ? frame->graphicAt(objectIndex) : nullptr;
+        const QString objectId = graphicObject
+                ? graphicObject->objectId().trimmed() : QString();
+        if (objectIndex < 0 || objectId.isEmpty()) {
+            #ifdef TUP_DEBUG
+                qWarning() << "[Motion Tweener::updateTweenPath()] - Native tween member cannot be resolved by object_id";
+            #endif
+            return;
+        }
+
+        if (representativeObjectId.isEmpty()) {
+            representativeIndex = objectIndex;
+            representativeObjectId = objectId;
+            representativeItem = item;
+        }
+    }
+
+    if (!representativeObjectId.isEmpty()) {
+        const QPointF representativePoint = representativeItem
+                ? representativeItem->pos() : QPointF();
+        QString routeCopy = route;
+        const QString targetTweenXml = configPanel->tweenToXml(
+                    initScene, initLayer, initFrame, tweenId,
+                    representativePoint, routeCopy);
+
+        QDomDocument targetDocument;
+        if (!targetDocument.setContent(targetTweenXml)) {
+            #ifdef TUP_DEBUG
+                qWarning() << "[Motion Tweener::updateTweenPath()] - Unable to serialize Motion path timing state";
+            #endif
+            return;
+        }
+
+        const QDomElement targetRoot = targetDocument.documentElement();
+        if (targetRoot.tagName() != QStringLiteral("tweening")
+                || targetRoot.attribute(QStringLiteral("tween_id")).trimmed() != tweenId) {
+            #ifdef TUP_DEBUG
+                qWarning() << "[Motion Tweener::updateTweenPath()] - Invalid Motion target state";
+            #endif
+            return;
+        }
+
+        QDomDocument payloadDocument;
+        QDomElement payload = payloadDocument.createElement(QStringLiteral("tween_path_update"));
+        payload.setAttribute(QStringLiteral("tween_id"), tweenId);
+        payload.setAttribute(QStringLiteral("coords"), route);
+        payload.setAttribute(QStringLiteral("frames"), targetRoot.attribute(QStringLiteral("frames")));
+        payload.setAttribute(QStringLiteral("intervals"), targetRoot.attribute(QStringLiteral("intervals")));
+
+        QDomElement step = targetRoot.firstChildElement(QStringLiteral("step"));
+        while (!step.isNull()) {
+            payload.appendChild(payloadDocument.importNode(step, true));
+            step = step.nextSiblingElement(QStringLiteral("step"));
+        }
+
+        payloadDocument.appendChild(payload);
         TupProjectRequest request = TupRequestBuilder::createItemRequest(
-                                    initScene, initLayer, initFrame, objectIndex,
-                                    QPointF(), scene->getSpaceContext(), type,
-                                    TupProjectRequest::UpdateTweenPath, argument,
-                                    QByteArray(), QString(), QString(), objectId);
+                                    initScene, initLayer, initFrame,
+                                    representativeIndex, QPointF(),
+                                    scene->getSpaceContext(), TupLibraryObject::Item,
+                                    TupProjectRequest::UpdateTweenPath,
+                                    payloadDocument.toString(0), QByteArray(),
+                                    QString(), QString(), representativeObjectId);
+        emit requested(&request);
+
+        // Local optimistic execution may replace the per-member serialized tween
+        // instances while preserving tween_id. Rebind the editor to the current
+        // logical tween before the next user edit.
+        currentTween = sceneData->tweenById(tweenId);
+    }
+
+    // SVG stable identity remains deferred. Preserve the legacy response-only
+    // request for SVG-only/mixed membership without claiming atomic SVG support.
+    for (const QPair<TupSvgItem *, int> &member : svgMembers) {
+        Q_UNUSED(member.first)
+        TupProjectRequest request = TupRequestBuilder::createItemRequest(
+                                    initScene, initLayer, initFrame, member.second,
+                                    QPointF(), scene->getSpaceContext(),
+                                    TupLibraryObject::Svg,
+                                    TupProjectRequest::UpdateTweenPath, route);
         emit requested(&request);
     }
+
     doList << linePath->path();
 }
 
@@ -1698,6 +1759,9 @@ void MotionTweener::itemResponse(const TupItemResponse *response)
                     */
 
                     paintTweenPoints();
+                    const QString selectedTweenId = configPanel->getTweenIdFromList().trimmed();
+                    if (!selectedTweenId.isEmpty())
+                        currentTween = scene->currentScene()->tweenById(selectedTweenId);
                 }
             }
 
@@ -1741,6 +1805,9 @@ void MotionTweener::itemResponse(const TupItemResponse *response)
                     */
 
                     paintTweenPoints();
+                    const QString selectedTweenId = configPanel->getTweenIdFromList().trimmed();
+                    if (!selectedTweenId.isEmpty())
+                        currentTween = scene->currentScene()->tweenById(selectedTweenId);
                 }
             }
         }

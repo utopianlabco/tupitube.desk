@@ -1563,6 +1563,30 @@ void MotionTweener::itemResponse(const TupItemResponse *response)
         qDebug() << "[Motion Tweener::itemResponse()] - index ->" << response->getItemIndex();
     #endif
 
+    // Atomic Motion Apply (including authoritative Undo/Redo) changes tween
+    // membership without separate SetTween/RemoveTween responses. The manager
+    // must reflect the model immediately, including a removed selected tween.
+    if (response->getAction() == TupProjectRequest::ApplyMotionTween) {
+        if (localTweenOperation)
+            return;
+
+        const QString selectedId = configPanel->getTweenIdFromList().trimmed();
+        TupScene *sceneData = scene ? scene->currentScene() : nullptr;
+        TupItemTweener *selected = sceneData && !selectedId.isEmpty()
+                ? sceneData->tweenById(selectedId) : nullptr;
+        if (configPanel->mode() == TupToolPlugin::Edit && !selected) {
+            // The edited tween was removed by Undo. End the properties UI
+            // without sending a nested project command or dereferencing it.
+            configPanel->resetUI();
+            mode = TupToolPlugin::View;
+            editMode = TupToolPlugin::None;
+            currentTween = nullptr;
+            objects.clear();
+        }
+        refreshTweenList();
+        return;
+    }
+
     if (response->getAction() == TupProjectRequest::SetTween
             || response->getAction() == TupProjectRequest::RebaseTween
             || response->getAction() == TupProjectRequest::RemoveTween) {

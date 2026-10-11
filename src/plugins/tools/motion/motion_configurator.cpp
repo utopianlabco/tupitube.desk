@@ -270,10 +270,19 @@ void MotionConfigurator::editTween()
         qDebug() << "[MotionConfigurator::editTween()]";
     #endif
 
+    // The project may have replaced or removed this tween during authoritative
+    // Apply/Undo/Redo. Never dereference the cached pointer until it has been
+    // resolved again from the model using its persistent tween_id.
+    const QString tweenId = tweenManager->currentTweenId().trimmed();
+    currentTween = nullptr;
+    if (!tweenId.isEmpty())
+        updateTweenData(tweenId);
+
     if (!currentTween) {
         #ifdef TUP_DEBUG
-            qWarning() << "[MotionConfigurator::editTween()] - Current tween is NULL!";
+            qWarning() << "[MotionConfigurator::editTween()] - Tween is no longer available:" << tweenId;
         #endif
+        activeButtonsPanel(false);
         return;
     }
 

@@ -1343,8 +1343,10 @@ void MotionTweener::setCurrentTween(const QString &tweenId)
     currentTween = sceneData->tweenById(tweenId);
     if (currentTween && currentTween->getType() == TupItemTweener::Motion)
         configPanel->setCurrentTween(currentTween);
-    else
+    else {
         currentTween = nullptr;
+        configPanel->setCurrentTween(nullptr);
+    }
 }
 
 void MotionTweener::setEditEnv()

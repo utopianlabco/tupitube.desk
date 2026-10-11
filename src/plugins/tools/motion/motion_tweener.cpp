@@ -1575,8 +1575,10 @@ void MotionTweener::itemResponse(const TupItemResponse *response)
         TupItemTweener *selected = sceneData && !selectedId.isEmpty()
                 ? sceneData->tweenById(selectedId) : nullptr;
         if (configPanel->mode() == TupToolPlugin::Edit && !selected) {
-            // The edited tween was removed by Undo. End the properties UI
-            // without sending a nested project command or dereferencing it.
+            // The edited tween was removed by Undo. Clear the editor's
+            // canvas path and nodes before resetting the properties UI.
+            // This is local presentation cleanup, not a project command.
+            resetGUI();
             configPanel->resetUI();
             mode = TupToolPlugin::View;
             editMode = TupToolPlugin::None;

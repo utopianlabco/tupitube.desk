@@ -131,8 +131,11 @@ TupNewProject::TupNewProject(QWidget *parent) : TabDialog(parent)
     QBoxLayout *fpsLayout = new QBoxLayout(QBoxLayout::LeftToRight);
     QLabel *label = new QLabel(tr("FPS"));
     fps = new QSpinBox();
+    fps->setMinimum(1);
     fps->setValue(24);
     connect(fps, SIGNAL(valueChanged(int)), this, SLOT(updateOkButtonState()));
+    connect(fps->findChild<QLineEdit *>(), SIGNAL(textChanged(QString)),
+            this, SLOT(updateOkButtonState()));
 
     fpsLayout->addWidget(label);
     fpsLayout->addWidget(fps);
@@ -333,7 +336,7 @@ void TupNewProject::ok()
         return;
     }
 
-    if (fps->value() <= 0) {
+    if (fps->value() < 1 || !fps->hasAcceptableInput()) {
         TOsd::self()->display(TOsd::Error, tr("Please, set the project FPS"));
         return;
     }
@@ -494,7 +497,8 @@ void TupNewProject::updateOkButtonState()
                  && !description->text().trimmed().isEmpty()
                  && size->x() > 0
                  && size->y() > 0
-                 && fps->value() > 0;
+                 && fps->value() >= 1
+                 && fps->hasAcceptableInput();
 
     if (valid && enableUseNetwork) {
         valid = !server->text().trimmed().isEmpty()

@@ -2254,7 +2254,12 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                 }
 
                 if (isPendingApplyMotionTweenRestore
-                        && parser.errorCode() == QStringLiteral("apply_motion_tween_restore_conflict")) {
+                        && (parser.errorCode() == QStringLiteral("apply_motion_restore_conflict")
+                             || parser.errorCode() == QStringLiteral("apply_motion_tween_restore_conflict"))) {
+                    qWarning() << "[T13-AT09C] Emitting authoritativeRestoreConflict"
+                               << "originalCommand=" << pendingApplyMotionTweenRestoreOriginalCommandId
+                               << "undo=" << (pendingApplyMotionTweenRestoreMode == static_cast<int>(TupProjectResponse::Undo))
+                               << "serverError=" << parser.errorCode();
                     emit authoritativeRestoreConflict(
                         pendingApplyMotionTweenRestoreOriginalCommandId,
                         pendingApplyMotionTweenRestoreMode == static_cast<int>(TupProjectResponse::Undo));

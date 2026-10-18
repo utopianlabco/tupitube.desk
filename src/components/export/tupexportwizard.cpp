@@ -155,11 +155,13 @@ void TupExportWizard::back()
     if (tag.compare("SCENE") == 0)
         backButton->setEnabled(false);
 
-    nextButton->setEnabled(true);
+    TupExportWizardPage *destination = qobject_cast<TupExportWizardPage *>(history->currentWidget());
+    nextButton->setEnabled(destination && destination->isComplete());
 
-    if (tag.compare("ANIMATION") == 0 || tag.compare("IMAGES_ARRAY") == 0
-        || tag.compare("ANIMATED_IMAGE") == 0 || tag.compare("PROPERTIES") == 0)
-        nextButton->setText(tr("Next"));
+    // Restoring an earlier page also restores its navigation-button presentation.
+    nextButton->setIcon(QIcon(THEME_DIR + "icons/next.png"));
+    nextButton->setToolTip(tr("Next"));
+    nextButton->setText("");
 }
 
 void TupExportWizard::next()
@@ -171,6 +173,11 @@ void TupExportWizard::next()
     TupExportWizardPage *current = qobject_cast<TupExportWizardPage *>(history->currentWidget());
 
     if (current) {
+        if (!current->isComplete()) {
+            nextButton->setEnabled(false);
+            return;
+        }
+
         current->aboutToNextPage();
 
         QString tag = current->getTag();

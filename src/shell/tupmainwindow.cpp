@@ -605,11 +605,6 @@ void TupMainWindow::setWorkSpace(const QStringList &users)
         // Audio scrubbing in Timeline panel
         connect(m_timeLine, SIGNAL(playSoundAt(int, int)), cameraWidget, SLOT(playSoundAtFrame(int, int)));
 
-        if (isNetworked) {
-            connect(cameraWidget, SIGNAL(requestForExportVideoToServer(const QString &, const QString &, const QString &, int, const QList<int>)), 
-                    netProjectManager, SLOT(sendVideoRequest(const QString &, const QString &, const QString &, int, const QList<int>)));
-        }
-
         playerTab = new TupAnimationSpace(cameraWidget);
         playerTab->setWindowIcon(QIcon(THEME_DIR + "icons/play_small.png"));
         playerTab->setWindowTitle(tr("Player"));                    

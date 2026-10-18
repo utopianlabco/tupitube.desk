@@ -70,6 +70,13 @@ bool ImagePlugin::exportToFormat(int colorAlpha, const QString &filePath, const 
 
     Q_UNUSED(fps)
 
+    errorMsg.clear();
+    if (!project || scenes.isEmpty() || size.isEmpty() || newSize.isEmpty() || filePath.isEmpty()) {
+        errorMsg = tr("Invalid image sequence export parameters.");
+        qWarning() << "[ImagePlugin::exportToFormat()] -" << errorMsg;
+        return false;
+    }
+
     int frames = 0;
     foreach (TupScene *scene, scenes)
         frames += scene->framesCount();
@@ -77,8 +84,11 @@ bool ImagePlugin::exportToFormat(int colorAlpha, const QString &filePath, const 
     QFileInfo fileInfo(filePath);
 
     QDir dir = fileInfo.dir();
-    if (!dir.exists())
-        dir.mkdir(dir.path());
+    if (!dir.exists() && !dir.mkpath(".")) {
+        errorMsg = tr("Could not create image export directory: %1.").arg(dir.absolutePath());
+        qWarning() << "[ImagePlugin::exportToFormat()] -" << errorMsg;
+        return false;
+    }
 
     m_baseName = fileInfo.baseName();
     const char *extension = "";
@@ -103,11 +113,13 @@ bool ImagePlugin::exportToFormat(int colorAlpha, const QString &filePath, const 
                  #ifdef TUP_DEBUG
                      qDebug() << "[ImagePlugin::exportToFormat()] - Warning: Image format is unknown ->" << format;
                  #endif
-                 imageFormat = QImage::Format_RGB32;
-                 break;
+                 errorMsg = tr("Unsupported image sequence format.");
+                 qWarning() << "[ImagePlugin::exportToFormat()] -" << errorMsg;
+                 return false;
     }
 
     TupAnimationRenderer renderer(project->getLibrary(), waterMark);
+    int exportedFrames = 0;
     foreach (TupScene *scene, scenes) {
         if (colorAlpha == 0)
             renderer.setScene(scene, size, Qt::transparent);
@@ -117,22 +129,29 @@ bool ImagePlugin::exportToFormat(int colorAlpha, const QString &filePath, const 
         int photogram = 0;
         while (renderer.nextPhotogram()) {
             QString index = "";
-            if (photogram < 10) {
+            if (exportedFrames < 10) {
                 index = "000";
-            } else if (photogram < 100) {
+            } else if (exportedFrames < 100) {
                 index = "00";
             } else {
                 index = "0";
             }
 
-            index += QString("%1").arg(photogram);
+            index += QString("%1").arg(exportedFrames);
 
             if (QString(extension).compare("SVG") == 0) {
                 QString path = fileInfo.absolutePath() + "/"
                                + QString(m_baseName + "%1.%2").arg(index, QString(extension).toLower());
 
+                QFile output(path);
+                if (!output.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+                    errorMsg = tr("Could not open image file %1: %2.").arg(path, output.errorString());
+                    qWarning() << "[ImagePlugin::exportToFormat()] -" << errorMsg;
+                    return false;
+                }
+
                 QSvgGenerator generator;
-                generator.setFileName(path);
+                generator.setOutputDevice(&output);
                 generator.setSize(size);
                 generator.setViewBox(QRect(0, 0, size.width(), size.height()));
                 QFileInfo info(path);
@@ -140,12 +159,28 @@ bool ImagePlugin::exportToFormat(int colorAlpha, const QString &filePath, const 
                 generator.setDescription(scene->getSceneName());
 
                 QPainter painter;
-                painter.begin(&generator);
+                if (!painter.begin(&generator)) {
+                    output.close();
+                    errorMsg = tr("Could not start SVG export to %1.").arg(path);
+                    qWarning() << "[ImagePlugin::exportToFormat()] -" << errorMsg;
+                    return false;
+                }
                 painter.setRenderHint(QPainter::Antialiasing, true);
                 renderer.render(&painter); // Frame render is created here
-                painter.end();
+                const bool painterFinished = painter.end();
+                output.close();
+                if (!painterFinished || output.error() != QFile::NoError) {
+                    errorMsg = tr("Could not finish SVG export to %1: %2.").arg(path, output.errorString());
+                    qWarning() << "[ImagePlugin::exportToFormat()] -" << errorMsg;
+                    return false;
+                }
             } else { // Exporting JPG/PNG
                 QImage image(size, imageFormat);
+                if (image.isNull()) {
+                    errorMsg = tr("Could not allocate image for export.");
+                    qWarning() << "[ImagePlugin::exportToFormat()] -" << errorMsg;
+                    return false;
+                }
                 if (QString(extension).compare("PNG") == 0) {
                     if (colorAlpha == 0)
                         image.fill(Qt::transparent);
@@ -156,9 +191,19 @@ bool ImagePlugin::exportToFormat(int colorAlpha, const QString &filePath, const 
                 }
 
                 {
-                    QPainter painter(&image);
+                    QPainter painter;
+                    if (!painter.begin(&image)) {
+                        errorMsg = tr("Could not start image sequence rendering.");
+                        qWarning() << "[ImagePlugin::exportToFormat()] -" << errorMsg;
+                        return false;
+                    }
                     painter.setRenderHint(QPainter::Antialiasing, true);
                     renderer.render(&painter);
+                    if (!painter.end()) {
+                        errorMsg = tr("Could not finish image sequence rendering.");
+                        qWarning() << "[ImagePlugin::exportToFormat()] -" << errorMsg;
+                        return false;
+                    }
                 }
 
                 if (size != newSize)
@@ -169,15 +214,20 @@ bool ImagePlugin::exportToFormat(int colorAlpha, const QString &filePath, const 
                 #ifdef TUP_DEBUG
                     qDebug() << "[ImagePlugin::exportToFormat()] - Saving image at ->" << imgPath;
                 #endif
-                image.save(imgPath, extension, 100);
+                if (!image.save(imgPath, extension, 100)) {
+                    errorMsg = tr("Could not save image sequence frame to %1.").arg(imgPath);
+                    qWarning() << "[ImagePlugin::exportToFormat()] -" << errorMsg;
+                    return false;
+                }
             }
             #ifdef TUP_DEBUG
                 qDebug() << "[ImagePlugin::exportToFormat()] - Rendering frame ->" << photogram;
             #endif
             photogram++;
+            exportedFrames++;
 
             if (frames > 0)
-                emit progressChanged((photogram * 100) / frames);
+                emit progressChanged((exportedFrames * 100) / frames);
         }
     }
 
@@ -191,17 +241,23 @@ bool ImagePlugin::exportFrame(int frameIndex, const QColor color, const QString 
         qDebug() << "[ImagePlugin::exportToFrame()] - size ->" << size;
     #endif
 
-    bool result = false;
+    errorMsg.clear();
+    if (!project || !scene || size.isEmpty() || frameIndex < 0 || filePath.isEmpty()) {
+        errorMsg = tr("Invalid image export parameters.");
+        qWarning() << "[ImagePlugin::exportFrame()] -" << errorMsg;
+        return false;
+    }
+
     QString path = filePath;
     const char *extension;
     QImage::Format imageFormat;
-    QColor bgColor = color;
-    bgColor.setAlpha(255);
+    const QColor bgColor = color.isValid() ? color : scene->getBgColor();
 
     TupAnimationRenderer renderer(project->getLibrary(), waterMark);
-    renderer.setScene(scene, size, scene->getBgColor());
+    renderer.setScene(scene, size, bgColor);
     renderer.renderPhotogram(frameIndex, showForegroundView);
 
+    bool result = false;
     if (filePath.endsWith(".SVG", Qt::CaseInsensitive)) {
         QSvgGenerator generator;
         generator.setFileName(path);
@@ -212,33 +268,40 @@ bool ImagePlugin::exportFrame(int frameIndex, const QColor color, const QString 
         generator.setDescription(scene->getSceneName());
 
         QPainter painter;
-        painter.begin(&generator);
-        painter.setRenderHint(QPainter::Antialiasing, true);
-        renderer.render(&painter);
-        result = painter.end();
+        if (painter.begin(&generator)) {
+            painter.setRenderHint(QPainter::Antialiasing, true);
+            renderer.render(&painter);
+            result = painter.end();
+        }
     } else {
         if (filePath.endsWith(".PNG", Qt::CaseInsensitive)) {
             extension = "PNG";
             imageFormat = QImage::Format_ARGB32;
-        } else if (filePath.endsWith(".JPG", Qt::CaseInsensitive) || filePath.endsWith("JPEG", Qt::CaseInsensitive)) {
-                   extension = "JPEG";
-                   imageFormat = QImage::Format_RGB32;
+        } else if (filePath.endsWith(".JPG", Qt::CaseInsensitive) || filePath.endsWith(".JPEG", Qt::CaseInsensitive)) {
+            extension = "JPEG";
+            imageFormat = QImage::Format_RGB32;
         } else {
-            extension = "PNG"; 
+            extension = "PNG";
             path += ".png";
             imageFormat = QImage::Format_ARGB32;
         }
 
         QImage image(size, imageFormat);
-        {
-            QPainter painter(&image);
-            painter.setRenderHint(QPainter::Antialiasing, true);
-            renderer.render(&painter);
+        if (!image.isNull()) {
+            image.fill(bgColor);
+            QPainter painter;
+            if (painter.begin(&image)) {
+                painter.setRenderHint(QPainter::Antialiasing, true);
+                renderer.render(&painter);
+                result = painter.end() && image.save(path, extension, 100);
+            }
         }
-
-        result = image.save(path, extension, 100);
     }
 
+    if (!result) {
+        errorMsg = tr("Could not export image to %1.").arg(path);
+        qWarning() << "[ImagePlugin::exportFrame()] -" << errorMsg;
+    }
     return result;
 }
 

@@ -37,7 +37,8 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 
-TupSceneSelector::TupSceneSelector() : TupExportWizardPage(tr("Select Scenes"))
+TupSceneSelector::TupSceneSelector() : TupExportWizardPage(tr("Select Scenes")),
+                                       format(static_cast<ExportOutputFormat>(-1)), duration(0.0)
 {
     setTag("SCENE");
     m_selector = new TItemSelector(tr("Add Scene"), tr("Remove Scene"));
@@ -81,8 +82,16 @@ void TupSceneSelector::setScenes(const QList<TupScene *> &scenesList, int fps)
     #endif
 
     scenes = scenesList;
-    m_selector->clear();
     duration = 0;
+    sceneDuration.clear();
+    m_selector->clear();
+
+    if (scenes.isEmpty() || fps <= 0) {
+        qWarning() << "[TupSceneSelector::setScenes()] - Invalid scenes or FPS";
+        m_selector->updateDurationLabel(QString::number(0.0, 'f', 2));
+        emit completed();
+        return;
+    }
 
     if (scenes.count() > 1) {
         int pos = 1;
@@ -135,8 +144,10 @@ void TupSceneSelector::updateState()
 
     if (format == Animation) {
         duration = 0;
-        foreach(int index, indexes)
-            duration += sceneDuration.at(index);
+        foreach(int index, indexes) {
+            if (index >= 0 && index < sceneDuration.size())
+                duration += sceneDuration.at(index);
+        }
 
         #ifdef TUP_DEBUG
             qDebug() << "[TupSceneSelector::updateState()] - duration ->" << duration;

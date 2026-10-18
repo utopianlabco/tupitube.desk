@@ -42,7 +42,7 @@
 #include <QMessageBox>
 
 TupExportModule::TupExportModule(TupProject *project, OutputFormat output,
-                                 QString title) : TupExportWizardPage(title), m_currentExporter(nullptr),
+                                 QString title) : TupExportWizardPage(title), fps(0), m_currentExporter(nullptr),
                                  m_currentFormat(TupExportInterface::NONE), m_project(project)
 {
     #ifdef TUP_DEBUG
@@ -170,7 +170,16 @@ void TupExportModule::setScenesIndexes(const QList<int> &indexes)
 {
     sceneIndexes = indexes;
     scenes = scenesToExport();
+    fps = 0;
+    if (scenes.isEmpty() || !scenes.first()) {
+        qWarning() << "[TupExportModule::setScenesIndexes()] - No valid scenes selected";
+        return;
+    }
     fps = scenes.first()->getFPS();
+    if (fps <= 0) {
+        qWarning() << "[TupExportModule::setScenesIndexes()] - Invalid FPS";
+        return;
+    }
 
     #ifdef TUP_DEBUG
         qDebug() << "[TupExportModule::setScenesIndexes()] - Scenes total ->" << scenes.count();
@@ -206,18 +215,9 @@ void TupExportModule::setScenesIndexes(const QList<int> &indexes)
 
 void TupExportModule::setCurrentExporter(TupExportInterface *currentExporter)
 {
-    // Disconnect from previous exporter to avoid multiple connections and crash on destruction
-    if (m_currentExporter) {
-        TupExportPluginObject *oldPlugin = (TupExportPluginObject *) m_currentExporter;
-        disconnect(oldPlugin, SIGNAL(messageChanged(const QString &)), this, SLOT(updateProgressMessage(const QString &)));
-        disconnect(oldPlugin, SIGNAL(progressChanged(int)), this, SLOT(updateProgressLabel(int)));
-    }
-
+    // The exporter plugin is shared between wizard instances. Subscribe only
+    // during exportIt() so earlier wizard pages cannot receive later progress.
     m_currentExporter = currentExporter;
-
-    TupExportPluginObject *plugin = (TupExportPluginObject *) currentExporter;
-    connect(plugin, SIGNAL(messageChanged(const QString &)), this, SLOT(updateProgressMessage(const QString &)));
-    connect(plugin, SIGNAL(progressChanged(int)), this, SLOT(updateProgressLabel(int)));
 }
 
 void TupExportModule::setCurrentFormat(TupExportInterface::Format format, const QString &value)
@@ -444,6 +444,24 @@ void TupExportModule::exportIt()
         file.remove();
     }
 
+    scenes = scenesToExport();
+    if (scenes.isEmpty() || fps <= 0) {
+        TOsd::self()->display(TOsd::Error, tr("No valid scenes or frame rate for export."));
+        return;
+    }
+    int totalFrames = 0;
+    foreach (TupScene *scene, scenes) {
+        if (!scene) {
+            TOsd::self()->display(TOsd::Error, tr("Invalid scene selected for export."));
+            return;
+        }
+        totalFrames += scene->framesCount();
+    }
+    if (totalFrames <= 0) {
+        TOsd::self()->display(TOsd::Error, tr("No frames available for export."));
+        return;
+    }
+
     emit exportHasStarted();
 
     progressWidget->setVisible(true);
@@ -483,10 +501,15 @@ void TupExportModule::exportIt()
 
             // SQA: The QSize second parameter will contain the resizing value of the animation
             //      * Pending feature
+            TupExportPluginObject *plugin = (TupExportPluginObject *) m_currentExporter;
+            connect(plugin, SIGNAL(messageChanged(const QString &)), this, SLOT(updateProgressMessage(const QString &)), Qt::UniqueConnection);
+            connect(plugin, SIGNAL(progressChanged(int)), this, SLOT(updateProgressLabel(int)), Qt::UniqueConnection);
             done = m_currentExporter->exportToFormat(colorAlpha, filename, scenes, m_currentFormat,
                                       QSize(width, height), QSize(width, height), fps /* m_project->getFPS() */,
                                       // QSize(width, height), QSize(newWidth, newHeight), m_fps->value(),
                                       m_project);
+            disconnect(plugin, SIGNAL(messageChanged(const QString &)), this, SLOT(updateProgressMessage(const QString &)));
+            disconnect(plugin, SIGNAL(progressChanged(int)), this, SLOT(updateProgressLabel(int)));
         }
     } else {
         TOsd::self()->display(TOsd::Error, tr("Format problem. TupiTube internal error"));
@@ -509,15 +532,20 @@ void TupExportModule::exportIt()
 
             QMessageBox msgBox;
             msgBox.setStyleSheet(TAppTheme::themeStyles());
-            msgBox.setWindowTitle(tr("Fatal Error: Can't export video"));
+            msgBox.setWindowTitle(isArray ? tr("Can't export image sequence") : tr("Fatal Error: Can't export video"));
             msgBox.setIcon(QMessageBox::Critical);
             msgBox.setTextFormat(Qt::RichText);
+            if (isArray && msg.isEmpty())
+                msg = tr("Image sequence export failed.");
             msgBox.setText(tr(msg.toLocal8Bit()));
             msgBox.addButton(QString(tr("Ok")), QMessageBox::AcceptRole);
             msgBox.show();
 
             if (msgBox.exec() == QMessageBox::AcceptRole) {
-                msg = tr("Sorry, animation is too short!");
+                if (isArray)
+                    msg = tr("Image sequence export failed.");
+                else
+                    msg = tr("Sorry, animation is too short!");
                 TOsd::self()->display(TOsd::Error, tr(msg.toLocal8Bit()));
                 emit isDone();
             }
@@ -528,8 +556,14 @@ void TupExportModule::exportIt()
 QList<TupScene *> TupExportModule::scenesToExport() const
 {
     QList<TupScene *> scenes;
-    foreach (int index, sceneIndexes)
-        scenes << m_project->sceneAt(index);
+    foreach (int index, sceneIndexes) {
+        if (index < 0)
+            return QList<TupScene *>();
+        TupScene *scene = m_project->sceneAt(index);
+        if (!scene)
+            return QList<TupScene *>();
+        scenes << scene;
+    }
 
     return scenes;
 }

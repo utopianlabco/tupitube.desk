@@ -56,6 +56,40 @@
 
 #include <QMessageBox>
 
+// Compare serialized tween representations without depending on XML attribute order.
+// This allows Apply to avoid creating a second Undo step when UpdateTweenPath
+// has already committed exactly the state shown by the editor.
+static bool motionTweenElementsEqual(const QDomElement &left, const QDomElement &right)
+{
+    if (left.tagName() != right.tagName())
+        return false;
+    const QDomNamedNodeMap leftAttributes = left.attributes();
+    const QDomNamedNodeMap rightAttributes = right.attributes();
+    if (leftAttributes.count() != rightAttributes.count())
+        return false;
+    for (int index = 0; index < leftAttributes.count(); ++index) {
+        const QDomNode attribute = leftAttributes.item(index);
+        if (right.attribute(attribute.nodeName(), QString()) != attribute.nodeValue())
+            return false;
+    }
+    QDomElement a = left.firstChildElement();
+    QDomElement b = right.firstChildElement();
+    while (!a.isNull() && !b.isNull()) {
+        if (!motionTweenElementsEqual(a, b))
+            return false;
+        a = a.nextSiblingElement();
+        b = b.nextSiblingElement();
+    }
+    return a.isNull() && b.isNull();
+}
+
+static bool motionTweenXmlEqual(const QString &left, const QString &right)
+{
+    QDomDocument a, b;
+    return a.setContent(left) && b.setContent(right)
+        && motionTweenElementsEqual(a.documentElement(), b.documentElement());
+}
+
 MotionTweener::MotionTweener() : TupToolPlugin()
 {
     #ifdef TUP_DEBUG
@@ -971,6 +1005,7 @@ void MotionTweener::applyTween()
         QString representativeId;
         int representativeIndex = -1;
         bool valid = !objects.isEmpty();
+        bool unchangedExistingTween = tweenAlreadyExists;
         QString route = pathToCoords();
         foreach (QGraphicsItem *item, objects) {
             if (qgraphicsitem_cast<TupSvgItem *>(item)) { valid = false; break; }
@@ -982,11 +1017,23 @@ void MotionTweener::applyTween()
                 representativeId = objectId;
                 representativeIndex = index;
             }
+            const QString targetTweenXml = configPanel->tweenToXml(
+                initScene, initLayer, initFrame, tweenId, item->pos(), route);
+            if (unchangedExistingTween) {
+                TupItemTweener *existingMemberTween = object->tweenById(tweenId);
+                if (!existingMemberTween) {
+                    unchangedExistingTween = false;
+                } else {
+                    QDomDocument currentDocument;
+                    currentDocument.appendChild(existingMemberTween->toXml(currentDocument));
+                    unchangedExistingTween = motionTweenXmlEqual(
+                        currentDocument.toString(0), targetTweenXml);
+                }
+            }
             QDomElement member = document.createElement(QStringLiteral("member"));
             member.setAttribute(QStringLiteral("object_id"), objectId);
             member.setAttribute(QStringLiteral("tween"), QString::fromLatin1(
-                configPanel->tweenToXml(initScene, initLayer, initFrame,
-                    tweenId, item->pos(), route).toUtf8().toBase64()));
+                targetTweenXml.toUtf8().toBase64()));
             root.appendChild(member);
         }
         if (!valid || representativeId.isEmpty()) {
@@ -995,13 +1042,18 @@ void MotionTweener::applyTween()
             TOsd::self()->display(TOsd::Error, tr("Motion Apply requires valid native object IDs."));
             return;
         }
-        document.appendChild(root);
-        TupProjectRequest request = TupRequestBuilder::createItemRequest(
-            initScene, initLayer, initFrame, representativeIndex, QPointF(),
-            scene->getSpaceContext(), TupLibraryObject::Item,
-            TupProjectRequest::ApplyMotionTween, document.toString(0),
-            QByteArray(), QString(), QString(), representativeId);
-        emit requested(&request);
+        // An edited path was already committed as UpdateTweenPath when the
+        // control point was released. If Apply contains the same complete
+        // per-member representation, it is not a second domain operation.
+        if (!unchangedExistingTween) {
+            document.appendChild(root);
+            TupProjectRequest request = TupRequestBuilder::createItemRequest(
+                initScene, initLayer, initFrame, representativeIndex, QPointF(),
+                scene->getSpaceContext(), TupLibraryObject::Item,
+                TupProjectRequest::ApplyMotionTween, document.toString(0),
+                QByteArray(), QString(), QString(), representativeId);
+            emit requested(&request);
+        }
     }
 
     localTweenOperation = false;
@@ -1096,7 +1148,7 @@ void MotionTweener::updateScene(TupGraphicsScene *scene)
                     nodesGroup->resizeNodes(realFactor);
                     nodesGroup->expandAllNodes();
 
-                    dots.clear();
+                    removeTweenPoints();
                     paintTweenPoints();
                 }
             }
@@ -1351,7 +1403,9 @@ void MotionTweener::setCurrentTween(const QString &tweenId)
 
 void MotionTweener::setEditEnv()
 {
-    loadEditEnvironment(true);
+    // The existing tween already owns authoritative path geometry. Do not
+    // reposition it to the first member returned by the scene query.
+    loadEditEnvironment(true, false);
 }
 
 void MotionTweener::loadEditEnvironment(bool requestFrameSelection, bool alignPathToObject)
@@ -1585,6 +1639,19 @@ void MotionTweener::itemResponse(const TupItemResponse *response)
             currentTween = nullptr;
             objects.clear();
         }
+        // A remote Apply or authoritative Undo/Redo may replace the tween's
+        // representation while its properties editor is open. Refresh that
+        // editor from the current model, not from cached local step values.
+        // Do not rebuild an unrelated tween's in-progress edit.
+        QString affectedTweenId;
+        QDomDocument applyDocument;
+        if (applyDocument.setContent(response->getArg().toString()))
+            affectedTweenId = applyDocument.documentElement()
+                    .attribute(QStringLiteral("tween_id")).trimmed();
+        if (configPanel->mode() == TupToolPlugin::Edit && selected
+                && !selectedId.isEmpty() && selectedId == affectedTweenId) {
+            refreshRebasedTween(selectedId);
+        }
         refreshTweenList();
         return;
     }
@@ -1676,126 +1743,23 @@ void MotionTweener::itemResponse(const TupItemResponse *response)
         return;
     }
 
-    if (editMode == TupToolPlugin::Properties) {
-        if (response->getAction() == TupProjectRequest::UpdateTweenPath) {
-            if (response->external()
-                    && response->getMode() != TupProjectResponse::Undo
-                    && response->getMode() != TupProjectResponse::Redo) {
-                const QString selectedTweenId = configPanel->getTweenIdFromList().trimmed();
-                if (!selectedTweenId.isEmpty())
-                    refreshRebasedTween(selectedTweenId);
-                return;
-            }
-
-            if (response->getMode() == TupProjectResponse::Undo) {
-                if (!doList.isEmpty()) {
-                    undoList << doList.last();
-                    doList.removeLast();
-                    if (linePath && linePath->scene())
-                        linePath->scene()->removeItem(linePath);
-
-                    if (nodesGroup) {
-                        delete nodesGroup;
-                        nodesGroup = nullptr;
-                    }
-                    removeTweenPoints();
-
-                    QPainterPath painterPath;
-                    if (doList.isEmpty()) {
-                        linePath = new QGraphicsPathItem;
-                        linePath->setZValue(baseZValue);
-
-                        QColor pathColor = configPanel->getPathColor();
-                        pathColor.setAlpha(200);
-                        QPen pen(QBrush(pathColor), configPanel->getPathThickness(), Qt::DashDotLine, Qt::RoundCap, Qt::RoundJoin);
-                        linePath->setPen(pen);
-
-                        painterPath.moveTo(firstNode);
-                        linePath->setPath(painterPath);
-                        scene->addItem(linePath);
-                        currentPoint = firstNode;
-
-                        configPanel->enableSaveOption(false);
-                    } else {
-                        painterPath = doList.last();
-
-                        QPainterPath::Element e = painterPath.elementAt(painterPath.elementCount() - 1);
-                        currentPoint = QPointF(e.x, e.y);
-                        linePath->setPath(painterPath);
-                        scene->addItem(linePath);
-                    }
-
-                    nodesGroup = new TNodeGroup(linePath, scene, TNodeGroup::MotionTween, baseZValue);
-                    connect(nodesGroup, SIGNAL(nodeReleased()), this, SLOT(updatePath()));
-                    nodesGroup->createNodes(linePath);
-
-                    nodesGroup->show();
-                    nodesGroup->resizeNodes(realFactor);
-                    nodesGroup->expandAllNodes();
-
-                    if (configPanel->stepsTotal() == nodesGroup->mainNodesCount())
-                        configPanel->undoSegment(painterPath);
-                    else
-                        configPanel->updateSegments(painterPath);
-
-                    /*
-                    qDebug() << "Main Nodes size: " << nodesGroup->mainNodesCount();
-                    qDebug() << "Nodes Total: " << nodesGroup->nodesTotalCount();
-                    qDebug() << "Config panel: " << configPanel->stepsTotal();
-                    */
-
-                    paintTweenPoints();
-                    const QString selectedTweenId = configPanel->getTweenIdFromList().trimmed();
-                    if (!selectedTweenId.isEmpty())
-                        currentTween = scene->currentScene()->tweenById(selectedTweenId);
-                }
-            }
-
-            if (response->getMode() == TupProjectResponse::Redo) {
-                if (!undoList.isEmpty()) {
-                    doList << undoList.last();
-                    undoList.removeLast();
-                    if (linePath && linePath->scene())
-                        linePath->scene()->removeItem(linePath);
-
-                    if (nodesGroup) {
-                        delete nodesGroup;
-                        nodesGroup = nullptr;
-                    }
-                    removeTweenPoints();
-
-                    QPainterPath painterPath = doList.last();
-                    QPainterPath::Element e = painterPath.elementAt(painterPath.elementCount() - 1);
-                    currentPoint = QPointF(e.x, e.y);
-
-                    linePath->setPath(painterPath);
-                    scene->addItem(linePath);
-
-                    nodesGroup = new TNodeGroup(linePath, scene, TNodeGroup::MotionTween, baseZValue);
-                    connect(nodesGroup, SIGNAL(nodeReleased()), this, SLOT(updatePath()));
-                    nodesGroup->createNodes(linePath);
-
-                    nodesGroup->show();
-                    nodesGroup->resizeNodes(realFactor);
-                    nodesGroup->expandAllNodes();
-
-                    if (configPanel->stepsTotal() < (nodesGroup->mainNodesCount()-1))
-                        configPanel->redoSegment(painterPath);
-                    else
-                        configPanel->updateSegments(painterPath);
-
-                    /*
-                    qDebug() << "Main Nodes size: " << nodesGroup->mainNodesCount();
-                    qDebug() << "Nodes Total: " << nodesGroup->nodesTotalCount();
-                    qDebug() << "Config panel: " << configPanel->stepsTotal();
-                    */
-
-                    paintTweenPoints();
-                    const QString selectedTweenId = configPanel->getTweenIdFromList().trimmed();
-                    if (!selectedTweenId.isEmpty())
-                        currentTween = scene->currentScene()->tweenById(selectedTweenId);
-                }
-            }
+    if (response->getAction() == TupProjectRequest::UpdateTweenPath
+            && (response->external()
+                || response->getMode() == TupProjectResponse::Undo
+                || response->getMode() == TupProjectResponse::Redo)) {
+        // The domain executor has already restored the authoritative tween
+        // snapshot. Never replay independent plugin-local path history here.
+        // Leave local optimistic Do untouched while updateTweenPath() is on
+        // the stack, because rebuilding linePath then would invalidate its
+        // active mouse-release handler.
+        const QString selectedTweenId = configPanel->getTweenIdFromList().trimmed();
+        TupScene *sceneData = scene ? scene->currentScene() : nullptr;
+        if (!selectedTweenId.isEmpty() && sceneData
+                && sceneData->tweenById(selectedTweenId)
+                && configPanel->mode() == TupToolPlugin::Edit) {
+            refreshRebasedTween(selectedTweenId);
+        } else {
+            refreshTweenList();
         }
     }
 }
@@ -1840,7 +1804,8 @@ void MotionTweener::paintTweenPoints()
         int total = points.size();
         for (int i=0; i < total; i++) {
             QPen inkPen(color, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-            TupEllipseItem *ellipse = new TupEllipseItem(QRectF(points.at(i) - QPointF(2,2), QSize(4, 4)));
+            const QPointF scenePoint = linePath->mapToScene(points.at(i));
+            TupEllipseItem *ellipse = new TupEllipseItem(QRectF(scenePoint - QPointF(2,2), QSize(4, 4)));
             ellipse->setPen(inkPen);
             ellipse->setBrush(inkPen.brush());
             scene->addItem(ellipse);

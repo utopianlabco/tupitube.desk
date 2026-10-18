@@ -205,6 +205,9 @@ void MotionSettings::setParameters(TupItemTweener *currentTween)
 
     initStartCombo(currentTween->getFrames(), currentTween->getInitFrame());
 
+    // Reloading an authoritative tween replaces the entire local step table.
+    // loadPath() appends rows and segments, so clear the previous representation.
+    stepViewer->clearInterface();
     stepViewer->loadPath(currentTween->graphicsPath(), currentTween->getIntervals());
     totalLabel->setText(tr("Frames Total") + ": " + QString::number(stepViewer->totalSteps()));
 }

@@ -40,6 +40,8 @@
 #include <QGroupBox>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QSaveFile>
+#include <QTemporaryFile>
 
 TupExportModule::TupExportModule(TupProject *project, OutputFormat output,
                                  QString title) : TupExportWizardPage(title), fps(0), m_currentExporter(nullptr),
@@ -289,8 +291,11 @@ void TupExportModule::chooseFile()
             path = QDir::homePath();
     #endif
 
+    // Defer the single overwrite confirmation to exportIt(), after the final
+    // destination (including its extension) has been resolved.
     filename = QFileDialog::getSaveFileName(this, tr("Export video as..."), path,
-                                            tr("Video File") + " (*" + extension.toLocal8Bit() + ")");
+                                            tr("Video File") + " (*" + extension.toLocal8Bit() + ")",
+                                            nullptr, QFileDialog::DontConfirmOverwrite);
     if (!filename.isEmpty()) {
         browserWasOpened = true;
         QString lower = filename.toLower();
@@ -342,6 +347,7 @@ void TupExportModule::exportIt()
     #endif
 
     bool done = false; 
+    QString outputError;
     bool isArray = false;
     QString name = "";
 
@@ -415,19 +421,19 @@ void TupExportModule::exportIt()
             return;
         }
 
-        if (!browserWasOpened) {
-            if (QFile::exists(filename)) {
-                QMessageBox::StandardButton reply;
-                reply = QMessageBox::question(this, tr("Warning!"),
-                                              tr("Video file exists. Overwrite it?"),
-                                              QMessageBox::Yes | QMessageBox::No);
-
-                if (reply == QMessageBox::No)
-                    return;
-            } 
+        if (QFile::exists(filename)) {
+            QMessageBox::StandardButton reply;
+            reply = QMessageBox::question(this, tr("Warning!"),
+                                          tr("Video file exists. Overwrite it?"),
+                                          QMessageBox::Yes | QMessageBox::No);
+            if (reply != QMessageBox::Yes)
+                return;
         }
     }
 
+    // File exports render into a sibling temporary file. The destination must
+    // not be modified until rendering succeeds and the replacement is committed.
+    QTemporaryFile stagedFile;
     if (outputFormat == ImagesArray) {
         QFileInfo dir(path);
         if (!dir.isReadable() || !dir.isWritable()) {
@@ -435,13 +441,12 @@ void TupExportModule::exportIt()
             return;
         }
     } else {
-        QFile file(filename);
-        if (!file.open(QIODevice::ReadWrite)) {
-            file.remove();
+        stagedFile.setFileTemplate(QDir(path).filePath(".tupitube-export-XXXXXX" + extension));
+        if (!stagedFile.open()) {
             TOsd::self()->display(TOsd::Error, tr("Insufficient permissions. Please, choose another path"));
             return;
         }
-        file.remove();
+        stagedFile.close();
     }
 
     scenes = scenesToExport();
@@ -504,7 +509,8 @@ void TupExportModule::exportIt()
             TupExportPluginObject *plugin = (TupExportPluginObject *) m_currentExporter;
             connect(plugin, SIGNAL(messageChanged(const QString &)), this, SLOT(updateProgressMessage(const QString &)), Qt::UniqueConnection);
             connect(plugin, SIGNAL(progressChanged(int)), this, SLOT(updateProgressLabel(int)), Qt::UniqueConnection);
-            done = m_currentExporter->exportToFormat(colorAlpha, filename, scenes, m_currentFormat,
+            const QString exportPath = isArray ? filename : stagedFile.fileName();
+            done = m_currentExporter->exportToFormat(colorAlpha, exportPath, scenes, m_currentFormat,
                                       QSize(width, height), QSize(width, height), fps /* m_project->getFPS() */,
                                       // QSize(width, height), QSize(newWidth, newHeight), m_fps->value(),
                                       m_project);
@@ -513,6 +519,41 @@ void TupExportModule::exportIt()
         }
     } else {
         TOsd::self()->display(TOsd::Error, tr("Format problem. TupiTube internal error"));
+    }
+
+    // QSaveFile commits by atomically replacing the destination on success.
+    // A failed render or copy leaves any previous video untouched.
+    if (done && !isArray) {
+        QFile rendered(stagedFile.fileName());
+        QSaveFile replacement(filename);
+        if (!rendered.open(QIODevice::ReadOnly) || rendered.size() == 0) {
+            outputError = tr("Exported video is missing or empty.");
+            done = false;
+        } else if (!replacement.open(QIODevice::WriteOnly)) {
+            outputError = tr("Could not prepare video replacement: %1.").arg(replacement.errorString());
+            done = false;
+        } else {
+            while (!rendered.atEnd()) {
+                const QByteArray chunk = rendered.read(64 * 1024);
+                if (chunk.isEmpty() || replacement.write(chunk) != chunk.size()) {
+                    outputError = tr("Could not copy exported video to destination.");
+                    done = false;
+                    break;
+                }
+            }
+            if (done && !replacement.commit()) {
+                outputError = tr("Could not save exported video: %1.").arg(replacement.errorString());
+                done = false;
+            }
+            if (!done)
+                replacement.cancelWriting();
+        }
+    }
+
+    // Remove the staged video before presenting completion/failure UI.
+    // This also covers a renderer that replaces the temporary file on disk.
+    if (!isArray && QFile::exists(stagedFile.fileName()) && !stagedFile.remove()) {
+        qWarning() << "[TupExportModule::exportIt()] - Could not remove staged video" << stagedFile.fileName();
     }
 
     QApplication::restoreOverrideCursor();
@@ -525,7 +566,9 @@ void TupExportModule::exportIt()
         emit isDone();
     } else {
         if (m_currentExporter) {
-            QString msg = m_currentExporter->getExceptionMsg();
+            QString msg = outputError.isEmpty() ? m_currentExporter->getExceptionMsg() : outputError;
+            if (msg.isEmpty())
+                msg = tr("Export failed.");
             #ifdef TUP_DEBUG
                 qWarning() << "[TupExportModule::exportIt()] -  Error Message ->" << msg;
             #endif

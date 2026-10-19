@@ -205,7 +205,6 @@ void TupVideoProperties::setProjectParams(const QString &login, const QString &s
 {
     #ifdef TUP_DEBUG
         qDebug() << "[TupVideoProperties::setProjectParams()] - login ->" << login;
-        qDebug() << "[TupVideoProperties::setProjectParams()] - secret ->" << secret;
         qDebug() << "[TupVideoProperties::setProjectParams()] - path ->" << path;
     #endif
 
@@ -263,6 +262,16 @@ void TupVideoProperties::postIt()
         qDebug() << "[TupVideoProperties::postIt()] - Tags ->" << tags;
         qDebug() << "[TupVideoProperties::postIt()] - Comment ->" << desc;
     #endif
+
+    // Verify the source before creating a website record.
+    QFile sourceFile(filePath);
+    if (!sourceFile.open(QIODevice::ReadOnly)) {
+        qWarning() << "[TupVideoProperties::postIt()] - Cannot open project file ->" << filePath
+                   << sourceFile.errorString();
+        TOsd::self()->display(TOsd::Error, tr("Can't open project file for posting!"));
+        return;
+    }
+    sourceFile.close();
 
     stackedWidget->setCurrentIndex(1);
     emit postHasStarted();
@@ -415,7 +424,15 @@ void TupVideoProperties::serverAuthAnswer(QNetworkReply *reply)
                 filePart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("application/octet-stream"));
 
                 QFile *projectFile = new QFile(filePath);
-                projectFile->open(QIODevice::ReadOnly);
+                if (!projectFile->open(QIODevice::ReadOnly)) {
+                    qWarning() << "[TupVideoProperties::serverAuthAnswer()] - Cannot open project file ->" << filePath
+                               << projectFile->errorString();
+                    delete projectFile;
+                    delete multiPart;
+                    TOsd::self()->display(TOsd::Error, tr("Can't open project file for posting!"));
+                    emit isDone();
+                    return;
+                }
 
                 filePart.setBodyDevice(projectFile);
                 projectFile->setParent(multiPart);

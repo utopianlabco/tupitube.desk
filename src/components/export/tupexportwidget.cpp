@@ -281,16 +281,16 @@ void TupExportWidget::updateWidgetConnections()
     #endif
 
     if (currentPlugin == TupExportInterface::VideoFormats) {
-        connect(this, SIGNAL(animationExported()), animationExport, SLOT(exportIt()));
-        connect(this, SIGNAL(animationFileNameChanged()), animationExport, SLOT(updateNameField()));
-        connect(animationExport, SIGNAL(exportHasStarted()), this, SLOT(updateWindowTitle()));
+        connect(this, SIGNAL(animationExported()), animationExport, SLOT(exportIt()), Qt::UniqueConnection);
+        connect(this, SIGNAL(animationFileNameChanged()), animationExport, SLOT(updateNameField()), Qt::UniqueConnection);
+        connect(animationExport, SIGNAL(exportHasStarted()), this, SLOT(updateWindowTitle()), Qt::UniqueConnection);
         connect(scenesPage, SIGNAL(selectedScenes(const QList<int> &)),
-                animationExport, SLOT(setScenesIndexes(const QList<int> &)));        
+                animationExport, SLOT(setScenesIndexes(const QList<int> &)), Qt::UniqueConnection);        
     } else if (currentPlugin == TupExportInterface::ImageSequence) {
-        connect(this, SIGNAL(imagesArrayExported()), imagesArrayExport, SLOT(exportIt()));
-        connect(this, SIGNAL(imagesArrayFileNameChanged()), imagesArrayExport, SLOT(updateNameField()));
-        connect(imagesArrayExport, SIGNAL(exportHasStarted()), this, SLOT(updateWindowTitle()));
+        connect(this, SIGNAL(imagesArrayExported()), imagesArrayExport, SLOT(exportIt()), Qt::UniqueConnection);
+        connect(this, SIGNAL(imagesArrayFileNameChanged()), imagesArrayExport, SLOT(updateNameField()), Qt::UniqueConnection);
+        connect(imagesArrayExport, SIGNAL(exportHasStarted()), this, SLOT(updateWindowTitle()), Qt::UniqueConnection);
         connect(scenesPage, SIGNAL(selectedScenes(const QList<int> &)),
-                imagesArrayExport, SLOT(setScenesIndexes(const QList<int> &)));        
+                imagesArrayExport, SLOT(setScenesIndexes(const QList<int> &)), Qt::UniqueConnection);        
     }
 }

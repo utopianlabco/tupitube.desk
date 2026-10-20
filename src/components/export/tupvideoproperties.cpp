@@ -295,10 +295,6 @@ void TupVideoProperties::postIt()
         qDebug() << "[TupVideoProperties::postIt()] - URL ->" << apiEntry;
     #endif
 
-    // TEMPORARY V-01E-T05 TEST-ONLY REDIRECT. NEVER use this build for public posting.
-    apiEntry = QString("http://127.0.0.1:18082") +
-               (mode == Image ? QString("/api/desk/add/image/") : QString("/api/desk/add/video/"));
-    qWarning() << "[V-01E-T05] localhost metadata URL ->" << apiEntry;
     QUrl url(apiEntry);
     QNetworkRequest request = QNetworkRequest();
     request.setRawHeader("User-Agent", BROWSER_FINGERPRINT);
@@ -393,10 +389,6 @@ void TupVideoProperties::serverAuthAnswer(QNetworkReply *reply)
                     qDebug() << "[TupVideoProperties::serverAuthAnswer()] - URL -> " << apiEntry;
                 #endif
 
-                // TEMPORARY V-01E-T05 TEST-ONLY REDIRECT. NEVER use this build for public posting.
-                apiEntry = QString("http://127.0.0.1:18082") +
-                           (mode == Image ? QString("/api/desk/upload/image/") : QString("/api/desk/upload/video/"));
-                qWarning() << "[V-01E-T05] localhost upload URL ->" << apiEntry;
                 QUrl url(apiEntry);
                 QNetworkRequest request = QNetworkRequest();
                 request.setRawHeader(QByteArray("User-Agent"), QByteArray(BROWSER_FINGERPRINT));

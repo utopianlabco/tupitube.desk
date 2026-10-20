@@ -273,6 +273,8 @@ void TupVideoProperties::postIt()
     }
     sourceFile.close();
 
+    // A new posting attempt must not inherit cancellation from a previous one.
+    aborted = false;
     stackedWidget->setCurrentIndex(1);
     emit postHasStarted();
 
@@ -293,6 +295,10 @@ void TupVideoProperties::postIt()
         qDebug() << "[TupVideoProperties::postIt()] - URL ->" << apiEntry;
     #endif
 
+    // TEMPORARY V-01E-T05 TEST-ONLY REDIRECT. NEVER use this build for public posting.
+    apiEntry = QString("http://127.0.0.1:18082") +
+               (mode == Image ? QString("/api/desk/add/image/") : QString("/api/desk/add/video/"));
+    qWarning() << "[V-01E-T05] localhost metadata URL ->" << apiEntry;
     QUrl url(apiEntry);
     QNetworkRequest request = QNetworkRequest();
     request.setRawHeader("User-Agent", BROWSER_FINGERPRINT);
@@ -346,6 +352,10 @@ void TupVideoProperties::serverAuthAnswer(QNetworkReply *reply)
         qDebug() << "[TupVideoProperties::serverAuthAnswer()]";
     #endif
 
+    // Aborting a reply still delivers finished(); it must not start an upload.
+    if (aborted)
+        return;
+
     /*
       <auth>
         <code></code>
@@ -383,6 +393,10 @@ void TupVideoProperties::serverAuthAnswer(QNetworkReply *reply)
                     qDebug() << "[TupVideoProperties::serverAuthAnswer()] - URL -> " << apiEntry;
                 #endif
 
+                // TEMPORARY V-01E-T05 TEST-ONLY REDIRECT. NEVER use this build for public posting.
+                apiEntry = QString("http://127.0.0.1:18082") +
+                           (mode == Image ? QString("/api/desk/upload/image/") : QString("/api/desk/upload/video/"));
+                qWarning() << "[V-01E-T05] localhost upload URL ->" << apiEntry;
                 QUrl url(apiEntry);
                 QNetworkRequest request = QNetworkRequest();
                 request.setRawHeader(QByteArray("User-Agent"), QByteArray(BROWSER_FINGERPRINT));
@@ -621,7 +635,6 @@ void TupVideoProperties::closeRequest(QNetworkReply *reply)
         #ifdef TUP_DEBUG
             qDebug() << "[TupVideoProperties::closeRequest()] - Aborted by user!";
         #endif
-        TOsd::self()->display(TOsd::Info, tr("Post action cancelled!"));
         return;
     }
 
@@ -762,6 +775,10 @@ void TupVideoProperties::cancelPost()
         qDebug() << "[TupVideoProperties::cancelPost()]";
     #endif
 
+    // User cancellation or a transport error can cause several callbacks.
+    if (aborted)
+        return;
+
     aborted = true;
     emit postAborted();
     emit isDone();
@@ -769,6 +786,10 @@ void TupVideoProperties::cancelPost()
 
 void TupVideoProperties::slotError(QNetworkReply::NetworkError error)
 {
+    // User-triggered aborts can emit error() before finished().
+    if (aborted || error == QNetworkReply::OperationCanceledError)
+        return;
+
     TOsd::self()->display(TOsd::Error, tr("Network Fatal Error. Please, contact us!"));
 
     switch (error) {
@@ -810,6 +831,9 @@ void TupVideoProperties::slotError(QNetworkReply::NetworkError error)
         break;
     }
 
+    // The reply has already failed. Do not abort it again: doing so can
+    // trigger a second network error inside Qt. finished() will still run.
+    aborted = true;
     emit isDone();
 }
 

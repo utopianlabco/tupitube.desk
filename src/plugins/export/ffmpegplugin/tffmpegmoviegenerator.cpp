@@ -40,6 +40,9 @@
 #include "talgorithm.h"
 
 #include <QDir>
+#include <QSaveFile>
+#include <QFileInfo>
+#include <QFile>
 #include <QTimer>
 #include <QTextStream>
 
@@ -794,7 +797,7 @@ void TFFmpegMovieGenerator::handle(const QImage &image)
     createVideoFrame(image);
 }
 
-void TFFmpegMovieGenerator::saveMovie(const QString &filename) 
+bool TFFmpegMovieGenerator::saveMovie(const QString &filename) 
 {
     #ifdef TUP_DEBUG
         qDebug() << "***";
@@ -804,7 +807,7 @@ void TFFmpegMovieGenerator::saveMovie(const QString &filename)
     #endif
 
     endVideoFile();
-    copyMovieFile(filename);
+    return publishMovieFile(filename);
 }
 
 void TFFmpegMovieGenerator::flushEncoder()
@@ -884,60 +887,73 @@ void TFFmpegMovieGenerator::endVideoFile()
 
 void TFFmpegMovieGenerator::copyMovieFile(const QString &videoPath)
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "[TFFmpegMovieGenerator::copyMovieFile()] - Video File ->" << videoPath;
-        qDebug() << "[TFFmpegMovieGenerator::copyMovieFile()] - Temp File ->" << movieFile;
-    #endif
+    // Keep the inherited void interface unchanged. Export callers use the
+    // status-returning publishMovieFile() method instead.
+    publishMovieFile(videoPath);
+}
 
-    if (QFile::exists(videoPath)) {
-        QFileInfo info(videoPath);
-        if (!info.isFile()) {
-            #ifdef TUP_DEBUG
-                qCritical() << "[TFFmpegMovieGenerator::copyMovieFile()] - Fatal Error: Video path is NOT a file! ->"
-                            << videoPath;
-            #endif
-
-            return;
-        }
-
-        if (!QFile::remove(videoPath)) {
-            #ifdef TUP_DEBUG
-                qCritical() << "[TFFmpegMovieGenerator::copyMovieFile()] - Fatal Error: Can't remove file! ->"
-                            << videoPath;
-            #endif
-
-            return;
-        }
+bool TFFmpegMovieGenerator::publishMovieFile(const QString &videoPath)
+{
+    QFileInfo destination(videoPath);
+    if (destination.exists() && !destination.isFile()) {
+        errorMsg = "ffmpeg error: Video destination is not a regular file: " + videoPath;
+        qCritical() << "[TFFmpegMovieGenerator::publishMovieFile()]" << errorMsg;
+        QFile::remove(movieFile);
+        return false;
     }
 
-    if (QFile::copy(movieFile, videoPath)) {
-        if (QFile::exists(movieFile)) {
-            #ifdef TUP_DEBUG
-                qDebug() << "[TFFmpegMovieGenerator::copyMovieFile()] - Trying to remove temp video file ->"
-                         << movieFile;
-            #endif
- 
-            if (QFile::remove(movieFile)) {
-                #ifdef TUP_DEBUG
-                    qDebug() << "[TFFmpegMovieGenerator::copyMovieFile()] - Temp video file has been removed!";
-                #endif
-            } else {
-                #ifdef TUP_DEBUG
-                    qCritical() << "[TFFmpegMovieGenerator::copyMovieFile()] - Error: Can't remove temp video file";
-                #endif
-            }
-        } else {
-            #ifdef TUP_DEBUG
-                qCritical() << "[TFFmpegMovieGenerator::copyMovieFile()] - Error: Temp video file wasn't found! ->"
-                            << movieFile;
-            #endif
-        }
-    } else {
-        #ifdef TUP_DEBUG
-            qCritical() << "[TFFmpegMovieGenerator::copyMovieFile()] - Error: Can't create video file ->"
-                        << videoPath;
-        #endif
+    QFile source(movieFile);
+    if (!source.open(QIODevice::ReadOnly)) {
+        errorMsg = "ffmpeg error: Cannot open encoded temporary video: " + source.errorString();
+        qCritical() << "[TFFmpegMovieGenerator::publishMovieFile()]" << errorMsg;
+        QFile::remove(movieFile);
+        return false;
     }
+
+    // QSaveFile stages in the destination directory and renames on commit.
+    // The previous MP4 is never deleted before the replacement is ready.
+    QSaveFile staged(videoPath);
+    if (!staged.open(QIODevice::WriteOnly)) {
+        errorMsg = "ffmpeg error: Cannot stage replacement video: " + staged.errorString();
+        qCritical() << "[TFFmpegMovieGenerator::publishMovieFile()]" << errorMsg;
+        source.close();
+        QFile::remove(movieFile);
+        return false;
+    }
+
+    char buffer[65536];
+    while (true) {
+        const qint64 count = source.read(buffer, sizeof(buffer));
+        if (count < 0) {
+            errorMsg = "ffmpeg error: Cannot read encoded video: " + source.errorString();
+            staged.cancelWriting();
+            source.close();
+            QFile::remove(movieFile);
+            return false;
+        }
+        if (count == 0)
+            break;
+        if (staged.write(buffer, count) != count) {
+            errorMsg = "ffmpeg error: Cannot stage encoded video: " + staged.errorString();
+            staged.cancelWriting();
+            source.close();
+            QFile::remove(movieFile);
+            return false;
+        }
+    }
+    source.close();
+
+    if (!staged.commit()) {
+        errorMsg = "ffmpeg error: Cannot publish encoded video: " + staged.errorString();
+        qCritical() << "[TFFmpegMovieGenerator::publishMovieFile()]" << errorMsg;
+        QFile::remove(movieFile);
+        return false;
+    }
+
+    if (!QFile::remove(movieFile)) {
+        qWarning() << "[TFFmpegMovieGenerator::publishMovieFile()] - Cannot remove temporary video:" << movieFile;
+    }
+    return true;
 }
 
 bool TFFmpegMovieGenerator::validMovieHeader()
@@ -947,6 +963,8 @@ bool TFFmpegMovieGenerator::validMovieHeader()
 
 QString TFFmpegMovieGenerator::getErrorMsg() const
 {
+    if (!errorMsg.isEmpty())
+        return errorMsg;
     QString errorDetail = "It seems there was an internal error while exporting your animation.<br/>"
                           "Please, contact our technical support team.<br/>"
                           "More info: <b>https://tupitube.com</b>";

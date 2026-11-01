@@ -275,8 +275,12 @@ bool FFmpegPlugin::exportToFormat(int colorAlpha, const QString &filePath, const
         }
     }
 
-    generator->saveMovie(filePath);
+    const bool movieSaved = generator->saveMovie(filePath);
+    if (!movieSaved)
+        errorMsg = generator->getErrorMsg();
     delete generator;
+    if (!movieSaved)
+        return false;
 
     if (hasSound) {
         QFile accAudioFile(aacAudioPath);
@@ -353,8 +357,12 @@ bool FFmpegPlugin::exportToAnimatic(const QString &filePath, const QList<QImage>
         }
     }
 
-    generator->saveMovie(filePath);
+    const bool movieSaved = generator->saveMovie(filePath);
+    if (!movieSaved)
+        errorMsg = generator->getErrorMsg();
     delete generator;
+    if (!movieSaved)
+        return false;
 
     return true;
 }

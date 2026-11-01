@@ -81,7 +81,7 @@ class TUPITUBE_PLUGIN TFFmpegMovieGenerator : public TMovieGenerator
         virtual QString getErrorMsg() const;
         bool createVideoFrame(const QImage &image);
         bool writeAudioStream();
-        void saveMovie(const QString &filename);
+        bool saveMovie(const QString &filename);
 
     protected:
         void copyMovieFile(const QString &fileName);
@@ -89,6 +89,7 @@ class TUPITUBE_PLUGIN TFFmpegMovieGenerator : public TMovieGenerator
         void endVideoFile();
 
     private:
+        bool publishMovieFile(const QString &fileName);
         bool initVideoFile();
         void setFileExtension(int format);
         void flushEncoder();

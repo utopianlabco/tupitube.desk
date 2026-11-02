@@ -35,6 +35,26 @@
 #include "tupprojectlistdialog.h"
 #include "tapptheme.h"
 
+#include <QDateTime>
+
+namespace {
+class ProjectListItem : public QTreeWidgetItem
+{
+public:
+    bool operator<(const QTreeWidgetItem &other) const override
+    {
+        const int column = treeWidget()->sortColumn();
+        if (column == treeWidget()->columnCount() - 1) {
+            const QDateTime left = QDateTime::fromString(text(column), "dd/MM/yyyy HH:mm");
+            const QDateTime right = QDateTime::fromString(other.text(column), "dd/MM/yyyy HH:mm");
+            if (left.isValid() && right.isValid())
+                return left < right;
+        }
+        return QTreeWidgetItem::operator<(other);
+    }
+};
+}
+
 TupProjectListDialog::TupProjectListDialog(int projects, int collabs, const QString &serverName) : QDialog()
 {
     works = nullptr;
@@ -124,8 +144,7 @@ TupProjectListDialog::TupProjectListDialog(int projects, int collabs, const QStr
     buttons->addWidget(okButton);
     layout->addLayout(buttons);
 
-    setMinimumWidth(615); 
-    index = 0;
+    setMinimumWidth(615);
 }
 
 TupProjectListDialog::~TupProjectListDialog()
@@ -142,6 +161,7 @@ QTreeWidget *TupProjectListDialog::tree(bool myWorks)
         tree->setHeaderLabels(QStringList() << tr("Name") << tr("Author") << tr("Description") << tr("Date"));
 
     tree->header()->show();
+    tree->setSortingEnabled(true);
 
     if (myWorks) {
         tree->setColumnWidth(0, 200);
@@ -159,42 +179,38 @@ QTreeWidget *TupProjectListDialog::tree(bool myWorks)
 
 void TupProjectListDialog::addWork(const QString &project, const QString &name, const QString &description, const QString &date)
 {
-    workList.append(project);
-
-    QTreeWidgetItem *item = new QTreeWidgetItem(works);
+    QTreeWidgetItem *item = new ProjectListItem;
+    item->setData(0, Qt::UserRole, project);
     item->setText(0, name);
     item->setText(1, description);
     item->setText(2, date);
+    works->addTopLevelItem(item);
 
-    if (index == 0) {
+    if (works->topLevelItemCount() == 1) {
         isMine = true;
         works->setCurrentItem(item);
         filename = project;
-        // Ensure OK button is enabled when the first item is added
-        if (okButton) okButton->setEnabled(true);
+        okButton->setEnabled(true);
     }
-
-    index++;
 }
 
 void TupProjectListDialog::addContribution(const QString &filename, const QString &name, const QString &author, const QString &description, const QString &date)
 {
-    contribList.append(filename);
-    authors.append(author);
-
-    QTreeWidgetItem *item = new QTreeWidgetItem(contributions);
+    QTreeWidgetItem *item = new ProjectListItem;
+    item->setData(0, Qt::UserRole, filename);
+    item->setData(0, Qt::UserRole + 1, author);
     item->setText(0, name);
     item->setText(1, author);
     item->setText(2, description);
     item->setText(3, date);
+    contributions->addTopLevelItem(item);
 
-    // If this is the first contribution and there are no works, select it and enable OK
-    if (contribList.size() == 1 && (!works || works->topLevelItemCount() == 0)) {
+    if (contributions->topLevelItemCount() == 1 && (!works || works->topLevelItemCount() == 0)) {
         isMine = false;
         contributions->setCurrentItem(item);
         this->filename = filename;
-        this->user = author;
-        if (okButton) okButton->setEnabled(true);
+        user = author;
+        okButton->setEnabled(true);
     }
 }
 
@@ -219,11 +235,11 @@ void TupProjectListDialog::execAccept(QTreeWidgetItem *item, int index)
 void TupProjectListDialog::updateWorkTree()
 {
     if (works->hasFocus()) {
-        if (contribList.size() > 0 && contributions)
+        if (contributions)
             contributions->clearSelection();
-        int index = works->currentIndex().row();
-        if (index >= 0 && index < workList.size()) {
-            filename = workList.at(index);
+        QTreeWidgetItem *item = works->currentItem();
+        if (item && item->isSelected()) {
+            filename = item->data(0, Qt::UserRole).toString();
             isMine = true;
             okButton->setEnabled(true);
         } else {
@@ -235,13 +251,13 @@ void TupProjectListDialog::updateWorkTree()
 void TupProjectListDialog::updateContribTree()
 {
     if (contributions->hasFocus()) {
-        if (workList.size() > 0 && works)
+        if (works)
             works->clearSelection();
-        int index = contributions->currentIndex().row();
-        if (index >= 0 && index < contribList.size()) {
+        QTreeWidgetItem *item = contributions->currentItem();
+        if (item && item->isSelected()) {
             isMine = false;
-            filename = contribList.at(index);
-            user = authors.at(index);
+            filename = item->data(0, Qt::UserRole).toString();
+            user = item->data(0, Qt::UserRole + 1).toString();
             okButton->setEnabled(true);
         } else {
             okButton->setEnabled(false);

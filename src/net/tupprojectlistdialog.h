@@ -70,6 +70,8 @@ class TUPITUBE_EXPORT TupProjectListDialog : public QDialog
         void execAccept(QTreeWidgetItem *item, int index);
         void updateWorkTree();
         void updateContribTree();
+        void updateFilteredSelection();
+        void accept() override;
     
     private:
         QTreeWidget *tree(bool myWorks);

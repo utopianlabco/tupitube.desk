@@ -121,6 +121,8 @@ TupProjectListDialog::TupProjectListDialog(int projects, int collabs, const QStr
     }
 
     connect(button, SIGNAL(clicked()), searchLine, SLOT(clear()));
+    if (searchLine)
+        connect(searchLine, SIGNAL(textChanged(QString)), this, SLOT(updateFilteredSelection()));
 
     //----
     QHBoxLayout *buttons = new QHBoxLayout;
@@ -226,10 +228,52 @@ QString TupProjectListDialog::owner() const
 
 void TupProjectListDialog::execAccept(QTreeWidgetItem *item, int index)
 {
-    Q_UNUSED(item);
-
-    if (index >= 0)
+    if (index >= 0 && item && !item->isHidden())
         accept();
+}
+
+void TupProjectListDialog::accept()
+{
+    updateFilteredSelection();
+    if (okButton->isEnabled())
+        QDialog::accept();
+}
+
+void TupProjectListDialog::updateFilteredSelection()
+{
+    QTreeWidgetItem *selected = nullptr;
+    bool mine = false;
+
+    if (works) {
+        QTreeWidgetItem *item = works->currentItem();
+        if (item && item->isSelected() && !item->isHidden()) {
+            selected = item;
+            mine = true;
+        } else if (item && item->isHidden()) {
+            works->clearSelection();
+        }
+    }
+
+    if (contributions) {
+        QTreeWidgetItem *item = contributions->currentItem();
+        if (item && item->isSelected() && !item->isHidden() && !selected) {
+            selected = item;
+            mine = false;
+        } else if (item && item->isHidden()) {
+            contributions->clearSelection();
+        }
+    }
+
+    if (selected) {
+        filename = selected->data(0, Qt::UserRole).toString();
+        isMine = mine;
+        user = mine ? QString() : selected->data(0, Qt::UserRole + 1).toString();
+    } else {
+        filename.clear();
+        user.clear();
+    }
+
+    okButton->setEnabled(selected && !filename.isEmpty());
 }
 
 void TupProjectListDialog::updateWorkTree()
@@ -246,6 +290,7 @@ void TupProjectListDialog::updateWorkTree()
             okButton->setEnabled(false);
         }
     }
+    updateFilteredSelection();
 }
 
 void TupProjectListDialog::updateContribTree()
@@ -263,6 +308,7 @@ void TupProjectListDialog::updateContribTree()
             okButton->setEnabled(false);
         }
     }
+    updateFilteredSelection();
 }
 
 bool TupProjectListDialog::workIsMine()

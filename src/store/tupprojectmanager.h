@@ -100,6 +100,7 @@ class TUPITUBE_EXPORT TupProjectManager : public QObject
 
     private slots:
         void emitResponse(TupProjectResponse *response);
+        void updateLocalModifiedStatus();
         void undo();
         void redo();
         void advanceAuthoritativeConvertRestore(const QString &commandId, bool undoRestore);
@@ -130,6 +131,7 @@ class TUPITUBE_EXPORT TupProjectManager : public QObject
 
     private:
         bool modified;
+        bool localNonUndoableModified;
         int sceneIndex;
         int layerIndex;
         int frameIndex;

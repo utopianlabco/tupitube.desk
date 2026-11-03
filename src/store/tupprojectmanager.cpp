@@ -58,6 +58,7 @@ TupProjectManager::TupProjectManager(QObject *parent) : QObject(parent)
     #endif
 
     modified = false;
+    localNonUndoableModified = false;
     handler = nullptr;
     macroInProgress = false;
     pendingConvertRestoreCommandId.clear();
@@ -68,6 +69,7 @@ TupProjectManager::TupProjectManager(QObject *parent) : QObject(parent)
 
     project = new TupProject(this);
     undoStack = new QUndoStack(this);
+    connect(undoStack, SIGNAL(indexChanged(int)), this, SLOT(updateLocalModifiedStatus()));
     commandExecutor = new TupCommandExecutor(project);
 
     connect(commandExecutor, SIGNAL(responsed(TupProjectResponse*)), this, SLOT(emitResponse(TupProjectResponse *)));
@@ -267,7 +269,8 @@ bool TupProjectManager::saveProject(const QString &fileName)
     #endif
 
     bool result = handler->saveProject(fileName, project);
-    setModificationStatus(!result);
+    if (result)
+        setModificationStatus(false);
 
     return result;
 }
@@ -313,13 +316,59 @@ bool TupProjectManager::projectWasModified() const
 
 void TupProjectManager::setModificationStatus(bool changed)
 {
-    #ifdef TUP_DEBUG
-        qDebug() << "[TupProjectManager::setModificationStatus()] - changed ->" << changed;
-    #endif
+    if (!isNetworked) {
+        // Changes outside the undo stack are not reversed by stack navigation.
+        localNonUndoableModified = changed;
+        if (!changed && undoStack)
+            undoStack->setClean();
+        updateLocalModifiedStatus();
+        return;
+    }
 
+#ifdef TUP_DEBUG
+    qDebug() << "[TupProjectManager::setModificationStatus()] - changed ->" << changed;
+#endif
     if (modified == changed)
         return;
 
+    modified = changed;
+    emit modificationStatusChanged(modified);
+}
+
+void TupProjectManager::updateLocalModifiedStatus()
+{
+    if (isNetworked || !undoStack)
+        return;
+
+    // A stack command's redo()/undo() emits its project response before
+    // QUndoStack advances the index. The completed index change is authoritative
+    // for undoable local changes; non-stack edits retain their own dirty flag.
+    bool stackModified = !undoStack->isClean();
+    if (stackModified && undoStack->cleanIndex() >= 0) {
+        // Selection commands are UI navigation, not document mutations.
+        const int from = qMin(undoStack->index(), undoStack->cleanIndex());
+        const int to = qMax(undoStack->index(), undoStack->cleanIndex());
+        stackModified = false;
+        for (int i = from; i < to; ++i) {
+            const TupProjectCommand *command =
+                dynamic_cast<const TupProjectCommand *>(undoStack->command(i));
+            if (!command || !command->isSelectionCommand()) {
+                stackModified = true;
+                break;
+            }
+        }
+    }
+
+    const bool changed = localNonUndoableModified || stackModified;
+#ifdef TUP_DEBUG
+    qDebug() << "[TupProjectManager::updateLocalModifiedStatus()]"
+             << "Index:" << undoStack->index()
+             << "Clean index:" << undoStack->cleanIndex()
+             << "Non-undoable:" << localNonUndoableModified
+             << "Changed:" << changed;
+#endif
+    if (modified == changed)
+        return;
     modified = changed;
     emit modificationStatusChanged(modified);
 }
@@ -412,6 +461,9 @@ void TupProjectManager::createCommand(const TupProjectRequest *request, bool add
                 */
             } else {
                 command->redo();
+                if (!isNetworked && !request->isRequestExternal()
+                        && request->getActionId() != TupProjectRequest::Select)
+                    setModificationStatus(true);
             }
         } else {
             #ifdef TUP_DEBUG
@@ -1035,9 +1087,8 @@ void TupProjectManager::emitResponse(TupProjectResponse *response)
         qDebug() << "[TupProjectManager::emitResponse()] - response->action() ->" << response->getAction();
     #endif
 
-    if (!isNetworked && response->getAction() != TupProjectRequest::Select
-            && !response->external())
-        setModificationStatus(true);
+    // Local undoable commands are tracked by the QUndoStack index, not by
+    // their execution responses (which also fire during Undo/Redo).
 
    if (handler) {
         if (isNetworked) {

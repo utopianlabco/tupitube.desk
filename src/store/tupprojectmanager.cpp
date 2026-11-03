@@ -256,7 +256,7 @@ void TupProjectManager::closeProject()
     }
 
     project->setOpen(false);
-    modified = false;
+    setModificationStatus(false);
     undoStack->clear();
 }
 
@@ -267,7 +267,7 @@ bool TupProjectManager::saveProject(const QString &fileName)
     #endif
 
     bool result = handler->saveProject(fileName, project);
-    modified = !result;
+    setModificationStatus(!result);
 
     return result;
 }
@@ -289,7 +289,7 @@ bool TupProjectManager::loadProject(const QString &fileName)
 
     if (ok) {
         project->setOpen(true);
-        modified = false;
+        setModificationStatus(false);
     } else {
         #ifdef TUP_DEBUG
             qWarning() << "[TupProjectManager::loadProject()] - Fatal Error: Can't load project ->" << fileName;
@@ -317,7 +317,11 @@ void TupProjectManager::setModificationStatus(bool changed)
         qDebug() << "[TupProjectManager::setModificationStatus()] - changed ->" << changed;
     #endif
 
+    if (modified == changed)
+        return;
+
     modified = changed;
+    emit modificationStatusChanged(modified);
 }
 
 bool TupProjectManager::isValid() const
@@ -1031,8 +1035,9 @@ void TupProjectManager::emitResponse(TupProjectResponse *response)
         qDebug() << "[TupProjectManager::emitResponse()] - response->action() ->" << response->getAction();
     #endif
 
-    if (response->getAction() != TupProjectRequest::Select && !response->external())
-        modified = true;
+    if (!isNetworked && response->getAction() != TupProjectRequest::Select
+            && !response->external())
+        setModificationStatus(true);
 
    if (handler) {
         if (isNetworked) {

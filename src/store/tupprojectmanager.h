@@ -122,6 +122,7 @@ class TUPITUBE_EXPORT TupProjectManager : public QObject
         void reconcileAuthoritativeCreatedObjectId(const QString &commandId, const QString &objectId);
 
     signals:
+        void modificationStatusChanged(bool modified);
         void responsed(TupProjectResponse *reponse);
         void requestOpenProject(const QString &filename);
         void projectPathChanged();

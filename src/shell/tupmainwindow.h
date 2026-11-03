@@ -146,6 +146,7 @@ class TupMainWindow : public TabbedMainWindow
         void saveDefaultPath(const QString &dir);
         bool cancelChanges(PendingCloseAction action = NoPendingClose);
         bool storeProcedure();
+        void setProjectWindowTitle(const QString &title);
         void setupCameraConnections();
         void disconnectCameraConnections();
 
@@ -245,6 +246,7 @@ class TupMainWindow : public TabbedMainWindow
         void updateScenesPanelStatus(bool flag);
         void doPlay();
         void requestSaveAction();
+        void updateWindowModifiedStatus(bool modified);
         void updateSoundsPath();
         void updateBgColorInPalette(int sceneIndex);
         void updateSoundItems();

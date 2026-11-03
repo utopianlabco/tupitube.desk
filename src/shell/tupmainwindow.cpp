@@ -97,7 +97,7 @@ TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
 
     // Naming the main window
     appTitle = "TupiTube Desk";
-    setWindowTitle(appTitle);
+    setProjectWindowTitle(appTitle);
     setWindowIcon(QIcon(THEME_DIR + "icons/tupitube.png"));
     setObjectName("TupMainWindow_");
     setAcceptDrops(true);
@@ -121,6 +121,8 @@ TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
 
     // Calling out the project manager
     m_projectManager = new TupProjectManager(this);
+    connect(m_projectManager, SIGNAL(modificationStatusChanged(bool)),
+            this, SLOT(updateWindowModifiedStatus(bool)));
 
     // Generic dependency coordinator for collaborative commands.
     commandCoordinator = new TupCommandCoordinator(this);
@@ -277,6 +279,19 @@ TupMainWindow::TupMainWindow(const QString &winKey, const QString &sourceFile) :
     }
 }
 
+void TupMainWindow::setProjectWindowTitle(const QString &title)
+{
+    // Qt replaces [*] with the platform's modified-document indicator.
+    // Keep it in every title variant, including reconnection and recovery.
+    setWindowTitle(title + QStringLiteral(" [*]"));
+    setWindowModified(m_projectManager && m_projectManager->projectWasModified());
+}
+
+void TupMainWindow::updateWindowModifiedStatus(bool modified)
+{
+    setWindowModified(modified);
+}
+
 void TupMainWindow::checkForRecoveryProject()
 {
     if (m_projectManager->isOpen())
@@ -327,7 +342,7 @@ void TupMainWindow::checkForRecoveryProject()
     if (author.isEmpty())
         author = "Anonymous";
 
-    setWindowTitle(appTitle + " - " + projectName + " " + tr("[ recovered | save required ]"));
+    setProjectWindowTitle(appTitle + " - " + projectName + " " + tr("[ recovered | save required ]"));
     enableToolViews(true);
     setMenuItemsContext(true);
     setUpdatesEnabled(true);
@@ -412,7 +427,7 @@ void TupMainWindow::createNewNetProject(const QString &title, const QStringList 
 {
     isNetworked = true;
     projectName = title;
-    setWindowTitle(appTitle + " - " + projectName + " " + tr("[ connected as %1 | collaboration mode ]").arg(netUser));
+    setProjectWindowTitle(appTitle + " - " + projectName + " " + tr("[ connected as %1 | collaboration mode ]").arg(netUser));
 
     if (m_viewChat) {
         removeToolView(m_viewChat);
@@ -443,7 +458,8 @@ void TupMainWindow::setupCameraConnections()
     connect(cameraWidget, SIGNAL(projectAuthorUpdated(const QString&)), this, SLOT(updateProjectAuthor(const QString&)));
     connect(cameraWidget, SIGNAL(exportRequested()), this, SLOT(exportProject()));
     connect(cameraWidget, SIGNAL(postRequested()), this, SLOT(postProject()));
-    connect(cameraWidget, SIGNAL(projectHasChanged(bool)), m_projectManager, SLOT(setModificationStatus(bool)));
+    if (!isNetworked)
+        connect(cameraWidget, SIGNAL(projectHasChanged(bool)), m_projectManager, SLOT(setModificationStatus(bool)));
     connect(cameraWidget, SIGNAL(fpsUpdated(int)), m_exposureSheet, SLOT(updateFPS(int)));
     connect(cameraWidget, SIGNAL(fpsUpdated(int)), m_timeLine, SLOT(updateFPS(int)));
     connectWidgetToManager(cameraWidget);
@@ -658,7 +674,8 @@ void TupMainWindow::updateSoundItems()
     cameraWidget->updateSoundItems();
     m_exposureSheet->updateSceneAudioButtons();
     m_timeLine->updateSceneAudioButtons();
-    m_projectManager->setModificationStatus(true);
+    if (!isNetworked)
+        m_projectManager->setModificationStatus(true);
 }
 
 void TupMainWindow::enableUpdatesDialog()
@@ -834,7 +851,8 @@ bool TupMainWindow::closeProject()
 
 void TupMainWindow::requestSaveAction()
 {
-    m_projectManager->setModificationStatus(true);
+    if (!isNetworked)
+        m_projectManager->setModificationStatus(true);
 }
 
 void TupMainWindow::resetUI()
@@ -893,7 +911,7 @@ void TupMainWindow::resetUI()
 
     enableToolViews(false);
     setUpdatesEnabled(true);
-    setWindowTitle(appTitle);
+    setProjectWindowTitle(appTitle);
 
     if (isNetworked) {
         if (m_viewChat)
@@ -1082,7 +1100,7 @@ void TupMainWindow::setupLocalProject(TupProjectManagerParams *params)
         m_projectManager->setParams(params);
         projectName = params->getProjectManager();
         author = params->getAuthor();
-        setWindowTitle(appTitle +  " - " + projectName + " [ " + tr("by") + " " + author + " ]");
+        setProjectWindowTitle(appTitle +  " - " + projectName + " [ " + tr("by") + " " + author + " ]");
         kAppProp->setProjectDir(projectName);
     }
 }
@@ -1172,7 +1190,7 @@ void TupMainWindow::openProject(const QString &path)
             author = m_projectManager->getProject()->getAuthor();
             if (author.length() <= 0)
                 author = "Anonymous";
-            setWindowTitle(appTitle + " - " + projectName + " [ " + tr("by") + " " + author + " ]");
+            setProjectWindowTitle(appTitle + " - " + projectName + " [ " + tr("by") + " " + author + " ]");
 
             enableToolViews(true);
             setMenuItemsContext(true);
@@ -1449,7 +1467,7 @@ bool TupMainWindow::saveAs()
     if (isNetworked) {
         isNetworked = false;
         m_projectManager->setHandler(new TupLocalProjectManagerHandler, false);
-        setWindowTitle(appTitle + " - " + projectName + " [ " + tr("by") + " " + author + " ]");
+        setProjectWindowTitle(appTitle + " - " + projectName + " [ " + tr("by") + " " + author + " ]");
     }
 
     return storeProcedure();
@@ -1542,7 +1560,7 @@ bool TupMainWindow::storeProcedure()
         int indexDot = name.lastIndexOf(".");
         name = name.left(indexDot);
 
-        setWindowTitle(appTitle + " - " + name + " [ " + tr("by") +  " " +  author + " ]");
+        setProjectWindowTitle(appTitle + " - " + name + " [ " + tr("by") +  " " +  author + " ]");
 
         int last = m_filename.lastIndexOf("/");
         QString dir = m_filename.left(last);
@@ -1796,7 +1814,8 @@ void TupMainWindow::createPaintCommand(const TupPaintAreaEvent *event)
         }
 
         if (event->getAction() == TupPaintAreaEvent::ChangeBgColor) {
-            m_projectManager->setModificationStatus(true);
+            if (!isNetworked)
+                m_projectManager->setModificationStatus(true);
             QColor color = qvariant_cast<QColor>(event->getData());
             int sceneIndex = animationTab->currentSceneIndex();
             m_projectManager->setSceneBgColor(sceneIndex, color);
@@ -2152,7 +2171,7 @@ void TupMainWindow::collaborationRecoveryStarted()
     m_actionManager->enable("importAudioFile", false);
     m_actionManager->enable("importVideoFile", false);
 
-    setWindowTitle(appTitle + " - " + projectName + " " + tr("[ reconnecting | collaboration mode ]"));
+    setProjectWindowTitle(appTitle + " - " + projectName + " " + tr("[ reconnecting | collaboration mode ]"));
     TOsd::self()->display(TOsd::Warning, tr("Connection lost. Reconnecting... Editing is temporarily disabled."));
 
     if (!collaborationRecoveryDialog) {
@@ -2284,7 +2303,7 @@ void TupMainWindow::collaborationRecoveryFinished()
         m_colorPalette->setEnabled(true);
 
     setMenuItemsContext(true);
-    setWindowTitle(appTitle + " - " + projectName + " " + tr("[ connected as %1 | collaboration mode ]").arg(netUser));
+    setProjectWindowTitle(appTitle + " - " + projectName + " " + tr("[ connected as %1 | collaboration mode ]").arg(netUser));
     TOsd::self()->display(TOsd::Info, tr("Connection restored. Collaborative editing resumed."));
 }
 
@@ -2605,5 +2624,5 @@ void TupMainWindow::dropEvent(QDropEvent *e)
 void TupMainWindow::updateProjectAuthor(const QString &artist)
 {
     author = artist;
-    setWindowTitle(appTitle +  " - " + projectName + " [ " + tr("by") + " " + author + " ]");
+    setProjectWindowTitle(appTitle +  " - " + projectName + " [ " + tr("by") + " " + author + " ]");
 }

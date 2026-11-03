@@ -1510,7 +1510,7 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
 
         if (!versionOk || version != 1 || !revisionOk || revision < 0
                 || !savedRevisionOk || savedRevision < 0 || savedRevision > revision
-                || !eventIndexOk || eventIndex < -1
+                || !eventIndexOk || eventIndex < -1 || projectId.isEmpty()
                 || (!currentProjectId.isEmpty() && projectId != currentProjectId)) {
             qWarning() << "[TupNetProjectManagerHandler::handlePackage()] Invalid project_revision metadata.";
             return;
@@ -1520,6 +1520,13 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                 || (revision > 0 && eventIndex < 0)) {
             qWarning() << "[TupNetProjectManagerHandler::handlePackage()] Inconsistent project_revision ordering metadata.";
             return;
+        }
+
+        // Newly created projects receive their server-assigned identity in this
+        // authoritative revision packet; only project_open sets it beforehand.
+        if (currentProjectId.isEmpty()) {
+            currentProjectId = projectId;
+            currentProjectOwner = username;
         }
 
         lastObservedProjectRevision = revision;

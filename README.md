@@ -128,4 +128,3 @@ Visit our [TupiTube Desk Home Page](http://www.tupitube.com/) for additional inf
 
 ### Licensing Information
 TupiTube Desk is free software. See the file [COPYING](COPYING) for copying conditions.
-

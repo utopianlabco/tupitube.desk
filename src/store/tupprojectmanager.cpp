@@ -1113,7 +1113,12 @@ void TupProjectManager::setOpen(bool isOpen)
 
 void TupProjectManager::updateProjectDimension(const QSize size)
 {
+    if (project->getDimension() == size)
+        return;
+
     project->setDimension(size);
+    if (!isNetworked)
+        setModificationStatus(true);
 }
 
 int TupProjectManager::framesCount(int sceneIndex)

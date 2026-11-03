@@ -1539,6 +1539,7 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                    << "Saved revision:" << lastSavedProjectRevision
                    << "Index:" << lastObservedEventIndex;
 #endif
+        updateAuthoritativeModifiedState();
         return;
     } else if (root == QStringLiteral("project_saved")) {
         QDomDocument document;

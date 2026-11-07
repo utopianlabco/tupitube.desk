@@ -424,6 +424,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         bool authoritativeSnapshotRecoveryRequired;
         qint64 snapshotRecoveryRevision;
         QSet<QString> snapshotReconciliationCommands;
+        QSet<QString> exhaustedCommandAckIds;
         QHash<QString, QString> provisionalCreatedObjectIds;
         QHash<QString, ConvertRestoreContext> convertRestoreContexts;
         QHash<QString, PendingConvertContext> pendingConvertContexts;

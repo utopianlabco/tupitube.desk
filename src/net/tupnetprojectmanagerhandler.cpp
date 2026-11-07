@@ -2366,6 +2366,7 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                 return;
         }
 
+        exhaustedCommandAckIds.remove(parser.commandId());
         if (commandTracker)
             commandTracker->complete(parser.commandId());
         notifyPendingCommandCountChanged();
@@ -2786,6 +2787,7 @@ void TupNetProjectManagerHandler::handleProjectEvent(const QString &package)
         // The authoritative event proves that this local command was durably
         // committed. Complete it so it is not resent after recovery and any
         // dependent commands can be released by the coordinator.
+        exhaustedCommandAckIds.remove(causedBy);
         commandTracker->complete(causedBy);
         notifyPendingCommandCountChanged();
         updateAuthoritativeModifiedState();
@@ -4046,26 +4048,18 @@ void TupNetProjectManagerHandler::retryTimedOutCommands()
         const int retries = commandTracker->retryCount(commandId);
 
         if (retries >= COMMAND_MAX_RETRIES) {
-            qWarning()
-                << "[TupNetProjectManagerHandler::retryTimedOutCommands()]"
-                << "Command acknowledgment timed out."
-                << "Command:" << commandId
-                << "Retries:" << retries;
-
-            commandTracker->complete(commandId);
-            notifyPendingCommandCountChanged();
-
-            if (pendingGroupRestoreRequests.contains(commandId)) {
-                const PendingGroupRestoreRequest pending =
-                    pendingGroupRestoreRequests.take(commandId);
-                emit groupRestoreRequestFinished(pending.originalCommandId);
+            // Exhausting local retries does not establish whether the server
+            // committed this command. Keep it tracked (and the project dirty)
+            // until an authoritative result or recovery event resolves it.
+            if (!exhaustedCommandAckIds.contains(commandId)) {
+                exhaustedCommandAckIds.insert(commandId);
+                qWarning()
+                    << "[TupNetProjectManagerHandler::retryTimedOutCommands()]"
+                    << "Command acknowledgment remains unresolved after retries;"
+                    << "retaining pending command until authoritative resolution."
+                    << "Command:" << commandId
+                    << "Retries:" << retries;
             }
-
-            emit commandResultReceived(
-                commandId,
-                QStringLiteral("failed"),
-                QStringLiteral("ack_timeout"),
-                tr("The server did not acknowledge the command after multiple retries."));
             continue;
         }
 
@@ -4167,6 +4161,7 @@ void TupNetProjectManagerHandler::closeConnection()
         recoveryWatchdogTimer->stop();
     if (commandTracker)
         commandTracker->clear();
+    exhaustedCommandAckIds.clear();
     convertRestoreContexts.clear();
     pendingConvertContexts.clear();
     pendingGroupContexts.clear();

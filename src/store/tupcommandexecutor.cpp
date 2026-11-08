@@ -142,6 +142,7 @@ bool TupCommandExecutor::createScene(TupSceneResponse *response)
     if (pos < 0)
         return false;
 
+    bool sceneResponseEmitted = false;
     if (response->getMode() == TupProjectResponse::Do) {
         const QByteArray snapshot = response->getData();
         if (!snapshot.isEmpty()) {
@@ -159,6 +160,11 @@ bool TupCommandExecutor::createScene(TupSceneResponse *response)
         if (!scene)
             return false;
         if (!snapshot.isEmpty()) {
+            // Register the scene in the Exposure Sheet and Timeline before
+            // TupScene::fromXml() emits layer/frame loader responses. Otherwise
+            // those responses target UI containers that do not exist yet.
+            emit responsed(response);
+            sceneResponseEmitted = true;
             scene->fromXml(QString::fromUtf8(snapshot));
             QDomDocument expected;
             expected.setContent(snapshot);
@@ -182,7 +188,8 @@ bool TupCommandExecutor::createScene(TupSceneResponse *response)
             return false;
     }
 
-    emit responsed(response);
+    if (!sceneResponseEmitted)
+        emit responsed(response);
     return true;
 }
 

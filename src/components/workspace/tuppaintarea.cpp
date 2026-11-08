@@ -549,12 +549,9 @@ void TupPaintArea::sceneResponse(TupSceneResponse *event)
             break;
             case TupProjectRequest::Remove:
               {
-                  if (project->scenesCount() > 0) {
-                      if (project->scenesCount() == 1)
-                          setCurrentScene(0);
-                      else
-                          setCurrentScene(sceneIndex);
-                  }
+                  const int scenesTotal = project->scenesCount();
+                  if (scenesTotal > 0)
+                      setCurrentScene(qBound(0, sceneIndex, scenesTotal - 1));
               }
             break;
             case TupProjectRequest::Move:

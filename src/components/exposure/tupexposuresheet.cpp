@@ -483,7 +483,7 @@ void TupExposureSheet::applyAction(int action)
                     emit requestTriggered(&request);
 
                     QString selection = "0,0,0,0";
-                    request = TupRequestBuilder::createFrameRequest(sceneIndex - 1, 0, 0, TupProjectRequest::Select, selection);
+                    request = TupRequestBuilder::createFrameRequest(qMax(0, sceneIndex - 1), 0, 0, TupProjectRequest::Select, selection);
                     emit requestTriggered(&request);
                 } else {
                     request = TupRequestBuilder::createSceneRequest(sceneIndex, TupProjectRequest::Reset, tr("Scene 1"));
@@ -866,13 +866,9 @@ void TupExposureSheet::sceneResponse(TupSceneResponse *response)
             {
                 scenesContainer->removeScene(sceneIndex, true);
 
-                int scenesTotal = scenesContainer->count();
-                if (scenesTotal > 0) {
-                    if (scenesTotal == 1)
-                        setCurrentScene(0);
-                    else
-                        setCurrentScene(sceneIndex);
-                }
+                const int scenesTotal = scenesContainer->count();
+                if (scenesTotal > 0)
+                    setCurrentScene(qBound(0, sceneIndex, scenesTotal - 1));
 
                 return;
             }

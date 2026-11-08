@@ -143,9 +143,37 @@ bool TupCommandExecutor::createScene(TupSceneResponse *response)
         return false;
 
     if (response->getMode() == TupProjectResponse::Do) {
+        const QByteArray snapshot = response->getData();
+        if (!snapshot.isEmpty()) {
+            // Only the server-validated authoritative scene event may carry a
+            // complete snapshot. Never silently create an empty replacement.
+            QDomDocument document;
+            if (!document.setContent(snapshot)
+                    || document.documentElement().tagName() != QStringLiteral("scene")
+                    || document.documentElement().attribute(QStringLiteral("name")) != name
+                    || pos > project->scenesCount())
+                return false;
+        }
+
         TupScene *scene = project->createScene(name, pos);
-        if (!scene) 
+        if (!scene)
             return false;
+        if (!snapshot.isEmpty()) {
+            scene->fromXml(QString::fromUtf8(snapshot));
+            QDomDocument expected;
+            expected.setContent(snapshot);
+            int expectedLayers = 0;
+            QDomElement child = expected.documentElement().firstChildElement();
+            while (!child.isNull()) {
+                if (child.tagName() == QStringLiteral("layer"))
+                    ++expectedLayers;
+                child = child.nextSiblingElement();
+            }
+            if (scene->getLayers().size() != expectedLayers) {
+                project->removeScene(pos);
+                return false;
+            }
+        }
     }
 
     if (response->getMode() == TupProjectResponse::Redo || response->getMode() == TupProjectResponse::Undo) { 
@@ -216,6 +244,7 @@ bool TupCommandExecutor::removeScene(TupSceneResponse *response)
         QDomDocument document;
         document.appendChild(scene->toXml(document));
         response->setState(document.toString());
+        response->setData(document.toString(0).toUtf8());
         response->setArg(scene->getSceneName());
 
         if (project->removeScene(pos)) {

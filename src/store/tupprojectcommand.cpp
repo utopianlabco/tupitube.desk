@@ -486,6 +486,20 @@ QString TupProjectCommand::authoritativeEventPayload() const
     if (!response || !executionSucceeded)
         return QString();
 
+    if (response->getPart() == TupProjectRequest::Scene) {
+        const TupSceneResponse *sceneResponse = static_cast<const TupSceneResponse *>(response);
+        if ((response->originalAction() == TupProjectRequest::Remove
+                || response->originalAction() == TupProjectRequest::Add)
+                && !response->getData().trimmed().isEmpty()) {
+            const TupProjectRequest event = TupRequestBuilder::createSceneRequest(
+                sceneResponse->getSceneIndex(), response->getAction(),
+                response->getArg().toString(), response->getData(),
+                response->getCommandId());
+            return event.getXml();
+        }
+        return QString();
+    }
+
     if (response->getPart() != TupProjectRequest::Item)
         return QString();
 

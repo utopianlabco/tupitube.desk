@@ -41,6 +41,7 @@
 
 #include <QDir>
 #include <QSaveFile>
+#include <QtGlobal>
 #include <QFileInfo>
 #include <QFile>
 #include <QTimer>
@@ -942,6 +943,15 @@ bool TFFmpegMovieGenerator::publishMovieFile(const QString &videoPath)
         }
     }
     source.close();
+
+    // S-08 test-only injection: enable with
+    // TUP_SQA_S08_FORCE_COMMIT_FAILURE=1 in the client process environment.
+    // This tests cancelled QSaveFile::commit(), not an OS rename failure.
+    if (qgetenv("TUP_SQA_S08_FORCE_COMMIT_FAILURE") == QByteArrayLiteral("1")) {
+        qWarning() << "[S-08 HOOK] Cancelling staged MP4 immediately before commit:"
+                   << videoPath;
+        staged.cancelWriting();
+    }
 
     if (!staged.commit()) {
         errorMsg = "ffmpeg error: Cannot publish encoded video: " + staged.errorString();

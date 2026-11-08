@@ -1223,7 +1223,19 @@ bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
         && response->originalAction() == TupProjectRequest::RemoveTween;
 
     TupProjectRequest request;
-    if (editNodesUndoOrRedo) {
+    if (undoOrRedo && response->getPart() == TupProjectRequest::Scene
+            && response->originalAction() == TupProjectRequest::Remove) {
+        const TupSceneResponse *sceneResponse = static_cast<const TupSceneResponse *>(response);
+        const QString originalId = response->getCommandId().trimmed();
+        if (originalId.isEmpty())
+            return false;
+        const bool restoring = response->getMode() == TupProjectResponse::Undo;
+        request = TupRequestBuilder::createSceneRequest(
+            sceneResponse->getSceneIndex(),
+            restoring ? TupProjectRequest::Add : TupProjectRequest::Remove,
+            (restoring ? QStringLiteral("restore_source:")
+                       : QStringLiteral("restore_target:")) + originalId);
+    } else if (editNodesUndoOrRedo) {
         TupItemResponse *itemResponse = static_cast<TupItemResponse *>(response);
         const QString sourceRoute = itemResponse->getState();
         const QString targetRoute = response->getArg().toString();

@@ -1798,6 +1798,12 @@ void MotionTweener::paintTweenPoints()
         qDebug() << "[Motion Tweener::paintTweenPoints()]";
     #endif
 
+    // Edit mode can synchronously select its start frame before loadEditEnvironment()
+    // has created linePath. The later setTweenPath() call paints the points once
+    // that path is ready; never dereference it during the nested frame response.
+    if (!linePath)
+        return;
+
     if (dots.isEmpty()) {
         QColor color = Qt::black;
         QList<QPointF> points = configPanel->tweenPoints();

@@ -46,6 +46,116 @@
 #include <QDirIterator>
 #include <QDomDocument>
 #include <QSet>
+#include <QByteArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonParseError>
+
+// The transaction record is committed before the first directory rename. It
+// identifies the logical destination independently of the random backup name.
+// A destination that already exists is never overwritten during recovery.
+static bool recoverPackageTransactions(const QString &workPath, const QString &root)
+{
+    QDir workDir(workPath);
+    const QStringList journals = workDir.entryList(
+                QStringList() << ".tup-import-txn-*", QDir::Files | QDir::Hidden);
+    for (const QString &name : journals) {
+        const QString journalPath = workDir.filePath(name);
+        const QFileInfo journalInfo(journalPath);
+        if (journalInfo.isSymLink()) {
+            qCritical() << "[TupPackageHandler] Unsafe import journal:" << journalPath;
+            return false;
+        }
+        QFile file(journalPath);
+        if (!file.open(QIODevice::ReadOnly))
+            return false;
+        QJsonParseError error;
+        const QJsonDocument document = QJsonDocument::fromJson(file.readAll(), &error);
+        if (error.error != QJsonParseError::NoError || !document.isObject()) {
+            qCritical() << "[TupPackageHandler] Invalid import journal:" << journalPath;
+            return false;
+        }
+        const QJsonObject data = document.object();
+        const QString projectRoot = data.value("root").toString();
+        if (data.value("version").toInt() != 1 || projectRoot.isEmpty() ||
+            projectRoot == "." || projectRoot == ".." || projectRoot.contains('/') ||
+            projectRoot.contains('\\') || projectRoot.startsWith('.') ||
+            !data.value("hadPrevious").isBool()) {
+            qCritical() << "[TupPackageHandler] Unsafe import journal metadata:" << journalPath;
+            return false;
+        }
+        if (!root.isEmpty() && projectRoot != root)
+            continue;
+        const QString id = name.mid(QStringLiteral(".tup-import-txn-").size());
+        if (QUuid(id).isNull()) {
+            qCritical() << "[TupPackageHandler] Invalid transaction id:" << journalPath;
+            return false;
+        }
+        const QString backup = workDir.filePath(".tup-import-backup-" + id);
+        const QString staging = workDir.filePath(".tup-import-" + id);
+        const QString destination = workDir.filePath(projectRoot);
+        const QFileInfo backupInfo(backup), destinationInfo(destination), stagingInfo(staging);
+        if (backupInfo.isSymLink() || destinationInfo.isSymLink() || stagingInfo.isSymLink() ||
+            (backupInfo.exists() && !backupInfo.isDir()) ||
+            (destinationInfo.exists() && !destinationInfo.isDir()) ||
+            (stagingInfo.exists() && !stagingInfo.isDir())) {
+            qCritical() << "[TupPackageHandler] Unsafe interrupted import path:" << journalPath;
+            return false;
+        }
+        const bool hadPrevious = data.value("hadPrevious").toBool();
+        if (backupInfo.exists()) {
+            if (destinationInfo.exists()) {
+                // Could be a completed promotion or a newer successful import.
+                // Refuse to guess or overwrite the existing project.
+                qCritical() << "[TupPackageHandler] Ambiguous interrupted import; preserving both caches:"
+                            << destination << backup;
+                return false;
+            }
+            if (!workDir.rename(QFileInfo(backup).fileName(), projectRoot)) {
+                qCritical() << "[TupPackageHandler] Cannot restore interrupted cache:" << backup;
+                return false;
+            }
+            qWarning() << "[TupPackageHandler] Recovered interrupted import:" << destination;
+        } else if (hadPrevious && !destinationInfo.exists()) {
+            qCritical() << "[TupPackageHandler] Previous cache missing from interrupted import:"
+                        << journalPath;
+            return false;
+        }
+        if (stagingInfo.exists() && !QDir(staging).removeRecursively()) {
+            qWarning() << "[TupPackageHandler] Could not clean abandoned staging:" << staging;
+            return false;
+        }
+        if (!QFile::remove(journalPath)) {
+            qWarning() << "[TupPackageHandler] Could not remove resolved journal:" << journalPath;
+            return false;
+        }
+    }
+    return true;
+}
+
+static bool createPackageJournal(const QString &path, const QString &root, bool hadPrevious)
+{
+    QJsonObject data;
+    data.insert("version", 1);
+    data.insert("root", root);
+    data.insert("hadPrevious", hadPrevious);
+    QSaveFile journal(path);
+    journal.setDirectWriteFallback(false);
+    if (!journal.open(QIODevice::WriteOnly))
+        return false;
+    const QByteArray payload = QJsonDocument(data).toJson(QJsonDocument::Compact);
+    if (journal.write(payload) != payload.size()) {
+        journal.cancelWriting();
+        return false;
+    }
+    return journal.commit();
+}
+
+bool TupPackageHandler::recoverInterruptedImports()
+{
+    // Use the journal metadata; never infer a destination from a backup name.
+    return recoverPackageTransactions(QDir::cleanPath(CACHE_DIR), QString());
+}
 
 TupPackageHandler::TupPackageHandler()
 {
@@ -278,7 +388,13 @@ bool TupPackageHandler::importPackage(const QString &packagePath, const QString 
     if (!safe || topLevel.isEmpty() || expectedFiles.isEmpty())
         return false;
 
+    // Recover an earlier interrupted transaction before creating a new one.
+    // Legacy pre-journal orphan directories are retained for manual forensic review.
+    if (!recoverPackageTransactions(workPath, topLevel))
+        return false;
+
     const QString id = QUuid::createUuid().toString(QUuid::WithoutBraces);
+    const QString journalPath = workDir.filePath(".tup-import-txn-" + id);
     const QString stagingPath = workDir.filePath(".tup-import-" + id);
     const QString backupPath = workDir.filePath(".tup-import-backup-" + id);
     const QString stagedProject = QDir(stagingPath).filePath(topLevel);
@@ -342,19 +458,29 @@ bool TupPackageHandler::importPackage(const QString &packagePath, const QString 
         return false;
     }
     const bool hadPrevious = prior.exists();
-    if (hadPrevious && !workDir.rename(topLevel, QFileInfo(backupPath).fileName())) {
+    if (!createPackageJournal(journalPath, topLevel, hadPrevious)) {
         QDir(stagingPath).removeRecursively();
         return false;
     }
+    if (hadPrevious && !workDir.rename(topLevel, QFileInfo(backupPath).fileName())) {
+        QDir(stagingPath).removeRecursively();
+        QFile::remove(journalPath);
+        return false;
+    }
     if (!QDir().rename(stagedProject, destination)) {
-        if (hadPrevious && !workDir.rename(QFileInfo(backupPath).fileName(), topLevel))
+        const bool restored = !hadPrevious ||
+                workDir.rename(QFileInfo(backupPath).fileName(), topLevel);
+        if (!restored)
             qCritical() << "[TupPackageHandler::importPackage()] Cache rollback failed:" << backupPath;
         QDir(stagingPath).removeRecursively();
+        if (restored)
+            QFile::remove(journalPath);
         return false;
     }
     QDir(stagingPath).removeRecursively();
 
     importedCachePath = destination;
+    transactionJournalPath = journalPath;
     if (hadPrevious)
         previousCachePath = backupPath;
     projectDir = QFileInfo(packagePath).baseName();
@@ -378,6 +504,11 @@ bool TupPackageHandler::rollbackImport()
         qCritical() << "[TupPackageHandler::rollbackImport()] Previous cache preserved at:" << backup;
         return false;
     }
+    if (!transactionJournalPath.isEmpty() && !QFile::remove(transactionJournalPath)) {
+        qWarning() << "[TupPackageHandler::rollbackImport()] Cannot remove journal:"
+                   << transactionJournalPath;
+    }
+    transactionJournalPath.clear();
     importedCachePath.clear();
     previousCachePath.clear();
     rollbackFailed = false;
@@ -387,8 +518,14 @@ bool TupPackageHandler::rollbackImport()
 
 void TupPackageHandler::finishImport()
 {
-    if (!previousCachePath.isEmpty() && !QDir(previousCachePath).removeRecursively())
+    if (!previousCachePath.isEmpty() && !QDir(previousCachePath).removeRecursively()) {
         qWarning() << "[TupPackageHandler::finishImport()] Cannot remove old cache:" << previousCachePath;
+        // Keep the journal so a later run detects the ambiguous state.
+        return;
+    }
+    if (!transactionJournalPath.isEmpty() && !QFile::remove(transactionJournalPath))
+        qWarning() << "[TupPackageHandler::finishImport()] Cannot remove journal:" << transactionJournalPath;
+    transactionJournalPath.clear();
     previousCachePath.clear();
     importedCachePath.clear();
 }

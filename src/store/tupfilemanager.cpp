@@ -53,6 +53,11 @@
 
 TupFileManager::TupFileManager() : QObject()
 {
+    // Resolve journaled imports before the user opens or creates a project.
+    // Ambiguous transactions are preserved, never overwritten automatically.
+    if (!TupPackageHandler::recoverInterruptedImports())
+        qCritical() << "[TupFileManager] Interrupted import recovery requires attention;"
+                       "unresolved cache transactions were preserved.";
 }
 
 TupFileManager::~TupFileManager()

@@ -34,12 +34,12 @@
 
 #include "tupapplication.h"
 #include "tupmainwindow.h"
+#include "tuppackagehandler.h"
 #include "tapplicationproperties.h"
 #include "talgorithm.h"
 #include "tuivalues.h"
 
 #ifdef TUP_DEBUG
-  #include <QDebug>
   #ifdef Q_OS_UNIX
     #include "tupcrashhandler.h"
   #endif
@@ -50,6 +50,7 @@
 #endif
 
 #include <QFile>
+#include <QDebug>
 #include <QTextStream>
 #include <QTextCodec>
 #include <QMessageBox>
@@ -177,6 +178,19 @@ int main(int argc, char ** argv)
 
     // Setting the repository directory (where the projects are saved)
     application.createCache(cachePath);
+
+    // Recover interrupted package imports before constructing the main window
+    // or allowing any project to be opened. Preserve ambiguous transactions.
+    if (!TupPackageHandler::recoverInterruptedImports()) {
+        qCritical() << "[main.cpp] Interrupted import recovery requires attention;"
+                       "unresolved cache transactions were preserved.";
+        QMessageBox::critical(nullptr, QObject::tr("Project recovery requires attention"),
+                              QObject::tr("TupiTube found an unresolved project import. "
+                                          "The existing project caches have been preserved. "
+                                          "To avoid overwriting recoverable data, TupiTube "
+                                          "cannot start until the transaction is resolved."));
+        return 1;
+    }
 
     QStyle *style = QStyleFactory::create("fusion");
     QApplication::setStyle(style);

@@ -47,6 +47,7 @@ class TUPITUBE_EXPORT TupPackageHandler
         
         bool makePackage(const QString &projectPath, const QString &packagePath);
         bool importPackage(const QString &packagePath, const QString &tempFolder = QString());
+        static bool recoverInterruptedImports();
         
         QString importedProjectPath() const;
         QString projectDirectory() const;
@@ -58,6 +59,7 @@ class TUPITUBE_EXPORT TupPackageHandler
         QString projectDir;
         QString previousCachePath;
         QString importedCachePath;
+        QString transactionJournalPath;
         bool rollbackFailed = false;
 };
 

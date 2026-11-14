@@ -645,7 +645,15 @@ bool TupFileManager::load(const QString &fileName, TupProject *project)
         return false;
     }
 
-    return loadProjectDirectory(packageHandler.importedProjectPath(), project);
+    const bool loaded = loadProjectDirectory(packageHandler.importedProjectPath(), project);
+    if (!loaded) {
+        // Project activation failed: restore the previous on-disk cache.
+        // The caller must discard this partially initialized TupProject.
+        packageHandler.rollbackImport();
+        return false;
+    }
+    packageHandler.finishImport();
+    return true;
 }
 
 bool TupFileManager::loadRecovery(const QString &recoveryPath, TupProject *project)

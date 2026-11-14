@@ -50,10 +50,15 @@ class TUPITUBE_EXPORT TupPackageHandler
         
         QString importedProjectPath() const;
         QString projectDirectory() const;
+        bool rollbackImport();
+        void finishImport();
 
     private:
         QString gPath;
         QString projectDir;
+        QString previousCachePath;
+        QString importedCachePath;
+        bool rollbackFailed = false;
 };
 
 #endif

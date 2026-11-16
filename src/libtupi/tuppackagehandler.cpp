@@ -59,74 +59,100 @@ static bool recoverPackageTransactions(const QString &workPath, const QString &r
     QDir workDir(workPath);
     const QStringList journals = workDir.entryList(
                 QStringList() << ".tup-import-txn-*", QDir::Files | QDir::Hidden);
-    for (const QString &name : journals) {
-        const QString journalPath = workDir.filePath(name);
-        const QFileInfo journalInfo(journalPath);
-        if (journalInfo.isSymLink()) {
-            qCritical() << "[TupPackageHandler] Unsafe import journal:" << journalPath;
-            return false;
-        }
-        QFile file(journalPath);
-        if (!file.open(QIODevice::ReadOnly))
-            return false;
-        QJsonParseError error;
-        const QJsonDocument document = QJsonDocument::fromJson(file.readAll(), &error);
-        if (error.error != QJsonParseError::NoError || !document.isObject()) {
-            qCritical() << "[TupPackageHandler] Invalid import journal:" << journalPath;
-            return false;
-        }
-        const QJsonObject data = document.object();
-        const QString projectRoot = data.value("root").toString();
-        if (data.value("version").toInt() != 1 || projectRoot.isEmpty() ||
-            projectRoot == "." || projectRoot == ".." || projectRoot.contains('/') ||
-            projectRoot.contains('\\') || projectRoot.startsWith('.') ||
-            !data.value("hadPrevious").isBool()) {
-            qCritical() << "[TupPackageHandler] Unsafe import journal metadata:" << journalPath;
-            return false;
-        }
-        if (!root.isEmpty() && projectRoot != root)
-            continue;
-        const QString id = name.mid(QStringLiteral(".tup-import-txn-").size());
-        if (QUuid(id).isNull()) {
-            qCritical() << "[TupPackageHandler] Invalid transaction id:" << journalPath;
-            return false;
-        }
-        const QString backup = workDir.filePath(".tup-import-backup-" + id);
-        const QString staging = workDir.filePath(".tup-import-" + id);
-        const QString destination = workDir.filePath(projectRoot);
-        const QFileInfo backupInfo(backup), destinationInfo(destination), stagingInfo(staging);
-        if (backupInfo.isSymLink() || destinationInfo.isSymLink() || stagingInfo.isSymLink() ||
-            (backupInfo.exists() && !backupInfo.isDir()) ||
-            (destinationInfo.exists() && !destinationInfo.isDir()) ||
-            (stagingInfo.exists() && !stagingInfo.isDir())) {
-            qCritical() << "[TupPackageHandler] Unsafe interrupted import path:" << journalPath;
-            return false;
-        }
-        const bool hadPrevious = data.value("hadPrevious").toBool();
-        if (backupInfo.exists()) {
-            if (destinationInfo.exists()) {
+
+    // Inspect every journal without changing any cache. A later unresolved
+    // transaction must not be hidden by an earlier recoverable transaction.
+    // Only begin recovery when the entire set has passed this safety check.
+    for (int pass = 0; pass < 2; ++pass) {
+        const bool inspecting = (pass == 0);
+        bool unresolved = false;
+        for (const QString &name : journals) {
+            const QString journalPath = workDir.filePath(name);
+            const QFileInfo journalInfo(journalPath);
+            if (journalInfo.isSymLink()) {
+                qCritical() << "[TupPackageHandler] Unsafe import journal:" << journalPath;
+                if (inspecting) { unresolved = true; continue; }
+                return false;
+            }
+            QFile file(journalPath);
+            if (!file.open(QIODevice::ReadOnly)) {
+                qCritical() << "[TupPackageHandler] Cannot read import journal:" << journalPath;
+                if (inspecting) { unresolved = true; continue; }
+                return false;
+            }
+            QJsonParseError error;
+            const QJsonDocument document = QJsonDocument::fromJson(file.readAll(), &error);
+            if (error.error != QJsonParseError::NoError || !document.isObject()) {
+                qCritical() << "[TupPackageHandler] Invalid import journal:" << journalPath;
+                if (inspecting) { unresolved = true; continue; }
+                return false;
+            }
+            const QJsonObject data = document.object();
+            const QString projectRoot = data.value("root").toString();
+            if (data.value("version").toInt() != 1 || projectRoot.isEmpty() ||
+                projectRoot == "." || projectRoot == ".." || projectRoot.contains('/') ||
+                projectRoot.contains('\\') || projectRoot.startsWith('.') ||
+                !data.value("hadPrevious").isBool()) {
+                qCritical() << "[TupPackageHandler] Unsafe import journal metadata:" << journalPath;
+                if (inspecting) { unresolved = true; continue; }
+                return false;
+            }
+            if (!root.isEmpty() && projectRoot != root)
+                continue;
+            const QString id = name.mid(QStringLiteral(".tup-import-txn-").size());
+            if (QUuid(id).isNull()) {
+                qCritical() << "[TupPackageHandler] Invalid transaction id:" << journalPath;
+                if (inspecting) { unresolved = true; continue; }
+                return false;
+            }
+            const QString backup = workDir.filePath(".tup-import-backup-" + id);
+            const QString staging = workDir.filePath(".tup-import-" + id);
+            const QString destination = workDir.filePath(projectRoot);
+            const QFileInfo backupInfo(backup), destinationInfo(destination), stagingInfo(staging);
+            if (backupInfo.isSymLink() || destinationInfo.isSymLink() || stagingInfo.isSymLink() ||
+                (backupInfo.exists() && !backupInfo.isDir()) ||
+                (destinationInfo.exists() && !destinationInfo.isDir()) ||
+                (stagingInfo.exists() && !stagingInfo.isDir())) {
+                qCritical() << "[TupPackageHandler] Unsafe interrupted import path:" << journalPath;
+                if (inspecting) { unresolved = true; continue; }
+                return false;
+            }
+            const bool hadPrevious = data.value("hadPrevious").toBool();
+            if (backupInfo.exists() && destinationInfo.exists()) {
                 // Could be a completed promotion or a newer successful import.
                 // Refuse to guess or overwrite the existing project.
                 qCritical() << "[TupPackageHandler] Ambiguous interrupted import; preserving both caches:"
                             << destination << backup;
+                if (inspecting) { unresolved = true; continue; }
                 return false;
             }
-            if (!workDir.rename(QFileInfo(backup).fileName(), projectRoot)) {
-                qCritical() << "[TupPackageHandler] Cannot restore interrupted cache:" << backup;
+            if (hadPrevious && !backupInfo.exists() && !destinationInfo.exists()) {
+                qCritical() << "[TupPackageHandler] Previous cache missing from interrupted import:"
+                            << journalPath;
+                if (inspecting) { unresolved = true; continue; }
                 return false;
             }
-            qWarning() << "[TupPackageHandler] Recovered interrupted import:" << destination;
-        } else if (hadPrevious && !destinationInfo.exists()) {
-            qCritical() << "[TupPackageHandler] Previous cache missing from interrupted import:"
-                        << journalPath;
-            return false;
+            if (inspecting)
+                continue;
+
+            if (backupInfo.exists()) {
+                if (!workDir.rename(QFileInfo(backup).fileName(), projectRoot)) {
+                    qCritical() << "[TupPackageHandler] Cannot restore interrupted cache:" << backup;
+                    return false;
+                }
+                qWarning() << "[TupPackageHandler] Recovered interrupted import:" << destination;
+            }
+            if (stagingInfo.exists() && !QDir(staging).removeRecursively()) {
+                qWarning() << "[TupPackageHandler] Could not clean abandoned staging:" << staging;
+                return false;
+            }
+            if (!QFile::remove(journalPath)) {
+                qWarning() << "[TupPackageHandler] Could not remove resolved journal:" << journalPath;
+                return false;
+            }
         }
-        if (stagingInfo.exists() && !QDir(staging).removeRecursively()) {
-            qWarning() << "[TupPackageHandler] Could not clean abandoned staging:" << staging;
-            return false;
-        }
-        if (!QFile::remove(journalPath)) {
-            qWarning() << "[TupPackageHandler] Could not remove resolved journal:" << journalPath;
+        if (unresolved) {
+            qCritical() << "[TupPackageHandler] Import recovery blocked; all unresolved journals were reported and preserved.";
             return false;
         }
     }

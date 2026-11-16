@@ -240,14 +240,14 @@ void TupProjectManager::closeProject()
         qDebug() << "[TupProjectManager::closeProject()]";
     #endif
 
-    if (!handler) {
-        #ifdef TUP_DEBUG
-            qWarning() << "[TupProjectManager::closeProject()] - Fatal Error: Project handler is NULL!";
-        #endif
-        return;
-    }
-
     if (project->isProjectOpen()) {
+        if (!handler) {
+            #ifdef TUP_DEBUG
+                qWarning() << "[TupProjectManager::closeProject()] - Fatal Error: Project handler is NULL!";
+            #endif
+            return;
+        }
+
         if (!handler->closeProject()) {
             #ifdef TUP_DEBUG
                 qWarning() << "[TupProjectManager::closeProject()] - Fatal Error: Handler can't close project!";

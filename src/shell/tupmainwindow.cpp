@@ -944,10 +944,6 @@ void TupMainWindow::resetUI()
                 TOsd::self()->display(TOsd::Error, tr("Error while clearing cache!"));
             }
         }
-    } else {
-        #ifdef TUP_DEBUG
-            qDebug() << "[TupMainWindow::resetUI()] - Warning: project name is empty!";
-        #endif
     }
 
     resetMousePointer();

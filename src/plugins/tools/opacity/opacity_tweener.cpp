@@ -38,6 +38,7 @@
 #include "tupbrushmanager.h"
 #include "tupgraphicsscene.h"
 #include "tupgraphicobject.h"
+#include "tweenitemrelease.h"
 #include "tupsvgitem.h"
 #include "tupitemtweener.h"
 #include "tuprequestbuilder.h"
@@ -791,6 +792,10 @@ void OpacityTweener::frameResponse(const TupFrameResponse *event)
 
 void OpacityTweener::itemResponse(const TupItemResponse *event)
 {
+    // The executor has already removed this tween. Release the native/SVG
+    // graphic item's interaction flags and only this type's tooltip label.
+    TweenItemRelease::reconcile(scene, event, TupItemTweener::Opacity, tr("Opacity"));
+
     if (event->getAction() == TupProjectRequest::RemoveTween
             && event->getMode() != TupProjectResponse::Do) {
         init(scene);

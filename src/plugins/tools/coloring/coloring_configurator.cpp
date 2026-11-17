@@ -85,8 +85,8 @@ ColoringConfigurator::~ColoringConfigurator()
 void ColoringConfigurator::loadTweenList(const QList<QPair<QString, QString>> &tweenList)
 {
     tweenManager->loadTweenList(tweenList);
-    if (tweenList.count() > 0)
-        activeButtonsPanel(true);
+    // Keep the manager buttons hidden while the Properties panel is active.
+    activeButtonsPanel(state == Manager && !tweenList.isEmpty());
 }
 
 void ColoringConfigurator::setPropertiesPanel()

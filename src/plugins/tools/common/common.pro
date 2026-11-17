@@ -21,7 +21,8 @@ target.path = /lib/
 #headers.commands = cp *.h $(INSTALL_ROOT)/include/plugincommon
 #headers.path = /include/plugincommon
 
-HEADERS += buttonspanel.h \
+HEADERS += tweenitemrelease.h \
+           buttonspanel.h \
            tweenmanager.h \
            stepsviewer.h \
            # spinboxdelegate.h \

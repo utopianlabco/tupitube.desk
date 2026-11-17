@@ -39,6 +39,7 @@
 #include "tupbrushmanager.h"
 #include "tupgraphicsscene.h"
 #include "tupgraphicobject.h"
+#include "tweenitemrelease.h"
 #include "tupsvgitem.h"
 #include "tupellipseitem.h"
 #include "tuppathitem.h"
@@ -867,6 +868,10 @@ void ScaleTweener::frameResponse(const TupFrameResponse *event)
 
 void ScaleTweener::itemResponse(const TupItemResponse *event)
 {
+    // The executor has already removed this tween. Release the native/SVG
+    // graphic item's interaction flags and only this type's tooltip label.
+    TweenItemRelease::reconcile(scene, event, TupItemTweener::Scale, tr("Scale"));
+
     if (event->getAction() == TupProjectRequest::RemoveTween
             && event->getMode() != TupProjectResponse::Do) {
         init(scene);

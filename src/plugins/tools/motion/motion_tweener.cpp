@@ -40,6 +40,7 @@
 #include "tupbrushmanager.h"
 #include "tupgraphicsscene.h"
 #include "tupgraphicobject.h"
+#include "tweenitemrelease.h"
 #include "tuppathitem.h"
 #include "tuprectitem.h"
 #include "tuplineitem.h"
@@ -617,19 +618,19 @@ void MotionTweener::resetGUI()
         clearSelection();
         disableSelection();
     } else if (editMode == TupToolPlugin::Properties) {
+        // Nodes may survive even when the path has already been cleared.
+        if (nodesGroup) {
+            delete nodesGroup;
+            nodesGroup = nullptr;
+        }
+        removeTweenPoints();
         if (linePath) {
             if (linePath->scene())
                 linePath->scene()->removeItem(linePath);
-            removeTweenPoints();
-            isPathInScene = false;
-            if (nodesGroup) {
-                delete nodesGroup;
-                nodesGroup = nullptr;
-            }
-
             delete linePath;
             linePath = nullptr;
         }
+        isPathInScene = false;
     }
 }
 
@@ -810,11 +811,12 @@ void MotionTweener::applyReset()
         qDebug() << "[Motion Tweener::applyReset()]";
     #endif
 
-    if (mode == TupToolPlugin::Edit && editMode == TupToolPlugin::Properties) {
-        if (nodesGroup) {
-            delete nodesGroup;
-            nodesGroup = nullptr;
-        }
+    // Control nodes are presentation state, not tween-domain state. They can
+    // exist after Add/Selection as well as Edit/Properties; always release
+    // them when resetting the Motion tool.
+    if (nodesGroup) {
+        delete nodesGroup;
+        nodesGroup = nullptr;
     }
 
     mode = TupToolPlugin::View;
@@ -1686,42 +1688,9 @@ void MotionTweener::itemResponse(const TupItemResponse *response)
                 && response->getMode() != TupProjectResponse::Undo;
 
         if (tweenWasRemoved) {
-            QGraphicsItem *releasedItem = nullptr;
-            TupScene *sceneData = scene->currentScene();
-            TupLayer *layer = sceneData ? sceneData->layerAt(response->getLayerIndex()) : nullptr;
-            TupFrame *frame = layer ? layer->frameAt(response->getFrameIndex()) : nullptr;
-
-            if (frame) {
-                if (response->getItemType() == TupLibraryObject::Svg) {
-                    releasedItem = frame->svgAt(response->getItemIndex());
-                } else {
-                    const QString objectId = response->getObjectId().trimmed();
-                    TupGraphicObject *graphicObject = objectId.isEmpty()
-                            ? nullptr
-                            : frame->graphicById(objectId);
-                    if (graphicObject)
-                        releasedItem = graphicObject->item();
-                }
-            }
-
-            if (releasedItem) {
-                QString tip = releasedItem->toolTip();
-                if (tip.compare("Tweens: " + tr("Motion")) == 0) {
-                    releasedItem->setToolTip(QString());
-                } else if (tip.contains(tr("Motion"))) {
-                    tip = tip.replace(tr("Motion") + ",", QString());
-                    tip = tip.replace("," + tr("Motion"), QString());
-                    tip = tip.replace(tr("Motion"), QString());
-                    if (tip.endsWith(","))
-                        tip.chop(1);
-                    releasedItem->setToolTip(tip);
-                }
-
-                if (releasedItem->toolTip().isEmpty()) {
-                    releasedItem->setFlag(QGraphicsItem::ItemIsSelectable, true);
-                    releasedItem->setFlag(QGraphicsItem::ItemIsMovable, true);
-                }
-            }
+            // Reconcile presentation only after the domain RemoveTween result.
+            // Shared with Rotation, Scale, Shear, Opacity and Coloring.
+            TweenItemRelease::reconcile(scene, response, TupItemTweener::Motion, tr("Motion"));
         }
 
         if (editingAffectedTween) {

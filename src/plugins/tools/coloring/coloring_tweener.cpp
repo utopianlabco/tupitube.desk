@@ -40,6 +40,7 @@
 #include "tupbrushmanager.h"
 #include "tupgraphicsscene.h"
 #include "tupgraphicobject.h"
+#include "tweenitemrelease.h"
 #include "tuppathitem.h"
 #include "tupellipseitem.h"
 #include "tuplineitem.h"
@@ -867,6 +868,10 @@ void ColoringTweener::frameResponse(const TupFrameResponse *event)
 
 void ColoringTweener::itemResponse(const TupItemResponse *event)
 {
+    // The executor has already removed this tween. Release the native/SVG
+    // graphic item's interaction flags and only this type's tooltip label.
+    TweenItemRelease::reconcile(scene, event, TupItemTweener::Coloring, tr("Coloring"));
+
     if (event->getAction() == TupProjectRequest::RemoveTween
             && event->getMode() != TupProjectResponse::Do) {
         init(scene);

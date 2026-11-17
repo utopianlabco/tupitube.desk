@@ -75,7 +75,9 @@ void ShearTweener::init(TupGraphicsScene *gScene)
     objects.clear();
 
     if (target) {
-        scene->removeItem(target);
+        if (target->scene() == scene)
+            scene->removeItem(target);
+        delete target;
         target = nullptr;
     }
 
@@ -255,8 +257,10 @@ void ShearTweener::aboutToChangeTool()
         return;
     }
 
-    if (editMode == TupToolPlugin::Properties) {
-        scene->removeItem(target);
+    if (editMode == TupToolPlugin::Properties && target) {
+        if (target->scene() == scene)
+            scene->removeItem(target);
+        delete target;
         target = nullptr;
     }
 }
@@ -369,8 +373,12 @@ void ShearTweener::disableSelection()
 
 void ShearTweener::setSelection()
 {
-    if (target)
-        scene->removeItem(target);
+    if (target) {
+        if (target->scene() == scene)
+            scene->removeItem(target);
+        delete target;
+        target = nullptr;
+    }
 
     editMode = TupToolPlugin::Selection;
 
@@ -400,8 +408,11 @@ void ShearTweener::setPropertiesMode()
 
 void ShearTweener::applyReset()
 {
-    if ((mode == TupToolPlugin::Edit || mode == TupToolPlugin::Add) && editMode == TupToolPlugin::Properties) {
-        scene->removeItem(target);
+    if ((mode == TupToolPlugin::Edit || mode == TupToolPlugin::Add)
+            && editMode == TupToolPlugin::Properties && target) {
+        if (target->scene() == scene)
+            scene->removeItem(target);
+        delete target;
         target = nullptr;
     }
 
@@ -857,6 +868,7 @@ void ShearTweener::refreshAuthoritativeTween(const QString &tweenId)
     if (target) {
         if (target->scene() == scene)
             scene->removeItem(target);
+        delete target;
         target = nullptr;
     }
 

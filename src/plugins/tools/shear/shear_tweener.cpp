@@ -53,6 +53,8 @@
 
 #include <QMessageBox>
 #include <QDir>
+#include <QGraphicsItemGroup>
+#include <QGraphicsScene>
 
 ShearTweener::ShearTweener(): TupToolPlugin()
 {
@@ -77,7 +79,7 @@ void ShearTweener::init(TupGraphicsScene *gScene)
     if (target) {
         if (target->scene() == scene)
             scene->removeItem(target);
-        delete target;
+        delete target.data();
         target = nullptr;
     }
 
@@ -260,7 +262,7 @@ void ShearTweener::aboutToChangeTool()
     if (editMode == TupToolPlugin::Properties && target) {
         if (target->scene() == scene)
             scene->removeItem(target);
-        delete target;
+        delete target.data();
         target = nullptr;
     }
 }
@@ -291,8 +293,33 @@ void ShearTweener::saveConfig()
 /* This method updates the workspace when the plugin changes the scene */
 
 void ShearTweener::updateScene(TupGraphicsScene *scene)
-{ 
+{
     mode = configPanel->mode();
+
+    // As in Rotation, an ordinary canvas refresh must not discard an
+    // unapplied origin drag. Reattach the *same* live Target when detached;
+    // reconstruct from authoritative state only if Qt destroyed it.
+    if (mode == TupToolPlugin::Edit && editMode == TupToolPlugin::Properties
+            && scene && scene->currentSceneIndex() == initScene
+            && scene->currentLayerIndex() == initLayer
+            && scene->currentFrameIndex() >= initFrame
+            && scene->currentFrameIndex() < initFrame + configPanel->totalSteps()) {
+        if (target && !target->scene()) {
+            scene->addItem(target.data());
+        } else if (target && target->scene() != scene) {
+            QGraphicsScene *ownerScene = target->scene();
+            ownerScene->removeItem(target.data());
+            delete target.data();
+            target = nullptr;
+        }
+        if (!target) {
+            const QString tweenId = configPanel->getTweenIdFromList().trimmed();
+            TupScene *sceneData = scene->currentScene();
+            if (sceneData && !tweenId.isEmpty()
+                    && sceneData->tweenById(tweenId))
+                refreshAuthoritativeTween(tweenId);
+        }
+    }
 
     if (mode == TupToolPlugin::Add) {
         int total = framesCount();
@@ -376,7 +403,7 @@ void ShearTweener::setSelection()
     if (target) {
         if (target->scene() == scene)
             scene->removeItem(target);
-        delete target;
+        delete target.data();
         target = nullptr;
     }
 
@@ -412,7 +439,7 @@ void ShearTweener::applyReset()
             && editMode == TupToolPlugin::Properties && target) {
         if (target->scene() == scene)
             scene->removeItem(target);
-        delete target;
+        delete target.data();
         target = nullptr;
     }
 
@@ -441,8 +468,15 @@ void ShearTweener::applyTween()
     }
 
     TupItemTweener *identityTween = nullptr;
-    if (mode == TupToolPlugin::Edit && currentTween)
-        identityTween = currentTween;
+    if (mode == TupToolPlugin::Edit) {
+        TupScene *sceneData = scene ? scene->currentScene() : nullptr;
+        const QString selectedTweenId = configPanel->getTweenIdFromList().trimmed();
+        if (sceneData && !selectedTweenId.isEmpty()) {
+            identityTween = sceneData->tweenById(selectedTweenId);
+            if (identityTween && identityTween->getType() != TupItemTweener::Shear)
+                identityTween = nullptr;
+        }
+    }
 
     const bool tweenAlreadyExists = identityTween != nullptr;
     const QString sourceTweenName = tweenAlreadyExists ? identityTween->getTweenName() : name;
@@ -461,6 +495,13 @@ void ShearTweener::applyTween()
         tweenId = TupItemTweener::createTweenId();
     }
 
+    // The green Target reports a scene-space position. Preserve it before
+    // synchronous SetTween responses can refresh the editor and the model.
+    // Target::positionUpdated() supplies the mouse-release cursor position,
+    // which can differ from the target center by the initial grab offset.
+    // Serialize the actual origin handle position, not the cursor position.
+    const QPointF requestedSceneOrigin = target ? target->scenePos() : origin;
+
     bool semanticRebase = false;
 
     // Tween is new
@@ -477,7 +518,8 @@ void ShearTweener::applyTween()
             if (TupSvgItem *svg = qgraphicsitem_cast<TupSvgItem *>(item)) {
                 type = TupLibraryObject::Svg;
                 objectIndex = scene->currentFrame()->indexOf(svg);
-            } else if (qgraphicsitem_cast<TupPathItem *>(item)) {
+            } else if (qgraphicsitem_cast<QGraphicsItemGroup *>(item)
+                    || qgraphicsitem_cast<TupPathItem *>(item)) {
                 pos = origin;
             }
 
@@ -517,8 +559,6 @@ void ShearTweener::applyTween()
                 return;
             }
 
-            const QPointF authoritativeOrigin = currentTween->transformOriginPoint();
-
             QDomDocument rebaseDocument;
             QDomElement root = rebaseDocument.createElement(QStringLiteral("tween_rebase"));
             root.setAttribute(QStringLiteral("tween_id"), tweenId);
@@ -550,8 +590,14 @@ void ShearTweener::applyTween()
                     return;
                 }
 
+                // Serialize the moved scene-space origin in the member's
+                // local coordinates, just as initial tween creation does.
+                const QPointF memberOrigin =
+                        (qgraphicsitem_cast<QGraphicsItemGroup *>(item)
+                         || qgraphicsitem_cast<TupPathItem *>(item))
+                        ? requestedSceneOrigin : item->mapFromParent(requestedSceneOrigin);
                 const QString targetTweenXml = configPanel->tweenToXml(
-                            initScene, initLayer, initFrame, tweenId, authoritativeOrigin);
+                            initScene, initLayer, initFrame, tweenId, memberOrigin);
 
                 QDomElement member = rebaseDocument.createElement(QStringLiteral("member"));
                 member.setAttribute(QStringLiteral("object_id"), objectId);
@@ -588,8 +634,6 @@ void ShearTweener::applyTween()
                 return;
             }
 
-            const QPointF authoritativeOrigin = currentTween->transformOriginPoint();
-
             foreach (QGraphicsItem *item, objects) {
                 TupLibraryObject::ObjectType type = TupLibraryObject::Item;
                 int objectIndex = frame->indexOf(item);
@@ -606,12 +650,16 @@ void ShearTweener::applyTween()
                         objectId = graphicObject->objectId();
                 }
 
+                const QPointF memberOrigin =
+                        (qgraphicsitem_cast<QGraphicsItemGroup *>(item)
+                         || qgraphicsitem_cast<TupPathItem *>(item))
+                        ? requestedSceneOrigin : item->mapFromParent(requestedSceneOrigin);
                 TupProjectRequest request = TupRequestBuilder::createItemRequest(
                             initScene, initLayer, initFrame, objectIndex,
                             QPointF(), scene->getSpaceContext(), type,
                             TupProjectRequest::SetTween,
                             configPanel->tweenToXml(initScene, initLayer, initFrame,
-                                                    tweenId, authoritativeOrigin),
+                                                    tweenId, memberOrigin),
                             QByteArray(), QString(), QString(), objectId);
                 emit requested(&request);
             }
@@ -644,7 +692,15 @@ void ShearTweener::applyTween()
     }
 
     refreshTweenList();
-    setCurrentTween(tweenId);
+    // Applying a tween may refresh the canvas and detach the temporary
+    // shear-origin target. Rebind it while the Properties panel stays open.
+    if (editMode == TupToolPlugin::Properties
+            && configPanel->mode() == TupToolPlugin::Edit
+            && scene->currentScene()->tweenById(tweenId)) {
+        refreshAuthoritativeTween(tweenId);
+    } else {
+        setCurrentTween(tweenId);
+    }
     TOsd::self()->display(TOsd::Info, tr("Tween %1 applied!").arg(name));
 
     QApplication::restoreOverrideCursor();
@@ -769,11 +825,19 @@ void ShearTweener::removeTween(const QString &tweenId)
 
 void ShearTweener::updateOriginPoint(const QPointF &point)
 {
-    origin = point;
+    // The Target signal currently carries event->scenePos() (the cursor),
+    // not the actual item center. Preserve the item's true origin instead.
+    origin = target ? target->scenePos() : point;
 }
 
 void ShearTweener::addTarget()
 {
+    if (target) {
+        if (!target->scene() && scene)
+            scene->addItem(target.data());
+        return;
+    }
+
     if (mode == TupToolPlugin::Add) {
         target = new Target(origin, baseZValue);
         connect(target, SIGNAL(positionUpdated(const QPointF &)), this, SLOT(updateOriginPoint(const QPointF &)));
@@ -783,8 +847,16 @@ void ShearTweener::addTarget()
         if (mode == TupToolPlugin::Edit) {
             if (!objects.isEmpty()) {
                 QGraphicsItem *item = objects.at(0);
-                if (currentTween) {
-                    origin = item->mapToParent(currentTween->transformOriginPoint());
+                const QString selectedTweenId = configPanel->getTweenIdFromList().trimmed();
+                TupScene *sceneData = scene ? scene->currentScene() : nullptr;
+                TupItemTweener *tween = sceneData && !selectedTweenId.isEmpty()
+                        ? sceneData->tweenById(selectedTweenId) : nullptr;
+                if (tween && tween->getType() == TupItemTweener::Shear) {
+                    currentTween = tween;
+                    const QPointF storedOrigin = tween->transformOriginPoint();
+                    origin = (qgraphicsitem_cast<QGraphicsItemGroup *>(item)
+                              || qgraphicsitem_cast<TupPathItem *>(item))
+                            ? storedOrigin : item->mapToParent(storedOrigin);
                     target = new Target(origin, baseZValue);
                     connect(target, SIGNAL(positionUpdated(const QPointF &)), this, SLOT(updateOriginPoint(const QPointF &)));
                     scene->addItem(target);
@@ -810,6 +882,12 @@ void ShearTweener::updateMode(TupToolPlugin::Mode currentMode)
     if (mode == TupToolPlugin::Edit) {
         editMode = TupToolPlugin::Properties;
 
+        TupScene *sceneData = scene ? scene->currentScene() : nullptr;
+        const QString selectedTweenId = configPanel->getTweenIdFromList().trimmed();
+        TupItemTweener *selectedTween = sceneData && !selectedTweenId.isEmpty()
+                ? sceneData->tweenById(selectedTweenId) : nullptr;
+        currentTween = selectedTween && selectedTween->getType() == TupItemTweener::Shear
+                ? selectedTween : nullptr;
         if (currentTween) {
             initScene = currentTween->getInitScene();
             initLayer = currentTween->getInitLayer();
@@ -868,7 +946,7 @@ void ShearTweener::refreshAuthoritativeTween(const QString &tweenId)
     if (target) {
         if (target->scene() == scene)
             scene->removeItem(target);
-        delete target;
+        delete target.data();
         target = nullptr;
     }
 
@@ -947,8 +1025,30 @@ void ShearTweener::itemResponse(const TupItemResponse *event)
         // Local Set/Remove UI state is already maintained by the initiating
         // configurator path. Remote peers reconcile their visible manager or
         // the Properties panel if it is currently showing the affected tween.
-        if (!event->external())
+        if (!event->external()) {
+            // A locally originated authoritative SetTween can arrive after
+            // the Apply-time UI refresh. Recreate the origin target if the
+            // Properties panel is still editing the affected tween.
+            if (event->getAction() == TupProjectRequest::SetTween
+                    && event->getMode() == TupProjectResponse::Do
+                    && editMode == TupToolPlugin::Properties
+                    && configPanel->mode() == TupToolPlugin::Edit) {
+                QDomDocument document;
+                if (document.setContent(event->getArg().toString())) {
+                    const QString appliedTweenId = document.documentElement()
+                            .attribute(QStringLiteral("tween_id")).trimmed();
+                    // A SetTween replaces the model object before this
+                    // synchronous response. currentTween may already be dead.
+                    // Match using the configurator's durable tween ID instead.
+                    const QString selectedTweenId =
+                            configPanel->getTweenIdFromList().trimmed();
+                    if (!appliedTweenId.isEmpty()
+                            && selectedTweenId == appliedTweenId)
+                        refreshAuthoritativeTween(appliedTweenId);
+                }
+            }
             return;
+        }
 
         QString affectedTweenId;
         if (event->getAction() == TupProjectRequest::RemoveTween) {

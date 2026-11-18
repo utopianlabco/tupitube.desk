@@ -46,6 +46,7 @@
 #include <QKeySequence>
 #include <QGraphicsView>
 #include <QDomDocument>
+#include <QPointer>
 
 /**
  * @author Gustav Gonzalez 
@@ -126,7 +127,7 @@ class TUPITUBE_PLUGIN ShearTweener : public TupToolPlugin
         int framesTotal;
 
         QPointF origin;
-        Target *target;
+        QPointer<Target> target;
         qreal realFactor;
 
         TupToolPlugin::Mode mode;

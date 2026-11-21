@@ -64,6 +64,7 @@ TupProjectManager::TupProjectManager(QObject *parent) : QObject(parent)
     pendingConvertRestoreCommandId.clear();
     pendingRebaseTweenRestoreCommandId.clear();
     pendingUpdateTweenPathRestoreCommandId.clear();
+    pendingSetTweenRestoreCommandId.clear();
     pendingRemoveRestoreCommandId.clear();
     pendingGroupRestoreCommandId.clear();
 
@@ -160,6 +161,10 @@ void TupProjectManager::setHandler(TupAbstractProjectHandler *pHandler, bool net
                 this, SLOT(advanceAuthoritativeUpdateTweenPathRestore(const QString &, bool)));
         connect(handler, SIGNAL(updateTweenPathRestoreRequestFinished(const QString &)),
                 this, SLOT(finishAuthoritativeUpdateTweenPathRestore(const QString &)));
+        connect(handler, SIGNAL(setTweenRestoreStackAdvanceRequested(const QString &, bool)),
+                this, SLOT(advanceAuthoritativeSetTweenRestore(const QString &, bool)));
+        connect(handler, SIGNAL(setTweenRestoreRequestFinished(const QString &)),
+                this, SLOT(finishAuthoritativeSetTweenRestore(const QString &)));
         connect(handler, SIGNAL(removeRestoreStackAdvanceRequested(const QString &, bool)),
                 this, SLOT(advanceAuthoritativeRemoveRestore(const QString &, bool)));
         connect(handler, SIGNAL(removeRestoreRequestFinished(const QString &)),
@@ -533,6 +538,7 @@ void TupProjectManager::undo()
             || !pendingTransformRestoreCommandId.isEmpty()
             || !pendingRebaseTweenRestoreCommandId.isEmpty()
             || !pendingUpdateTweenPathRestoreCommandId.isEmpty()
+            || !pendingSetTweenRestoreCommandId.isEmpty()
             || !pendingRemoveRestoreCommandId.isEmpty()
             || !pendingGroupRestoreCommandId.isEmpty())) {
         return;
@@ -622,6 +628,16 @@ void TupProjectManager::undo()
                     return;
                 pendingUpdateTweenPathRestoreCommandId.clear();
             }
+        } else if (isNetworked && constCommand && constCommand->isItemSetTween()) {
+            const QString id = constCommand->commandId().trimmed();
+            if (!id.isEmpty()) {
+                pendingSetTweenRestoreCommandId = id;
+                if (QMetaObject::invokeMethod(handler, "requestAuthoritativeSetTweenRestore",
+                        Qt::DirectConnection, Q_ARG(QString, id), Q_ARG(bool, true)))
+                    return;
+                pendingSetTweenRestoreCommandId.clear();
+            }
+            return;
         } else if (isNetworked && constCommand && constCommand->isNativeItemRemove()) {
             const QString commandId = constCommand->commandId().trimmed();
             if (!commandId.isEmpty()) {
@@ -662,6 +678,7 @@ void TupProjectManager::redo()
             || !pendingTransformRestoreCommandId.isEmpty()
             || !pendingRebaseTweenRestoreCommandId.isEmpty()
             || !pendingUpdateTweenPathRestoreCommandId.isEmpty()
+            || !pendingSetTweenRestoreCommandId.isEmpty()
             || !pendingRemoveRestoreCommandId.isEmpty()
             || !pendingGroupRestoreCommandId.isEmpty())) {
         return;
@@ -751,6 +768,16 @@ void TupProjectManager::redo()
                     return;
                 pendingUpdateTweenPathRestoreCommandId.clear();
             }
+        } else if (isNetworked && constCommand && constCommand->isItemSetTween()) {
+            const QString id = constCommand->commandId().trimmed();
+            if (!id.isEmpty()) {
+                pendingSetTweenRestoreCommandId = id;
+                if (QMetaObject::invokeMethod(handler, "requestAuthoritativeSetTweenRestore",
+                        Qt::DirectConnection, Q_ARG(QString, id), Q_ARG(bool, false)))
+                    return;
+                pendingSetTweenRestoreCommandId.clear();
+            }
+            return;
         } else if (isNetworked && constCommand && constCommand->isNativeItemRemove()) {
             const QString commandId = constCommand->commandId().trimmed();
             if (!commandId.isEmpty()) {
@@ -955,6 +982,31 @@ void TupProjectManager::finishAuthoritativeUpdateTweenPathRestore(const QString 
         pendingUpdateTweenPathRestoreCommandId.clear();
 }
 
+void TupProjectManager::advanceAuthoritativeSetTweenRestore(
+    const QString &commandId, bool undoRestore)
+{
+    if (!undoStack || pendingSetTweenRestoreCommandId != commandId.trimmed())
+        return;
+    const int index = undoRestore ? undoStack->index() - 1 : undoStack->index();
+    const TupProjectCommand *entry = index >= 0 && index < undoStack->count()
+        ? dynamic_cast<const TupProjectCommand *>(undoStack->command(index)) : nullptr;
+    if (!entry || !entry->isItemSetTween()
+            || entry->commandId() != pendingSetTweenRestoreCommandId)
+        return;
+    TupProjectCommand *command = const_cast<TupProjectCommand *>(entry);
+    if (undoRestore) command->setRedoBlocked(false);
+    else command->setUndoBlocked(false);
+    command->skipNextStackExecution();
+    if (undoRestore) undoStack->undo();
+    else undoStack->redo();
+}
+
+void TupProjectManager::finishAuthoritativeSetTweenRestore(const QString &commandId)
+{
+    if (pendingSetTweenRestoreCommandId == commandId.trimmed())
+        pendingSetTweenRestoreCommandId.clear();
+}
+
 void TupProjectManager::advanceAuthoritativeRemoveRestore(
     const QString &commandId, bool undoRestore)
 {
@@ -1076,6 +1128,7 @@ void TupProjectManager::clearUndoStack()
     pendingTransformRestoreCommandId.clear();
     pendingRebaseTweenRestoreCommandId.clear();
     pendingUpdateTweenPathRestoreCommandId.clear();
+    pendingSetTweenRestoreCommandId.clear();
     pendingRemoveRestoreCommandId.clear();
     pendingGroupRestoreCommandId.clear();
     undoStack->clear();

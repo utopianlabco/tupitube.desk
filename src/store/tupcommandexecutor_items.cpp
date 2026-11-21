@@ -1337,105 +1337,122 @@ static QString tweenSnapshot(TupItemTweener *tween)
 }
 
 bool TupCommandExecutor::setTween(TupItemResponse *response)
-{    
-    #ifdef TUP_DEBUG
-        qDebug() << "[TupCommandExecutor::setTween()]";
-        SHOW_VAR(response)
-    #endif
+{
+    if (!response || !validateIndices(response->getSceneIndex(),
+                                      response->getLayerIndex(), response->getFrameIndex()))
+        return false;
 
-    int sceneIndex = response->getSceneIndex();
-    int layerIndex = response->getLayerIndex();
-    int frameIndex = response->getFrameIndex();
-    TupLibraryObject::ObjectType itemType = response->getItemType();
+    TupScene *scene = project->sceneAt(response->getSceneIndex());
+    TupLayer *layer = scene ? scene->layerAt(response->getLayerIndex()) : nullptr;
+    TupFrame *frame = layer ? layer->frameAt(response->getFrameIndex()) : nullptr;
+    if (!scene || !frame)
+        return false;
+
+    const bool native = response->getItemType() == TupLibraryObject::Item;
     int itemIndex = response->getItemIndex();
-    QString xml = response->getArg().toString();
-    TupScene *scene = project->sceneAt(sceneIndex);
-    
-    if (scene) {
-        TupLayer *layer = scene->layerAt(layerIndex);
-        if (layer) {
-            TupFrame *frame = layer->frameAt(frameIndex);
-            if (frame) {
-                TupItemTweener *tween = new TupItemTweener();
-                tween->fromXml(xml);
+    TupGraphicObject *object = nullptr;
+    TupSvgItem *svg = nullptr;
+    if (native) {
+        if (!response->getObjectId().trimmed().isEmpty()) {
+            itemIndex = resolveItemIndex(frame, response);
+            if (itemIndex < 0)
+                return false;
+        }
+        object = frame->graphicAt(itemIndex);
+        if (!object)
+            return false;
+    } else {
+        svg = frame->svgAt(itemIndex);
+        if (!svg)
+            return false;
+    }
 
-                const QString tweenId = tween->tweenId().trimmed();
-                if (tweenId.isEmpty()) {
-                    #ifdef TUP_DEBUG
-                        qWarning() << "[TupCommandExecutor::setTween()] - Tween request is missing tween_id";
-                    #endif
-                    delete tween;
-                    return false;
-                }
+    static const QString absent = QStringLiteral("<tween_absent/>");
+    const bool undo = response->getMode() == TupProjectResponse::Undo;
+    const QString requestedXml = undo ? response->getState() : response->getArg().toString();
+    if (requestedXml.trimmed().isEmpty())
+        return false;
 
-                if (TupItemTweener *existingTween = scene->tweenById(tweenId)) {
-                    if (existingTween->getType() != tween->getType()) {
-                        #ifdef TUP_DEBUG
-                            qWarning() << "[TupCommandExecutor::setTween()] - tween_id/type conflict ->"
-                                       << tweenId << existingTween->getType() << tween->getType();
-                        #endif
-                        delete tween;
-                        return false;
-                    }
-                }
+    const bool restoringAbsence = requestedXml == absent;
+    QString targetId;
+    TupItemTweener *replacement = nullptr;
+    if (restoringAbsence) {
+        // Only a previously captured creation can be removed this way.
+        QDomDocument original;
+        const QString originalXml = undo ? response->getArg().toString()
+            : QString::fromUtf8(response->getData());
+        if (!original.setContent(originalXml)
+                || original.documentElement().tagName() != QStringLiteral("tweening"))
+            return false;
+        targetId = original.documentElement().attribute(QStringLiteral("tween_id")).trimmed();
+    } else {
+        QDomDocument targetDocument;
+        if (!targetDocument.setContent(requestedXml)
+                || targetDocument.documentElement().tagName() != QStringLiteral("tweening"))
+            return false;
+        replacement = new TupItemTweener();
+        replacement->fromXml(requestedXml);
+        targetId = replacement->tweenId().trimmed();
+    }
+    if (targetId.isEmpty()) {
+        delete replacement;
+        return false;
+    }
 
-                if (itemType == TupLibraryObject::Item) {
-                    const QString objectId = response->getObjectId().trimmed();
-                    if (!objectId.isEmpty()) {
-                        itemIndex = resolveItemIndex(frame, response);
-                        if (itemIndex < 0) {
-                            delete tween;
-                            return false;
-                        }
-                    } else {
-                        // Legacy compatibility is required until tween-start
-                        // relocation becomes one atomic object-id-preserving
-                        // domain operation. The existing relocation path still
-                        // emits Add -> Remove -> SetTween and cannot safely
-                        // reuse an object_id across those committed revisions.
-                        #ifdef TUP_DEBUG
-                            qWarning() << "[TupCommandExecutor::setTween()] - "
-                                          "Native tween request has no object_id; "
-                                          "using legacy positional lookup ->"
-                                       << itemIndex;
-                        #endif
-                    }
-
-                    tween->setZLevel(itemIndex);
-                    TupGraphicObject *object = frame->graphicAt(itemIndex);
-                    if (object) {
-                        object->addTween(tween);
-                        scene->addTweenObject(layerIndex, object);
-                    } else {
-                        #ifdef TUP_DEBUG
-                            qDebug() << "[TupCommandExecutor::setTween()] - Error: Invalid graphic index -> "
-                                     << itemIndex;
-                        #endif
-                        delete tween;
-                        return false;
-                    }
-                } else {
-                    tween->setZLevel(itemIndex);
-                    TupSvgItem *svg = frame->svgAt(itemIndex); 
-                    if (svg) {
-                        svg->addTween(tween);
-                        scene->addTweenObject(layerIndex, svg);
-                    } else {
-                        #ifdef TUP_DEBUG
-                            qDebug() << "[TupCommandExecutor::setTween()] - Error: Invalid svg index -> "
-                                     << itemIndex;
-                        #endif
-                        return false;
-                    }
-                }
-
-                emit responsed(response);
-                return true;
-            }
+    const QList<TupItemTweener *> existing = native ? object->tweensList() : svg->tweensList();
+    int previousIndex = -1;
+    for (int i = 0; i < existing.size(); ++i) {
+        if (existing.at(i) && (existing.at(i)->tweenId() == targetId
+                || (!restoringAbsence && existing.at(i)->getType() == replacement->getType()))) {
+            previousIndex = i;
+            break;
         }
     }
-    
-    return false;
+
+    if (response->getMode() == TupProjectResponse::Do) {
+        // Capture before overwriting; this survives the optimistic client
+        // execution and the authoritative server's rollback path.
+        const QString previousSnapshot = previousIndex < 0
+            ? absent : tweenSnapshot(existing.at(previousIndex));
+        if (previousSnapshot.trimmed().isEmpty()) {
+            delete replacement;
+            return false;
+        }
+        response->setState(previousSnapshot);
+    }
+
+    if (restoringAbsence) {
+        if (previousIndex < 0 || existing.at(previousIndex)->tweenId() != targetId)
+            return false;
+        if (native) {
+            object->removeTween(previousIndex);
+            if (object->tweensList().isEmpty())
+                scene->removeTweenObject(response->getLayerIndex(), object);
+        } else {
+            svg->removeTween(previousIndex);
+            if (svg->tweensList().isEmpty())
+                scene->removeTweenObject(response->getLayerIndex(), svg);
+        }
+    } else {
+        if (TupItemTweener *sceneTween = scene->tweenById(targetId)) {
+            if (sceneTween->getType() != replacement->getType()
+                    || previousIndex < 0 || sceneTween != existing.at(previousIndex)) {
+                delete replacement;
+                return false;
+            }
+        }
+        replacement->setZLevel(itemIndex);
+        if (native) {
+            object->addTween(replacement);
+            scene->addTweenObject(response->getLayerIndex(), object);
+        } else {
+            svg->addTween(replacement);
+            scene->addTweenObject(response->getLayerIndex(), svg);
+        }
+    }
+
+    emit responsed(response);
+    return true;
 }
 
 

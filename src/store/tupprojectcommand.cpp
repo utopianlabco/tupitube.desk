@@ -419,6 +419,16 @@ bool TupProjectCommand::isItemUpdateTweenPath() const
         && !itemResponse->getObjectId().trimmed().isEmpty();
 }
 
+bool TupProjectCommand::isItemSetTween() const
+{
+    if (!response || response->getPart() != TupProjectRequest::Item
+            || response->originalAction() != TupProjectRequest::SetTween)
+        return false;
+    const TupItemResponse *item = static_cast<const TupItemResponse *>(response);
+    return item->getItemType() == TupLibraryObject::Item
+        && !item->getObjectId().trimmed().isEmpty();
+}
+
 bool TupProjectCommand::isSelectionCommand() const
 {
     return response
@@ -552,6 +562,28 @@ QString TupProjectCommand::authoritativeEventPayload() const
             itemResponse->getObjectId());
 
         return request.getXml();
+    }
+
+    if (response->originalAction() == TupProjectRequest::SetTween) {
+        const QString sourceSnapshot = itemResponse->getState();
+        if (sourceSnapshot.trimmed().isEmpty())
+            return QString();
+        const TupProjectRequest request = TupRequestBuilder::createItemRequest(
+            itemResponse->getSceneIndex(), itemResponse->getLayerIndex(),
+            itemResponse->getFrameIndex(), itemResponse->getItemIndex(),
+            itemResponse->position(), itemResponse->spaceMode(),
+            itemResponse->getItemType(), TupProjectRequest::SetTween,
+            itemResponse->getArg().toString(), itemResponse->getData(),
+            response->getCommandId(), QString(), itemResponse->getObjectId());
+        QDomDocument document;
+        if (!document.setContent(request.getXml()))
+            return QString();
+        QDomElement state = document.createElement(QStringLiteral("tween_set_source"));
+        state.setAttribute(QStringLiteral("encoding"), QStringLiteral("base64"));
+        state.appendChild(document.createTextNode(QString::fromLatin1(
+            sourceSnapshot.toUtf8().toBase64())));
+        document.documentElement().appendChild(state);
+        return document.toString(0);
     }
 
     if (response->originalAction() == TupProjectRequest::Transform) {

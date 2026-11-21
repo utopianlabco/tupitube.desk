@@ -136,6 +136,8 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void convertRestoreRequestFinished(const QString &commandId);
         void editNodesRestoreStackAdvanceRequested(const QString &commandId, bool undoRestore);
         void editNodesRestoreRequestFinished(const QString &commandId);
+        void setTweenRestoreStackAdvanceRequested(const QString &commandId, bool undoRestore);
+        void setTweenRestoreRequestFinished(const QString &commandId);
         void transformRestoreStackAdvanceRequested(const QString &commandId, bool undoRestore);
         void transformRestoreRequestFinished(const QString &commandId);
         void applyMotionTweenRestoreStackAdvanceRequested(const QString &commandId, bool undoRestore);
@@ -154,6 +156,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
     public slots:
         void requestAuthoritativeConvertRestore(const QString &commandId, bool undoRestore);
         void requestAuthoritativeEditNodesRestore(const QString &commandId, bool undoRestore);
+        void requestAuthoritativeSetTweenRestore(const QString &commandId, bool undoRestore);
         void requestAuthoritativeTransformRestore(const QString &commandId, bool undoRestore);
         void requestAuthoritativeApplyMotionTweenRestore(const QString &commandId, bool undoRestore);
         void requestAuthoritativeRebaseTweenRestore(const QString &commandId, bool undoRestore);
@@ -278,6 +281,18 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
             QString objectId;
         };
 
+        struct SetTweenRestoreContext
+        {
+            int sceneIndex = -1;
+            int layerIndex = -1;
+            int frameIndex = -1;
+            int itemIndex = -1;
+            QPointF position;
+            int spaceMode = 0;
+            int itemType = 0;
+            QString objectId;
+        };
+
         struct TransformRestoreContext
         {
             int sceneIndex = -1; int layerIndex = -1; int frameIndex = -1; int itemIndex = -1;
@@ -348,6 +363,9 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         bool reconcileRejectedOptimisticGroup(const QString &commandId);
         bool reconcileRejectedOptimisticUngroup(
             const QString &commandId);
+        bool applyAuthoritativeSetTweenResult(
+            const QString &commandId,
+            const QString &authoritativePayload);
         bool applyAuthoritativeEditNodesResult(
             const QString &commandId,
             const QString &authoritativePayload);
@@ -433,6 +451,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         QHash<QString, GroupRestoreContext> groupRestoreContexts;
         QHash<QString, PendingGroupRestoreRequest> pendingGroupRestoreRequests;
         QHash<QString, EditNodesRestoreContext> editNodesRestoreContexts;
+        QHash<QString, SetTweenRestoreContext> setTweenRestoreContexts;
         QHash<QString, TransformRestoreContext> transformRestoreContexts;
         QHash<QString, ApplyMotionTweenRestoreContext> applyMotionTweenRestoreContexts;
         QHash<QString, RebaseTweenRestoreContext> rebaseTweenRestoreContexts;

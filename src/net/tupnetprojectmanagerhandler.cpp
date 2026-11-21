@@ -133,6 +133,22 @@ namespace {
         return -1;
     }
 
+    int setTweenRestoreModeFromRequestXml(const QString &xml)
+    {
+        TupRequestParser parser;
+        if (!parser.parse(xml)) return -1;
+        TupProjectResponse *response = parser.getResponse();
+        if (!response || response->getPart() != TupProjectRequest::Item
+                || response->originalAction() != TupProjectRequest::SetTween)
+            return -1;
+        const QString arg = response->getArg().toString().trimmed();
+        if (arg.startsWith(QStringLiteral("restore_source:")))
+            return static_cast<int>(TupProjectResponse::Undo);
+        if (arg.startsWith(QStringLiteral("restore_target:")))
+            return static_cast<int>(TupProjectResponse::Redo);
+        return -1;
+    }
+
     int editNodesRestoreModeFromRequestXml(const QString &xml)
     {
         if (xml.trimmed().isEmpty())
@@ -285,6 +301,21 @@ QString convertRestoreOriginalCommandIdFromRequestXml(const QString &xml)
     if (argument.startsWith(targetPrefix))
         return argument.mid(targetPrefix.size()).trimmed();
 
+    return QString();
+}
+
+QString setTweenRestoreOriginalCommandIdFromRequestXml(const QString &xml)
+{
+    TupRequestParser parser;
+    if (!parser.parse(xml)) return QString();
+    TupProjectResponse *response = parser.getResponse();
+    if (!response || response->getPart() != TupProjectRequest::Item
+            || response->originalAction() != TupProjectRequest::SetTween)
+        return QString();
+    const QString arg = response->getArg().toString().trimmed();
+    if (arg.startsWith(QStringLiteral("restore_source:"))
+            || arg.startsWith(QStringLiteral("restore_target:")))
+        return arg.mid(15).trimmed();
     return QString();
 }
 
@@ -727,6 +758,32 @@ void TupNetProjectManagerHandler::requestAuthoritativeEditNodesRestore(
     socket->send(request.getXml());
 }
 
+void TupNetProjectManagerHandler::requestAuthoritativeSetTweenRestore(
+    const QString &commandId, bool undoRestore)
+{
+    const QString id = commandId.trimmed();
+    if (id.isEmpty() || !setTweenRestoreContexts.contains(id) || !socket
+            || socket->state() != QAbstractSocket::ConnectedState) {
+        emit setTweenRestoreRequestFinished(id);
+        return;
+    }
+    const SetTweenRestoreContext context = setTweenRestoreContexts.value(id);
+    const QString prefix = undoRestore ? QStringLiteral("restore_source:")
+                                       : QStringLiteral("restore_target:");
+    TupProjectRequest request = TupRequestBuilder::createItemRequest(
+        context.sceneIndex, context.layerIndex, context.frameIndex,
+        context.itemIndex, context.position,
+        static_cast<TupProject::Mode>(context.spaceMode),
+        static_cast<TupLibraryObject::ObjectType>(context.itemType),
+        TupProjectRequest::SetTween, prefix + id, QByteArray(),
+        QString(), QString(), context.objectId);
+    if (!request.isValid() || !prepareCollaborativeCommand(&request)) {
+        emit setTweenRestoreRequestFinished(id);
+        return;
+    }
+    socket->send(request.getXml());
+}
+
 void TupNetProjectManagerHandler::requestAuthoritativeTransformRestore(const QString &commandId, bool undoRestore)
 {
     const QString id = commandId.trimmed();
@@ -1097,6 +1154,26 @@ bool TupNetProjectManagerHandler::commandExecuted(TupProjectResponse *response)
                 context.itemType = static_cast<int>(itemResponse->getItemType());
                 context.objectId = itemResponse->getObjectId().trimmed();
                 editNodesRestoreContexts.insert(commandId, context);
+            }
+        }
+
+        if (response->getPart() == TupProjectRequest::Item
+                && response->originalAction() == TupProjectRequest::SetTween
+                && !response->external()) {
+            TupItemResponse *item = static_cast<TupItemResponse *>(response);
+            const QString id = item->getCommandId().trimmed();
+            if (!id.isEmpty() && item->getItemType() == TupLibraryObject::Item
+                    && !item->getObjectId().trimmed().isEmpty()) {
+                SetTweenRestoreContext context;
+                context.sceneIndex = item->getSceneIndex();
+                context.layerIndex = item->getLayerIndex();
+                context.frameIndex = item->getFrameIndex();
+                context.itemIndex = item->getItemIndex();
+                context.position = item->position();
+                context.spaceMode = static_cast<int>(item->spaceMode());
+                context.itemType = static_cast<int>(item->getItemType());
+                context.objectId = item->getObjectId().trimmed();
+                setTweenRestoreContexts.insert(id, context);
             }
         }
 
@@ -1921,6 +1998,11 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
             editNodesRestoreOriginalCommandIdFromRequestXml(pendingCommandXml);
         const bool isPendingEditNodesRestore = pendingEditNodesRestoreMode >= 0
             && !pendingEditNodesRestoreOriginalCommandId.isEmpty();
+        const int pendingSetTweenRestoreMode = setTweenRestoreModeFromRequestXml(pendingCommandXml);
+        const QString pendingSetTweenRestoreOriginalCommandId =
+            setTweenRestoreOriginalCommandIdFromRequestXml(pendingCommandXml);
+        const bool isPendingSetTweenRestore = pendingSetTweenRestoreMode >= 0
+            && !pendingSetTweenRestoreOriginalCommandId.isEmpty();
         const int pendingTransformRestoreMode = transformRestoreModeFromRequestXml(pendingCommandXml);
         const QString pendingTransformRestoreOriginalCommandId =
             transformRestoreOriginalCommandIdFromRequestXml(pendingCommandXml);
@@ -1965,6 +2047,7 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
 
                 bool convertAuthoritativeApplied = !isPendingConvertRestore;
                 bool editNodesAuthoritativeApplied = !isPendingEditNodesRestore;
+                bool setTweenAuthoritativeApplied = !isPendingSetTweenRestore;
                 bool transformAuthoritativeApplied = !isPendingTransformRestore;
                 bool applyMotionTweenAuthoritativeApplied = !isPendingApplyMotionTweenRestore;
                 bool rebaseTweenAuthoritativeApplied = !isPendingRebaseTweenRestore;
@@ -2029,6 +2112,13 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                                 << "Unable to apply authoritative EditNodes result."
                                 << "Command:" << parser.commandId();
                         }
+                    } else if (isPendingSetTweenRestore
+                            && parser.eventType() == QStringLiteral("item.tween-updated")) {
+                        setTweenAuthoritativeApplied = applyAuthoritativeSetTweenResult(
+                            parser.commandId(), parser.authoritativePayload());
+                        if (!setTweenAuthoritativeApplied)
+                            qWarning() << "Unable to apply authoritative SetTween restore:"
+                                       << parser.commandId();
                     } else if (isPendingTransformRestore
                             && parser.eventType() == QStringLiteral("item.transformed")) {
                         transformAuthoritativeApplied = applyAuthoritativeTransformResult(
@@ -2086,6 +2176,11 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                         pendingEditNodesRestoreMode == static_cast<int>(TupProjectResponse::Undo));
                 }
 
+                if (isPendingSetTweenRestore && setTweenAuthoritativeApplied) {
+                    emit setTweenRestoreStackAdvanceRequested(
+                        pendingSetTweenRestoreOriginalCommandId,
+                        pendingSetTweenRestoreMode == static_cast<int>(TupProjectResponse::Undo));
+                }
                 if (isPendingTransformRestore && transformAuthoritativeApplied) {
                     emit transformRestoreStackAdvanceRequested(
                         pendingTransformRestoreOriginalCommandId,
@@ -2266,6 +2361,12 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
                         pendingEditNodesRestoreMode == static_cast<int>(TupProjectResponse::Undo));
                 }
 
+                if (isPendingSetTweenRestore
+                        && parser.errorCode() == QStringLiteral("set_tween_restore_conflict")) {
+                    emit authoritativeRestoreConflict(
+                        pendingSetTweenRestoreOriginalCommandId,
+                        pendingSetTweenRestoreMode == static_cast<int>(TupProjectResponse::Undo));
+                }
                 if (isPendingTransformRestore
                         && parser.errorCode() == QStringLiteral("transform_restore_conflict")) {
                     emit authoritativeRestoreConflict(
@@ -2387,6 +2488,8 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
             emit convertRestoreRequestFinished(pendingRestoreOriginalCommandId);
         if (isPendingEditNodesRestore)
             emit editNodesRestoreRequestFinished(pendingEditNodesRestoreOriginalCommandId);
+        if (isPendingSetTweenRestore)
+            emit setTweenRestoreRequestFinished(pendingSetTweenRestoreOriginalCommandId);
         if (isPendingTransformRestore)
             emit transformRestoreRequestFinished(pendingTransformRestoreOriginalCommandId);
         if (isPendingApplyMotionTweenRestore)
@@ -2632,6 +2735,11 @@ void TupNetProjectManagerHandler::handleProjectEvent(const QString &package)
             updateTweenPathRestoreOriginalCommandIdFromRequestXml(pendingCommandXml);
         const bool isPendingUpdateTweenPathRestore = pendingUpdateTweenPathRestoreMode >= 0
             && !pendingUpdateTweenPathRestoreOriginalCommandId.isEmpty();
+        const int pendingSetTweenRestoreMode = setTweenRestoreModeFromRequestXml(pendingCommandXml);
+        const QString pendingSetTweenRestoreOriginalCommandId =
+            setTweenRestoreOriginalCommandIdFromRequestXml(pendingCommandXml);
+        const bool isPendingSetTweenRestore = pendingSetTweenRestoreMode >= 0
+            && !pendingSetTweenRestoreOriginalCommandId.isEmpty();
 
         if (isPendingConvertRestore) {
             if (eventType != QStringLiteral("item.converted")) {
@@ -2658,6 +2766,20 @@ void TupNetProjectManagerHandler::handleProjectEvent(const QString &package)
                 pendingConvertRestoreMode == static_cast<int>(TupProjectResponse::Undo));
             emit convertRestoreRequestFinished(
                 pendingConvertRestoreOriginalCommandId);
+        }
+
+        if (isPendingSetTweenRestore) {
+            if (eventType != QStringLiteral("item.tween-updated")
+                    || !applyAuthoritativeSetTweenResult(causedBy, payloadXml)) {
+                qCritical() << "Unable to reconcile SetTween restore during recovery:"
+                            << causedBy;
+                requestProjectSync(true);
+                return;
+            }
+            emit setTweenRestoreStackAdvanceRequested(
+                pendingSetTweenRestoreOriginalCommandId,
+                pendingSetTweenRestoreMode == static_cast<int>(TupProjectResponse::Undo));
+            emit setTweenRestoreRequestFinished(pendingSetTweenRestoreOriginalCommandId);
         }
 
         if (isPendingUpdateTweenPathRestore) {
@@ -3878,6 +4000,28 @@ void TupNetProjectManagerHandler::updateGroupRestoreContextFromPayload(
         groupRestoreContexts.insert(normalizedCommandId, context);
 }
 
+bool TupNetProjectManagerHandler::applyAuthoritativeSetTweenResult(
+    const QString &commandId, const QString &authoritativePayload)
+{
+    if (commandId.trimmed().isEmpty() || authoritativePayload.trimmed().isEmpty()
+            || !project) return false;
+    TupRequestParser parser;
+    if (!parser.parse(authoritativePayload)) return false;
+    TupProjectResponse *response = parser.getResponse();
+    if (!response || response->getPart() != TupProjectRequest::Item
+            || response->originalAction() != TupProjectRequest::SetTween
+            || response->getCommandId() != commandId) return false;
+    TupItemResponse *item = static_cast<TupItemResponse *>(response);
+    TupFrame *frame = resolveNativeItemFrame(project, item);
+    if (item->getItemType() != TupLibraryObject::Item
+            || item->getObjectId().trimmed().isEmpty()
+            || !frame || !frame->graphicById(item->getObjectId().trimmed())) return false;
+    TupProjectRequest request = TupRequestBuilder::fromResponse(response, true);
+    request.setExternal(true);
+    emitRequest(&request, false);
+    return true;
+}
+
 bool TupNetProjectManagerHandler::applyAuthoritativeEditNodesResult(
     const QString &commandId, const QString &authoritativePayload)
 {
@@ -4181,6 +4325,7 @@ void TupNetProjectManagerHandler::closeConnection()
     groupRestoreContexts.clear();
     pendingGroupRestoreRequests.clear();
     editNodesRestoreContexts.clear();
+    setTweenRestoreContexts.clear();
     transformRestoreContexts.clear();
     updateTweenPathRestoreContexts.clear();
     applyMotionTweenRestoreContexts.clear();

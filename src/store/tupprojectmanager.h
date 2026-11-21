@@ -114,6 +114,8 @@ class TUPITUBE_EXPORT TupProjectManager : public QObject
         void advanceAuthoritativeRebaseTweenRestore(const QString &commandId, bool undoRestore);
         void finishAuthoritativeRebaseTweenRestore(const QString &commandId);
         void advanceAuthoritativeUpdateTweenPathRestore(const QString &commandId, bool undoRestore);
+        void advanceAuthoritativeSetTweenRestore(const QString &commandId, bool undoRestore);
+        void finishAuthoritativeSetTweenRestore(const QString &commandId);
         void finishAuthoritativeUpdateTweenPathRestore(const QString &commandId);
         void advanceAuthoritativeRemoveRestore(const QString &commandId, bool undoRestore);
         void finishAuthoritativeRemoveRestore(const QString &commandId);
@@ -143,6 +145,7 @@ class TUPITUBE_EXPORT TupProjectManager : public QObject
         QString pendingApplyMotionTweenRestoreCommandId;
         QString pendingRebaseTweenRestoreCommandId;
         QString pendingUpdateTweenPathRestoreCommandId;
+        QString pendingSetTweenRestoreCommandId;
         QString pendingRemoveRestoreCommandId;
         QString pendingGroupRestoreCommandId;
 

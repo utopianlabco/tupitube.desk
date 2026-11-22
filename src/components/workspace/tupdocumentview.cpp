@@ -1657,12 +1657,16 @@ void TupDocumentView::closeRasterWindow(const QString &imgPath)
 void TupDocumentView::prepareRecoverySnapshot()
 {
     // Save only stable identity, never pointers into the model being replaced.
-    recoveryEditedRotationTweenId.clear();
-    if (currentTool && currentTool->toolId() == TAction::Rotation) {
+    recoveryEditedTweenId.clear();
+    if (currentTool && (currentTool->toolId() == TAction::Rotation
+                        || currentTool->toolId() == TAction::Scale
+                        || currentTool->toolId() == TAction::Shear
+                        || currentTool->toolId() == TAction::Opacity
+                        || currentTool->toolId() == TAction::Color)) {
         QString tweenId;
         if (QMetaObject::invokeMethod(currentTool, "recoveryEditedTweenId",
                                       Qt::DirectConnection, Q_RETURN_ARG(QString, tweenId)))
-            recoveryEditedRotationTweenId = tweenId;
+            recoveryEditedTweenId = tweenId;
     }
 
     if (currentTool)
@@ -1688,19 +1692,24 @@ void TupDocumentView::completeRecoverySnapshot()
 
     if (currentTool) {
         currentTool->init(scene);
-        if (currentTool->toolId() == TAction::Rotation
-                && !recoveryEditedRotationTweenId.isEmpty()) {
+        if ((currentTool->toolId() == TAction::Rotation
+                || currentTool->toolId() == TAction::Scale
+                || currentTool->toolId() == TAction::Shear
+                || currentTool->toolId() == TAction::Opacity
+                || currentTool->toolId() == TAction::Color)
+                && !recoveryEditedTweenId.isEmpty()) {
             bool restored = false;
             const bool invoked = QMetaObject::invokeMethod(
                     currentTool, "restoreRecoveryEditedTween", Qt::DirectConnection,
-                    Q_RETURN_ARG(bool, restored), Q_ARG(QString, recoveryEditedRotationTweenId));
+                    Q_RETURN_ARG(bool, restored), Q_ARG(QString, recoveryEditedTweenId));
 #ifdef TUP_DEBUG
-            qDebug() << "[TupDocumentView::completeRecoverySnapshot()] Rotation editor restoration:"
-                     << (invoked && restored) << "Tween:" << recoveryEditedRotationTweenId;
+            qDebug() << "[TupDocumentView::completeRecoverySnapshot()] Tween editor restoration:"
+                     << (invoked && restored) << "Tool:" << currentTool->toolId()
+                     << "Tween:" << recoveryEditedTweenId;
 #endif
         }
     }
-    recoveryEditedRotationTweenId.clear();
+    recoveryEditedTweenId.clear();
 
     // P-09 recovery lifecycle: model installed -> tool rebound -> one render.
     paintArea->updatePaintArea();

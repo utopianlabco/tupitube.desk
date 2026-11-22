@@ -933,6 +933,33 @@ void ShearTweener::refreshTweenList()
     setCurrentTween(tweenId);
 }
 
+QString ShearTweener::recoveryEditedTweenId() const
+{
+    if (!configPanel || configPanel->mode() != TupToolPlugin::Edit)
+        return QString();
+
+    const QString tweenId = configPanel->getTweenIdFromList().trimmed();
+    TupScene *sceneData = scene ? scene->currentScene() : nullptr;
+    TupItemTweener *tween = sceneData && !tweenId.isEmpty()
+            ? sceneData->tweenById(tweenId) : nullptr;
+    if (!tween || tween->getType() != TupItemTweener::Shear)
+        return QString();
+
+    return tweenId;
+}
+
+bool ShearTweener::restoreRecoveryEditedTween(const QString &tweenId)
+{
+    TupScene *sceneData = scene ? scene->currentScene() : nullptr;
+    TupItemTweener *tween = sceneData && !tweenId.trimmed().isEmpty()
+            ? sceneData->tweenById(tweenId) : nullptr;
+    if (!configPanel || !tween || tween->getType() != TupItemTweener::Shear)
+        return false;
+
+    refreshAuthoritativeTween(tweenId);
+    return true;
+}
+
 void ShearTweener::refreshAuthoritativeTween(const QString &tweenId)
 {
     TupScene *sceneData = scene ? scene->currentScene() : nullptr;

@@ -78,6 +78,9 @@ class TUPITUBE_PLUGIN OpacityTweener : public TupToolPlugin
         virtual void frameResponse(const TupFrameResponse *event);
         virtual void itemResponse(const TupItemResponse *event);
 
+        Q_INVOKABLE QString recoveryEditedTweenId() const;
+        Q_INVOKABLE bool restoreRecoveryEditedTween(const QString &tweenId);
+
     signals:
         void tweenRemoved();
         void rebasedFrameFollowRequested(int frameIndex, int layerIndex, int sceneIndex);

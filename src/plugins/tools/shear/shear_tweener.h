@@ -88,6 +88,9 @@ class TUPITUBE_PLUGIN ShearTweener : public TupToolPlugin
         void resizeNode(qreal scaleFactor);
         void updateZoomFactor(qreal scaleFactor);
 
+        Q_INVOKABLE QString recoveryEditedTweenId() const;
+        Q_INVOKABLE bool restoreRecoveryEditedTween(const QString &tweenId);
+
     signals:
         void tweenRemoved();
         void rebasedFrameFollowRequested(int frameIndex, int layerIndex, int sceneIndex);

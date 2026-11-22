@@ -734,6 +734,33 @@ void OpacityTweener::refreshTweenList()
     setCurrentTween(tweenId);
 }
 
+QString OpacityTweener::recoveryEditedTweenId() const
+{
+    if (!configPanel || configPanel->mode() != TupToolPlugin::Edit)
+        return QString();
+
+    const QString tweenId = configPanel->getTweenIdFromList().trimmed();
+    TupScene *sceneData = scene ? scene->currentScene() : nullptr;
+    TupItemTweener *tween = sceneData && !tweenId.isEmpty()
+            ? sceneData->tweenById(tweenId) : nullptr;
+    if (!tween || tween->getType() != TupItemTweener::Opacity)
+        return QString();
+
+    return tweenId;
+}
+
+bool OpacityTweener::restoreRecoveryEditedTween(const QString &tweenId)
+{
+    TupScene *sceneData = scene ? scene->currentScene() : nullptr;
+    TupItemTweener *tween = sceneData && !tweenId.trimmed().isEmpty()
+            ? sceneData->tweenById(tweenId) : nullptr;
+    if (!configPanel || !tween || tween->getType() != TupItemTweener::Opacity)
+        return false;
+
+    refreshAuthoritativeTween(tweenId);
+    return true;
+}
+
 void OpacityTweener::refreshAuthoritativeTween(const QString &tweenId)
 {
     TupScene *sceneData = scene ? scene->currentScene() : nullptr;

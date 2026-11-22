@@ -810,6 +810,33 @@ void ColoringTweener::refreshTweenList()
     setCurrentTween(tweenId);
 }
 
+QString ColoringTweener::recoveryEditedTweenId() const
+{
+    if (!configPanel || configPanel->mode() != TupToolPlugin::Edit)
+        return QString();
+
+    const QString tweenId = configPanel->getTweenIdFromList().trimmed();
+    TupScene *sceneData = scene ? scene->currentScene() : nullptr;
+    TupItemTweener *tween = sceneData && !tweenId.isEmpty()
+            ? sceneData->tweenById(tweenId) : nullptr;
+    if (!tween || tween->getType() != TupItemTweener::Coloring)
+        return QString();
+
+    return tweenId;
+}
+
+bool ColoringTweener::restoreRecoveryEditedTween(const QString &tweenId)
+{
+    TupScene *sceneData = scene ? scene->currentScene() : nullptr;
+    TupItemTweener *tween = sceneData && !tweenId.trimmed().isEmpty()
+            ? sceneData->tweenById(tweenId) : nullptr;
+    if (!configPanel || !tween || tween->getType() != TupItemTweener::Coloring)
+        return false;
+
+    refreshAuthoritativeTween(tweenId);
+    return true;
+}
+
 void ColoringTweener::refreshAuthoritativeTween(const QString &tweenId)
 {
     TupScene *sceneData = scene ? scene->currentScene() : nullptr;

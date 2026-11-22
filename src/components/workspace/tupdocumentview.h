@@ -308,6 +308,7 @@ class Q_DECL_EXPORT TupDocumentView: public QMainWindow
         TActionManager *actionManager;
         TupConfigurationArea *configurationArea;
         TupToolPlugin *currentTool;
+        QString recoveryEditedRotationTweenId;
         TupPaintAreaStatus *status;
         QComboBox *spaceModeCombo;
         QString zoomFactor;

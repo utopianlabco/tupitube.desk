@@ -64,6 +64,8 @@ class TUPITUBE_PLUGIN RotationTweener : public TupToolPlugin
         virtual ~RotationTweener();
 
         virtual void init(TupGraphicsScene *scene);
+        Q_INVOKABLE QString recoveryEditedTweenId() const;
+        Q_INVOKABLE bool restoreRecoveryEditedTween(const QString &tweenId);
 
         virtual QList<TAction::ActionId> keys() const;
         virtual void press(const TupInputDeviceInformation *input, TupBrushManager *brushManager, TupGraphicsScene *scene);

@@ -104,6 +104,33 @@ void RotationTweener::init(TupGraphicsScene *gScene)
     configPanel->initStartCombo(total, initFrame);
 }
 
+QString RotationTweener::recoveryEditedTweenId() const
+{
+    if (!configPanel || configPanel->mode() != TupToolPlugin::Edit
+            || editMode != TupToolPlugin::Properties)
+        return QString();
+
+    return configPanel->getTweenIdFromList().trimmed();
+}
+
+bool RotationTweener::restoreRecoveryEditedTween(const QString &tweenId)
+{
+    if (!scene || !scene->currentScene() || !configPanel || tweenId.isEmpty())
+        return false;
+
+    TupItemTweener *tween = scene->currentScene()->tweenById(tweenId);
+    if (!tween || tween->getType() != TupItemTweener::Rotation)
+        return false;
+
+    if (scene->currentScene()->getItemsFromTweenId(tweenId).isEmpty())
+        return false;
+
+    // Resolve the freshly reconstructed tween and graphics items by identity.
+    // refreshRebasedTween also restores the Properties form and editing target.
+    refreshRebasedTween(tweenId);
+    return true;
+}
+
 void RotationTweener::updateStartPoint(int index)
 {
      if (initFrame != index && index >= 0)

@@ -63,6 +63,7 @@
 #include "tupprojectsizedialog.h"
 
 #include <QDir>
+#include <QMetaObject>
 #include <QApplication>
 #include <QToolBar>
 #include <QPixmap>
@@ -1655,7 +1656,14 @@ void TupDocumentView::closeRasterWindow(const QString &imgPath)
 
 void TupDocumentView::prepareRecoverySnapshot()
 {
-    
+    // Save only stable identity, never pointers into the model being replaced.
+    recoveryEditedRotationTweenId.clear();
+    if (currentTool && currentTool->toolId() == TAction::Rotation) {
+        QString tweenId;
+        if (QMetaObject::invokeMethod(currentTool, "recoveryEditedTweenId",
+                                      Qt::DirectConnection, Q_RETURN_ARG(QString, tweenId)))
+            recoveryEditedRotationTweenId = tweenId;
+    }
 
     if (currentTool)
         currentTool->aboutToChangeTool();
@@ -1678,8 +1686,21 @@ void TupDocumentView::completeRecoverySnapshot()
     if (!scene || !scene->currentScene())
         return;
 
-    if (currentTool)
+    if (currentTool) {
         currentTool->init(scene);
+        if (currentTool->toolId() == TAction::Rotation
+                && !recoveryEditedRotationTweenId.isEmpty()) {
+            bool restored = false;
+            const bool invoked = QMetaObject::invokeMethod(
+                    currentTool, "restoreRecoveryEditedTween", Qt::DirectConnection,
+                    Q_RETURN_ARG(bool, restored), Q_ARG(QString, recoveryEditedRotationTweenId));
+#ifdef TUP_DEBUG
+            qDebug() << "[TupDocumentView::completeRecoverySnapshot()] Rotation editor restoration:"
+                     << (invoked && restored) << "Tween:" << recoveryEditedRotationTweenId;
+#endif
+        }
+    }
+    recoveryEditedRotationTweenId.clear();
 
     // P-09 recovery lifecycle: model installed -> tool rebound -> one render.
     paintArea->updatePaintArea();

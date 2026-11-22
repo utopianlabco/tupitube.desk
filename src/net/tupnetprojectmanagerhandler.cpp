@@ -2363,9 +2363,23 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
 
                 if (isPendingSetTweenRestore
                         && parser.errorCode() == QStringLiteral("set_tween_restore_conflict")) {
+                    const bool undoRestore =
+                        pendingSetTweenRestoreMode == static_cast<int>(TupProjectResponse::Undo);
                     emit authoritativeRestoreConflict(
-                        pendingSetTweenRestoreOriginalCommandId,
-                        pendingSetTweenRestoreMode == static_cast<int>(TupProjectResponse::Undo));
+                        pendingSetTweenRestoreOriginalCommandId, undoRestore);
+                    // Explain the server-side conflict to the editor. A snapshot
+                    // recovery restores authoritative state, but does not by
+                    // itself tell the user why Undo/Redo had no effect.
+                    TOsd::self()->display(
+                        TOsd::Warning,
+                        undoRestore
+                            ? tr("Undo couldn't be applied. This animation was changed by another collaborator. The latest changes were preserved.")
+                            : tr("Redo couldn't be applied. This animation was changed by another collaborator. The latest changes were preserved."));
+                    qWarning()
+                        << "[TupNetProjectManagerHandler::handlePackage()]"
+                        << "Notified user of rejected SetTween restore."
+                        << "Command:" << parser.commandId()
+                        << "Undo:" << undoRestore;
                 }
                 if (isPendingTransformRestore
                         && parser.errorCode() == QStringLiteral("transform_restore_conflict")) {
@@ -3343,6 +3357,7 @@ void TupNetProjectManagerHandler::connectionLost()
 #endif
     }
 
+    emit collaborationTransportLost();
     scheduleReconnect(reconnectDelayMs);
 }
 

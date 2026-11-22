@@ -236,6 +236,7 @@ class TupMainWindow : public TabbedMainWindow
         void openTupiTubeNetwork();
         void handleCollaborativeAuthenticationFailure();
         void collaborationRecoveryStarted();
+        void collaborationTransportLost();
         void prepareRecoverySnapshot();
         void completeRecoverySnapshotUi();
         void collaborationRecoveryFinished();
@@ -287,6 +288,7 @@ class TupMainWindow : public TabbedMainWindow
         TupCommandCoordinator *commandCoordinator;
         bool isNetworked;
         bool collaborationRecovering;
+        bool collaborationTransportDisconnected = false;
         QPointer<QMessageBox> collaborationRecoveryDialog;
         bool recoverySnapshotConsumersSuspended = false;
         ToolView *m_viewChat;

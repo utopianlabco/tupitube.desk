@@ -121,6 +121,7 @@ class TUPITUBE_EXPORT TupNetProjectManagerHandler : public TupAbstractProjectHan
         void postOperationDone();
         void connectionHasBeenLost(DisconnectReason reason = DisconnectReason::UnknownDisconnectReason);
         void collaborationRecoveryStarted();
+        void collaborationTransportLost();
         void recoverySnapshotAboutToLoad();
         void recoverySnapshotUiReady();
         void collaborationRecoveryFinished();

@@ -1057,6 +1057,8 @@ void TupMainWindow::setupCollaborativeProject(TupProjectManagerParams *params)
                 this, SLOT(unexpectedClose(DisconnectReason)));
         connect(netProjectManager, SIGNAL(collaborationRecoveryStarted()),
                 this, SLOT(collaborationRecoveryStarted()));
+        connect(netProjectManager, SIGNAL(collaborationTransportLost()),
+                this, SLOT(collaborationTransportLost()));
         connect(netProjectManager, SIGNAL(recoverySnapshotAboutToLoad()),
                 this, SLOT(prepareRecoverySnapshot()));
         connect(netProjectManager, SIGNAL(recoverySnapshotUiReady()),
@@ -2167,6 +2169,20 @@ void TupMainWindow::collaborationRecoveryStarted()
     m_actionManager->enable("importAudioFile", false);
     m_actionManager->enable("importVideoFile", false);
 
+    // This callback also runs for an authoritative snapshot sync while the
+    // transport remains connected. Do not describe that as a disconnection.
+    setProjectWindowTitle(appTitle + " - " + projectName + " " + tr("[ synchronizing | collaboration mode ]"));
+}
+
+void TupMainWindow::collaborationTransportLost()
+{
+    // A transport failure may begin a new recovery or interrupt an in-flight
+    // authoritative snapshot synchronization. In either case it is now a
+    // genuine disconnection, and editing must remain suspended.
+    collaborationTransportDisconnected = true;
+    if (!collaborationRecovering)
+        collaborationRecoveryStarted();
+
     setProjectWindowTitle(appTitle + " - " + projectName + " " + tr("[ reconnecting | collaboration mode ]"));
     TOsd::self()->display(TOsd::Warning, tr("Connection lost. Reconnecting... Editing is temporarily disabled."));
 
@@ -2274,6 +2290,8 @@ void TupMainWindow::completeRecoverySnapshotUi()
 void TupMainWindow::collaborationRecoveryFinished()
 {
     collaborationRecovering = false;
+    const bool wasDisconnected = collaborationTransportDisconnected;
+    collaborationTransportDisconnected = false;
 
     if (collaborationRecoveryDialog) {
         collaborationRecoveryDialog->hide();
@@ -2300,12 +2318,14 @@ void TupMainWindow::collaborationRecoveryFinished()
 
     setMenuItemsContext(true);
     setProjectWindowTitle(appTitle + " - " + projectName + " " + tr("[ connected as %1 | collaboration mode ]").arg(netUser));
-    TOsd::self()->display(TOsd::Info, tr("Connection restored. Collaborative editing resumed."));
+    if (wasDisconnected)
+        TOsd::self()->display(TOsd::Info, tr("Connection restored. Collaborative editing resumed."));
 }
 
 void TupMainWindow::unexpectedClose(DisconnectReason reason)
 {
     collaborationRecovering = false;
+    collaborationTransportDisconnected = false;
 
     if (collaborationRecoveryDialog) {
         collaborationRecoveryDialog->hide();

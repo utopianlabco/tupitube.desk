@@ -2402,9 +2402,20 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
 
                 if (isPendingRebaseTweenRestore
                         && parser.errorCode() == QStringLiteral("rebase_tween_restore_conflict")) {
+                    const bool undoRestore =
+                        pendingRebaseTweenRestoreMode == static_cast<int>(TupProjectResponse::Undo);
                     emit authoritativeRestoreConflict(
-                        pendingRebaseTweenRestoreOriginalCommandId,
-                        pendingRebaseTweenRestoreMode == static_cast<int>(TupProjectResponse::Undo));
+                        pendingRebaseTweenRestoreOriginalCommandId, undoRestore);
+                    TOsd::self()->display(
+                        TOsd::Warning,
+                        undoRestore
+                            ? tr("Undo couldn't be applied. This animation was changed by another collaborator. The latest changes were preserved.")
+                            : tr("Redo couldn't be applied. This animation was changed by another collaborator. The latest changes were preserved."));
+                    qWarning()
+                        << "[TupNetProjectManagerHandler::handlePackage()]"
+                        << "Notified user of rejected RebaseTween restore."
+                        << "Command:" << parser.commandId()
+                        << "Undo:" << undoRestore;
                 }
 
                 if (isPendingUpdateTweenPathRestore

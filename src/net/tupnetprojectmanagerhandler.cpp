@@ -1982,6 +1982,30 @@ void TupNetProjectManagerHandler::handlePackage(const QString &root, const QStri
             return;
         }
 
+        // An already completed RebaseTween can receive its committed result
+        // again after a retry or an exact SQA replay. Suppress the duplicate
+        // before dispatching its authoritative snapshot or completing its
+        // tracker entry twice. Still-tracked commands must reach normal
+        // acknowledgement and snapshot-reconciliation handling.
+        if (parser.status() == TupCommandResultParser::Committed
+                && parser.eventType() == QStringLiteral("item.tween-rebased")
+                && commandTracker && !commandTracker->contains(parser.commandId())
+                && parser.committedRevision() > 0
+                && parser.eventIndex() >= 0
+                && (parser.committedRevision() < lastObservedProjectRevision
+                    || (parser.committedRevision() == lastObservedProjectRevision
+                        && parser.eventIndex() <= lastObservedEventIndex))) {
+#ifdef TUP_DEBUG
+            qWarning()
+                << "[TupNetProjectManagerHandler::handlePackage()]"
+                << "Ignoring already acknowledged RebaseTween command_result."
+                << "Command:" << parser.commandId()
+                << "Revision:" << parser.committedRevision()
+                << "Event index:" << parser.eventIndex();
+#endif
+            return;
+        }
+
         QString status;
         bool forceAuthoritativeSnapshotRecovery = false;
         const QString pendingCommandXml = commandTracker

@@ -215,6 +215,9 @@ void RotationConfigurator::editTween()
 
     settingsPanel->notifySelection(true);
     settingsPanel->setParameters(currentTween);
+    // Programmatic radio selection does not emit clicked(int).
+    // Always expand the existing tween properties on the first edit.
+    settingsPanel->showPropertiesForm();
     activePropertiesPanel(true);
 }
 

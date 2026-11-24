@@ -223,13 +223,8 @@ void RotationSettings::setInnerForm()
 
 void RotationSettings::activeInnerForm(bool enable)
 {
-    if (enable && !tabWidget->isVisible()) {
-        propertiesDone = true;
-        tabWidget->show();
-    } else {
-        propertiesDone = false;
-        tabWidget->hide();
-    }
+    propertiesDone = enable;
+    tabWidget->setVisible(enable);
 }
 
 void RotationSettings::setRangeForm()

@@ -293,6 +293,9 @@ void MotionConfigurator::editTween()
 
     settingsPanel->notifySelection(true);
     settingsPanel->setParameters(currentTween);
+    // Programmatic radio selection does not emit clicked(int).
+    // Expand the path editor for an existing tween immediately.
+    settingsPanel->showPropertiesForm();
     activePropertiesPanel(true);
 
     emit setMode(currentMode);

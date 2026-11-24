@@ -224,13 +224,8 @@ void OpacitySettings::setInnerForm()
 
 void OpacitySettings::activeInnerForm(bool enable)
 {
-    if (enable && !innerPanel->isVisible()) {
-        propertiesDone = true;
-        innerPanel->show();
-    } else {
-        propertiesDone = false;
-        innerPanel->hide();
-    }
+    propertiesDone = enable;
+    innerPanel->setVisible(enable);
 }
 
 // Adding new Tween

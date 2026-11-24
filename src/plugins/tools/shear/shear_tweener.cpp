@@ -63,6 +63,7 @@ ShearTweener::ShearTweener(): TupToolPlugin()
     configPanel = nullptr;
     framesTotal = 1;
     target = nullptr;
+    currentTween = nullptr;
 }
 
 ShearTweener::~ShearTweener()
@@ -75,6 +76,8 @@ void ShearTweener::init(TupGraphicsScene *gScene)
 {
     scene = gScene;
     objects.clear();
+    currentTween = nullptr;
+    configPanel->setCurrentTween(nullptr);
 
     if (target) {
         if (target->scene() == scene)

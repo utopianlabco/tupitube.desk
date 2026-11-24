@@ -153,6 +153,11 @@ void MotionSettings::activeInnerForm(bool enable)
         innerPanel->hide();
 }
 
+void MotionSettings::showPropertiesForm()
+{
+    activeInnerForm(true);
+}
+
 // Adding new Tween
 
 void MotionSettings::setParameters(const QString &name, int framesCount, int startFrame)

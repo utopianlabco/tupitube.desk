@@ -41,6 +41,7 @@ ShearConfigurator::ShearConfigurator(QWidget *parent) : QFrame(parent)
 {
     framesCount = 1;
     currentFrame = 0;
+    currentTween = nullptr;
 
     currentMode = TupToolPlugin::View;
     state = ShearConfigurator::Manager;

@@ -63,6 +63,7 @@ class TUPITUBE_PLUGIN MotionSettings : public QWidget
 
         void setParameters(const QString &name, int framesCount, int startFrame);
         void setParameters(TupItemTweener *currentTween);
+        void showPropertiesForm();
         void initStartCombo(int totalFrames, int currentIndex);
         void setStartFrame(int currentIndex);
         int startFrame();

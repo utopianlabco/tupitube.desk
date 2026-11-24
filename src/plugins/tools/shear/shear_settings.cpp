@@ -220,13 +220,8 @@ void ShearSettings::setInnerForm()
 
 void ShearSettings::activeInnerForm(bool enable)
 {
-    if (enable && !innerPanel->isVisible()) {
-        propertiesDone = true;
-        innerPanel->show();
-    } else {
-        propertiesDone = false;
-        innerPanel->hide();
-    }
+    propertiesDone = enable;
+    innerPanel->setVisible(enable);
 }
 
 // Adding new Tween
@@ -269,6 +264,10 @@ void ShearSettings::setParameters(TupItemTweener *currentTween)
     iterationsField->setValue(currentTween->tweenShearIterations());
     loopBox->setChecked(currentTween->tweenShearLoop());
     reverseLoopBox->setChecked(currentTween->tweenShearReverseLoop());
+
+    // Editing an existing tween must expose the properties on the first
+    // selection, even when a programmatic radio-button change emits no click.
+    showPropertiesForm();
 }
 
 void ShearSettings::initStartCombo(int framesCount, int currentIndex)

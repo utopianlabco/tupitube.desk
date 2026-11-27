@@ -49,6 +49,7 @@ ColoringSettings::ColoringSettings(QWidget *parent) : QWidget(parent)
     int iconSize = TResponsiveUI::fitRightPanelIconSize();
     selectionDone = false;
     totalStepsCount = 0;
+    mode = TupToolPlugin::View;
 
     layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
     layout->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
@@ -283,6 +284,12 @@ void ColoringSettings::setParameters(const QString &name, int framesCount, int i
     remove->setToolTip(tr("Cancel Tween"));
 
     initStartCombo(framesCount, initFrame);
+
+    // Default new tweens to a full-range color transition. Existing
+    // tweens restore their own iteration count in setParameters().
+    totalStepsCount = totalSteps();
+    totalLabel->setText(tr("Frames Total") + ": " + QString::number(totalStepsCount));
+    iterationsCombo->setValue(qMax(1, totalStepsCount));
 }
 
 // Editing current Tween
@@ -511,9 +518,14 @@ QString ColoringSettings::tweenToXml(int currentScene, int currentLayer, int cur
     else
        root.setAttribute("colorReverseLoop", "0");
 
-    double redDelta = static_cast<double>(initialRed - endingRed) / static_cast<double>(iterations - 1);
-    double greenDelta = static_cast<double>(initialGreen - endingGreen) / static_cast<double>(iterations - 1);
-    double blueDelta = static_cast<double>(initialBlue - endingBlue)/ static_cast<double>(iterations - 1);
+    // A one-iteration cycle has no intermediate color interpolation.
+    // Keep its delta finite, including when reverse looping is enabled.
+    const double redDelta = iterations > 1
+            ? static_cast<double>(initialRed - endingRed) / (iterations - 1) : 0.0;
+    const double greenDelta = iterations > 1
+            ? static_cast<double>(initialGreen - endingGreen) / (iterations - 1) : 0.0;
+    const double blueDelta = iterations > 1
+            ? static_cast<double>(initialBlue - endingBlue) / (iterations - 1) : 0.0;
 
     double redReference = 0;
     double greenReference = 0;

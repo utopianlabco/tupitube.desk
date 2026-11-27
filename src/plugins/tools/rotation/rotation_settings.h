@@ -66,13 +66,13 @@ class TUPITUBE_PLUGIN RotationSettings : public QWidget
         void setParameters(const QString &name, int framesCount, int startFrame);
         void setParameters(TupItemTweener *currentTween);
         void initStartCombo(int totalFrames, int currentIndex);
+        void updateStartFrameLimit(int totalFrames);
         void setStartFrame(int currentIndex);
         int startFrame();
 
         int totalSteps();
 
         void notifySelection(bool flag);
-        int startComboSize();
         QString currentTweenName() const;
         void setTweenName(const QString &name);
         void focusTweenName();

@@ -71,7 +71,6 @@ class TUPITUBE_PLUGIN ShearSettings : public QWidget
 
         void notifySelection(bool flag);
         int startFrame();
-        int startComboSize();
         QString currentTweenName() const;
         void setTweenName(const QString &name);
         void focusTweenName();

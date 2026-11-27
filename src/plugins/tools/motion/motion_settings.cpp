@@ -46,6 +46,7 @@ MotionSettings::MotionSettings(QWidget *parent) : QWidget(parent)
 {
     int iconSize = TResponsiveUI::fitRightPanelIconSize();
     selectionDone = false;
+    mode = TupToolPlugin::View;
 
     layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
     layout->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
@@ -208,7 +209,9 @@ void MotionSettings::setParameters(TupItemTweener *currentTween)
     input->setText(currentTween->getTweenName());
     initSpinBox->setEnabled(true);
 
-    initStartCombo(currentTween->getFrames(), currentTween->getInitFrame());
+    // Tween duration is not the layer length. Keep the current start valid.
+    initStartCombo(qMax(initSpinBox->maximum(), currentTween->getInitFrame() + 1),
+                   currentTween->getInitFrame());
 
     // Reloading an authoritative tween replaces the entire local step table.
     // loadPath() appends rows and segments, so clear the previous representation.
@@ -225,6 +228,12 @@ void MotionSettings::initStartCombo(int framesCount, int currentIndex)
     initSpinBox->setValue(currentIndex + 1);
 }
 
+void MotionSettings::updateStartFrameLimit(int totalFrames)
+{
+    // Updating available frames must never clamp an existing/pending start.
+    initSpinBox->setMaximum(qMax(totalFrames, initSpinBox->value()));
+}
+
 void MotionSettings::setStartFrame(int currentIndex)
 {
     initSpinBox->setValue(currentIndex + 1);
@@ -233,11 +242,6 @@ void MotionSettings::setStartFrame(int currentIndex)
 int MotionSettings::startFrame()
 {
     return initSpinBox->value() - 1;
-}
-
-int MotionSettings::startComboSize()
-{
-    return initSpinBox->maximum();
 }
 
 void MotionSettings::updateSteps(const QGraphicsPathItem *path)

@@ -91,6 +91,7 @@ class TUPITUBE_PLUGIN ScaleTweener : public TupToolPlugin
         void rebasedFrameFollowRequested(int frameIndex, int layerIndex, int sceneIndex);
 
     private slots:
+        void prepareNewTweenContext();
         void setSelection();
         void setPropertiesMode();
         void updateMode(TupToolPlugin::Mode mode);

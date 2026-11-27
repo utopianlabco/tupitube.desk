@@ -192,6 +192,13 @@ void MotionConfigurator::activeButtonsPanel(bool enable)
         controlPanel->hide();
 }
 
+void MotionConfigurator::updateTimelineContext(int totalFrames, int frameIndex)
+{
+    framesCount = qMax(1, totalFrames);
+    currentFrame = qBound(0, frameIndex, framesCount - 1);
+    settingsPanel->updateStartFrameLimit(framesCount);
+}
+
 void MotionConfigurator::initStartCombo(int frames, int frameIndex)
 {
     framesCount = frames;
@@ -208,11 +215,6 @@ void MotionConfigurator::setStartFrame(int currentIndex)
 int MotionConfigurator::startFrame()
 {
     return settingsPanel->startFrame();
-}
-
-int MotionConfigurator::startComboSize()
-{
-    return settingsPanel->startComboSize();
 }
 
 void MotionConfigurator::updateSteps(const QGraphicsPathItem *path)
@@ -252,6 +254,7 @@ void MotionConfigurator::addTween(const QString &name)
     #endif
 
     emit clickedResetInterface();
+    emit newTweenContextRequested();
 
     currentMode = TupToolPlugin::Add;
     settingsPanel->setParameters(name, framesCount, currentFrame);
@@ -453,7 +456,7 @@ void MotionConfigurator::refreshCurrentTweenProperties(int totalFrames)
     activeTweenManagerPanel(false);
     settingsPanel->notifySelection(true);
     settingsPanel->setParameters(currentTween);
-    settingsPanel->initStartCombo(framesCount, currentFrame);
+    settingsPanel->updateStartFrameLimit(framesCount);
     activePropertiesPanel(true);
 }
 

@@ -70,7 +70,6 @@ class TUPITUBE_PLUGIN ScaleSettings : public QWidget
         int totalSteps();
 
         void notifySelection(bool flag);
-        int startComboSize();
         QString currentTweenName() const;
         void setTweenName(const QString &name);
         void focusTweenName();

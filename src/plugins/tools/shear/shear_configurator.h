@@ -65,6 +65,7 @@ class TUPITUBE_PLUGIN ShearConfigurator : public QFrame
 
         void loadTweenList(const QList<QPair<QString, QString>> &tweenList);
 
+        void updateTimelineContext(int totalFrames, int frameIndex);
         void initStartCombo(int framesCount, int currentFrame);
         void setStartFrame(int currentIndex);
 
@@ -77,7 +78,6 @@ class TUPITUBE_PLUGIN ShearConfigurator : public QFrame
         QString getTweenIdFromList() const;
         void notifySelection(bool flag);
         int startFrame();
-        int startComboSize();
         void closeSettingsPanel();
         TupToolPlugin::Mode mode();
         void resetUI();
@@ -97,6 +97,7 @@ class TUPITUBE_PLUGIN ShearConfigurator : public QFrame
         void updateTweenData(const QString &tweenId);
         
     signals:
+        void newTweenContextRequested();
         void initFrameChanged(int index);
         void clickedSelect();
         void clickedDefineProperties();

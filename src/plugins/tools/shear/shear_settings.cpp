@@ -43,6 +43,7 @@ ShearSettings::ShearSettings(QWidget *parent) : QWidget(parent)
     shearAxes = TupItemTweener::XY;
     selectionDone = false;
     stepsCounter = 0;
+    mode = TupToolPlugin::View;
 
     layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
     layout->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
@@ -237,6 +238,11 @@ void ShearSettings::setParameters(const QString &name, int framesCount, int init
     remove->setToolTip(tr("Cancel Tween"));
 
     initStartCombo(framesCount, initFrame);
+
+    // Initialize Iterations exactly once, from the actual inclusive range.
+    stepsCounter = totalSteps();
+    totalLabel->setText(tr("Frames Total") + ": " + QString::number(stepsCounter));
+    iterationsField->setValue(qMax(1, stepsCounter));
 }
 
 // Editing new Tween
@@ -285,8 +291,6 @@ void ShearSettings::initStartCombo(int framesCount, int currentIndex)
     endFrameSpin->setMinimum(1);
     endFrameSpin->setMaximum(999);
     endFrameSpin->setValue(framesCount);
-
-    iterationsField->setValue(framesCount);
 }
 
 void ShearSettings::setStartFrame(int currentIndex)
@@ -300,11 +304,6 @@ void ShearSettings::setStartFrame(int currentIndex)
 int ShearSettings::startFrame()
 {
     return initFrameSpin->value() - 1;
-}
-
-int ShearSettings::startComboSize()
-{
-    return initFrameSpin->maximum();
 }
 
 int ShearSettings::totalSteps()
@@ -451,7 +450,11 @@ QString ShearSettings::tweenToXml(int currentScene, int currentLayer, int curren
     int reverseTop = (iterations*2)-2;
 
     for (int i=0; i < stepsCounter; i++) {
-         if (cycle <= iterations) {
+         if (iterations == 1) {
+             // A one-step cycle has no shear increment to reverse.
+             shearX = 0.0;
+             shearY = 0.0;
+         } else if (cycle <= iterations) {
              if (cycle == 1) {
                  shearX = 0;
                  shearY = 0;
@@ -524,10 +527,6 @@ void ShearSettings::checkFramesRange()
 
     stepsCounter = end - begin + 1;
     totalLabel->setText(tr("Frames Total") + ": " + QString::number(stepsCounter));
-
-    int iterations = iterationsField->value();
-    if (iterations > stepsCounter)
-        iterationsField->setValue(stepsCounter);
 }
 
 void ShearSettings::updateLoopCheckbox(int state)

@@ -75,7 +75,6 @@ class TUPITUBE_PLUGIN OpacitySettings : public QWidget
         void activateMode(TupToolPlugin::EditMode mode);
         void showPropertiesForm();
         void notifySelection(bool flag);
-        int startComboSize();
         QString tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId);
 
     private slots:

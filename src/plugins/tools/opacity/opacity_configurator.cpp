@@ -153,6 +153,12 @@ void OpacityConfigurator::activeButtonsPanel(bool enable)
         controlPanel->hide();
 }
 
+void OpacityConfigurator::updateTimelineContext(int totalFrames, int frameIndex)
+{
+    framesCount = qMax(1, totalFrames);
+    currentFrame = qBound(0, frameIndex, framesCount - 1);
+}
+
 void OpacityConfigurator::initStartCombo(int frames, int frameIndex)
 {
     framesCount = frames;
@@ -169,11 +175,6 @@ void OpacityConfigurator::setStartFrame(int currentIndex)
 int OpacityConfigurator::startFrame()
 {
     return settingsPanel->startFrame();
-}
-
-int OpacityConfigurator::startComboSize()
-{
-    return settingsPanel->startComboSize();
 }
 
 QString OpacityConfigurator::tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId)
@@ -193,6 +194,8 @@ void OpacityConfigurator::activateMode(TupToolPlugin::EditMode mode)
 
 void OpacityConfigurator::addTween(const QString &name)
 {
+    emit newTweenContextRequested();
+
     activeTweenManagerPanel(false);
 
     currentMode = TupToolPlugin::Add;

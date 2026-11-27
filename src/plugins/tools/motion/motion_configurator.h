@@ -78,6 +78,7 @@ class TUPITUBE_PLUGIN MotionConfigurator : public QFrame
         void setButtonsPanel();
         void activeButtonsPanel(bool enable);
 
+        void updateTimelineContext(int totalFrames, int frameIndex);
         void initStartCombo(int framesCount, int currentFrame);
         void setStartFrame(int currentIndex);
         int startFrame();
@@ -92,7 +93,6 @@ class TUPITUBE_PLUGIN MotionConfigurator : public QFrame
         QString getTweenNameFromList() const;
         QString getTweenIdFromList() const;
         void notifySelection(bool flag);
-        int startComboSize();
         void closeSettingsPanel();
         TupToolPlugin::Mode mode();
         void resetUI();
@@ -123,6 +123,7 @@ class TUPITUBE_PLUGIN MotionConfigurator : public QFrame
         void updateTweenData(const QString &tweenId);
         
     signals:
+        void newTweenContextRequested();
         void clickedCreatePath();
         void clickedSelect();
         void clickedRemoveTween(const QString &tweenId);

@@ -59,6 +59,7 @@ RotationTweener::RotationTweener() : TupToolPlugin()
     setupActions();
 
     configPanel = nullptr;
+    scene = nullptr;
     initFrame = 0;
     target = nullptr;
 }
@@ -259,6 +260,8 @@ QWidget * RotationTweener::configurator()
         mode = TupToolPlugin::View;
 
         configPanel = new RotationConfigurator;
+        connect(configPanel, SIGNAL(newTweenContextRequested()),
+                this, SLOT(prepareNewTweenContext()), Qt::DirectConnection);
         connect(configPanel, SIGNAL(startingPointChanged(int)), this, SLOT(updateStartPoint(int)));
         connect(configPanel, SIGNAL(clickedApplyTween()), this, SLOT(applyTween()));
         connect(configPanel, SIGNAL(clickedSelect()), this, SLOT(setSelection()));
@@ -320,44 +323,39 @@ void RotationTweener::saveConfig()
 /* This method updates the workspace when the plugin changes the scene */
 
 void RotationTweener::updateScene(TupGraphicsScene *scene)
-{ 
+{
+    if (!configPanel || !scene || !scene->currentScene())
+        return;
+
     mode = configPanel->mode();
+    configPanel->updateTimelineContext(framesCount(), scene->currentFrameIndex());
 
     if (mode == TupToolPlugin::Edit) {
-        int framesNumber = framesCount();
-
-        if (configPanel->startComboSize() < framesNumber)
-            configPanel->initStartCombo(framesNumber, initFrame);
-
         int tweenLimit = initFrame + (configPanel->totalSteps() - 1);
         if (scene->currentFrameIndex() >= initFrame && scene->currentFrameIndex() <= tweenLimit)
             scene->addItem(target);
 
     } else if (mode == TupToolPlugin::Add) {
-        int total = framesCount();
-
-        if (editMode == TupToolPlugin::Properties) {
-            if (total > configPanel->startComboSize()) {
-                configPanel->activateMode(TupToolPlugin::Selection);
-                clearSelection();
-                setSelection();
-            }
+        const int frameIndex = scene->currentFrameIndex();
+        if (editMode == TupToolPlugin::Properties && frameIndex != initFrame) {
+            // A pending tween belongs to its selected objects' frame.
+            // Re-select objects only on actual frame navigation, not growth.
+            configPanel->activateMode(TupToolPlugin::Selection);
+            clearSelection();
+            configPanel->setStartFrame(frameIndex);
+            initFrame = frameIndex;
+            setSelection();
         } else if (editMode == TupToolPlugin::Selection) {
-            if (scene->currentFrameIndex() != initFrame)
+            if (frameIndex != initFrame) {
                 clearSelection();
-            initFrame = scene->currentFrameIndex();
+                configPanel->setStartFrame(frameIndex);
+            }
+            initFrame = frameIndex;
             setSelection();
         }
-
-        if (configPanel->startComboSize() < total) {
-            configPanel->initStartCombo(total, initFrame);
-        } else {
-            if (scene->currentFrameIndex() != initFrame)
-                configPanel->setStartFrame(scene->currentFrameIndex());
-        }
-    } else {
-        if (scene->currentFrameIndex() != initFrame)
-            configPanel->setStartFrame(scene->currentFrameIndex());
+    } else if (mode == TupToolPlugin::View) {
+        // Track selection without rewriting an existing or pending property.
+        initFrame = scene->currentFrameIndex();
     }
 }
 
@@ -371,14 +369,23 @@ void RotationTweener::setCurrentTween(const QString &tweenId)
         currentTween = nullptr;
 }
 
+// The active layer is the source of truth at the Add Tween boundary.
+void RotationTweener::prepareNewTweenContext()
+{
+    if (!configPanel || !scene || !scene->currentScene())
+        return;
+
+    initScene = scene->currentSceneIndex();
+    initLayer = scene->currentLayerIndex();
+    initFrame = scene->currentFrameIndex();
+    configPanel->updateTimelineContext(framesCount(), initFrame);
+}
+
 int RotationTweener::framesCount()
 {
-    int total = 1;
-    TupLayer *layer = scene->currentScene()->layerAt(scene->currentLayerIndex());
-    if (layer)
-        total = layer->framesCount();
-
-    return total;
+    TupScene *sceneData = scene ? scene->currentScene() : nullptr;
+    TupLayer *layer = sceneData ? sceneData->layerAt(scene->currentLayerIndex()) : nullptr;
+    return layer ? qMax(1, layer->framesCount()) : 1;
 }
 
 /* This method clears selection */
@@ -969,6 +976,9 @@ void RotationTweener::layerResponse(const TupLayerResponse *event)
 
 void RotationTweener::frameResponse(const TupFrameResponse *event)
 {
+    if (configPanel && scene && scene->currentScene())
+        configPanel->updateTimelineContext(framesCount(), scene->currentFrameIndex());
+
     if (event->getAction() == TupProjectRequest::RemoveSelection && initLayer == event->getLayerIndex())
         init(scene);
 

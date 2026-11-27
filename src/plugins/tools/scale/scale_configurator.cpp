@@ -158,6 +158,12 @@ void ScaleConfigurator::activeButtonsPanel(bool enable)
        controlPanel->hide();
 }
 
+void ScaleConfigurator::updateTimelineContext(int totalFrames, int frameIndex)
+{
+    framesCount = qMax(1, totalFrames);
+    currentFrame = qBound(0, frameIndex, framesCount - 1);
+}
+
 void ScaleConfigurator::initStartCombo(int frames, int frameIndex)
 {
     framesCount = frames;
@@ -174,11 +180,6 @@ void ScaleConfigurator::setStartFrame(int currentIndex)
 int ScaleConfigurator::startFrame()
 {
     return settingsPanel->startFrame();
-}
-
-int ScaleConfigurator::startComboSize()
-{
-    return settingsPanel->startComboSize();
 }
 
 QString ScaleConfigurator::tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId,
@@ -200,6 +201,8 @@ void ScaleConfigurator::activateMode(TupToolPlugin::EditMode currentMode)
 
 void ScaleConfigurator::addTween(const QString &name)
 {
+    emit newTweenContextRequested();
+
     activeTweenManagerPanel(false);
 
     currentMode = TupToolPlugin::Add;

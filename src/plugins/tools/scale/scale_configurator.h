@@ -59,6 +59,7 @@ class TUPITUBE_PLUGIN ScaleConfigurator : public QFrame
 
         void loadTweenList(const QList<QPair<QString, QString>> &tweenList);
 
+        void updateTimelineContext(int totalFrames, int frameIndex);
         void initStartCombo(int framesCount, int currentFrame);
         void setStartFrame(int currentIndex);
         int startFrame();
@@ -71,7 +72,6 @@ class TUPITUBE_PLUGIN ScaleConfigurator : public QFrame
         QString getTweenNameFromList() const;
         QString getTweenIdFromList() const;
         void notifySelection(bool flag);
-        int startComboSize();
         void closeSettingsPanel();
         TupToolPlugin::Mode mode();
         void resetUI();
@@ -92,6 +92,7 @@ class TUPITUBE_PLUGIN ScaleConfigurator : public QFrame
         void updateTweenData(const QString &tweenId);
         
     signals:
+        void newTweenContextRequested();
         void startingPointChanged(int index);
         void clickedSelect();
         void clickedDefineProperties();

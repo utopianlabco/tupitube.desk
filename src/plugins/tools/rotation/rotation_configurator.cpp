@@ -153,6 +153,13 @@ void RotationConfigurator::activeButtonsPanel(bool enable)
         controlPanel->hide();
 }
 
+void RotationConfigurator::updateTimelineContext(int totalFrames, int frameIndex)
+{
+    framesCount = qMax(1, totalFrames);
+    currentFrame = qBound(0, frameIndex, framesCount - 1);
+    settingsPanel->updateStartFrameLimit(framesCount);
+}
+
 void RotationConfigurator::initStartCombo(int frames, int frameIndex)
 {
     framesCount = frames;
@@ -169,11 +176,6 @@ void RotationConfigurator::setStartFrame(int currentIndex)
 int RotationConfigurator::startFrame()
 {
     return settingsPanel->startFrame();
-}
-
-int RotationConfigurator::startComboSize()
-{
-    return settingsPanel->startComboSize();
 }
 
 QString RotationConfigurator::tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId, QPointF point)
@@ -193,6 +195,8 @@ void RotationConfigurator::activateMode(TupToolPlugin::EditMode mode)
 
 void RotationConfigurator::addTween(const QString &name)
 {
+    emit newTweenContextRequested();
+
     currentMode = TupToolPlugin::Add;
     emit setMode(currentMode);
 

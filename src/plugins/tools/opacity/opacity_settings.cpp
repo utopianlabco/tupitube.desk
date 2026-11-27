@@ -43,6 +43,7 @@ OpacitySettings::OpacitySettings(QWidget *parent) : QWidget(parent)
     int iconSize = TResponsiveUI::fitRightPanelIconSize();
     selectionDone = false;
     stepsCounter = 0;
+    mode = TupToolPlugin::View;
 
     layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
     layout->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
@@ -241,6 +242,11 @@ void OpacitySettings::setParameters(const QString &name, int framesCount, int in
     remove->setToolTip(tr("Cancel Tween"));
 
     initStartCombo(framesCount, initFrame);
+
+    // Initialize Iterations exactly once, from the actual inclusive range.
+    stepsCounter = totalSteps();
+    totalLabel->setText(tr("Frames Total") + ": " + QString::number(stepsCounter));
+    iterationsField->setValue(qMax(1, stepsCounter));
 }
 
 // Editing current Tween
@@ -285,8 +291,6 @@ void OpacitySettings::initStartCombo(int framesCount, int currentIndex)
     endFrame->setMinimum(1);
     endFrame->setMaximum(999);
     endFrame->setValue(framesCount);
-
-    iterationsField->setValue(framesCount);
 }
 
 void OpacitySettings::setStartFrame(int currentIndex)
@@ -300,11 +304,6 @@ void OpacitySettings::setStartFrame(int currentIndex)
 int OpacitySettings::startFrame()
 {
     return initFrame->value() - 1;
-}
-
-int OpacitySettings::startComboSize()
-{
-    return initFrame->maximum();
 }
 
 int OpacitySettings::totalSteps()
@@ -431,7 +430,8 @@ QString OpacitySettings::tweenToXml(int currentScene, int currentLayer, int curr
     else
         root.setAttribute("opacityReverseLoop", "0");
 
-    double delta = static_cast<double>(initFactor - endFactor) / static_cast<double>(iterations - 1);
+    // One iteration has no intermediate interpolation interval.
+    const double delta = iterations > 1 ? (initFactor - endFactor) / (iterations - 1) : 0.0;
     double reference = 0;
 
     int cycle = 1;
@@ -505,10 +505,6 @@ void OpacitySettings::checkFramesRange()
 
     stepsCounter = end - begin + 1;
     totalLabel->setText(tr("Frames Total") + ": " + QString::number(stepsCounter));
-
-    int iterations = iterationsField->value();
-    if (iterations > stepsCounter)
-        iterationsField->setValue(stepsCounter);
 }
 
 void OpacitySettings::updateLoopCheckbox(int state)

@@ -109,6 +109,7 @@ class TUPITUBE_PLUGIN RotationTweener : public TupToolPlugin
         void refreshRebasedTween(const QString &tweenId);
 
     private slots:
+        void prepareNewTweenContext();
         void setSelection();
         void setPropertiesMode();
         void updateMode(TupToolPlugin::Mode mode);

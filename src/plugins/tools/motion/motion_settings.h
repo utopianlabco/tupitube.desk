@@ -65,6 +65,7 @@ class TUPITUBE_PLUGIN MotionSettings : public QWidget
         void setParameters(TupItemTweener *currentTween);
         void showPropertiesForm();
         void initStartCombo(int totalFrames, int currentIndex);
+        void updateStartFrameLimit(int totalFrames);
         void setStartFrame(int currentIndex);
         int startFrame();
 
@@ -75,7 +76,6 @@ class TUPITUBE_PLUGIN MotionSettings : public QWidget
         void activateMode(TupToolPlugin::EditMode mode);
         void clearData();
         void notifySelection(bool flag);
-        int startComboSize();
         void enableInitCombo(bool enable);
         QString currentTweenName() const;
         void setTweenName(const QString &name);

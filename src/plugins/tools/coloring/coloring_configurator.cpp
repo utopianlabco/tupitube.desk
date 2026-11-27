@@ -162,6 +162,12 @@ void ColoringConfigurator::activeButtonsPanel(bool enable)
         controlPanel->hide();
 }
 
+void ColoringConfigurator::updateTimelineContext(int totalFrames, int frameIndex)
+{
+    framesCount = qMax(1, totalFrames);
+    currentFrame = qBound(0, frameIndex, framesCount - 1);
+}
+
 void ColoringConfigurator::initStartCombo(int lFramesCount, int lCurrentFrame)
 {
     framesCount = lFramesCount;
@@ -178,11 +184,6 @@ void ColoringConfigurator::setStartFrame(int currentIndex)
 int ColoringConfigurator::startFrame()
 {
     return settingsPanel->startFrame();
-}
-
-int ColoringConfigurator::startComboSize()
-{
-    return settingsPanel->startComboSize();
 }
 
 QString ColoringConfigurator::tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId)
@@ -202,6 +203,8 @@ void ColoringConfigurator::activateMode(TupToolPlugin::EditMode mode)
 
 void ColoringConfigurator::addTween(const QString &name)
 {
+    emit newTweenContextRequested();
+
     activeTweenManagerPanel(false);
 
     toolMode = TupToolPlugin::Add;

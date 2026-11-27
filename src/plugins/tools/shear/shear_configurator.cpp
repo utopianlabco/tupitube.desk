@@ -154,6 +154,12 @@ void ShearConfigurator::activeButtonsPanel(bool enable)
         controlPanel->hide();
 }
 
+void ShearConfigurator::updateTimelineContext(int totalFrames, int frameIndex)
+{
+    framesCount = qMax(1, totalFrames);
+    currentFrame = qBound(0, frameIndex, framesCount - 1);
+}
+
 void ShearConfigurator::initStartCombo(int frames, int frameIndex)
 {
     framesCount = frames;
@@ -170,11 +176,6 @@ void ShearConfigurator::setStartFrame(int currentIndex)
 int ShearConfigurator::startFrame()
 {
     return settingsPanel->startFrame();
-}
-
-int ShearConfigurator::startComboSize()
-{
-    return settingsPanel->startComboSize();
 }
 
 QString ShearConfigurator::tweenToXml(int currentScene, int currentLayer, int currentFrame, const QString &tweenId, QPointF point)
@@ -194,6 +195,8 @@ void ShearConfigurator::activateMode(TupToolPlugin::EditMode mode)
 
 void ShearConfigurator::addTween(const QString &name)
 {
+    emit newTweenContextRequested();
+
     currentMode = TupToolPlugin::Add;
     emit setMode(currentMode);
 

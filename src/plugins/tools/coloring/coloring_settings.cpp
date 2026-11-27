@@ -356,11 +356,6 @@ int ColoringSettings::startFrame()
     return initFrame->value() - 1;
 }
 
-int ColoringSettings::startComboSize()
-{
-    return initFrame->maximum();
-}
-
 int ColoringSettings::totalSteps()
 {
     return endFrame->value() - (initFrame->value() - 1);

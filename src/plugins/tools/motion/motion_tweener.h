@@ -98,6 +98,7 @@ class TUPITUBE_PLUGIN MotionTweener : public TupToolPlugin
         void rebasedFrameFollowRequested(int frameIndex, int layerIndex, int sceneIndex);
 
     private slots:
+        void prepareNewTweenContext();
         void applyReset();
         void applyTween();
         void removeTween(const QString &tweenId);

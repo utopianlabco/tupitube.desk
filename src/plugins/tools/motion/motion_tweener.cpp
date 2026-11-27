@@ -101,6 +101,7 @@ MotionTweener::MotionTweener() : TupToolPlugin()
 
     isPathInScene = false;
     configPanel = nullptr;
+    scene = nullptr;
     linePath = nullptr;
     guideLine = nullptr;
     nodesGroup = nullptr;
@@ -183,8 +184,8 @@ void MotionTweener::updateStartFrame(int index)
        qDebug() << "*** index ->" << index;
     #endif
 
-    if (index == 1)
-        index--;
+    // QSpinBox emits one-based UI frame numbers.
+    --index;
 
     if (initFrame != index && index >= 0) {
         initFrame = index;
@@ -566,6 +567,8 @@ QWidget *MotionTweener::configurator()
         mode = TupToolPlugin::View;
 
         configPanel = new MotionConfigurator;
+        connect(configPanel, SIGNAL(newTweenContextRequested()),
+                this, SLOT(prepareNewTweenContext()), Qt::DirectConnection);
         connect(configPanel, SIGNAL(startingFrameChanged(int)), this, SLOT(updateStartFrame(int)));
         connect(configPanel, SIGNAL(clickedCreatePath()), this, SLOT(setTweenPath()));
         connect(configPanel, SIGNAL(clickedSelect()), this, SLOT(setSelection()));
@@ -1131,7 +1134,11 @@ void MotionTweener::saveConfig()
 
 void MotionTweener::updateScene(TupGraphicsScene *scene)
 {
+    if (!configPanel || !scene || !scene->currentScene())
+        return;
+
     mode = configPanel->mode();
+    configPanel->updateTimelineContext(framesCount(), scene->currentFrameIndex());
 
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::updateScene()] - Scene index ->" << scene->currentSceneIndex();
@@ -1154,38 +1161,30 @@ void MotionTweener::updateScene(TupGraphicsScene *scene)
                     paintTweenPoints();
                 }
             }
-        } 
-
-        int framesNumber = framesCount();
-        if (configPanel->startComboSize() < framesNumber)
-            configPanel->initStartCombo(framesNumber, initFrame);
-
-    } else if (mode == TupToolPlugin::Add) {
-        int total = framesCount();
-        if (configPanel->startComboSize() < total) {
-            configPanel->initStartCombo(total, initFrame);
-        } else {
-            if (scene->currentFrameIndex() != initFrame)
-                configPanel->setStartFrame(scene->currentFrameIndex());
         }
-
+    } else if (mode == TupToolPlugin::Add) {
         if (editMode == TupToolPlugin::Properties) {
             linePath = nullptr;
             configPanel->clearData();
             configPanel->activateMode(TupToolPlugin::Selection);
             clearSelection();
+            if (scene->currentFrameIndex() != initFrame)
+                configPanel->setStartFrame(scene->currentFrameIndex());
+            initFrame = scene->currentFrameIndex();
             setSelection();
         } else if (editMode == TupToolPlugin::Selection) {
             linePath = nullptr;
-            if (scene->currentFrameIndex() != initFrame)
+            if (scene->currentFrameIndex() != initFrame) {
                 clearSelection();
+                configPanel->setStartFrame(scene->currentFrameIndex());
+            }
             initFrame = scene->currentFrameIndex();            
             #ifdef TUP_DEBUG
                 qDebug() << "[Motion Tweener::updateScene()] - initFrame -> " << initFrame;
             #endif
             setSelection();
         }
-    } else {
+    } else if (mode == TupToolPlugin::View) {
         // Snapshot recovery replaces the project model in place. If a local
         // optimistic RemoveTween was rejected, currentTween is NULL after the
         // local removal, but the authoritative snapshot may contain the tween
@@ -1194,8 +1193,7 @@ void MotionTweener::updateScene(TupGraphicsScene *scene)
         if (!currentTween && scene->currentScene())
             refreshTweenList();
 
-        if (scene->currentFrameIndex() != initFrame)
-            configPanel->setStartFrame(scene->currentFrameIndex());
+        initFrame = scene->currentFrameIndex();
     }
 }
 
@@ -1503,18 +1501,27 @@ void MotionTweener::loadEditEnvironment(bool requestFrameSelection, bool alignPa
     }
 }
 
+// The active layer is the source of truth at the Add Tween boundary.
+void MotionTweener::prepareNewTweenContext()
+{
+    if (!configPanel || !scene || !scene->currentScene())
+        return;
+
+    initScene = scene->currentSceneIndex();
+    initLayer = scene->currentLayerIndex();
+    initFrame = scene->currentFrameIndex();
+    configPanel->updateTimelineContext(framesCount(), initFrame);
+}
+
 int MotionTweener::framesCount()
 {
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::framesCount()]";
     #endif
 
-    int total = 1;
-    TupLayer *layer = scene->currentScene()->layerAt(scene->currentLayerIndex());
-    if (layer)
-        total = layer->framesCount();
-
-    return total;
+    TupScene *sceneData = scene ? scene->currentScene() : nullptr;
+    TupLayer *layer = sceneData ? sceneData->layerAt(scene->currentLayerIndex()) : nullptr;
+    return layer ? qMax(1, layer->framesCount()) : 1;
 }
 
 /* This method clear selection */
@@ -1579,6 +1586,9 @@ void MotionTweener::layerResponse(const TupLayerResponse *response)
 
 void MotionTweener::frameResponse(const TupFrameResponse *response)
 {
+    if (configPanel && scene && scene->currentScene())
+        configPanel->updateTimelineContext(framesCount(), scene->currentFrameIndex());
+
     #ifdef TUP_DEBUG
         qDebug() << "[Motion Tweener::frameResponse()] - index ->" << response->getFrameIndex();
     #endif

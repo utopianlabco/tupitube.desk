@@ -60,6 +60,7 @@ OpacityTweener::OpacityTweener() : TupToolPlugin()
     setupActions();
 
     configPanel = nullptr;
+    scene = nullptr;
     initFrame = 0;
 }
 
@@ -212,6 +213,8 @@ QWidget *OpacityTweener::configurator()
         mode = TupToolPlugin::View;
 
         configPanel = new OpacityConfigurator;
+        connect(configPanel, SIGNAL(newTweenContextRequested()),
+                this, SLOT(prepareNewTweenContext()), Qt::DirectConnection);
         connect(configPanel, SIGNAL(startingPointChanged(int)), this, SLOT(updateStartPoint(int)));
         connect(configPanel, SIGNAL(clickedApplyTween()), this, SLOT(applyTween()));
         connect(configPanel, SIGNAL(clickedSelect()), this, SLOT(setSelection()));
@@ -258,35 +261,33 @@ void OpacityTweener::saveConfig()
 /* This method updates the workspace when the plugin changes the scene */
 void OpacityTweener::updateScene(TupGraphicsScene *gScene)
 {
+    if (!configPanel || !gScene || !gScene->currentScene())
+        return;
+
     mode = configPanel->mode();
+    configPanel->updateTimelineContext(framesCount(), gScene->currentFrameIndex());
 
     if (mode == TupToolPlugin::Add) {
-        int total = framesCount();
-
-        if (editMode == TupToolPlugin::Properties) {
-            if (total > configPanel->startComboSize()) {
-                configPanel->activateMode(TupToolPlugin::Selection);
-                clearSelection();
-                setSelection();
-            }
+        const int frameIndex = gScene->currentFrameIndex();
+        if (editMode == TupToolPlugin::Properties && frameIndex != initFrame) {
+            // A pending tween belongs to its selected objects' frame.
+            // Re-select objects only on actual frame navigation, not growth.
+            configPanel->activateMode(TupToolPlugin::Selection);
+            clearSelection();
+            configPanel->setStartFrame(frameIndex);
+            initFrame = frameIndex;
+            setSelection();
         } else if (editMode == TupToolPlugin::Selection) {
-                   if (gScene->currentFrameIndex() != initFrame)
-                       clearSelection();
-                   initFrame = gScene->currentFrameIndex();
-                   setSelection();
-        }
-
-        if (configPanel->startComboSize() < total) {
-            configPanel->initStartCombo(total, initFrame);
-        } else {
-            if (gScene->currentFrameIndex() != initFrame)
-                configPanel->setStartFrame(gScene->currentFrameIndex());
+            if (frameIndex != initFrame) {
+                clearSelection();
+                configPanel->setStartFrame(frameIndex);
+            }
+            initFrame = frameIndex;
+            setSelection();
         }
     } else if (mode == TupToolPlugin::View) {
-        // Timeline navigation must not overwrite an existing tween's
-        // Start Frame property or an explicitly edited pending value.
-        if (gScene->currentFrameIndex() != initFrame)
-            configPanel->setStartFrame(gScene->currentFrameIndex());
+        // Track selection without rewriting an existing or pending property.
+        initFrame = gScene->currentFrameIndex();
     }
 }
 
@@ -300,14 +301,23 @@ void OpacityTweener::setCurrentTween(const QString &tweenId)
         currentTween = nullptr;
 }
 
+// The active layer is the source of truth at the Add Tween boundary.
+void OpacityTweener::prepareNewTweenContext()
+{
+    if (!configPanel || !scene || !scene->currentScene())
+        return;
+
+    initScene = scene->currentSceneIndex();
+    initLayer = scene->currentLayerIndex();
+    initFrame = scene->currentFrameIndex();
+    configPanel->updateTimelineContext(framesCount(), initFrame);
+}
+
 int OpacityTweener::framesCount()
 {
-    int total = 1;
-    TupLayer *layer = scene->currentScene()->layerAt(scene->currentLayerIndex());
-    if (layer)
-        total = layer->framesCount();
-
-    return total;
+    TupScene *sceneData = scene ? scene->currentScene() : nullptr;
+    TupLayer *layer = sceneData ? sceneData->layerAt(scene->currentLayerIndex()) : nullptr;
+    return layer ? qMax(1, layer->framesCount()) : 1;
 }
 
 /* This method clears selection */
@@ -810,6 +820,9 @@ void OpacityTweener::layerResponse(const TupLayerResponse *event)
 
 void OpacityTweener::frameResponse(const TupFrameResponse *event)
 {
+    if (configPanel && scene && scene->currentScene())
+        configPanel->updateTimelineContext(framesCount(), scene->currentFrameIndex());
+
     if (event->getAction() == TupProjectRequest::Remove && scene->currentLayerIndex() == event->getLayerIndex())
         init(scene);
 

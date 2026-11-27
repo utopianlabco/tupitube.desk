@@ -45,6 +45,7 @@ ScaleSettings::ScaleSettings(QWidget *parent) : QWidget(parent)
     scaleAxes = TupItemTweener::XY;
     selectionDone = false;
     stepsCounter = 0;
+    mode = TupToolPlugin::View;
 
     layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
     layout->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
@@ -232,8 +233,6 @@ void ScaleSettings::activeInnerForm(bool enable)
 // Adding new Tween
 void ScaleSettings::setParameters(const QString &name, int framesCount, int initFrame)
 {
-    Q_UNUSED(framesCount);
-
     mode = TupToolPlugin::Add;
     input->setText(name);
 
@@ -242,8 +241,13 @@ void ScaleSettings::setParameters(const QString &name, int framesCount, int init
     remove->setIcon(QPixmap(kAppProp->themeDir() + "icons/close.png"));
     remove->setToolTip(tr("Cancel Tween"));
 
-    initFrameSpin->setValue(initFrame + 1);
+    initStartCombo(framesCount, initFrame);
     initFrameSpin->setEnabled(false);
+
+    // Initialize Iterations exactly once, from the actual inclusive range.
+    stepsCounter = totalSteps();
+    totalLabel->setText(tr("Frames Total") + ": " + QString::number(stepsCounter));
+    iterationsField->setValue(qMax(1, stepsCounter));
 }
 
 // Editing new Tween
@@ -295,8 +299,6 @@ void ScaleSettings::initStartCombo(int framesCount, int currentIndex)
     endFrameSpin->setMinimum(1);
     endFrameSpin->setMaximum(999);
     endFrameSpin->setValue(framesCount);
-
-    iterationsField->setValue(framesCount);
 }
 
 void ScaleSettings::setStartFrame(int currentIndex)
@@ -310,11 +312,6 @@ void ScaleSettings::setStartFrame(int currentIndex)
 int ScaleSettings::startFrame()
 {
     return initFrameSpin->value() - 1;
-}
-
-int ScaleSettings::startComboSize()
-{
-    return initFrameSpin->maximum();
 }
 
 int ScaleSettings::totalSteps()
@@ -449,8 +446,8 @@ QString ScaleSettings::tweenToXml(int currentScene, int currentLayer, int curren
     double factorY = 1.0;
     double scaleX = 1.0;
     double scaleY = 1.0;
-    double lastScaleX = 1.0;
-    double lastScaleY = 1.0;
+    double lastScaleX = initialXScaleFactor;
+    double lastScaleY = initialYScaleFactor;
 
     if (scaleAxes == TupItemTweener::XY) {
         factorX = factor;
@@ -465,7 +462,11 @@ QString ScaleSettings::tweenToXml(int currentScene, int currentLayer, int curren
     int reverseTop = (iterations * 2) - 2;
 
     for (int i=0; i < stepsCounter; i++) {
-         if (cycle <= iterations) {
+         if (iterations == 1) {
+             // A one-step cycle is stationary in every looping mode.
+             scaleX = initialXScaleFactor;
+             scaleY = initialYScaleFactor;
+         } else if (cycle <= iterations) {
              if (cycle == 1) {
                  scaleX = initialXScaleFactor;
                  scaleY = initialYScaleFactor;
@@ -485,8 +486,13 @@ QString ScaleSettings::tweenToXml(int currentScene, int currentLayer, int curren
                  lastScaleX = scaleX;
                  lastScaleY = scaleY;
              } else if (reverse) { // if reverse option is enabled
-                 scaleX /= factorX;
-                 scaleY /= factorY;
+                 // Zero is an allowed scale factor and cannot be inverted.
+                 // Replay the zero-factor forward state for this reverse step.
+                 const int exponent = qMax(0, 2 * iterations - 1 - cycle);
+                 scaleX = factorX == 0.0 ? (exponent == 0 ? initialXScaleFactor : 0.0)
+                                         : scaleX / factorX;
+                 scaleY = factorY == 0.0 ? (exponent == 0 ? initialYScaleFactor : 0.0)
+                                         : scaleY / factorY;
                  lastScaleX = scaleX;
                  lastScaleY = scaleY;
                  if (cycle < reverseTop)
@@ -539,10 +545,6 @@ void ScaleSettings::checkFramesRange()
 
     stepsCounter = end - begin + 1;
     totalLabel->setText(tr("Frames Total") + ": " + QString::number(stepsCounter));
-
-    int iterations = iterationsField->value();
-    if (iterations > stepsCounter)
-        iterationsField->setValue(stepsCounter);
 }
 
 void ScaleSettings::updateLoopCheckbox(int state)

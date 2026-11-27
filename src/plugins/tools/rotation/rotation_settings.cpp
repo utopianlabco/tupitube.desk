@@ -47,6 +47,7 @@ RotationSettings::RotationSettings(QWidget *parent) : QWidget(parent)
     propertiesDone = false;
     rotationType = TupItemTweener::Continuos;
     stepsCounter = 0;
+    mode = TupToolPlugin::View;
 
     layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
     layout->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
@@ -333,6 +334,8 @@ void RotationSettings::setParameters(const QString &name, int framesCount, int i
     remove->setToolTip(tr("Cancel Tween"));
 
     initStartCombo(framesCount, initFrame);
+    stepsCounter = totalSteps();
+    totalLabel->setText(tr("Frames Total") + ": " + QString::number(stepsCounter));
 }
 
 // Editing current Tween
@@ -353,6 +356,7 @@ void RotationSettings::setParameters(TupItemTweener *currentTween)
     stepsCounter = currentTween->getFrames();
 
     initFrame->setEnabled(true);
+    updateStartFrameLimit(currentTween->getInitFrame() + 1);
     initFrame->setValue(currentTween->getInitFrame() + 1);
 
     endFrame->setValue(currentTween->getInitFrame() + currentTween->getFrames());
@@ -386,6 +390,12 @@ void RotationSettings::initStartCombo(int framesCount, int currentIndex)
     endFrame->setValue(framesCount);
 }
 
+void RotationSettings::updateStartFrameLimit(int totalFrames)
+{
+    // Updating available frames must never clamp an existing/pending start.
+    initFrame->setMaximum(qMax(totalFrames, initFrame->value()));
+}
+
 void RotationSettings::setStartFrame(int currentIndex)
 {
     initFrame->setValue(currentIndex + 1);
@@ -397,11 +407,6 @@ void RotationSettings::setStartFrame(int currentIndex)
 int RotationSettings::startFrame()
 {
     return initFrame->value() - 1;
-}
-
-int RotationSettings::startComboSize()
-{
-    return initFrame->maximum();
 }
 
 int RotationSettings::totalSteps()

@@ -61,6 +61,7 @@ ShearTweener::ShearTweener(): TupToolPlugin()
     setupActions();
 
     configPanel = nullptr;
+    scene = nullptr;
     framesTotal = 1;
     target = nullptr;
     currentTween = nullptr;
@@ -233,6 +234,8 @@ QWidget *ShearTweener::configurator()
         mode = TupToolPlugin::View;
 
         configPanel = new ShearConfigurator;
+        connect(configPanel, SIGNAL(newTweenContextRequested()),
+                this, SLOT(prepareNewTweenContext()), Qt::DirectConnection);
         connect(configPanel, SIGNAL(initFrameChanged(int)), this, SLOT(updateInitFrame(int)));
         connect(configPanel, SIGNAL(clickedApplyTween()), this, SLOT(applyTween()));
         connect(configPanel, SIGNAL(clickedSelect()), this, SLOT(setSelection()));
@@ -297,7 +300,11 @@ void ShearTweener::saveConfig()
 
 void ShearTweener::updateScene(TupGraphicsScene *scene)
 {
+    if (!configPanel || !scene || !scene->currentScene())
+        return;
+
     mode = configPanel->mode();
+    configPanel->updateTimelineContext(framesCount(), scene->currentFrameIndex());
 
     // As in Rotation, an ordinary canvas refresh must not discard an
     // unapplied origin drag. Reattach the *same* live Target when detached;
@@ -325,32 +332,26 @@ void ShearTweener::updateScene(TupGraphicsScene *scene)
     }
 
     if (mode == TupToolPlugin::Add) {
-        int total = framesCount();
-
-        if (editMode == TupToolPlugin::Properties) {
-            if (total > configPanel->startComboSize()) {
-                configPanel->activateMode(TupToolPlugin::Selection);
-                clearSelection();
-                setSelection();
-            }
+        const int frameIndex = scene->currentFrameIndex();
+        if (editMode == TupToolPlugin::Properties && frameIndex != initFrame) {
+            // A pending tween belongs to its selected objects' frame.
+            // Re-select objects only on actual frame navigation, not growth.
+            configPanel->activateMode(TupToolPlugin::Selection);
+            clearSelection();
+            configPanel->setStartFrame(frameIndex);
+            initFrame = frameIndex;
+            setSelection();
         } else if (editMode == TupToolPlugin::Selection) {
-            if (scene->currentFrameIndex() != initFrame)
+            if (frameIndex != initFrame) {
                 clearSelection();
-            initFrame = scene->currentFrameIndex();
+                configPanel->setStartFrame(frameIndex);
+            }
+            initFrame = frameIndex;
             setSelection();
         }
-
-        if (configPanel->startComboSize() < total) {
-            configPanel->initStartCombo(total, initFrame);
-        } else {
-            if (scene->currentFrameIndex() != initFrame)
-                configPanel->setStartFrame(scene->currentFrameIndex());
-        }
     } else if (mode == TupToolPlugin::View) {
-        // Timeline navigation must not overwrite an existing tween's
-        // Start Frame property or an explicitly edited pending value.
-        if (scene->currentFrameIndex() != initFrame)
-            configPanel->setStartFrame(scene->currentFrameIndex());
+        // Track selection without rewriting an existing or pending property.
+        initFrame = scene->currentFrameIndex();
     }
 }
 
@@ -364,14 +365,23 @@ void ShearTweener::setCurrentTween(const QString &tweenId)
         currentTween = nullptr;
 }
 
+// The active layer is the source of truth at the Add Tween boundary.
+void ShearTweener::prepareNewTweenContext()
+{
+    if (!configPanel || !scene || !scene->currentScene())
+        return;
+
+    initScene = scene->currentSceneIndex();
+    initLayer = scene->currentLayerIndex();
+    initFrame = scene->currentFrameIndex();
+    configPanel->updateTimelineContext(framesCount(), initFrame);
+}
+
 int ShearTweener::framesCount()
 {
-    int total = 1;
-    TupLayer *layer = scene->currentScene()->layerAt(scene->currentLayerIndex());
-    if (layer)
-        total = layer->framesCount();
-
-    return total;
+    TupScene *sceneData = scene ? scene->currentScene() : nullptr;
+    TupLayer *layer = sceneData ? sceneData->layerAt(scene->currentLayerIndex()) : nullptr;
+    return layer ? qMax(1, layer->framesCount()) : 1;
 }
 
 /* This method clears selection */
@@ -1019,6 +1029,9 @@ void ShearTweener::layerResponse(const TupLayerResponse *event)
 
 void ShearTweener::frameResponse(const TupFrameResponse *event)
 {
+    if (configPanel && scene && scene->currentScene())
+        configPanel->updateTimelineContext(framesCount(), scene->currentFrameIndex());
+
     if (event->getAction() == TupProjectRequest::Remove && initLayer == event->getLayerIndex())
         init(scene);
 

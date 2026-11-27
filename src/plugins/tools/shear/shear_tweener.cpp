@@ -346,7 +346,9 @@ void ShearTweener::updateScene(TupGraphicsScene *scene)
             if (scene->currentFrameIndex() != initFrame)
                 configPanel->setStartFrame(scene->currentFrameIndex());
         }
-    } else {
+    } else if (mode == TupToolPlugin::View) {
+        // Timeline navigation must not overwrite an existing tween's
+        // Start Frame property or an explicitly edited pending value.
         if (scene->currentFrameIndex() != initFrame)
             configPanel->setStartFrame(scene->currentFrameIndex());
     }

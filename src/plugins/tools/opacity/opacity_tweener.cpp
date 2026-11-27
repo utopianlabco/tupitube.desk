@@ -282,7 +282,9 @@ void OpacityTweener::updateScene(TupGraphicsScene *gScene)
             if (gScene->currentFrameIndex() != initFrame)
                 configPanel->setStartFrame(gScene->currentFrameIndex());
         }
-    } else {
+    } else if (mode == TupToolPlugin::View) {
+        // Timeline navigation must not overwrite an existing tween's
+        // Start Frame property or an explicitly edited pending value.
         if (gScene->currentFrameIndex() != initFrame)
             configPanel->setStartFrame(gScene->currentFrameIndex());
     }
